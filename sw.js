@@ -1,7 +1,7 @@
 // CalcInvest Service Worker
 // Stratégie : network-first pour HTML (toujours récent), cache-first pour assets statiques
 
-const CACHE_VERSION = 'calcinvest-v4';
+const CACHE_VERSION = 'calcinvest-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

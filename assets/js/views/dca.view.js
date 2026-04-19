@@ -685,29 +685,90 @@
       set('da5-simdd-recovery', 'Pas encore récupéré');
     }
 
-    // Underwater chart
-    const canvas = document.getElementById('da5-chart');
-    if (!canvas) return;
+    // Compute drawdown series on full history
     const prices = currentData.prices;
-    // Compute drawdown series
     let peak = prices[0];
     const dd = prices.map((p) => { if (p > peak) peak = p; return -(peak - p) / peak * 100; });
 
     // Downsample
     const maxPts = 400;
     const stride = Math.max(1, Math.ceil(dd.length / maxPts));
-    const sampled = [];
-    const labels = [];
+    const sampled = [], labels = [];
     for (let i = 0; i < dd.length; i += stride) {
       sampled.push(dd[i]);
       labels.push(addMonths(currentData.start, i).slice(0, 4));
     }
 
-    requestAnimationFrame(() => {
-      CI.drawChart('da5-chart', labels, [
-        { data: sampled, color: '#F87171', fill: true, fillColor: 'rgba(248,113,113,0.15)', width: 1.8 }
-      ], { yFormat: (v) => v.toFixed(0) + ' %' });
-    });
+    requestAnimationFrame(() => drawUnderwaterChart(sampled, labels));
+  }
+
+  function drawUnderwaterChart(sampled, labels) {
+    const canvas = document.getElementById('da5-chart');
+    if (!canvas || !sampled.length) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(320, Math.floor(rect.width || canvas.offsetWidth || 600));
+    const H = Math.max(180, Math.floor(rect.height || 220));
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 52, padR = 14, padT = 14, padB = 30;
+    const w = W - padL - padR, h = H - padT - padB;
+
+    let yMin = Math.min(...sampled);
+    let yMax = 0; // drawdown always ≤ 0
+    if (yMin === yMax) yMin = -1;
+    const span = yMax - yMin;
+    yMin -= span * 0.05;
+    yMax += span * 0.05;
+    const yAt = (v) => padT + h - ((v - yMin) / (yMax - yMin)) * h;
+    const xAt = (i) => padL + (sampled.length <= 1 ? w / 2 : (i / (sampled.length - 1)) * w);
+
+    // Grid
+    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    const nTicks = 5;
+    for (let t = 0; t <= nTicks; t++) {
+      const v = yMin + (yMax - yMin) * (t / nTicks);
+      const y = yAt(v);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText(v.toFixed(0) + ' %', padL - 5, y);
+    }
+
+    // Zero line
+    const zeroY = yAt(0);
+    ctx.strokeStyle = 'rgba(107,118,132,0.5)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(padL, zeroY); ctx.lineTo(W - padR, zeroY); ctx.stroke();
+
+    // Fill area under zero
+    const grad = ctx.createLinearGradient(0, padT, 0, padT + h);
+    grad.addColorStop(0, 'rgba(248,113,113,0.35)');
+    grad.addColorStop(1, 'rgba(248,113,113,0.04)');
+    ctx.beginPath();
+    sampled.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.lineTo(xAt(sampled.length - 1), zeroY);
+    ctx.lineTo(xAt(0), zeroY);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    sampled.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.strokeStyle = '#F87171'; ctx.lineWidth = 1.5; ctx.lineJoin = 'round';
+    ctx.setLineDash([]); ctx.stroke();
+
+    // X labels
+    const tickStep = Math.max(1, Math.ceil(labels.length / 10));
+    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    for (let i = 0; i < labels.length; i += tickStep) {
+      ctx.fillText(String(labels[i]), xAt(i), padT + h + 5);
+    }
   }
 
   // ===== Analyse 06 : Volatilité & CAPE =====
@@ -727,20 +788,20 @@
 
     const s = vc.stats;
 
-    // Volatilité
+    // Volatilité stats
     set('da6-vol-current', s.currentVol != null ? s.currentVol.toFixed(1) + ' %' : '—');
-    set('da6-vol-avg', 'Moy. historique : ' + s.avgVol.toFixed(1) + ' %');
-    const volRatio = s.currentVol / s.avgVol;
+    set('da6-vol-avg', 'Moy. historique : ' + (s.avgVol || 0).toFixed(1) + ' %');
+    const volRatio = (s.avgVol > 0) ? (s.currentVol / s.avgVol) : 1;
     const volSignal = volRatio < 0.75 ? 'Calme' : volRatio < 1.25 ? 'Normal' : volRatio < 1.75 ? 'Élevée' : 'Très élevée';
     const volCls = volRatio < 0.75 ? 'pos' : volRatio < 1.25 ? 'info' : volRatio < 1.75 ? 'warn' : 'neg';
     set('da6-vol-signal', volSignal);
-    set('da6-vol-signal-sub', (volRatio * 100 - 100).toFixed(0) + ' % vs moyenne');
+    set('da6-vol-signal-sub', ((volRatio - 1) * 100).toFixed(0) + ' % vs moyenne');
     cls('da6-vol-signal', volCls);
     cls('da6-vol-current', volCls);
     set('da6-vol-meta', currentAsset.name + ' · fenêtre 12 mois');
 
-    // CAPE
-    if (hasCAPE && s.currentCAPE != null) {
+    // CAPE stats
+    if (hasCAPE && s.currentCAPE != null && s.capeAvg != null) {
       set('da6-cape-current', s.currentCAPE.toFixed(1) + 'x');
       set('da6-cape-avg', 'Moy. historique : ' + s.capeAvg.toFixed(1) + 'x');
       const capeRatio = s.currentCAPE / s.capeAvg;
@@ -758,30 +819,119 @@
       set('da6-cape-current', '—');
     }
 
-    // Downsample pour les charts
+    // Downsample
     const maxPts = 400;
     const stride = Math.max(1, Math.ceil(vc.labels.length / maxPts));
     const sampledLabels = [], sampledVol = [], sampledCAPE = [], capeAvgLine = [];
     for (let i = 0; i < vc.labels.length; i += stride) {
       const cape = vc.capeSeries[i];
-      if (hasCAPE && cape == null) continue; // skip nulls pour aligner les séries
+      if (hasCAPE && cape == null) continue;
       sampledLabels.push(vc.labels[i].slice(0, 4));
       sampledVol.push(vc.volSeries[i] || 0);
-      sampledCAPE.push(cape || 0);
-      capeAvgLine.push(s.capeAvg || 0);
+      if (hasCAPE) {
+        sampledCAPE.push(cape || 0);
+        capeAvgLine.push(s.capeAvg || 0);
+      }
     }
 
     requestAnimationFrame(() => {
-      CI.drawChart('da6-vol-chart', sampledLabels, [
-        { data: sampledVol, color: '#A78BFA', fill: true, fillColor: 'rgba(167,139,250,0.12)', width: 1.8 }
-      ], { yFormat: (v) => (v || 0).toFixed(0) + ' %' });
+      drawVolatilityChart(sampledLabels, sampledVol);
+      if (hasCAPE && sampledCAPE.length > 0) drawCAPEChart(sampledLabels, sampledCAPE, capeAvgLine);
+    });
+  }
 
-      if (hasCAPE && sampledCAPE.length > 0) {
-        CI.drawChart('da6-cape-chart', sampledLabels, [
-          { data: capeAvgLine, color: '#FBBF24', width: 1.5, dash: [4, 4] },
-          { data: sampledCAPE, color: '#60A5FA', fill: true, fillColor: 'rgba(96,165,250,0.1)', width: 1.8 }
-        ], { yFormat: (v) => (v || 0).toFixed(0) + 'x' });
+  function drawVolatilityChart(labels, volData) {
+    const canvas = document.getElementById('da6-vol-chart');
+    if (!canvas || !volData.length) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(320, Math.floor(rect.width || canvas.offsetWidth || 600));
+    const H = Math.max(180, Math.floor(rect.height || 220));
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+    _drawLineAreaChart(ctx, W, H, labels, [
+      { data: volData, color: '#A78BFA', fillColor: 'rgba(167,139,250,0.2)', lineWidth: 1.8 }
+    ], (v) => v.toFixed(0) + ' %');
+  }
+
+  function drawCAPEChart(labels, capeData, avgLine) {
+    const canvas = document.getElementById('da6-cape-chart');
+    if (!canvas || !capeData.length) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(320, Math.floor(rect.width || canvas.offsetWidth || 600));
+    const H = Math.max(180, Math.floor(rect.height || 220));
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+    _drawLineAreaChart(ctx, W, H, labels, [
+      { data: avgLine, color: '#FBBF24', lineWidth: 1.5, dash: [5, 4] },
+      { data: capeData, color: '#60A5FA', fillColor: 'rgba(96,165,250,0.15)', lineWidth: 1.8 }
+    ], (v) => v.toFixed(0) + 'x');
+  }
+
+  // Shared helper : draw a line+area chart on an already-sized canvas context
+  function _drawLineAreaChart(ctx, W, H, labels, series, yFmt) {
+    const padL = 52, padR = 14, padT = 14, padB = 30;
+    const w = W - padL - padR, h = H - padT - padB;
+    const n = labels.length;
+    if (n < 2 || h <= 0) return;
+
+    // Domain
+    let yMin = Infinity, yMax = -Infinity;
+    series.forEach((s) => s.data.forEach((v) => { if (v < yMin) yMin = v; if (v > yMax) yMax = v; }));
+    if (!isFinite(yMin)) { yMin = 0; yMax = 1; }
+    if (yMin === yMax) yMax = yMin + 1;
+    const span = yMax - yMin;
+    yMin -= span * 0.05;
+    yMax += span * 0.08;
+    if (yMin > 0 && yMin < span * 0.2) yMin = 0;
+
+    const xAt = (i) => padL + (i / (n - 1)) * w;
+    const yAt = (v) => padT + h - ((v - yMin) / (yMax - yMin)) * h;
+
+    // Grid
+    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    for (let t = 0; t <= 5; t++) {
+      const v = yMin + (yMax - yMin) * (t / 5);
+      const y = yAt(v);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText(yFmt ? yFmt(v) : v.toFixed(0), padL - 5, y);
+    }
+
+    // X labels
+    const tickStep = Math.max(1, Math.ceil(n / 10));
+    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for (let i = 0; i < n; i += tickStep) ctx.fillText(String(labels[i]), xAt(i), padT + h + 5);
+
+    // Draw each series
+    series.forEach((s) => {
+      if (s.fillColor) {
+        // Area fill
+        const grad = ctx.createLinearGradient(0, padT, 0, padT + h);
+        grad.addColorStop(0, s.fillColor);
+        grad.addColorStop(1, s.fillColor.replace(/[\d.]+\)$/, '0)'));
+        ctx.beginPath();
+        s.data.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+        ctx.lineTo(xAt(n - 1), yAt(yMin));
+        ctx.lineTo(xAt(0), yAt(yMin));
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
       }
+      // Line
+      ctx.beginPath();
+      s.data.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      ctx.strokeStyle = s.color; ctx.lineWidth = s.lineWidth || 1.8;
+      ctx.setLineDash(s.dash || []); ctx.lineJoin = 'round'; ctx.stroke();
+      ctx.setLineDash([]);
     });
   }
 
