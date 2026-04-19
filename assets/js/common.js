@@ -560,7 +560,14 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        // Quand un nouveau SW prend le contrôle → recharger la page automatiquement
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+        // Forcer la vérification d'une mise à jour dès le chargement
+        reg.update().catch(() => {});
+      }).catch(() => {});
     });
   }
 
