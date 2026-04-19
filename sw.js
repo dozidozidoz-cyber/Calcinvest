@@ -1,25 +1,34 @@
 // CalcInvest Service Worker
-// Stratégie : network-first pour HTML (toujours récent), cache-first pour assets statiques
+// Stratégie :
+//   - HTML + JS applicatif : network-first (toujours à jour)
+//   - Data JSON, CSS, icons  : cache-first (stable, gros fichiers)
 
-const CACHE_VERSION = 'calcinvest-v5';
+const CACHE_VERSION = 'calcinvest-v6';
+
+// Seuls les assets vraiment stables vont en cache-first
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/simulateur-dca.html',
-  '/simulateur-rendement-locatif.html',
-  '/mes-projets.html',
   '/assets/css/style.css',
-  '/assets/js/common.js',
-  '/assets/js/core/finance-utils.js',
-  '/assets/js/core/calc-locatif.js',
-  '/assets/js/core/calc-dca.js',
-  '/assets/js/views/dca.view.js',
-  '/assets/js/views/locatif.view.js',
-  '/assets/js/views/projects.view.js',
   '/assets/data/manifest.json',
   '/manifest.json',
   '/assets/icons/icon-192.svg',
-  '/assets/icons/icon-512.svg'
+  '/assets/icons/icon-512.svg',
+  '/assets/data/sp500.json',
+  '/assets/data/nasdaq.json',
+  '/assets/data/nikkei.json',
+  '/assets/data/cac40.json',
+  '/assets/data/msci_world.json',
+  '/assets/data/paeem.json',
+  '/assets/data/gold.json',
+  '/assets/data/silver.json',
+  '/assets/data/oil_brent.json',
+  '/assets/data/oil_wti.json'
+];
+
+// JS et HTML → toujours network-first
+const NETWORK_FIRST_PATTERNS = [
+  /\.html$/,
+  /\/assets\/js\//,
+  /^\/$/
 ];
 
 self.addEventListener('install', (event) => {
@@ -44,13 +53,19 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // HTML : network-first (pour avoir les updates tout de suite)
-  if (request.destination === 'document' || url.pathname.endsWith('.html') || url.pathname === '/') {
+  const isNetworkFirst =
+    request.destination === 'document' ||
+    NETWORK_FIRST_PATTERNS.some((re) => re.test(url.pathname));
+
+  if (isNetworkFirst) {
+    // Network-first : toujours chercher en réseau, fallback cache si offline
     event.respondWith(
       fetch(request)
         .then((res) => {
-          const clone = res.clone();
-          caches.open(CACHE_VERSION).then((c) => c.put(request, clone));
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE_VERSION).then((c) => c.put(request, clone));
+          }
           return res;
         })
         .catch(() => caches.match(request).then((hit) => hit || caches.match('/index.html')))
@@ -58,7 +73,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Assets : cache-first
+  // Cache-first pour les données JSON et assets statiques lourds
   event.respondWith(
     caches.match(request).then((hit) => {
       if (hit) return hit;
