@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Mes Projets — CalcInvest</title>
+<meta name="description" content="Retrouvez et gérez vos simulations financières sauvegardées localement." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">CalcInvest</div>
+        <div class="logo-text-sub">Mes projets</div>
+      </div>
+    </a>
+  </div>
+  <div class="topbar-right">
+    <a href="/" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l-4 5 4 5M2 8h12"/></svg>
+      <span>Retour</span>
+    </a>
+  </div>
+</header>
+
+<main class="main fade-in">
+  <div class="page-header">
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      </span>
+      Vos simulations sauvegardées
+    </div>
+    <h1 class="page-title">Mes projets</h1>
+    <p class="page-lede">Toutes vos simulations, stockées localement dans votre navigateur. Exportez-les en JSON pour les sauvegarder ou les transférer entre appareils.</p>
+  </div>
+
+  <div class="btn-row" style="margin-bottom:20px">
+    <button class="btn btn-secondary" onclick="exportProjects()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v9M4 7l4 4 4-4M2 14h12"/></svg>
+      Exporter JSON
+    </button>
+    <label class="btn btn-secondary" style="cursor:pointer">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 13V4M4 8l4-4 4 4M2 2h12"/></svg>
+      Importer JSON
+      <input type="file" accept="application/json" id="import-input" style="display:none" />
+    </label>
+  </div>
+
+  <div id="projects-list"></div>
+  <div id="empty-state" class="info-box hidden">
+    <div class="info-box-title">Aucun projet sauvegardé</div>
+    Utilise un simulateur et clique sur <strong>Sauvegarder</strong> pour retrouver tes projets ici.
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div>© 2026 CalcInvest</div>
+  <div>
+    <a href="/">Accueil</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/views/projects.view.js"></script>
+</body>
+</html>

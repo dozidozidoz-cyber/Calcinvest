@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Simulateur DCA — Placement en bourse | CalcInvest</title>
+<meta name="description" content="Simulateur d'investissement programmé complet : scénarios historiques (1929, 2000, 2008…), dividendes réinvestis, pouvoir d'achat, frais ETF, drawdown, volatilité, Monte Carlo." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.scenario-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r);
+  transition: var(--t-fast);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-2);
+}
+.scenario-btn:hover { border-color: var(--border-strong); background: var(--bg-elev); color: var(--text); }
+.scenario-btn.active { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.scenario-btn .s-icon { font-size: 13px; }
+.scenario-btn .s-label { flex: 1; min-width: 0; font-weight: 500; color: var(--text); }
+.scenario-btn .s-dd { color: var(--red); font-weight: 600; font-size: 11px; }
+.scenario-btn.today .s-dd { color: var(--accent); }
+
+.asset-picker { display: grid; gap: 14px; }
+.asset-group-title { font-size: 10px; letter-spacing: 0.18em; font-weight: 600; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px; }
+.asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.asset-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-2); border: 1px solid var(--border-soft); border-radius: var(--r); text-align: left; transition: var(--t-fast); cursor: pointer; width: 100%; }
+.asset-btn:hover { border-color: var(--border-strong); background: var(--bg-elev); }
+.asset-btn.active { border-color: var(--accent); background: var(--accent-soft); }
+.asset-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+.asset-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.asset-name { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-badge { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; padding: 2px 6px; border-radius: var(--r-sm); font-family: var(--font-mono); flex-shrink: 0; }
+.badge-pea { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-mid); }
+.badge-soon { background: var(--bg-3); color: var(--text-3); border: 1px solid var(--border-soft); }
+
+.toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; background: var(--bg-2); border: 1px solid var(--border-soft); border-radius: var(--r); margin-bottom: 8px; cursor: pointer; transition: var(--t-fast); }
+.toggle-row:hover { border-color: var(--border-strong); }
+.toggle-row-text { flex: 1; min-width: 0; }
+.toggle-row-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.toggle-row-sub { font-size: 11px; color: var(--text-3); }
+.switch { position: relative; width: 38px; height: 22px; background: var(--bg-3); border-radius: 999px; transition: var(--t-fast); flex-shrink: 0; }
+.switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: var(--text-2); border-radius: 50%; transition: var(--t); }
+.switch.on { background: var(--accent); }
+.switch.on::after { left: 19px; background: #052E20; }
+.switch.disabled { opacity: 0.5; cursor: not-allowed; }
+
+.hist-bar { fill: var(--accent); }
+.hist-bar.neg { fill: var(--red); }
+
+.placeholder-card {
+  padding: 40px 22px;
+  text-align: center;
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--r-lg);
+  background: var(--bg-2);
+  color: var(--text-3);
+}
+.placeholder-card-icon {
+  display: inline-grid; place-items: center;
+  width: 48px; height: 48px;
+  border-radius: var(--r);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-mid);
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.placeholder-card-title { font-size: 15px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+.placeholder-card-desc { font-size: 13px; max-width: 440px; margin: 0 auto; line-height: 1.5; }
+
+.mode-toggle { display: inline-flex; gap: 2px; padding: 4px; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--r); }
+.mode-toggle button { padding: 7px 14px; font-size: 12px; font-weight: 500; color: var(--text-2); border-radius: calc(var(--r) - 4px); transition: var(--t-fast); }
+.mode-toggle button:hover { color: var(--text); }
+.mode-toggle button.active { background: var(--bg-elev); color: var(--text); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">Placement en bourse</div>
+        <div class="logo-text-sub">Simulateur</div>
+      </div>
+    </a>
+  </div>
+  <div class="topbar-center">
+    <div class="segmented">
+      <button class="segmented-btn active">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Bourse
+      </button>
+      <button class="segmented-btn" onclick="location.href='/simulateur-rendement-locatif'">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7"/></svg>
+        Immobilier
+      </button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+    <button class="btn-ghost">
+      <span class="dot"></span>
+      <span>Données au Avr 2026</span>
+    </button>
+  </div>
+</header>
+
+<div class="shell" id="page-dca">
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#params">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h10M3 8h10M3 11h6"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Exploration</div>
+          <div class="sidebar-link-title">Scénario historique</div>
+        </div>
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses statistiques</div>
+      <a class="sidebar-link" href="#a1">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 01</div>
+          <div class="sidebar-link-title">Vue d'ensemble</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#a2">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l3-3 2 2 3-5 4 4"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 02</div>
+          <div class="sidebar-link-title">Rendements glissants</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#a3">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13h3v-8h3v6h3v-10h3v12"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 03</div>
+          <div class="sidebar-link-title">Lump vs DCA</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#a4">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="8" width="2" height="6"/><rect x="5" y="5" width="2" height="9"/><rect x="8" y="10" width="2" height="4"/><rect x="11" y="3" width="2" height="11"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 04</div>
+          <div class="sidebar-link-title">Rendements annuels</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#a5">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4l3 3-3 3M13 4l-3 3 3 3M2 12h12"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 05</div>
+          <div class="sidebar-link-title">Drawdown historique</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#a6">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8l2-3 2 6 2-9 2 12 2-6 2 2"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 06</div>
+          <div class="sidebar-link-title">Volatilité &amp; CAPE</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#a7">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="5" r="1.5"/><circle cx="11" cy="6" r="1.5"/><circle cx="8" cy="11" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="11" r="1.5"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 07</div>
+          <div class="sidebar-link-title">Prévisions Monte Carlo</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main fade-in">
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l4-4 3 3 3-4" stroke-linecap="round"/></svg></span>
+        Zone 1 · Simulateur
+      </div>
+      <h1 class="page-title">Simuler un placement en bourse</h1>
+      <p class="page-lede">Choisissez un point d'entrée historique, un horizon, et observez comment un DCA ou un lump-sum aurait traversé les crises. Tout est recalculé en direct.</p>
+    </div>
+
+    <!-- SCENARIOS -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v6l4 2"/><circle cx="8" cy="8" r="6"/></svg></div>
+          Scénarios historiques
+        </div>
+        <div class="card-meta">Point d'entrée pré-configuré</div>
+      </div>
+      <div class="card-body">
+        <div class="scenario-grid" id="d-scenarios"></div>
+      </div>
+    </section>
+
+    <!-- PARAMS -->
+    <section class="accordion open" id="params">
+      <div class="accordion-header">
+        <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Paramètres du simulateur</div>
+          <div class="accordion-summary" id="d-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-body-inner">
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+              <div class="subsection-title">Actif</div>
+            </div>
+            <div class="asset-picker" id="d-asset-picker"></div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M2 6h12M5 1v3M11 1v3"/></svg></div>
+              <div class="subsection-title">Mode de simulation</div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+              <div class="mode-toggle" id="d-mode">
+                <button data-mode="fixed-duration" class="active">Durée fixe</button>
+                <button data-mode="fixed-exit">Sortie fixe</button>
+              </div>
+              <div style="font-size:12px;color:var(--text-3);font-family:var(--font-mono)" id="d-mode-info">Durée fixe : entrée + horizon définissent la sortie</div>
+            </div>
+            <div class="field-grid" style="margin-top:14px">
+              <div class="field">
+                <label class="field-label">Durée d'investissement</label>
+                <div class="stepper" data-step="1" data-min="1" data-max="60">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="d-duration" value="20" />
+                  <span class="stepper-unit">ans</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="d-duration">
+                  <button class="pill" data-value="5" type="button">5</button>
+                  <button class="pill" data-value="10" type="button">10</button>
+                  <button class="pill active" data-value="20" type="button">20</button>
+                  <button class="pill" data-value="30" type="button">30</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" id="d-date-label">Date d'entrée</label>
+                <input class="select" type="month" id="d-start" />
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)" id="d-date-hint">Sortie : —</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg></div>
+              <div class="subsection-title">Combien ?</div>
+              <div class="subsection-hint">Capital initial et versements</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Capital initial</label>
+                <div class="stepper" data-step="1000" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="d-initial" value="20000" />
+                  <span class="stepper-unit">€</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="d-initial">
+                  <button class="pill" data-value="0" type="button">0</button>
+                  <button class="pill" data-value="5000" type="button">5k</button>
+                  <button class="pill active" data-value="20000" type="button">20k</button>
+                  <button class="pill" data-value="100000" type="button">100k</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Déploiement</label>
+                <div class="mode-toggle" id="d-deployment">
+                  <button data-val="lump" class="active">En une fois</button>
+                  <button data-val="spread">DCA étalé (12 mois)</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="d-deployment-hint">Capital investi entièrement au mois d'entrée</div>
+              </div>
+              <div class="field field-full">
+                <label class="field-label">Versement mensuel</label>
+                <div class="stepper" data-step="50" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="d-monthly" value="500" />
+                  <span class="stepper-unit">€/mois</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="d-monthly">
+                  <button class="pill" data-value="100" type="button">100</button>
+                  <button class="pill" data-value="200" type="button">200</button>
+                  <button class="pill active" data-value="500" type="button">500</button>
+                  <button class="pill" data-value="1000" type="button">1000</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 3h8l1 2v8H3V5z"/><path d="M6 6h4M6 9h4"/></svg></div>
+              <div class="subsection-title">Options</div>
+              <div class="subsection-hint">Dividendes, inflation, frais, cash</div>
+            </div>
+
+            <div class="toggle-row" data-toggle="d-opt-dividends">
+              <div class="toggle-row-text">
+                <div class="toggle-row-title">Dividendes réinvestis</div>
+                <div class="toggle-row-sub">~1.6 %/an pour le S&amp;P 500 — ETF capitalisant</div>
+              </div>
+              <div class="switch on" id="d-opt-dividends"></div>
+            </div>
+
+            <div class="toggle-row" data-toggle="d-opt-inflation">
+              <div class="toggle-row-text">
+                <div class="toggle-row-title">Pouvoir d'achat (inflation-adjusted)</div>
+                <div class="toggle-row-sub">Valeurs en monnaie constante du mois d'entrée (CPI US)</div>
+              </div>
+              <div class="switch" id="d-opt-inflation"></div>
+            </div>
+
+            <div class="field-grid" style="margin-top:14px">
+              <div class="field">
+                <label class="field-label">Taux du cash (référence)</label>
+                <div class="stepper" data-step="0.25" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="d-cash" value="2" step="0.25" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="d-cash">
+                  <button class="pill" data-value="0" type="button">0 %</button>
+                  <button class="pill active" data-value="2" type="button">Livret A · 2 %</button>
+                  <button class="pill" data-value="3" type="button">3 %</button>
+                  <button class="pill" data-value="4" type="button">Boosté · 4 %</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Frais de l'ETF (TER)</label>
+                <div class="stepper" data-step="0.05" data-min="0" data-max="2">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="d-fees" value="0.20" step="0.05" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="d-fees">
+                  <button class="pill" data-value="0" type="button">0 %</button>
+                  <button class="pill active" data-value="0.20" type="button">0,20 %</button>
+                  <button class="pill" data-value="0.50" type="button">0,50 %</button>
+                  <button class="pill" data-value="1" type="button">1 %</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row" style="margin-top:22px">
+            <button class="btn btn-primary" onclick="saveDCA()">Sauvegarder</button>
+            <button class="btn btn-secondary" onclick="shareDCA()">Partager</button>
+            <button class="btn btn-secondary" onclick="printDCA()">Imprimer</button>
+            <button class="btn btn-secondary" onclick="resetDCA()">Réinitialiser</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 01 : Vue d'ensemble -->
+    <section id="a1">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></span>
+        Analyse 01 · Vue d'ensemble
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Portefeuille final</div>
+          <div class="stat-value pos" id="ds-final">—</div>
+          <div class="stat-sub" id="ds-final-real">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total investi</div>
+          <div class="stat-value" id="ds-invested">—</div>
+          <div class="stat-sub" id="ds-invested-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Plus-value</div>
+          <div class="stat-value pos" id="ds-gain">—</div>
+          <div class="stat-sub" id="ds-gain-pct">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Rendement annualisé</div>
+          <div class="stat-value info" id="ds-tri">—</div>
+          <div class="stat-sub">TRI</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+            Évolution du portefeuille
+          </div>
+          <div class="card-meta" id="ds-chart-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="d-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>Portefeuille</div>
+            <div><span class="legend-dot" style="background:#FBBF24"></span>Total versé</div>
+            <div><span class="legend-dot" style="background:#60A5FA"></span>Cash <span id="ds-cash-rate">2 %</span></div>
+            <div><span class="legend-dot" style="background:#A78BFA"></span>Sans frais ETF</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 02 : Rendements glissants -->
+    <section id="a2">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-3 2 2 3-5 4 4"/></svg></span>
+        Analyse 02 · Rendements glissants
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Pour chaque année d'entrée × durée de détention, le CAGR obtenu sur l'actif seul (hors versements DCA). Vert = positif, rouge = négatif. Survolez une case pour le détail.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label" id="da2-dur-label">Périodes 10 ans positives</div>
+          <div class="stat-value pos" id="da2-pos10">—</div>
+          <div class="stat-sub" id="da2-pos10-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label" id="da2-best-label">Meilleure entrée (10 ans)</div>
+          <div class="stat-value pos" id="da2-best10">—</div>
+          <div class="stat-sub" id="da2-best10-year">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label" id="da2-worst-label">Pire entrée (10 ans)</div>
+          <div class="stat-value neg" id="da2-worst10">—</div>
+          <div class="stat-sub" id="da2-worst10-year">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Durée sans perte</div>
+          <div class="stat-value info" id="da2-safe">—</div>
+          <div class="stat-sub">100 % périodes positives</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="1" width="4" height="4" rx="0.5"/><rect x="6" y="1" width="4" height="4" rx="0.5"/><rect x="11" y="1" width="4" height="4" rx="0.5"/><rect x="1" y="6" width="4" height="4" rx="0.5"/><rect x="6" y="6" width="4" height="4" rx="0.5"/><rect x="11" y="6" width="4" height="4" rx="0.5"/><rect x="1" y="11" width="4" height="4" rx="0.5"/><rect x="6" y="11" width="4" height="4" rx="0.5"/><rect x="11" y="11" width="4" height="4" rx="0.5"/></svg></div>
+            CAGR · Année d'entrée × Durée de détention
+          </div>
+          <div class="card-meta" id="da2-meta">—</div>
+        </div>
+        <div class="card-body no-pad" style="position:relative;overflow:hidden">
+          <canvas id="da2-heatmap" style="display:block;width:100%;cursor:crosshair"></canvas>
+          <div id="da2-tooltip" style="position:absolute;display:none;background:var(--bg-elev);border:1px solid var(--border-strong);border-radius:var(--r);padding:8px 12px;font-size:12px;pointer-events:none;z-index:10;min-width:150px;font-family:var(--font-mono);box-shadow:0 4px 12px rgba(0,0,0,.4)"></div>
+        </div>
+        <div class="card-body" style="border-top:1px solid var(--border-soft);padding:10px 20px">
+          <div style="display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text-3);flex-wrap:wrap">
+            <span>CAGR annualisé :</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="color:#F87171">≤ −10 %</span>
+              <div style="width:100px;height:8px;border-radius:99px;background:linear-gradient(to right,#7F1D1D,#1E293B,#065F46)"></div>
+              <span style="color:#34D399">≥ +15 %</span>
+            </div>
+            <span style="opacity:.6">· Gris foncé = données insuffisantes</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 03 : Lump vs DCA -->
+    <section id="a3">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13h3v-8h3v6h3v-10h3v12"/></svg></span>
+        Analyse 03 · Lump sum vs DCA
+      </div>
+      <div class="placeholder-card">
+        <div class="placeholder-card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M2 16h3V8h3v5h3V4h3v12"/></svg></div>
+        <div class="placeholder-card-title">Comparaison des 2 stratégies · Bientôt</div>
+        <div class="placeholder-card-desc">Si j'avais 60 000 € aujourd'hui, vaut-il mieux tout investir d'un coup ou l'étaler sur 12/24 mois ? Réponse testée sur toute la période historique.</div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 04 : Rendements annuels -->
+    <section id="a4">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="8" width="2" height="6"/><rect x="5" y="5" width="2" height="9"/><rect x="8" y="10" width="2" height="4"/><rect x="11" y="3" width="2" height="11"/></svg></span>
+        Analyse 04 · Histogramme des rendements annuels
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Année par année, à quoi ressemble la performance du marché ? La volatilité brute, avant le lissage du temps long.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Meilleure année</div>
+          <div class="stat-value pos" id="da4-best">—</div>
+          <div class="stat-sub" id="da4-best-year">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Pire année</div>
+          <div class="stat-value neg" id="da4-worst">—</div>
+          <div class="stat-sub" id="da4-worst-year">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Rendement médian</div>
+          <div class="stat-value" id="da4-median">—</div>
+          <div class="stat-sub" id="da4-mean">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Années positives</div>
+          <div class="stat-value pos" id="da4-pos">—</div>
+          <div class="stat-sub" id="da4-pos-sub">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="2" height="8"/><rect x="5" y="4" width="2" height="10"/><rect x="8" y="8" width="2" height="6"/><rect x="11" y="2" width="2" height="12"/></svg></div>Année par année</div>
+          <div class="card-meta" id="da4-years-range">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:280px"><canvas id="da4-bars"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 05 : Drawdown -->
+    <section id="a5">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3-3 3M13 4l-3 3 3 3M2 12h12"/></svg></span>
+        Analyse 05 · Drawdown historique
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">À quel point l'actif chute depuis ses plus hauts, historiquement ? Mesure l'inconfort maximum qu'on doit être prêt à traverser.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Drawdown max (actif)</div>
+          <div class="stat-value neg" id="da5-maxdd">—</div>
+          <div class="stat-sub" id="da5-maxdd-date">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Drawdown ma simulation</div>
+          <div class="stat-value neg" id="da5-simdd">—</div>
+          <div class="stat-sub" id="da5-simdd-recovery">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3v10h12"/><path d="M4 10l3-4 2 3 3-5"/></svg></div>Underwater chart (drawdown continu)</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:220px"><canvas id="da5-chart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 06 : Volatilité & CAPE -->
+    <section id="a6">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8l2-3 2 6 2-9 2 12 2-6 2 2"/></svg></span>
+        Analyse 06 · Volatilité &amp; CAPE
+      </div>
+      <div class="placeholder-card">
+        <div class="placeholder-card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M2 10l2-3 2 6 2-9 2 12 2-6 2 2 2-4"/></svg></div>
+        <div class="placeholder-card-title">Volatilité glissante 12 mois + ratio CAPE · Bientôt</div>
+        <div class="placeholder-card-desc">Volatilité annualisée, CAPE (Shiller PE 10 ans) vs sa moyenne historique. Donne un sentiment du "tremblement" du marché et de sa valorisation.</div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 07 : Monte Carlo -->
+    <section id="a7">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="1.5"/><circle cx="11" cy="6" r="1.5"/><circle cx="8" cy="11" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="11" r="1.5"/></svg></span>
+        Analyse 07 · Prévisions Monte Carlo
+      </div>
+      <div class="placeholder-card">
+        <div class="placeholder-card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M2 16c3-6 5-2 8-8 2-4 5-2 8-2"/></svg></div>
+        <div class="placeholder-card-title">Bootstrap 2000 trajectoires futures · Bientôt</div>
+        <div class="placeholder-card-desc">Simulation par rééchantillonnage des rendements mensuels historiques. Pas une prédiction — la forme plausible de ce qui pourrait arriver (médiane, p10, p90).</div>
+      </div>
+    </section>
+
+    <div class="info-box warn" style="margin-top:32px">
+      <div class="info-box-title">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M8 2L1 14h14z"/><path d="M8 7v3M8 12h.01"/></svg>
+        Avertissement
+      </div>
+      Valeurs nominales, brutes de fiscalité. Les frais ETF s'appliquent à tous les graphiques. Ajustement inflation disponible pour le S&amp;P 500 (CPI US) uniquement. Les performances passées ne préjugent pas des performances futures.
+    </div>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div>Données : Shiller (S&amp;P 500 + CPI US), Yahoo/Investing.com (indices), datasets.io</div>
+  <div><a href="/">Accueil</a> · <a href="/mes-projets">Mes projets</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/core/calc-dca.js"></script>
+<script src="/assets/js/views/dca.view.js"></script>
+</body>
+</html>

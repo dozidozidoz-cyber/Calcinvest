@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>CalcInvest — Simulateurs financiers pour investisseurs</title>
+<meta name="description" content="Plateforme gratuite de simulateurs financiers : rendement locatif, DCA, intérêts composés, FIRE. Backtestez vos stratégies avec des données réelles." />
+<meta property="og:title" content="CalcInvest — Simulateurs financiers" />
+<meta property="og:description" content="Backtestez vos stratégies d'investissement. Tous vos outils en un seul endroit." />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">CalcInvest</div>
+        <div class="logo-text-sub">Plateforme</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="topbar-center">
+    <div class="segmented">
+      <button class="segmented-btn active">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Tous les outils
+      </button>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+  </div>
+</header>
+
+<main class="main fade-in" style="max-width:1100px">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span>●</span>
+      Plateforme de simulation financière
+    </div>
+    <h1 class="hero-title">Simulez avant<br/>d'<em>investir</em>.</h1>
+    <p class="hero-lede">Des outils précis pour valider vos stratégies d'investissement. DCA, intérêts composés, rendement locatif, FIRE — tout en un seul endroit. Gratuit, sans inscription, vos données restent sur votre appareil.</p>
+  </div>
+
+  <div class="tools-grid">
+
+    <a href="/simulateur-rendement-locatif" class="tool-card" style="--card-color:#34D399">
+      <div class="tool-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20V10l9-6 9 6v10"/><path d="M9 20v-6h6v6"/></svg>
+      </div>
+      <div class="tool-card-title">Rendement Locatif</div>
+      <div class="tool-card-desc">Calculez la rentabilité nette de votre investissement immobilier. Cashflow, TRI sur 20 ans, LMNP, déficit foncier — tous les régimes fiscaux.</div>
+      <span class="tool-card-tag"><span class="dot"></span>Live</span>
+    </a>
+
+    <a href="/simulateur-dca" class="tool-card" style="--card-color:#60A5FA">
+      <div class="tool-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-10"/><path d="M15 5h6v6"/></svg>
+      </div>
+      <div class="tool-card-title">Simulateur DCA</div>
+      <div class="tool-card-desc">Backtestez votre stratégie d'investissement programmé sur 13 actifs — S&amp;P 500 depuis 1871, indices mondiaux, ETF UCITS PEA, or, argent, pétrole.</div>
+      <span class="tool-card-tag"><span class="dot"></span>Live</span>
+    </a>
+
+    <a href="#" class="tool-card locked" style="--card-color:#A78BFA">
+      <div class="tool-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V8l8-4 8 4v12"/><path d="M4 14l8-4 8 4"/></svg>
+      </div>
+      <div class="tool-card-title">Intérêts Composés</div>
+      <div class="tool-card-desc">Projetez la croissance de votre épargne sur 40 ans. Intègre l'inflation, les versements mensuels, plusieurs scénarios.</div>
+      <span class="tool-card-tag"><span class="dot"></span>Bientôt</span>
+    </a>
+
+    <a href="#" class="tool-card locked" style="--card-color:#FBBF24">
+      <div class="tool-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 4v4M12 16v4M4 12h4M16 12h4"/></svg>
+      </div>
+      <div class="tool-card-title">DCA Crypto</div>
+      <div class="tool-card-desc">Simulez votre stratégie DCA sur Bitcoin, Ethereum, Solana. Données historiques réelles et fiscalité française (flat tax 30 %).</div>
+      <span class="tool-card-tag"><span class="dot"></span>Bientôt</span>
+    </a>
+
+    <a href="#" class="tool-card locked" style="--card-color:#FB923C">
+      <div class="tool-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8l-2 8h-4z"/><path d="M10 12v8M14 12v8"/></svg>
+      </div>
+      <div class="tool-card-title">Calculateur FIRE</div>
+      <div class="tool-card-desc">Simulez votre chemin vers l'indépendance financière. Règle des 4 %, âge de retraite, capital cible, coast-FIRE, lean-FIRE.</div>
+      <span class="tool-card-tag"><span class="dot"></span>Bientôt</span>
+    </a>
+
+    <a href="#" class="tool-card locked" style="--card-color:#F87171">
+      <div class="tool-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8M12 8v8"/></svg>
+      </div>
+      <div class="tool-card-title">Simulateur PER</div>
+      <div class="tool-card-desc">Optimisez votre épargne retraite, calculez votre déduction fiscale et comparez rente vs capital. Simulation sur 30 ans.</div>
+      <span class="tool-card-tag"><span class="dot"></span>Bientôt</span>
+    </a>
+
+  </div>
+
+  <div class="info-box" style="margin-top:20px">
+    <div class="info-box-title">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+      Pourquoi CalcInvest ?
+    </div>
+    <ul>
+      <li><strong>Données réelles</strong> — toutes les simulations s'appuient sur des données historiques publiques</li>
+      <li><strong>Sauvegarde locale</strong> — vos projets restent dans votre navigateur, aucune donnée sur nos serveurs</li>
+      <li><strong>Gratuit et sans inscription</strong> — tous les outils disponibles librement</li>
+      <li><strong>Partage facile</strong> — chaque simulation génère un lien qui reproduit les paramètres</li>
+      <li><strong>Installable</strong> — ajoutez l'app sur votre écran d'accueil (PWA)</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div>© 2026 CalcInvest — Outils de simulation à titre informatif</div>
+  <div>
+    <a href="#">Mentions légales</a> ·
+    <a href="#">Confidentialité</a> ·
+    <a href="mailto:contact@calcinvest.fr">Contact</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+</body>
+</html>

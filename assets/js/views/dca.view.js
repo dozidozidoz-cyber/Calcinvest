@@ -1,0 +1,711 @@
+/* ============================================================
+   CalcInvest — DCA VIEW v2
+   Gère : scénarios, modes, toggles, 3 analyses implémentées
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  const { calcDCA, computeAssetStats, computeRollingReturns, monthDiff, addMonths, ymLabel } = window.CalcDCA;
+  const num = window.FIN.num;
+
+  // ---------- State ----------
+  let manifest = null;
+  let currentAsset = null;
+  let currentData = null;
+  const dataCache = {};
+  let lastResult = null;
+  let lastParams = null;
+
+  // ---------- Scénarios historiques ----------
+  const SCENARIOS = [
+    { id: 'aug1929', icon: '⚠', label: 'Août 1929', date: '1929-08', dd: '-84 %' },
+    { id: 'mar1937', icon: '⚠', label: 'Mars 1937', date: '1937-03', dd: '-55 %' },
+    { id: 'jan1973', icon: '⚠', label: 'Janv 1973', date: '1973-01', dd: '-43 %' },
+    { id: 'sep1987', icon: '⚠', label: 'Sept 1987', date: '1987-09', dd: '-24 %' },
+    { id: 'mar2000', icon: '⚠', label: 'Mars 2000', date: '2000-03', dd: '-42 %' },
+    { id: 'oct2007', icon: '⚠', label: 'Oct 2007', date: '2007-10', dd: '-51 %' },
+    { id: 'feb2020', icon: '⚠', label: 'Fév 2020', date: '2020-02', dd: '-19 %' },
+    { id: 'jan2022', icon: '⚠', label: 'Janv 2022', date: '2022-01', dd: '-19 %' },
+    { id: 'today', icon: '✓', label: "Aujourd'hui", date: null, dd: null }
+  ];
+
+  const GROUP_LABELS = {
+    'index': 'Indices boursiers',
+    'etf': 'ETF UCITS',
+    'commodity': 'Matières premières'
+  };
+
+  /* ============================================================
+     DATA LOADING
+     ============================================================ */
+  async function loadManifest() {
+    const res = await fetch('/assets/data/manifest.json');
+    manifest = await res.json();
+  }
+  async function loadData(id) {
+    if (dataCache[id]) return dataCache[id];
+    const res = await fetch(`/assets/data/${id}.json`);
+    const data = await res.json();
+    dataCache[id] = data;
+    return data;
+  }
+
+  /* ============================================================
+     RENDERERS - UI COMPONENTS
+     ============================================================ */
+  function renderScenarios() {
+    const c = document.getElementById('d-scenarios');
+    c.innerHTML = SCENARIOS.map((s) => `
+      <button type="button" class="scenario-btn ${s.id === 'today' ? 'today' : ''}" data-id="${s.id}">
+        <span class="s-icon">${s.icon}</span>
+        <span class="s-label">${s.label}</span>
+        ${s.dd ? `<span class="s-dd">${s.dd}</span>` : '<span class="s-dd" style="color:var(--accent)">→</span>'}
+      </button>
+    `).join('');
+    c.querySelectorAll('.scenario-btn').forEach((btn) => {
+      btn.addEventListener('click', () => applyScenario(btn.dataset.id));
+    });
+  }
+
+  function renderAssetPicker() {
+    const c = document.getElementById('d-asset-picker');
+    const byCat = {};
+    manifest.assets.forEach((a) => {
+      if (!byCat[a.category]) byCat[a.category] = [];
+      byCat[a.category].push(a);
+    });
+    c.innerHTML = Object.keys(byCat).map((cat) => `
+      <div>
+        <div class="asset-group-title">${GROUP_LABELS[cat] || cat}</div>
+        <div class="asset-grid">
+          ${byCat[cat].map((a) => `
+            <button type="button" class="asset-btn ${a.available ? '' : 'disabled'}" data-id="${a.id}" ${a.available ? '' : 'disabled'}>
+              <span class="asset-dot" style="background:${a.color}"></span>
+              <span class="asset-name">${a.name}</span>
+              ${a.pea ? '<span class="asset-badge badge-pea">PEA</span>' : ''}
+              ${!a.available ? '<span class="asset-badge badge-soon">SOON</span>' : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+    c.querySelectorAll('.asset-btn:not(.disabled)').forEach((btn) => {
+      btn.addEventListener('click', () => selectAsset(btn.dataset.id));
+    });
+  }
+
+  function updatePickerActive() {
+    document.querySelectorAll('.asset-btn').forEach((b) => {
+      b.classList.toggle('active', b.dataset.id === (currentAsset && currentAsset.id));
+    });
+  }
+
+  /* ============================================================
+     ASSET & SCENARIO HANDLING
+     ============================================================ */
+  async function selectAsset(id) {
+    const a = manifest.assets.find((x) => x.id === id);
+    if (!a || !a.available) return;
+    currentAsset = a;
+    currentData = await loadData(id);
+    updatePickerActive();
+    updateFeatureToggles();
+    clampDates();
+    run();
+  }
+
+  function updateFeatureToggles() {
+    // Dividendes : active seulement si la série a "dividends"
+    const divSwitch = document.getElementById('d-opt-dividends');
+    const divRow = divSwitch.parentElement;
+    if (currentData && currentData.dividends) {
+      divSwitch.classList.remove('disabled');
+      divRow.style.opacity = '1';
+      divRow.style.pointerEvents = 'auto';
+    } else {
+      divSwitch.classList.remove('on');
+      divSwitch.classList.add('disabled');
+      divRow.style.opacity = '0.5';
+      divRow.style.pointerEvents = 'none';
+    }
+    // Inflation : idem avec cpi
+    const infSwitch = document.getElementById('d-opt-inflation');
+    const infRow = infSwitch.parentElement;
+    if (currentData && currentData.cpi) {
+      infSwitch.classList.remove('disabled');
+      infRow.style.opacity = '1';
+      infRow.style.pointerEvents = 'auto';
+    } else {
+      infSwitch.classList.remove('on');
+      infSwitch.classList.add('disabled');
+      infRow.style.opacity = '0.5';
+      infRow.style.pointerEvents = 'none';
+    }
+  }
+
+  function applyScenario(id) {
+    const s = SCENARIOS.find((x) => x.id === id);
+    if (!s) return;
+    document.querySelectorAll('.scenario-btn').forEach((b) => b.classList.toggle('active', b.dataset.id === id));
+
+    if (!currentData) return;
+
+    // Default duration 20 years
+    document.getElementById('d-duration').value = 20;
+
+    let target;
+    if (s.date) {
+      target = s.date;
+      if (target < currentData.start) target = currentData.start;
+    } else {
+      // Aujourd'hui : entrée = end - 20 ans
+      target = addMonths(currentData.end, -20 * 12);
+      if (target < currentData.start) target = currentData.start;
+    }
+    document.getElementById('d-start').value = target;
+    run();
+  }
+
+  /* ============================================================
+     MODE & DEPLOYMENT
+     ============================================================ */
+  function getMode() {
+    const btn = document.querySelector('#d-mode button.active');
+    return btn ? btn.dataset.mode : 'fixed-duration';
+  }
+  function getDeployment() {
+    const btn = document.querySelector('#d-deployment button.active');
+    return btn ? btn.dataset.val : 'lump';
+  }
+
+  function updateModeInfo() {
+    const mode = getMode();
+    const info = document.getElementById('d-mode-info');
+    const label = document.getElementById('d-date-label');
+    if (mode === 'fixed-exit') {
+      info.textContent = 'Sortie fixe : horizon + date de sortie = date d\'entrée recalculée';
+      label.textContent = 'Date de sortie';
+    } else {
+      info.textContent = "Durée fixe : entrée + horizon définissent la sortie";
+      label.textContent = "Date d'entrée";
+    }
+  }
+
+  function updateDeploymentHint() {
+    const dep = getDeployment();
+    const el = document.getElementById('d-deployment-hint');
+    el.textContent = dep === 'spread' ? 'Capital étalé uniformément sur les 12 premiers mois' : 'Capital investi entièrement au mois d\'entrée';
+  }
+
+  /* ============================================================
+     DATES
+     ============================================================ */
+  function clampDates() {
+    if (!currentData) return;
+    const i = document.getElementById('d-start');
+    i.min = currentData.start;
+    i.max = currentData.end;
+    if (!i.value || i.value < currentData.start || i.value > currentData.end) {
+      i.value = addMonths(currentData.end, -20 * 12);
+      if (i.value < currentData.start) i.value = currentData.start;
+    }
+    updateDateHint();
+  }
+
+  function updateDateHint() {
+    const start = document.getElementById('d-start').value;
+    const dur = num(document.getElementById('d-duration').value) || 20;
+    const end = addMonths(start, dur * 12 - 1);
+    const mode = getMode();
+    const hint = document.getElementById('d-date-hint');
+    if (mode === 'fixed-exit') {
+      // En mode sortie fixe, on affiche l'entrée recalculée
+      const entry = addMonths(start, -dur * 12 + 1);
+      hint.textContent = `Entrée : ${ymLabel(entry)}`;
+    } else {
+      hint.textContent = `Sortie : ${ymLabel(end)}`;
+    }
+  }
+
+  /* ============================================================
+     CALC
+     ============================================================ */
+  function readForm() {
+    const mode = getMode();
+    const dur = num(document.getElementById('d-duration').value) || 20;
+    let startDate = document.getElementById('d-start').value;
+    if (mode === 'fixed-exit') {
+      startDate = addMonths(startDate, -dur * 12 + 1);
+      if (startDate < currentData.start) startDate = currentData.start;
+    }
+    return {
+      assetId: currentAsset.id,
+      mode,
+      startDate,
+      durationMonths: dur * 12,
+      monthlyAmount: num(document.getElementById('d-monthly').value),
+      initialAmount: num(document.getElementById('d-initial').value),
+      deployment: getDeployment(),
+      feesPct: num(document.getElementById('d-fees').value),
+      cashRate: num(document.getElementById('d-cash').value),
+      dividendsReinvested: document.getElementById('d-opt-dividends').classList.contains('on') && !document.getElementById('d-opt-dividends').classList.contains('disabled'),
+      inflationAdjusted: document.getElementById('d-opt-inflation').classList.contains('on') && !document.getElementById('d-opt-inflation').classList.contains('disabled')
+    };
+  }
+
+  function run() {
+    if (!currentAsset || !currentData) return;
+    const form = readForm();
+    const r = calcDCA({
+      prices: currentData.prices,
+      dividends: currentData.dividends,
+      cpi: currentData.cpi,
+      seriesStart: currentData.start,
+      startDate: form.startDate,
+      durationMonths: form.durationMonths,
+      monthlyAmount: form.monthlyAmount,
+      initialAmount: form.initialAmount,
+      deployment: form.deployment,
+      feesPct: form.feesPct,
+      cashRate: form.cashRate,
+      dividendsReinvested: form.dividendsReinvested,
+      inflationAdjusted: form.inflationAdjusted
+    });
+    if (!r || r.error) return;
+
+    lastParams = form;
+    lastResult = r;
+
+    renderSummary(form, r);
+    renderAnalyse01(form, r);
+    renderAnalyse02(form, r);
+    renderAnalyse04(form, r);
+    renderAnalyse05(form, r);
+    updateDateHint();
+    syncUrl(form);
+  }
+
+  /* ============================================================
+     RENDERS
+     ============================================================ */
+  function renderSummary(form, r) {
+    const el = document.getElementById('d-sum-params');
+    el.textContent = `${currentAsset.name} · ${CI.fmtNum(form.monthlyAmount)} €/mois · ${r.durationYears.toFixed(0)} ans · ${form.startDate}`;
+  }
+
+  // ===== Analyse 01 =====
+  function renderAnalyse01(form, r) {
+    const curr = currentAsset.currency;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const color = (id, v) => { const el = document.getElementById(id); if (el) { el.classList.remove('pos','neg'); if (v > 0) el.classList.add('pos'); else if (v < 0) el.classList.add('neg'); } };
+
+    set('ds-final', CI.fmtNum(r.finalValue, 0) + ' ' + curr);
+    set('ds-final-real', r.inflationAdjusted ? `Pouvoir d'achat : ${CI.fmtNum(r.finalValueReal, 0)} ${curr}` : `Au ${ymLabel(addMonths(form.startDate, r.durationMonths - 1))}`);
+    set('ds-invested', CI.fmtNum(r.totalInvested, 0) + ' ' + curr);
+    set('ds-invested-sub', `${CI.fmtNum(form.monthlyAmount)}/mois + ${CI.fmtNum(form.initialAmount)} initial`);
+    set('ds-gain', (r.finalGain >= 0 ? '+' : '') + CI.fmtNum(r.finalGain, 0) + ' ' + curr);
+    set('ds-gain-pct', CI.fmtPct(r.finalGainPct, 1));
+    color('ds-gain', r.finalGain);
+    set('ds-tri', r.annualReturn != null ? CI.fmtPctPlain(r.annualReturn, 2) : '—');
+    set('ds-cash-rate', CI.fmtPctPlain(form.cashRate, 1));
+    set('ds-chart-meta', `${currentAsset.name} · ${r.durationYears.toFixed(0)} ans`);
+
+    // Chart
+    const monthly = r.series;
+    const maxPoints = 300;
+    const stride = Math.max(1, Math.ceil(monthly.portfolio.length / maxPoints));
+    const idxs = [];
+    for (let i = 0; i < monthly.portfolio.length; i += stride) idxs.push(i);
+    if (idxs[idxs.length - 1] !== monthly.portfolio.length - 1) idxs.push(monthly.portfolio.length - 1);
+
+    const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
+    const pick = (arr) => idxs.map((i) => arr[i]);
+
+    const datasets = [
+      { data: pick(monthly.invested), color: '#FBBF24', width: 1.8, dash: [4, 3] },
+      { data: pick(monthly.cash), color: '#60A5FA', width: 1.8 },
+      { data: pick(monthly.noFees), color: '#A78BFA', width: 1.5, dash: [2, 3] },
+      { data: pick(r.inflationAdjusted ? monthly.real : monthly.portfolio), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.15)', width: 2.5 }
+    ];
+
+    requestAnimationFrame(() => CI.drawChart('d-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) }));
+  }
+
+  // ===== Analyse 02 : Rendements glissants (heatmap) =====
+  const HEATMAP_DURATIONS = [1, 2, 3, 5, 10, 15, 20, 30];
+
+  function lerpRGB(c1, c2, t) {
+    return 'rgb(' +
+      Math.round(c1[0] + (c2[0] - c1[0]) * t) + ',' +
+      Math.round(c1[1] + (c2[1] - c1[1]) * t) + ',' +
+      Math.round(c1[2] + (c2[2] - c1[2]) * t) + ')';
+  }
+
+  function cagrColor(cagr) {
+    if (cagr === null || !isFinite(cagr)) return '#0D1620';
+    const t = Math.max(-1, Math.min(1, cagr / 15));
+    if (t < 0) return lerpRGB([30, 41, 59], [127, 29, 29], -t);
+    return lerpRGB([30, 41, 59], [6, 95, 70], t);
+  }
+
+  function renderAnalyse02(form, r) {
+    if (!currentData) return;
+    const rolling = computeRollingReturns(currentData.prices, currentData.start, HEATMAP_DURATIONS);
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+    // Référence : 10 ans si dispo, sinon plus long avec données
+    const refDur = HEATMAP_DURATIONS.slice().reverse().find((d) => rolling.durationStats[d] && rolling.durationStats[d].count >= 3) || null;
+    const dur10stats = rolling.durationStats[10];
+    const refStats = dur10stats || (refDur ? rolling.durationStats[refDur] : null);
+    const refLabel = dur10stats ? '10 ans' : (refDur ? refDur + ' ans' : '—');
+
+    set('da2-dur-label', `Périodes ${refLabel} positives`);
+    set('da2-best-label', `Meilleure entrée (${refLabel})`);
+    set('da2-worst-label', `Pire entrée (${refLabel})`);
+
+    if (refStats) {
+      set('da2-pos10', refStats.positivePct.toFixed(0) + ' %');
+      set('da2-pos10-sub', `${refStats.count} période${refStats.count > 1 ? 's' : ''} de ${refLabel}`);
+      set('da2-best10', '+' + refStats.best.toFixed(1) + ' %/an');
+      set('da2-best10-year', `Entrée ${refStats.bestYear}`);
+      const worstSign = refStats.worst >= 0 ? '+' : '';
+      set('da2-worst10', worstSign + refStats.worst.toFixed(1) + ' %/an');
+      set('da2-worst10-year', `Entrée ${refStats.worstYear}`);
+    }
+
+    const safeD = HEATMAP_DURATIONS.find((d) => rolling.durationStats[d] && rolling.durationStats[d].positivePct >= 100);
+    set('da2-safe', safeD ? safeD + ' ans' : '> 30 ans');
+
+    if (rolling.entryYears.length) {
+      set('da2-meta', `${rolling.entryYears[0]} → ${rolling.entryYears[rolling.entryYears.length - 1]} · ${rolling.entryYears.length} entrées`);
+    }
+
+    requestAnimationFrame(() => drawHeatmap(rolling));
+  }
+
+  function drawHeatmap(rolling) {
+    const canvas = document.getElementById('da2-heatmap');
+    if (!canvas || !rolling.entryYears.length) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(400, Math.floor(rect.width || canvas.offsetWidth || 600));
+    const DURS = rolling.durations;
+    const cellH = 34;
+    const padL = 52, padR = 10, padT = 10, padB = 26;
+    const H = padT + DURS.length * cellH + padB;
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.fillStyle = '#0D1620';
+    ctx.fillRect(0, 0, W, H);
+
+    const years = rolling.entryYears;
+    const numYears = years.length;
+    const plotW = W - padL - padR;
+    const cellW = plotW / numYears;
+
+    DURS.forEach((d, di) => {
+      const cy = padT + di * cellH;
+      years.forEach((yr, xi) => {
+        const cx = padL + xi * cellW;
+        const cagr = rolling.data[yr][d];
+        ctx.fillStyle = cagrColor(cagr);
+        ctx.fillRect(cx, cy, Math.max(1, cellW - (cellW > 3 ? 0.5 : 0)), cellH - 1);
+
+        if (cellW >= 30 && cagr !== null) {
+          ctx.fillStyle = 'rgba(255,255,255,0.82)';
+          ctx.font = `bold ${Math.min(10, Math.floor(cellW * 0.32))}px "JetBrains Mono", monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText((cagr >= 0 ? '+' : '') + cagr.toFixed(0) + '%', cx + cellW / 2, cy + cellH / 2);
+        }
+      });
+
+      ctx.fillStyle = '#6B7684';
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(d + ' ans', padL - 5, cy + cellH / 2);
+    });
+
+    // X labels
+    const labelStep = Math.max(1, Math.ceil(numYears / 14));
+    ctx.fillStyle = '#6B7684';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    for (let xi = 0; xi < numYears; xi += labelStep) {
+      const cx = padL + xi * cellW + cellW / 2;
+      ctx.fillText(String(years[xi]), cx, padT + DURS.length * cellH + 4);
+    }
+
+    // Tooltip via closure
+    const tooltip = document.getElementById('da2-tooltip');
+    canvas.onmousemove = (e) => {
+      const cr = canvas.getBoundingClientRect();
+      const mx = e.clientX - cr.left;
+      const my = e.clientY - cr.top;
+      const xi = Math.floor((mx - padL) / cellW);
+      const di = Math.floor((my - padT) / cellH);
+      if (xi < 0 || xi >= numYears || di < 0 || di >= DURS.length) {
+        tooltip.style.display = 'none'; return;
+      }
+      const yr = years[xi];
+      const dur = DURS[di];
+      const cagr = rolling.data[yr][dur];
+      if (cagr === null) { tooltip.style.display = 'none'; return; }
+      const totalGain = (Math.pow(1 + cagr / 100, dur) - 1) * 100;
+      const color = cagr >= 0 ? 'var(--accent)' : 'var(--red)';
+      tooltip.innerHTML =
+        `<div style="color:var(--text-3);margin-bottom:5px">${yr} → ${yr + dur} · ${dur} an${dur > 1 ? 's' : ''}</div>` +
+        `<div style="font-size:14px;font-weight:600;color:${color}">${cagr >= 0 ? '+' : ''}${cagr.toFixed(2)} %/an</div>` +
+        `<div style="color:var(--text-3);margin-top:3px;font-size:11px">Gain total : ${cagr >= 0 ? '+' : ''}${totalGain.toFixed(0)} %</div>`;
+      let tx = mx + 14, ty = my - 10;
+      if (tx + 160 > cr.width) tx = mx - 170;
+      if (ty < 0) ty = 4;
+      tooltip.style.left = tx + 'px';
+      tooltip.style.top = ty + 'px';
+      tooltip.style.display = 'block';
+    };
+    canvas.onmouseleave = () => { tooltip.style.display = 'none'; };
+  }
+
+  // ===== Analyse 04 : Rendements annuels =====
+  function renderAnalyse04(form, r) {
+    const stats = computeAssetStats(currentData.prices, currentData.start);
+    const s = stats.stats;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+    if (s.best) {
+      set('da4-best', '+' + s.best.pct.toFixed(1) + ' %');
+      set('da4-best-year', s.best.year);
+    }
+    if (s.worst) {
+      set('da4-worst', s.worst.pct.toFixed(1) + ' %');
+      set('da4-worst-year', s.worst.year);
+    }
+    set('da4-median', (s.median >= 0 ? '+' : '') + s.median.toFixed(1) + ' %');
+    set('da4-mean', `Moyenne ${s.mean >= 0 ? '+' : ''}${s.mean.toFixed(1)} %`);
+    set('da4-pos', s.positivePct.toFixed(0) + ' %');
+    set('da4-pos-sub', `${s.positive} sur ${s.total}`);
+
+    if (stats.calYears.length) {
+      set('da4-years-range', `${stats.calYears[0].year} → ${stats.calYears[stats.calYears.length - 1].year} · ${stats.calYears.length} ans`);
+    }
+
+    // Render histogram as bars (custom)
+    renderYearBars(stats.calYears);
+  }
+
+  function renderYearBars(calYears) {
+    const canvas = document.getElementById('da4-bars');
+    if (!canvas || !calYears.length) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(320, Math.floor(rect.width));
+    const H = Math.max(180, Math.floor(rect.height));
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 48, padR = 16, padT = 14, padB = 34;
+    const w = W - padL - padR, h = H - padT - padB;
+
+    let max = Math.max(...calYears.map((y) => y.pct));
+    let min = Math.min(...calYears.map((y) => y.pct));
+    max = Math.max(max, 10); min = Math.min(min, -10);
+    const span = max - min;
+
+    const yAt = (v) => padT + h - ((v - min) / span) * h;
+    const zeroY = yAt(0);
+
+    // Grid & labels
+    ctx.strokeStyle = 'rgba(36, 46, 59, 0.6)';
+    ctx.fillStyle = '#6B7684';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.lineWidth = 1;
+    const yTicks = [min, min / 2, 0, max / 2, max];
+    yTicks.forEach((v) => {
+      const y = yAt(v);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText((v >= 0 ? '+' : '') + v.toFixed(0) + ' %', padL - 6, y);
+    });
+
+    // Bars
+    const barW = Math.max(2, w / calYears.length - 1);
+    calYears.forEach((y, i) => {
+      const x = padL + (i / calYears.length) * w;
+      const topY = yAt(Math.max(0, y.pct));
+      const botY = yAt(Math.min(0, y.pct));
+      ctx.fillStyle = y.pct >= 0 ? '#34D399' : '#F87171';
+      ctx.fillRect(x, topY, barW, botY - topY);
+    });
+
+    // X labels (sparse)
+    ctx.fillStyle = '#6B7684';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    const tickStep = Math.max(1, Math.ceil(calYears.length / 10));
+    for (let i = 0; i < calYears.length; i += tickStep) {
+      const x = padL + (i / calYears.length) * w + barW / 2;
+      ctx.fillText(String(calYears[i].year), x, padT + h + 6);
+    }
+  }
+
+  // ===== Analyse 05 : Drawdown =====
+  function renderAnalyse05(form, r) {
+    const stats = computeAssetStats(currentData.prices, currentData.start);
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+    set('da5-maxdd', '-' + stats.drawdown.maxPct.toFixed(1) + ' %');
+    const ddIdx = stats.drawdown.atIdx;
+    set('da5-maxdd-date', `en ${ymLabel(addMonths(currentData.start, ddIdx))}`);
+
+    set('da5-simdd', '-' + r.maxDrawdownPct.toFixed(1) + ' %');
+    if (r.recoveryMonths != null) {
+      const yrs = Math.floor(r.recoveryMonths / 12);
+      const mths = r.recoveryMonths % 12;
+      set('da5-simdd-recovery', `Récupéré en ${yrs > 0 ? yrs + ' an' + (yrs > 1 ? 's ' : ' ') : ''}${mths} mois`);
+    } else {
+      set('da5-simdd-recovery', 'Pas encore récupéré');
+    }
+
+    // Underwater chart
+    const canvas = document.getElementById('da5-chart');
+    if (!canvas) return;
+    const prices = currentData.prices;
+    // Compute drawdown series
+    let peak = prices[0];
+    const dd = prices.map((p) => { if (p > peak) peak = p; return -(peak - p) / peak * 100; });
+
+    // Downsample
+    const maxPts = 400;
+    const stride = Math.max(1, Math.ceil(dd.length / maxPts));
+    const sampled = [];
+    const labels = [];
+    for (let i = 0; i < dd.length; i += stride) {
+      sampled.push(dd[i]);
+      labels.push(addMonths(currentData.start, i).slice(0, 4));
+    }
+
+    requestAnimationFrame(() => {
+      CI.drawChart('da5-chart', labels, [
+        { data: sampled, color: '#F87171', fill: true, fillColor: 'rgba(248,113,113,0.15)', width: 1.8 }
+      ], { yFormat: (v) => v.toFixed(0) + ' %' });
+    });
+  }
+
+  /* ============================================================
+     URL state
+     ============================================================ */
+  function syncUrl(form) {
+    CI.setUrlParams({
+      asset: form.assetId,
+      start: form.startDate,
+      dur: Math.round(form.durationMonths / 12),
+      monthly: form.monthlyAmount,
+      initial: form.initialAmount,
+      mode: form.mode,
+      dep: form.deployment,
+      fees: form.feesPct,
+      cash: form.cashRate,
+      divs: form.dividendsReinvested ? 1 : 0,
+      infl: form.inflationAdjusted ? 1 : 0
+    });
+  }
+
+  /* ============================================================
+     PUBLIC ACTIONS
+     ============================================================ */
+  window.runDCA = run;
+  window.shareDCA = () => { if (lastParams) syncUrl(lastParams); CI.copyShareUrl(); };
+  window.printDCA = () => window.print();
+  window.resetDCA = () => { window.location.search = ''; };
+  window.saveDCA = () => {
+    if (!lastResult) return CI.toast("Lance un calcul d'abord", 'error');
+    CI.promptSave('DCA', lastParams, `DCA ${currentAsset.name}`, () => {});
+  };
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  async function init() {
+    await loadManifest();
+    renderScenarios();
+    renderAssetPicker();
+    CI.initAll();
+
+    // Wire toggle rows
+    document.querySelectorAll('[data-toggle]').forEach((row) => {
+      row.addEventListener('click', () => {
+        const sw = document.getElementById(row.dataset.toggle);
+        if (sw.classList.contains('disabled')) return;
+        sw.classList.toggle('on');
+        run();
+      });
+    });
+
+    // Mode toggle
+    document.querySelectorAll('#d-mode button').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#d-mode button').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        updateModeInfo();
+        run();
+      });
+    });
+    document.querySelectorAll('#d-deployment button').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#d-deployment button').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        updateDeploymentHint();
+        run();
+      });
+    });
+
+    // Load URL state
+    const urlAsset = CI.getUrlParam('asset') || 'sp500';
+    const start = CI.getUrlParam('start');
+    const dur = CI.getUrlParam('dur');
+    const monthly = CI.getUrlParam('monthly');
+    const initial = CI.getUrlParam('initial');
+
+    if (monthly != null) document.getElementById('d-monthly').value = monthly;
+    if (initial != null) document.getElementById('d-initial').value = initial;
+    if (dur != null) document.getElementById('d-duration').value = dur;
+    if (CI.getUrlParam('fees') != null) document.getElementById('d-fees').value = CI.getUrlParam('fees');
+    if (CI.getUrlParam('cash') != null) document.getElementById('d-cash').value = CI.getUrlParam('cash');
+
+    let initId = urlAsset;
+    if (!manifest.assets.find((a) => a.id === initId && a.available)) {
+      initId = manifest.assets.find((a) => a.available).id;
+    }
+    await selectAsset(initId);
+    if (start) document.getElementById('d-start').value = start;
+    clampDates();
+
+    updateModeInfo();
+    updateDeploymentHint();
+
+    // Bind inputs → run
+    document.querySelectorAll('#page-dca input, #page-dca select').forEach((el) => {
+      if (el.closest('.asset-picker')) return;
+      el.addEventListener('input', run);
+      el.addEventListener('change', run);
+    });
+
+    run();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  window.addEventListener('resize', () => lastResult && lastParams && run());
+})();

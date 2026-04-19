@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-19",
+  "assets": [
+    {
+      "id": "sp500",
+      "name": "S&P 500",
+      "ticker": "^GSPC",
+      "category": "index",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#60A5FA",
+      "desc": "Les 500 plus grandes capitalisations américaines.",
+      "dataSince": "1871-01"
+    },
+    {
+      "id": "nasdaq",
+      "name": "NASDAQ Composite",
+      "ticker": "^IXIC",
+      "category": "index",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#818CF8",
+      "desc": "Indice tech américain, orienté technologies et innovation.",
+      "dataSince": "1971-02"
+    },
+    {
+      "id": "msci_world",
+      "name": "MSCI World",
+      "ticker": "URTH",
+      "category": "index",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#34D399",
+      "desc": "Exposition mondiale développée, 23 pays, 1500+ entreprises.",
+      "dataSince": "2012-01"
+    },
+    {
+      "id": "cac40",
+      "name": "CAC 40",
+      "ticker": "^FCHI",
+      "category": "index",
+      "currency": "EUR",
+      "pea": false,
+      "available": true,
+      "color": "#FBBF24",
+      "desc": "Les 40 plus grandes capitalisations de la Bourse de Paris.",
+      "dataSince": "1990-03"
+    },
+    {
+      "id": "nikkei",
+      "name": "Nikkei 225",
+      "ticker": "^N225",
+      "category": "index",
+      "currency": "JPY",
+      "pea": false,
+      "available": true,
+      "color": "#F87171",
+      "desc": "225 grandes entreprises cotées à Tokyo.",
+      "dataSince": "1965-01"
+    },
+    {
+      "id": "cw8",
+      "name": "Amundi MSCI World",
+      "ticker": "CW8.PA",
+      "category": "etf",
+      "currency": "EUR",
+      "pea": true,
+      "available": false,
+      "color": "#34D399",
+      "desc": "ETF monde éligible PEA. Le plus populaire en France pour le DCA mondial.",
+      "dataSince": "2009-05"
+    },
+    {
+      "id": "cspx",
+      "name": "iShares Core S&P 500",
+      "ticker": "CSPX.L",
+      "category": "etf",
+      "currency": "USD",
+      "pea": false,
+      "available": false,
+      "color": "#60A5FA",
+      "desc": "ETF UCITS S&P 500 capitalisant. Accessible via CTO et assurance-vie.",
+      "dataSince": "2010-05"
+    },
+    {
+      "id": "eimi",
+      "name": "iShares Core EM IMI",
+      "ticker": "EIMI.L",
+      "category": "etf",
+      "currency": "USD",
+      "pea": false,
+      "available": false,
+      "color": "#FB923C",
+      "desc": "Marchés émergents (Chine, Inde, Brésil...) via ETF UCITS.",
+      "dataSince": "2014-06"
+    },
+    {
+      "id": "panx",
+      "name": "BNPP Easy NASDAQ 100",
+      "ticker": "PANX.PA",
+      "category": "etf",
+      "currency": "EUR",
+      "pea": true,
+      "available": false,
+      "color": "#818CF8",
+      "desc": "NASDAQ 100 éligible PEA. Exposition tech US sans sortir du cadre PEA.",
+      "dataSince": "2014-01"
+    },
+    {
+      "id": "paeem",
+      "name": "Amundi Euro Stoxx 50",
+      "ticker": "C50.PA",
+      "category": "etf",
+      "currency": "EUR",
+      "pea": true,
+      "available": true,
+      "color": "#A78BFA",
+      "desc": "Les 50 plus grandes capitalisations de la zone euro.",
+      "dataSince": "2008-03"
+    },
+    {
+      "id": "gold",
+      "name": "Or (XAU/USD)",
+      "ticker": "XAU",
+      "category": "commodity",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#FBBF24",
+      "desc": "Valeur refuge historique, cours en USD par once troy.",
+      "dataSince": "1833-01"
+    },
+    {
+      "id": "silver",
+      "name": "Argent (XAG/USD)",
+      "ticker": "XAG",
+      "category": "commodity",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#94A3B8",
+      "desc": "Métal précieux plus volatil que l'or, usages industriels + monétaires.",
+      "dataSince": "1975-01"
+    },
+    {
+      "id": "oil_brent",
+      "name": "Pétrole Brent",
+      "ticker": "BZ=F",
+      "category": "commodity",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#F87171",
+      "desc": "Référence européenne, baril de mer du Nord.",
+      "dataSince": "1987-05"
+    }
+  ]
+}
