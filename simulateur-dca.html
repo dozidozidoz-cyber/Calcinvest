@@ -504,12 +504,67 @@
     <section id="a3">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13h3v-8h3v6h3v-10h3v12"/></svg></span>
-        Analyse 03 · Lump sum vs DCA
+        Analyse 03 · Lump sum vs DCA étalé
       </div>
-      <div class="placeholder-card">
-        <div class="placeholder-card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M2 16h3V8h3v5h3V4h3v12"/></svg></div>
-        <div class="placeholder-card-title">Comparaison des 2 stratégies · Bientôt</div>
-        <div class="placeholder-card-desc">Si j'avais 60 000 € aujourd'hui, vaut-il mieux tout investir d'un coup ou l'étaler sur 12/24 mois ? Réponse testée sur toute la période historique.</div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même capital, deux stratégies : tout investir d'un coup vs l'étaler sur plusieurs mois. Testé sur <strong id="da3-periods">—</strong> périodes historiques. Résultat : <strong id="da3-verdict" style="color:var(--accent)">—</strong></p>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+        <span style="font-size:12px;color:var(--text-3)">Capital analysé :</span>
+        <span id="da3-capital" style="font-family:var(--font-mono);font-size:13px;color:var(--accent);font-weight:600">—</span>
+        <span style="font-size:12px;color:var(--text-3);margin-left:8px">Étalement DCA :</span>
+        <div class="mode-toggle" id="da3-spread">
+          <button data-val="6" type="button">6 mois</button>
+          <button data-val="12" type="button" class="active">12 mois</button>
+          <button data-val="24" type="button">24 mois</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Lump sum gagne</div>
+          <div class="stat-value pos" id="da3-lump-pct">—</div>
+          <div class="stat-sub" id="da3-lump-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">DCA gagne</div>
+          <div class="stat-value neg" id="da3-dca-pct">—</div>
+          <div class="stat-sub" id="da3-dca-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avantage médian lump</div>
+          <div class="stat-value info" id="da3-median">—</div>
+          <div class="stat-sub">% du capital engagé</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avantage moyen lump</div>
+          <div class="stat-value info" id="da3-avg">—</div>
+          <div class="stat-sub">toutes périodes confondues</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13h3v-8h3v6h3v-10h3v12"/></svg></div>
+            Lump sum − DCA par année d'entrée (<span id="da3-dur-label">10 ans</span> de détention)
+          </div>
+          <div class="card-meta" id="da3-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:260px"><canvas id="da3-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>Lump sum surperforme</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>DCA surperforme</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Pourquoi le lump sum gagne plus souvent ?
+        </div>
+        Les marchés montent structurellement sur le long terme. Rester en cash pendant l'étalement a un coût d'opportunité. Le DCA étalé est utile psychologiquement — il réduit le risque d'entrer exactement au plus haut — mais statistiquement sous-optimal. Il gagne surtout en période de baisse prolongée post-entrée.
       </div>
     </section>
 
@@ -592,10 +647,59 @@
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8l2-3 2 6 2-9 2 12 2-6 2 2"/></svg></span>
         Analyse 06 · Volatilité &amp; CAPE
       </div>
-      <div class="placeholder-card">
-        <div class="placeholder-card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M2 10l2-3 2 6 2-9 2 12 2-6 2 2 2-4"/></svg></div>
-        <div class="placeholder-card-title">Volatilité glissante 12 mois + ratio CAPE · Bientôt</div>
-        <div class="placeholder-card-desc">Volatilité annualisée, CAPE (Shiller PE 10 ans) vs sa moyenne historique. Donne un sentiment du "tremblement" du marché et de sa valorisation.</div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Volatilité glissante 12 mois (risque ressenti) et ratio CAPE de Shiller vs sa moyenne historique (valorisation). <span id="da6-cape-note" style="color:var(--text-3)">CAPE disponible sur S&amp;P 500 uniquement.</span></p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Volatilité actuelle (12 mois)</div>
+          <div class="stat-value" id="da6-vol-current">—</div>
+          <div class="stat-sub" id="da6-vol-avg">Moy. historique : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">CAPE actuel</div>
+          <div class="stat-value" id="da6-cape-current">—</div>
+          <div class="stat-sub" id="da6-cape-avg">Moy. historique : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Valorisation relative</div>
+          <div class="stat-value" id="da6-valuation">—</div>
+          <div class="stat-sub" id="da6-valuation-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Signal risque vol.</div>
+          <div class="stat-value" id="da6-vol-signal">—</div>
+          <div class="stat-sub" id="da6-vol-signal-sub">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8l2-3 2 6 2-9 2 12 2-6 2 2"/></svg></div>
+            Volatilité annualisée glissante (12 mois)
+          </div>
+          <div class="card-meta" id="da6-vol-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:220px"><canvas id="da6-vol-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card" id="da6-cape-card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+            CAPE (Shiller PE 10 ans) vs moyenne historique
+          </div>
+          <div class="card-meta" id="da6-cape-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:220px"><canvas id="da6-cape-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#60A5FA"></span>CAPE</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.6"></span>Moyenne historique</div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -605,10 +709,56 @@
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="1.5"/><circle cx="11" cy="6" r="1.5"/><circle cx="8" cy="11" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="11" r="1.5"/></svg></span>
         Analyse 07 · Prévisions Monte Carlo
       </div>
-      <div class="placeholder-card">
-        <div class="placeholder-card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M2 16c3-6 5-2 8-8 2-4 5-2 8-2"/></svg></div>
-        <div class="placeholder-card-title">Bootstrap 2000 trajectoires futures · Bientôt</div>
-        <div class="placeholder-card-desc">Simulation par rééchantillonnage des rendements mensuels historiques. Pas une prédiction — la forme plausible de ce qui pourrait arriver (médiane, p10, p90).</div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Rééchantillonnage de <strong id="da7-n-sims">1 000</strong> trajectoires à partir des rendements mensuels historiques de cet actif. Pas une prédiction — l'éventail du plausible. <strong style="color:var(--yellow)">Passé ≠ futur.</strong></p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Médiane à l'horizon</div>
+          <div class="stat-value pos" id="da7-p50">—</div>
+          <div class="stat-sub" id="da7-p50-gain">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Scénario pessimiste (p10)</div>
+          <div class="stat-value neg" id="da7-p10">—</div>
+          <div class="stat-sub" id="da7-p10-gain">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Scénario optimiste (p90)</div>
+          <div class="stat-value pos" id="da7-p90">—</div>
+          <div class="stat-sub" id="da7-p90-gain">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Probabilité de gain</div>
+          <div class="stat-value info" id="da7-prob">—</div>
+          <div class="stat-sub" id="da7-prob-sub">vs capital investi</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="1.5"/><circle cx="11" cy="6" r="1.5"/><circle cx="8" cy="11" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="11" r="1.5"/></svg></div>
+            Éventail des trajectoires — p10 / p25 / médiane / p75 / p90
+          </div>
+          <div class="card-meta" id="da7-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:300px"><canvas id="da7-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>Médiane (p50)</div>
+            <div><span class="legend-dot" style="background:rgba(52,211,153,0.3)"></span>Fourchette p25–p75</div>
+            <div><span class="legend-dot" style="background:rgba(52,211,153,0.12)"></span>Fourchette p10–p90</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.7"></span>Capital investi</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box warn" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M8 2L1 14h14z"/><path d="M8 7v3M8 12h.01"/></svg>
+          Méthode &amp; limites
+        </div>
+        Bootstrap par rééchantillonnage des rendements mensuels réels. Ne modélise pas les régimes de marché, la corrélation temporelle, ni les crises inédites. La dispersion reflète la volatilité historique — les marchés futurs peuvent être différents.
       </div>
     </section>
 

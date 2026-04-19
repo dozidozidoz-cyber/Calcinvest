@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const { calcDCA, computeAssetStats, computeRollingReturns, monthDiff, addMonths, ymLabel } = window.CalcDCA;
+  const { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, monthDiff, addMonths, ymLabel } = window.CalcDCA;
   const num = window.FIN.num;
 
   // ---------- State ----------
@@ -280,8 +280,11 @@
     renderSummary(form, r);
     renderAnalyse01(form, r);
     renderAnalyse02(form, r);
+    renderAnalyse03(form, r);
     renderAnalyse04(form, r);
     renderAnalyse05(form, r);
+    renderAnalyse06(form, r);
+    renderAnalyse07(form, r);
     updateDateHint();
     syncUrl(form);
   }
@@ -330,6 +333,114 @@
     ];
 
     requestAnimationFrame(() => CI.drawChart('d-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) }));
+  }
+
+  // ===== Analyse 03 : Lump sum vs DCA étalé =====
+  let da3SpreadMonths = 12;
+
+  function renderAnalyse03(form, r) {
+    if (!currentData) return;
+    const capital = form.initialAmount || 10000;
+    const durationYears = Math.round(r.durationYears) || 10;
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+    const res = computeLumpVsDCA(currentData.prices, currentData.start, {
+      capital,
+      durationYears,
+      dcaMonths: da3SpreadMonths,
+      feesPct: form.feesPct
+    });
+
+    if (!res) return;
+    const s = res.stats;
+
+    set('da3-capital', CI.fmtNum(capital, 0) + ' ' + currentAsset.currency);
+    set('da3-periods', s.total + ' périodes');
+    set('da3-verdict', s.lumpWinsPct.toFixed(0) + ' % du temps, le lump sum gagne');
+    set('da3-lump-pct', s.lumpWinsPct.toFixed(0) + ' %');
+    set('da3-lump-sub', s.lumpWins + ' périodes sur ' + s.total);
+    set('da3-dca-pct', s.dcaWinsPct.toFixed(0) + ' %');
+    set('da3-dca-sub', (s.total - s.lumpWins) + ' périodes sur ' + s.total);
+
+    const medSign = s.medianDiffPct >= 0 ? '+' : '';
+    const avgSign = s.avgDiffPct >= 0 ? '+' : '';
+    set('da3-median', medSign + s.medianDiffPct.toFixed(1) + ' %');
+    set('da3-avg', avgSign + s.avgDiffPct.toFixed(1) + ' %');
+    set('da3-dur-label', durationYears + ' an' + (durationYears > 1 ? 's' : ''));
+    set('da3-meta', `${currentAsset.name} · capital ${CI.fmtNum(capital, 0)} ${currentAsset.currency}`);
+
+    const lumpEl = document.getElementById('da3-lump-pct');
+    if (lumpEl) { lumpEl.className = 'stat-value ' + (s.lumpWinsPct >= 50 ? 'pos' : 'neg'); }
+    const medEl = document.getElementById('da3-median');
+    if (medEl) { medEl.className = 'stat-value ' + (s.medianDiffPct >= 0 ? 'pos' : 'neg'); }
+    const avgEl = document.getElementById('da3-avg');
+    if (avgEl) { avgEl.className = 'stat-value ' + (s.avgDiffPct >= 0 ? 'pos' : 'neg'); }
+
+    requestAnimationFrame(() => renderLumpBars(res.yearlyDiff));
+  }
+
+  function renderLumpBars(yearlyDiff) {
+    const canvas = document.getElementById('da3-chart');
+    if (!canvas || !yearlyDiff.length) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(320, Math.floor(rect.width || 600));
+    const H = Math.max(200, Math.floor(rect.height || 260));
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 52, padR = 14, padT = 14, padB = 30;
+    const w = W - padL - padR, h = H - padT - padB;
+
+    const vals = yearlyDiff.map((d) => d.diffPct);
+    let maxV = Math.max(...vals, 5), minV = Math.min(...vals, -5);
+    maxV = Math.ceil(maxV / 5) * 5; minV = Math.floor(minV / 5) * 5;
+    const span = maxV - minV;
+    const yAt = (v) => padT + h - ((v - minV) / span) * h;
+    const zeroY = yAt(0);
+
+    // Grid
+    const ticks = [];
+    const step = Math.ceil(Math.abs(span) / 6 / 5) * 5;
+    for (let v = Math.ceil(minV / step) * step; v <= maxV; v += step) ticks.push(v);
+    ctx.strokeStyle = 'rgba(36,46,59,0.7)';
+    ctx.fillStyle = '#6B7684';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.lineWidth = 1;
+    ticks.forEach((v) => {
+      const y = yAt(v);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText((v >= 0 ? '+' : '') + v.toFixed(0) + ' %', padL - 5, y);
+    });
+
+    // Zero line
+    ctx.strokeStyle = 'rgba(107,118,132,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(padL, zeroY); ctx.lineTo(W - padR, zeroY); ctx.stroke();
+
+    // Bars
+    const barW = Math.max(2, w / yearlyDiff.length - 1);
+    yearlyDiff.forEach((d, i) => {
+      const x = padL + (i / yearlyDiff.length) * w;
+      const topY = yAt(Math.max(0, d.diffPct));
+      const botY = yAt(Math.min(0, d.diffPct));
+      ctx.fillStyle = d.diffPct >= 0 ? 'rgba(52,211,153,0.85)' : 'rgba(248,113,113,0.85)';
+      ctx.fillRect(x, topY, barW, Math.max(1, botY - topY));
+    });
+
+    // X labels
+    const tickStep = Math.max(1, Math.ceil(yearlyDiff.length / 10));
+    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    for (let i = 0; i < yearlyDiff.length; i += tickStep) {
+      const x = padL + (i / yearlyDiff.length) * w + barW / 2;
+      ctx.fillText(String(yearlyDiff[i].year), x, padT + h + 5);
+    }
   }
 
   // ===== Analyse 02 : Rendements glissants (heatmap) =====
@@ -604,6 +715,211 @@
     });
   }
 
+  // ===== Analyse 06 : Volatilité & CAPE =====
+  function renderAnalyse06(form, r) {
+    if (!currentData) return;
+    const hasCAPE = !!(currentData.pe10 && currentData.pe10.length);
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+
+    const vc = computeVolatilityCAPE(currentData.prices, currentData.start, hasCAPE ? currentData.pe10 : null);
+
+    // Note CAPE
+    const note = document.getElementById('da6-cape-note');
+    if (note) note.style.display = hasCAPE ? 'none' : '';
+    const capeCard = document.getElementById('da6-cape-card');
+    if (capeCard) capeCard.style.display = hasCAPE ? '' : 'none';
+
+    const s = vc.stats;
+
+    // Volatilité
+    set('da6-vol-current', s.currentVol != null ? s.currentVol.toFixed(1) + ' %' : '—');
+    set('da6-vol-avg', 'Moy. historique : ' + s.avgVol.toFixed(1) + ' %');
+    const volRatio = s.currentVol / s.avgVol;
+    const volSignal = volRatio < 0.75 ? 'Calme' : volRatio < 1.25 ? 'Normal' : volRatio < 1.75 ? 'Élevée' : 'Très élevée';
+    const volCls = volRatio < 0.75 ? 'pos' : volRatio < 1.25 ? 'info' : volRatio < 1.75 ? 'warn' : 'neg';
+    set('da6-vol-signal', volSignal);
+    set('da6-vol-signal-sub', (volRatio * 100 - 100).toFixed(0) + ' % vs moyenne');
+    cls('da6-vol-signal', volCls);
+    cls('da6-vol-current', volCls);
+    set('da6-vol-meta', currentAsset.name + ' · fenêtre 12 mois');
+
+    // CAPE
+    if (hasCAPE && s.currentCAPE != null) {
+      set('da6-cape-current', s.currentCAPE.toFixed(1) + 'x');
+      set('da6-cape-avg', 'Moy. historique : ' + s.capeAvg.toFixed(1) + 'x');
+      const capeRatio = s.currentCAPE / s.capeAvg;
+      const capePct = ((capeRatio - 1) * 100).toFixed(0);
+      const capeLabel = capeRatio < 0.8 ? 'Sous-évalué' : capeRatio < 1.1 ? 'Juste valeur' : capeRatio < 1.5 ? 'Surévalué' : 'Très surévalué';
+      const capeCls = capeRatio < 0.8 ? 'pos' : capeRatio < 1.1 ? 'info' : capeRatio < 1.5 ? 'warn' : 'neg';
+      set('da6-valuation', capeLabel);
+      set('da6-valuation-sub', (capePct >= 0 ? '+' : '') + capePct + ' % vs moyenne');
+      cls('da6-valuation', capeCls);
+      cls('da6-cape-current', capeCls);
+      set('da6-cape-meta', 'CAPE actuel ' + s.currentCAPE.toFixed(1) + 'x · moy. ' + s.capeAvg.toFixed(1) + 'x');
+    } else {
+      set('da6-valuation', '—');
+      set('da6-valuation-sub', 'Non disponible');
+      set('da6-cape-current', '—');
+    }
+
+    // Downsample pour les charts
+    const maxPts = 400;
+    const stride = Math.max(1, Math.ceil(vc.labels.length / maxPts));
+    const sampledLabels = [], sampledVol = [], sampledCAPE = [], capeAvgLine = [];
+    for (let i = 0; i < vc.labels.length; i += stride) {
+      sampledLabels.push(vc.labels[i].slice(0, 4));
+      sampledVol.push(vc.volSeries[i]);
+      sampledCAPE.push(vc.capeSeries[i]);
+      capeAvgLine.push(s.capeAvg);
+    }
+
+    requestAnimationFrame(() => {
+      CI.drawChart('da6-vol-chart', sampledLabels, [
+        { data: sampledVol, color: '#A78BFA', fill: true, fillColor: 'rgba(167,139,250,0.12)', width: 1.8 }
+      ], { yFormat: (v) => v.toFixed(0) + ' %' });
+
+      if (hasCAPE) {
+        CI.drawChart('da6-cape-chart', sampledLabels, [
+          { data: capeAvgLine, color: '#FBBF24', width: 1.5, dash: [4, 4] },
+          { data: sampledCAPE, color: '#60A5FA', fill: true, fillColor: 'rgba(96,165,250,0.1)', width: 1.8 }
+        ], { yFormat: (v) => v != null ? v.toFixed(0) + 'x' : '' });
+      }
+    });
+  }
+
+  // ===== Analyse 07 : Monte Carlo =====
+  function renderAnalyse07(form, r) {
+    if (!currentData) return;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+    const curr = currentAsset.currency;
+
+    const mc = computeMonteCarlo(currentData.prices, currentData.dividends || null, {
+      simulations: 1000,
+      horizonYears: Math.max(1, Math.round(r.durationYears)),
+      monthlyAmount: form.monthlyAmount,
+      initialAmount: form.initialAmount,
+      feesPct: form.feesPct,
+      dividendsReinvested: form.dividendsReinvested
+    });
+
+    if (!mc) return;
+    const fs = mc.finalStats;
+
+    set('da7-n-sims', fs.simulations.toLocaleString('fr-FR'));
+    set('da7-meta', currentAsset.name + ' · ' + Math.round(r.durationYears) + ' ans · ' + fs.simulations.toLocaleString('fr-FR') + ' simulations');
+
+    const fmt = (v) => CI.fmtCompact(v) + ' ' + curr;
+    const gainPct = (v) => ((v - fs.totalInvested) / fs.totalInvested * 100).toFixed(0) + ' %';
+    const gainSign = (v) => v >= fs.totalInvested ? '+' : '';
+
+    set('da7-p50', fmt(fs.p50));
+    set('da7-p50-gain', gainSign(fs.p50) + gainPct(fs.p50) + ' vs investi');
+    set('da7-p10', fmt(fs.p10));
+    set('da7-p10-gain', gainSign(fs.p10) + gainPct(fs.p10) + ' vs investi');
+    set('da7-p90', fmt(fs.p90));
+    set('da7-p90-gain', '+' + gainPct(fs.p90) + ' vs investi');
+    set('da7-prob', fs.probPositive.toFixed(0) + ' %');
+
+    cls('da7-p50', fs.p50 >= fs.totalInvested ? 'pos' : 'neg');
+    cls('da7-p10', fs.p10 >= fs.totalInvested ? 'pos' : 'neg');
+    cls('da7-prob', fs.probPositive >= 80 ? 'pos' : fs.probPositive >= 50 ? 'info' : 'neg');
+
+    requestAnimationFrame(() => drawMonteCarlo(mc, curr));
+  }
+
+  function drawMonteCarlo(mc, curr) {
+    const canvas = document.getElementById('da7-chart');
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(400, Math.floor(rect.width || 600));
+    const H = Math.max(250, Math.floor(rect.height || 300));
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 64, padR = 16, padT = 14, padB = 30;
+    const w = W - padL - padR, h = H - padT - padB;
+
+    const pd = mc.percentileData;
+    const years = mc.years;
+    // Prepend year 0 (initial)
+    const inv0 = mc.investedLine[0] - (mc.investedLine[1] - mc.investedLine[0]);
+    const allYears = [0, ...years];
+    const allP10 = [mc.finalStats.totalInvested > 0 ? mc.investedLine[0] : 0, ...pd.p10];
+    const allP25 = [allP10[0], ...pd.p25];
+    const allP50 = [allP10[0], ...pd.p50];
+    const allP75 = [allP10[0], ...pd.p75];
+    const allP90 = [allP10[0], ...pd.p90];
+    const allInv = [mc.investedLine[0], ...mc.investedLine];
+
+    const allVals = [...allP10, ...allP90, ...allInv].filter(Boolean);
+    const maxV = Math.max(...allVals) * 1.05;
+    const minV = 0;
+
+    const xAt = (i) => padL + (i / (allYears.length - 1)) * w;
+    const yAt = (v) => padT + h - ((v - minV) / (maxV - minV)) * h;
+
+    // Grid
+    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    const yTicks = 5;
+    for (let t = 0; t <= yTicks; t++) {
+      const v = minV + (maxV - minV) * (t / yTicks);
+      const y = yAt(v);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText(CI.fmtCompact(v), padL - 5, y);
+    }
+
+    // Helper: draw filled band between two arrays
+    const fillBand = (upper, lower, color) => {
+      ctx.beginPath();
+      upper.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      for (let i = lower.length - 1; i >= 0; i--) ctx.lineTo(xAt(i), yAt(lower[i]));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    };
+
+    // Helper: draw line
+    const drawLine = (arr, color, width, dash) => {
+      ctx.beginPath();
+      arr.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.setLineDash(dash || []);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    };
+
+    // Bandes
+    fillBand(allP90, allP10, 'rgba(52,211,153,0.08)');
+    fillBand(allP75, allP25, 'rgba(52,211,153,0.18)');
+
+    // Lignes percentiles
+    drawLine(allP10, 'rgba(52,211,153,0.35)', 1, [3, 3]);
+    drawLine(allP90, 'rgba(52,211,153,0.35)', 1, [3, 3]);
+    drawLine(allP25, 'rgba(52,211,153,0.6)', 1.2);
+    drawLine(allP75, 'rgba(52,211,153,0.6)', 1.2);
+    drawLine(allP50, '#34D399', 2.5);
+
+    // Capital investi
+    drawLine(allInv, '#FBBF24', 1.8, [5, 4]);
+
+    // X labels (années)
+    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    allYears.forEach((yr, i) => {
+      if (yr % 5 === 0) {
+        ctx.fillText('an ' + yr, xAt(i), padT + h + 5);
+      }
+    });
+  }
+
   /* ============================================================
      URL state
      ============================================================ */
@@ -643,6 +959,16 @@
     renderScenarios();
     renderAssetPicker();
     CI.initAll();
+
+    // Analyse 03 spread toggle
+    document.querySelectorAll('#da3-spread button').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#da3-spread button').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        da3SpreadMonths = parseInt(b.dataset.val, 10);
+        if (lastResult && lastParams) renderAnalyse03(lastParams, lastResult);
+      });
+    });
 
     // Wire toggle rows
     document.querySelectorAll('[data-toggle]').forEach((row) => {

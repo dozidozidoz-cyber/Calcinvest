@@ -230,6 +230,233 @@
     return `${names[m - 1]} ${y}`;
   }
 
+  /* Lump sum vs DCA étalé — sur toute la période historique disponible */
+  function computeLumpVsDCA(prices, seriesStart, options) {
+    options = options || {};
+    const capital = options.capital || 10000;
+    const durationMonths = (options.durationYears || 10) * 12;
+    const dcaMonths = options.dcaMonths || 12;
+    const feesPct = options.feesPct || 0;
+    const feesMonthly = feesPct / 100 / 12;
+
+    const [sy, sm] = seriesStart.split('-').map(Number);
+    const results = [];
+
+    for (let startIdx = 0; startIdx + durationMonths < prices.length; startIdx++) {
+      const endIdx = startIdx + durationMonths;
+
+      // Lump sum : invest tout au départ
+      let lumpUnits = capital / prices[startIdx];
+      if (feesMonthly > 0) lumpUnits *= Math.pow(1 - feesMonthly, durationMonths);
+      const lumpFinal = lumpUnits * prices[endIdx];
+
+      // DCA : investir capital/dcaMonths chaque mois pendant dcaMonths
+      let dcaUnits = 0;
+      const tranche = capital / dcaMonths;
+      for (let k = 0; k < dcaMonths; k++) {
+        const idx = startIdx + k;
+        if (idx >= prices.length) break;
+        let u = tranche / prices[idx];
+        if (feesMonthly > 0) u *= Math.pow(1 - feesMonthly, durationMonths - k);
+        dcaUnits += u;
+      }
+      const dcaFinal = dcaUnits * prices[endIdx];
+
+      const totalM = (sy * 12 + sm - 1) + startIdx;
+      results.push({
+        year: Math.floor(totalM / 12),
+        month: (totalM % 12) + 1,
+        lumpFinal,
+        dcaFinal,
+        diffPct: ((lumpFinal - dcaFinal) / capital) * 100,
+        lumpWins: lumpFinal >= dcaFinal
+      });
+    }
+
+    if (!results.length) return null;
+
+    const lumpWins = results.filter((r) => r.lumpWins).length;
+    const diffs = results.map((r) => r.diffPct).sort((a, b) => a - b);
+    const avg = diffs.reduce((s, v) => s + v, 0) / diffs.length;
+
+    // Agréger par année (moyenne des mois de cette année)
+    const byYear = {};
+    results.forEach((r) => {
+      if (!byYear[r.year]) byYear[r.year] = [];
+      byYear[r.year].push(r.diffPct);
+    });
+    const yearlyDiff = Object.keys(byYear).map((y) => ({
+      year: parseInt(y, 10),
+      diffPct: byYear[y].reduce((s, v) => s + v, 0) / byYear[y].length,
+      lumpWins: byYear[y].reduce((s, v) => s + v, 0) / byYear[y].length >= 0
+    })).sort((a, b) => a.year - b.year);
+
+    return {
+      yearlyDiff,
+      stats: {
+        total: results.length,
+        lumpWins,
+        lumpWinsPct: (lumpWins / results.length) * 100,
+        dcaWinsPct: ((results.length - lumpWins) / results.length) * 100,
+        avgDiffPct: avg,
+        medianDiffPct: diffs[Math.floor(diffs.length / 2)]
+      }
+    };
+  }
+
+  /* Volatilité glissante 12 mois + CAPE vs sa moyenne historique */
+  function computeVolatilityCAPE(prices, seriesStart, pe10) {
+    const [sy, sm] = seriesStart.split('-').map(Number);
+    const window = 12;
+    const volSeries = [], capeSeries = [], labels = [];
+    let capeHistSum = 0, capeHistCount = 0;
+
+    for (let i = window; i < prices.length; i++) {
+      // Volatilité annualisée : écart-type des rendements mensuels × √12
+      const rets = [];
+      for (let k = i - window; k < i; k++) {
+        rets.push((prices[k + 1] - prices[k]) / prices[k]);
+      }
+      const mean = rets.reduce((s, v) => s + v, 0) / rets.length;
+      const variance = rets.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / rets.length;
+      const vol = Math.sqrt(variance * 12) * 100;
+
+      const totalM = (sy * 12 + sm - 1) + i;
+      labels.push(`${Math.floor(totalM / 12)}-${String((totalM % 12) + 1).padStart(2, '0')}`);
+      volSeries.push(vol);
+
+      if (pe10 && pe10[i] != null) {
+        capeSeries.push(pe10[i]);
+        capeHistSum += pe10[i];
+        capeHistCount++;
+      } else {
+        capeSeries.push(null);
+      }
+    }
+
+    const capeAvg = capeHistCount > 0 ? capeHistSum / capeHistCount : null;
+    const currentVol = volSeries[volSeries.length - 1];
+    const currentCAPE = capeSeries[capeSeries.length - 1];
+    const avgVol = volSeries.reduce((s, v) => s + v, 0) / volSeries.length;
+
+    return {
+      labels, volSeries, capeSeries,
+      stats: { capeAvg, currentVol, currentCAPE, avgVol }
+    };
+  }
+
+  /* Monte Carlo bootstrap — rééchantillonnage des rendements mensuels historiques */
+  function computeMonteCarlo(prices, dividends, options) {
+    options = options || {};
+    const N = options.simulations || 1000;
+    const horizonMonths = (options.horizonYears || 20) * 12;
+    const monthlyAmount = options.monthlyAmount || 0;
+    const initialAmount = options.initialAmount || 0;
+    const feesPct = options.feesPct || 0;
+    const feesMonthly = feesPct / 100 / 12;
+    const reinvestDivs = options.dividendsReinvested && dividends && dividends.length === prices.length;
+
+    // Calcul des rendements mensuels historiques (prix)
+    const monthlyReturns = [];
+    for (let i = 1; i < prices.length; i++) {
+      if (prices[i] && prices[i - 1]) monthlyReturns.push(prices[i] / prices[i - 1] - 1);
+    }
+
+    // Dividendes mensuels moyens si dispo
+    const avgDivYield = reinvestDivs
+      ? dividends.filter((v) => v > 0).reduce((s, v) => s + v, 0) / Math.max(1, dividends.filter((v) => v > 0).length)
+      : 0;
+
+    const n = monthlyReturns.length;
+    if (n < 12) return null;
+
+    // Lancer N simulations
+    const finalValues = [];
+    const percentileData = { p10: [], p25: [], p50: [], p75: [], p90: [] };
+
+    // Pour les percentiles on stocke toutes les trajectoires partiellement
+    // On collecte la valeur finale + quelques snapshots intermédiaires
+    const snapMonths = [];
+    for (let m = 12; m <= horizonMonths; m += 12) snapMonths.push(m);
+
+    const snapData = snapMonths.map(() => []);
+
+    for (let sim = 0; sim < N; sim++) {
+      let portfolio = initialAmount;
+      let invested = initialAmount;
+      let units = initialAmount > 0 ? 1 : 0; // on travaille en valeur relative
+      portfolio = initialAmount;
+
+      // Rééchantillonnage par blocs de 12 mois (préserve la saisonnalité)
+      let value = initialAmount;
+      const blockSize = 12;
+
+      for (let m = 0; m < horizonMonths; m++) {
+        // Versement mensuel
+        value += monthlyAmount;
+        invested += monthlyAmount;
+
+        // Tirage aléatoire dans les rendements historiques
+        const ri = Math.floor(Math.random() * n);
+        const ret = monthlyReturns[ri];
+
+        // Dividende
+        const div = reinvestDivs ? value * avgDivYield : 0;
+        value = (value + div) * (1 + ret);
+
+        // Frais ETF
+        if (feesMonthly > 0) value *= (1 - feesMonthly);
+
+        if (value < 0) value = 0;
+
+        // Snapshot annuel
+        const snapIdx = snapMonths.indexOf(m + 1);
+        if (snapIdx !== -1) snapData[snapIdx].push(value);
+      }
+
+      finalValues.push(value);
+    }
+
+    finalValues.sort((a, b) => a - b);
+
+    const pct = (arr, p) => {
+      const sorted = [...arr].sort((a, b) => a - b);
+      return sorted[Math.floor(sorted.length * p / 100)];
+    };
+
+    // Construire les courbes de percentiles par année
+    const years = snapMonths.map((m) => m / 12);
+    snapData.forEach((arr, i) => {
+      arr.sort((a, b) => a - b);
+      percentileData.p10.push(pct(arr, 10));
+      percentileData.p25.push(pct(arr, 25));
+      percentileData.p50.push(pct(arr, 50));
+      percentileData.p75.push(pct(arr, 75));
+      percentileData.p90.push(pct(arr, 90));
+    });
+
+    // Invested line
+    const investedLine = snapMonths.map((m) => initialAmount + monthlyAmount * m);
+
+    const totalInvested = initialAmount + monthlyAmount * horizonMonths;
+
+    return {
+      years,
+      percentileData,
+      investedLine,
+      finalStats: {
+        p10: pct(finalValues, 10),
+        p25: pct(finalValues, 25),
+        p50: pct(finalValues, 50),
+        p75: pct(finalValues, 75),
+        p90: pct(finalValues, 90),
+        probPositive: (finalValues.filter((v) => v > totalInvested).length / N) * 100,
+        totalInvested,
+        simulations: N
+      }
+    };
+  }
+
   function computeRollingReturns(prices, seriesStart, durationsYears) {
     durationsYears = durationsYears || [1, 2, 3, 5, 10, 15, 20, 30];
     const [sy, sm] = seriesStart.split('-').map(Number);
@@ -268,7 +495,7 @@
     return { entryYears, durations: durationsYears, data, durationStats };
   }
 
-  const mod = { calcDCA, computeAssetStats, computeRollingReturns, monthDiff, addMonths, ymLabel };
+  const mod = { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, monthDiff, addMonths, ymLabel };
   if (typeof module !== 'undefined' && module.exports) module.exports = mod;
   else global.CalcDCA = mod;
 })(typeof window !== 'undefined' ? window : this);
