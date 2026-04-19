@@ -278,13 +278,8 @@
     lastResult = r;
 
     renderSummary(form, r);
-    renderAnalyse01(form, r);
-    renderAnalyse02(form, r);
-    renderAnalyse03(form, r);
-    renderAnalyse04(form, r);
-    renderAnalyse05(form, r);
-    renderAnalyse06(form, r);
-    renderAnalyse07(form, r);
+    const renders = [renderAnalyse01, renderAnalyse02, renderAnalyse03, renderAnalyse04, renderAnalyse05, renderAnalyse06, renderAnalyse07];
+    renders.forEach((fn) => { try { fn(form, r); } catch (e) { console.error('[CalcInvest]', fn.name, e); } });
     updateDateHint();
     syncUrl(form);
   }
@@ -768,22 +763,24 @@
     const stride = Math.max(1, Math.ceil(vc.labels.length / maxPts));
     const sampledLabels = [], sampledVol = [], sampledCAPE = [], capeAvgLine = [];
     for (let i = 0; i < vc.labels.length; i += stride) {
+      const cape = vc.capeSeries[i];
+      if (hasCAPE && cape == null) continue; // skip nulls pour aligner les séries
       sampledLabels.push(vc.labels[i].slice(0, 4));
-      sampledVol.push(vc.volSeries[i]);
-      sampledCAPE.push(vc.capeSeries[i]);
-      capeAvgLine.push(s.capeAvg);
+      sampledVol.push(vc.volSeries[i] || 0);
+      sampledCAPE.push(cape || 0);
+      capeAvgLine.push(s.capeAvg || 0);
     }
 
     requestAnimationFrame(() => {
       CI.drawChart('da6-vol-chart', sampledLabels, [
         { data: sampledVol, color: '#A78BFA', fill: true, fillColor: 'rgba(167,139,250,0.12)', width: 1.8 }
-      ], { yFormat: (v) => v.toFixed(0) + ' %' });
+      ], { yFormat: (v) => (v || 0).toFixed(0) + ' %' });
 
-      if (hasCAPE) {
+      if (hasCAPE && sampledCAPE.length > 0) {
         CI.drawChart('da6-cape-chart', sampledLabels, [
           { data: capeAvgLine, color: '#FBBF24', width: 1.5, dash: [4, 4] },
           { data: sampledCAPE, color: '#60A5FA', fill: true, fillColor: 'rgba(96,165,250,0.1)', width: 1.8 }
-        ], { yFormat: (v) => v != null ? v.toFixed(0) + 'x' : '' });
+        ], { yFormat: (v) => (v || 0).toFixed(0) + 'x' });
       }
     });
   }

@@ -1,15 +1,21 @@
 // CalcInvest Service Worker
 // Stratégie : network-first pour HTML (toujours récent), cache-first pour assets statiques
 
-const CACHE_VERSION = 'calcinvest-v3';
+const CACHE_VERSION = 'calcinvest-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/simulateur-dca.html',
+  '/simulateur-rendement-locatif.html',
+  '/mes-projets.html',
   '/assets/css/style.css',
   '/assets/js/common.js',
   '/assets/js/core/finance-utils.js',
   '/assets/js/core/calc-locatif.js',
   '/assets/js/core/calc-dca.js',
+  '/assets/js/views/dca.view.js',
+  '/assets/js/views/locatif.view.js',
+  '/assets/js/views/projects.view.js',
   '/assets/data/manifest.json',
   '/manifest.json',
   '/assets/icons/icon-192.svg',

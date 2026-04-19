@@ -307,14 +307,14 @@
   /* Volatilité glissante 12 mois + CAPE vs sa moyenne historique */
   function computeVolatilityCAPE(prices, seriesStart, pe10) {
     const [sy, sm] = seriesStart.split('-').map(Number);
-    const window = 12;
+    const WIN = 12;
     const volSeries = [], capeSeries = [], labels = [];
     let capeHistSum = 0, capeHistCount = 0;
 
-    for (let i = window; i < prices.length; i++) {
+    for (let i = WIN; i < prices.length; i++) {
       // Volatilité annualisée : écart-type des rendements mensuels × √12
       const rets = [];
-      for (let k = i - window; k < i; k++) {
+      for (let k = i - WIN; k < i; k++) {
         rets.push((prices[k + 1] - prices[k]) / prices[k]);
       }
       const mean = rets.reduce((s, v) => s + v, 0) / rets.length;
@@ -323,7 +323,7 @@
 
       const totalM = (sy * 12 + sm - 1) + i;
       labels.push(`${Math.floor(totalM / 12)}-${String((totalM % 12) + 1).padStart(2, '0')}`);
-      volSeries.push(vol);
+      volSeries.push(isFinite(vol) ? vol : 0);
 
       if (pe10 && pe10[i] != null) {
         capeSeries.push(pe10[i]);
