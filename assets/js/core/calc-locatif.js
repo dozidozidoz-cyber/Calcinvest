@@ -57,40 +57,38 @@
     const yieldGross = (grossRent / p.price) * 100;
     const yieldNet = (netRentBeforeLoan / totalAcquisition) * 100;
 
-    // -- Fiscalité : calcul annuel (année "stabilisée") --
-    function computeTax(year) {
-      // Par défaut on prend l'année 1 pour le calcul des intérêts
-      const interestsYear = amort.yearly[year - 1] ? amort.yearly[year - 1].interest : 0;
-      const insuranceYear = amort.yearly[year - 1] ? amort.yearly[year - 1].insurance : 0;
-
-      let taxableBase = 0;
+    // -- Fiscalité : calcul par année avec loyer indexé --
+    // grossRentYear = loyer brut annuel (peut être indexé)
+    // yearLoan      = ligne d'amortissement de l'année { interest, insurance }
+    function computeTax(grossRentYear, yearLoan) {
+      const interestsYear  = yearLoan ? yearLoan.interest  : 0;
+      const insuranceYear  = yearLoan ? yearLoan.insurance : 0;
+      const effRentYear    = grossRentYear * (1 - p.vacancy / 100);
+      const mgmtYear       = effRentYear * (p.mgmtPct / 100);
+      const chargesYear    = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100);
       const tr = p.tmi / 100;
       const sr = SOCIAL_TAX / 100;
+      let taxableBase = 0;
 
       switch (p.regime) {
         case 'micro-foncier':
-          // 30% abattement forfaitaire
-          taxableBase = grossRent * 0.7;
+          taxableBase = grossRentYear * 0.7;
           return taxableBase * (tr + sr);
 
         case 'reel-foncier':
-          // charges réelles déductibles (intérêts + assurance + tous frais) sur location nue
-          taxableBase = grossRent - (totalCharges + interestsYear + insuranceYear);
-          if (taxableBase < 0) taxableBase = 0; // déficit foncier : simplifié ici
+          taxableBase = grossRentYear - (chargesYear + interestsYear + insuranceYear);
+          if (taxableBase < 0) taxableBase = 0;
           return taxableBase * (tr + sr);
 
         case 'lmnp-micro':
-          // 50% abattement (meublé)
-          taxableBase = grossRent * 0.5;
+          taxableBase = grossRentYear * 0.5;
           return taxableBase * (tr + sr);
 
         case 'lmnp-reel': {
-          // Amortissements : bien sur ~25 ans, mobilier sur ~7 ans
-          const amortBuilding = (p.price * 0.85) / 25; // 85% du prix amortissable
+          const amortBuilding  = (p.price * 0.85) / 25;
           const amortFurniture = p.furniture / 7;
-          const totalDeductibles = totalCharges + interestsYear + insuranceYear + amortBuilding + amortFurniture;
-          taxableBase = grossRent - totalDeductibles;
-          if (taxableBase < 0) taxableBase = 0; // LMNP réel : déficit reporté, pas imputé sur revenu global
+          taxableBase = grossRentYear - (chargesYear + interestsYear + insuranceYear + amortBuilding + amortFurniture);
+          if (taxableBase < 0) taxableBase = 0;
           return taxableBase * (tr + sr);
         }
         default:
@@ -104,34 +102,29 @@
     const years = Math.max(1, p.holdYears);
 
     for (let y = 1; y <= years; y++) {
-      const yearLoan = amort.yearly[y - 1] || { principal: 0, interest: 0, insurance: 0, balance: 0 };
-      const rentYear = effectiveRent; // simplification : pas d'indexation par défaut
-      const chargesYear = totalCharges;
-      const loanYear = (y <= p.loanYears && p.loan > 0) ? amort.total * 12 : 0;
-      const tax = computeTax(y);
+      const yearLoan     = amort.yearly[y - 1] || { principal: 0, interest: 0, insurance: 0, balance: 0 };
+      const rentFactor   = Math.pow(1 + (p.rentIndexation || 0) / 100, y - 1);
+      const grossRentYear = grossRent * rentFactor;
+      const rentYear     = grossRentYear * (1 - p.vacancy / 100);
+      const mgmtYear     = rentYear * (p.mgmtPct / 100);
+      const chargesYear  = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100);
+      const loanYear     = (y <= p.loanYears && p.loan > 0) ? amort.total * 12 : 0;
+      const tax          = computeTax(grossRentYear, yearLoan);
       const cashflowYear = rentYear - chargesYear - loanYear - tax;
 
       propertyValue = propertyValue * (1 + p.appreciation / 100);
       const balance = y <= p.loanYears ? yearLoan.balance : 0;
-      const equity = propertyValue - balance;
+      const equity  = propertyValue - balance;
 
       yearly.push({
-        year: y,
-        rent: rentYear,
-        charges: chargesYear,
-        loanPayments: loanYear,
-        loanInterest: yearLoan.interest,
-        loanPrincipal: yearLoan.principal,
-        tax,
-        cashflow: cashflowYear,
-        propertyValue,
-        balance,
-        equity
+        year: y, rent: rentYear, charges: chargesYear,
+        loanPayments: loanYear, loanInterest: yearLoan.interest, loanPrincipal: yearLoan.principal,
+        tax, cashflow: cashflowYear, propertyValue, balance, equity
       });
     }
 
-    // -- Rendement net-net (après impôts) --
-    const year1Tax = computeTax(1);
+    // -- Rendement net-net (après impôts, année 1) --
+    const year1Tax = computeTax(grossRent, amort.yearly[0] || { interest: 0, insurance: 0 });
     const netRentAfterTax = netRentBeforeLoan - year1Tax;
     const yieldNetNet = (netRentAfterTax / totalAcquisition) * 100;
 
@@ -158,26 +151,18 @@
 
     return {
       // Acquisition
-      totalAcquisition,
-      downPayment,
+      totalAcquisition, downPayment,
       // Crédit
-      monthlyPayment: amort.total,
-      monthlyPaymentPrincipal: amort.pmt,
+      monthlyPayment: amort.total, monthlyPaymentPrincipal: amort.pmt,
       monthlyPaymentInsurance: amort.insurance,
-      totalInterest: amort.totalInterest,
+      totalInterest: amort.totalInterest, totalInsurance: amort.totalInsurance,
+      amortSchedule: amort.yearly,       // [{year,interest,principal,insurance,balance}]
       // Rendements
-      yieldGross,
-      yieldNet,
-      yieldNetNet,
+      yieldGross, yieldNet, yieldNetNet,
       // Flux
-      grossRent,
-      effectiveRent,
-      totalCharges,
-      netRentBeforeLoan,
-      netRentAfterTax,
-      year1Tax,
-      cashflowMonthly,
-      enrichmentMonthly,
+      grossRent, effectiveRent, totalCharges,
+      netRentBeforeLoan, netRentAfterTax, year1Tax,
+      cashflowMonthly, enrichmentMonthly,
       // TRI & patrimoine
       tri: tri == null ? null : tri * 100,
       finalEquity,
@@ -187,8 +172,74 @@
     };
   }
 
+  /* ============================================================
+     computeRegimeComparison(p)
+     Runs calcLocatif with all 4 regimes → comparison data
+     ============================================================ */
+  function computeRegimeComparison(p) {
+    const regimes = [
+      { id: 'micro-foncier', label: 'Micro-foncier',  desc: 'Location nue · abattement 30 %' },
+      { id: 'reel-foncier',  label: 'Réel foncier',   desc: 'Location nue · charges réelles' },
+      { id: 'lmnp-micro',    label: 'LMNP Micro-BIC', desc: 'Location meublée · abattement 50 %' },
+      { id: 'lmnp-reel',     label: 'LMNP Réel',      desc: 'Location meublée · amortissements' }
+    ];
+    const results = regimes.map(function (reg) {
+      const r = calcLocatif(Object.assign({}, p, { regime: reg.id }));
+      const amortBuilding  = reg.id === 'lmnp-reel' ? (p.price * 0.85) / 25 : 0;
+      const amortFurniture = reg.id === 'lmnp-reel' ? (p.furniture || 0) / 7 : 0;
+      return {
+        id: reg.id, label: reg.label, desc: reg.desc,
+        yieldNetNet: r.yieldNetNet, year1Tax: r.year1Tax,
+        netRentAfterTax: r.netRentAfterTax, cashflowMonthly: r.cashflowMonthly,
+        tri: r.tri, amortBuilding, amortFurniture
+      };
+    });
+    const sorted = results.slice().sort(function (a, b) { return b.yieldNetNet - a.yieldNetNet; });
+    return { results: results, bestId: sorted[0].id, worstId: sorted[sorted.length - 1].id };
+  }
+
+  /* ============================================================
+     computePlusValue(price, saleValue, holdYears, agencyPct, debtBalance)
+     Plus-value immobilière avec abattements progressifs — France 2025
+     Résidences secondaires / investissement locatif (hors RP)
+     ============================================================ */
+  function computePlusValue(price, saleValue, holdYears, agencyPct, debtBalance) {
+    agencyPct   = agencyPct   || 4;
+    debtBalance = debtBalance || 0;
+    const fees    = saleValue * (agencyPct / 100);
+    const netSale = saleValue - fees;
+    const pv      = Math.max(0, saleValue - price);
+
+    // Abattement IR (19%) : 6 %/an de l'an 6 à 21, +4 % an 22 → 100 % à 22 ans
+    var abattIR = 0;
+    if (holdYears >= 22) {
+      abattIR = 1;
+    } else if (holdYears >= 6) {
+      abattIR = Math.min(1, (holdYears - 5) * 0.06);
+    }
+
+    // Abattement PS (17,2%) : 1,65 %/an an 6-21, +9 % an 22, 1,60 %/an an 23-30 → 100 % à 30 ans
+    var abattPS = 0;
+    if (holdYears >= 30) {
+      abattPS = 1;
+    } else if (holdYears >= 23) {
+      abattPS = Math.min(1, 16 * 0.0165 + 0.09 + (holdYears - 22) * 0.016);
+    } else if (holdYears >= 22) {
+      abattPS = 16 * 0.0165 + 0.09; // 35.4 %
+    } else if (holdYears >= 6) {
+      abattPS = (holdYears - 5) * 0.0165;
+    }
+
+    const taxIR    = pv * (1 - abattIR) * 0.19;
+    const taxPS    = pv * (1 - abattPS) * 0.172;
+    const totalTax = taxIR + taxPS;
+    const netVendeur = netSale - debtBalance - totalTax;
+
+    return { saleValue, fees, netSale, pv, abattIR, abattPS, taxIR, taxPS, totalTax, debtBalance, netVendeur };
+  }
+
   // Export
-  const mod = { calcLocatif };
+  const mod = { calcLocatif, computeRegimeComparison, computePlusValue };
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = mod;
   } else {

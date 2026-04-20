@@ -117,6 +117,42 @@
           <div class="sidebar-link-title">Fiscalité du projet</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#l-amort-credit">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="5" width="12" height="8" rx="1"/><path d="M2 8h12M5 2v3M11 2v3"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 05</div>
+          <div class="sidebar-link-title">Amortissement crédit</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#l-fiscal-comp">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 06</div>
+          <div class="sidebar-link-title">Comparaison fiscale</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#l-cashflow-proj">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l3-4 2 2 3-5 4 3"/><path d="M2 14h12" stroke-dasharray="2 1"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 07</div>
+          <div class="sidebar-link-title">Cashflows projetés</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#l-revente">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7"/><path d="M11 8l2 2-2 2M13 10H9"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 08</div>
+          <div class="sidebar-link-title">Simulation de revente</div>
+        </div>
+      </a>
     </div>
   </aside>
 
@@ -575,6 +611,260 @@
           Avertissement
         </div>
         Simulation informative, pas un conseil fiscal. Les régimes réels ont des subtilités (déficit reporté, CFE, etc.) non intégralement modélisées ici. Consultez un expert-comptable pour valider votre situation.
+      </div>
+    </section>
+
+    <!-- ============= A05 · AMORTISSEMENT CRÉDIT ============= -->
+    <section id="l-amort-credit">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="12" height="8" rx="1"/><path d="M2 8h12M5 2v3M11 2v3"/></svg></span>
+        Analyse 05 · Amortissement du crédit
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Décomposition principal / intérêts / assurance année par année sur la durée du prêt.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Total intérêts</div>
+          <div class="stat-value neg" id="la5-interest">—</div>
+          <div class="stat-sub">Coût de l'argent emprunté</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total assurance</div>
+          <div class="stat-value neg" id="la5-insurance">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Coût total crédit</div>
+          <div class="stat-value neg" id="la5-cost">—</div>
+          <div class="stat-sub">Intérêts + assurance</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Coût / capital emprunté</div>
+          <div class="stat-value" id="la5-pct">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-3 3 2 5-6"/></svg></div>
+            Évolution cumulative
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:260px"><canvas id="la5-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.8"></span>Capital restant dû</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>Principal remboursé (cumulé)</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>Intérêts payés (cumulé)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h12v10H2z"/><path d="M2 6h12M6 3v10"/></svg></div>
+            Tableau d'amortissement annuel
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr><th>Année</th><th>Principal</th><th>Intérêts</th><th>Assurance</th><th>Total annuel</th><th>Capital restant</th></tr>
+              </thead>
+              <tbody id="la5-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A06 · COMPARAISON FISCALE ============= -->
+    <section id="l-fiscal-comp">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></span>
+        Analyse 06 · Comparaison fiscale des régimes
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même projet, 4 régimes fiscaux — lequel optimise ta rentabilité nette ?</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Meilleur régime</div>
+          <div class="stat-value pos" id="la6-best">—</div>
+          <div class="stat-sub" id="la6-best-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Pire régime</div>
+          <div class="stat-value neg" id="la6-worst">—</div>
+          <div class="stat-sub" id="la6-worst-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Économie fiscale max</div>
+          <div class="stat-value pos" id="la6-saving">—</div>
+          <div class="stat-sub">Différence impôts/an</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Régime actuel</div>
+          <div class="stat-value info" id="la6-current">—</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:14px" id="la6-cards"></div>
+    </section>
+
+    <!-- ============= A07 · CASHFLOWS PROJETÉS ============= -->
+    <section id="l-cashflow-proj">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12l3-4 2 2 3-5 4 3"/><path d="M2 14h12" stroke-dasharray="2 1"/></svg></span>
+        Analyse 07 · Cashflows projetés
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Projection avec indexation des loyers. L'inflation peut transformer un cashflow négatif en positif à terme.</p>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+        <span style="font-size:12px;color:var(--text-3)">Indexation loyers :</span>
+        <div class="mode-toggle" id="la7-indexation-btns">
+          <button data-val="0" class="active" type="button">0 %</button>
+          <button data-val="1" type="button">1 %</button>
+          <button data-val="2" type="button">2 %</button>
+          <button data-val="3" type="button">3 %</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Cashflow mensuel an 1</div>
+          <div class="stat-value" id="la7-cf1">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Cashflow mensuel fin</div>
+          <div class="stat-value" id="la7-cfn">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total flux cumulés</div>
+          <div class="stat-value" id="la7-total">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Breakeven cumulatif</div>
+          <div class="stat-value" id="la7-breakeven">—</div>
+          <div class="stat-sub">1ère année à cumul positif</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+            Cashflow mensuel et cumulatif
+          </div>
+          <div class="card-meta" id="la7-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:260px"><canvas id="la7-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>Cashflow mensuel</div>
+            <div><span class="legend-dot" style="background:#60A5FA"></span>Cumul cashflow</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A08 · SIMULATION DE REVENTE ============= -->
+    <section id="l-revente">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 14V7l5-4 5 4v7"/><path d="M11 8l2 2-2 2M13 10H9"/></svg></span>
+        Analyse 08 · Simulation de revente &amp; plus-value
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Plus-value immobilière avec abattements progressifs selon la durée de détention. Net vendeur après frais, dettes et impôts.</p>
+
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px;padding:14px 16px;background:var(--bg-elev);border-radius:var(--r);border:1px solid var(--border-soft)">
+        <div class="field">
+          <label class="field-label">Année de revente</label>
+          <div class="stepper" data-step="1" data-min="1" data-max="30" style="width:auto">
+            <button class="stepper-btn" data-dir="-1" type="button">−</button>
+            <input class="stepper-input" type="number" id="la8-year" value="20" min="1" max="30" style="width:44px" />
+            <span class="stepper-unit">ans</span>
+            <button class="stepper-btn" data-dir="1" type="button">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Frais d'agence</label>
+          <div class="stepper" data-step="0.5" data-min="0" data-max="10" style="width:auto">
+            <button class="stepper-btn" data-dir="-1" type="button">−</button>
+            <input class="stepper-input" type="number" id="la8-fees" value="4" step="0.5" style="width:44px" />
+            <span class="stepper-unit">%</span>
+            <button class="stepper-btn" data-dir="1" type="button">+</button>
+          </div>
+        </div>
+        <div class="pills" data-target="la8-year">
+          <button class="pill" data-value="10" type="button">10 ans</button>
+          <button class="pill" data-value="15" type="button">15 ans</button>
+          <button class="pill active" data-value="20" type="button">20 ans</button>
+          <button class="pill" data-value="25" type="button">25 ans</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Valeur de revente</div>
+          <div class="stat-value info" id="la8-sale">—</div>
+          <div class="stat-sub" id="la8-sale-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Plus-value brute</div>
+          <div class="stat-value pos" id="la8-pv">—</div>
+          <div class="stat-sub">Revente − prix d'achat</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Impôt sur plus-value</div>
+          <div class="stat-value neg" id="la8-tax">—</div>
+          <div class="stat-sub" id="la8-tax-sub">IR + PS</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Net vendeur</div>
+          <div class="stat-value" id="la8-net">—</div>
+          <div class="stat-sub">Après frais, dettes, impôts</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0">
+        <div style="background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px">
+          <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Abattement IR (19 %)</div>
+          <div style="font-size:24px;font-weight:700;color:var(--text-1)" id="la8-abatt-ir">—</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px" id="la8-ir-status">—</div>
+        </div>
+        <div style="background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px">
+          <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Abattement PS (17,2 %)</div>
+          <div style="font-size:24px;font-weight:700;color:var(--text-1)" id="la8-abatt-ps">—</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px" id="la8-ps-status">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14V2m0 12h12"/><path d="M2 10l4-4 3 3 5-6"/></svg></div>
+            Net vendeur vs patrimoine brut — par année
+          </div>
+          <div class="card-meta" id="la8-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:260px"><canvas id="la8-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.8"></span>Patrimoine brut (valeur − dette)</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>Net vendeur (après frais, dettes, impôts)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Abattements plus-value immobilière — France 2025
+        </div>
+        <strong>Exonération IR (19 %) :</strong> 6 %/an de la 6ème à la 21ème année, +4 % la 22ème → exonération totale après <strong>22 ans</strong>.&nbsp;
+        <strong>Exonération PS (17,2 %) :</strong> 1,65 %/an de la 6ème à la 21ème, +9 % la 22ème, 1,60 %/an de la 23ème à la 30ème → exonération totale après <strong>30 ans</strong>.
+        Ces règles s'appliquent aux résidences secondaires et investissements locatifs (hors résidence principale, totalement exonérée).
       </div>
     </section>
 
