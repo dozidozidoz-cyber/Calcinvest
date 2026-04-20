@@ -1077,12 +1077,12 @@
   async function selectCompAsset(id) {
     if (id === compAssetId) {
       compAssetId = null; compData = null;
-      document.querySelectorAll('#d-comp-picker .asset-btn').forEach((b) => b.classList.remove('active'));
+      document.querySelectorAll('#da8-picker .asset-btn').forEach((b) => b.classList.remove('active'));
       if (lastResult && lastParams) renderAnalyse08(lastParams, lastResult);
       return;
     }
     compAssetId = id;
-    document.querySelectorAll('#d-comp-picker .asset-btn').forEach((b) => b.classList.toggle('active', b.dataset.id === id));
+    document.querySelectorAll('#da8-picker .asset-btn').forEach((b) => b.classList.toggle('active', b.dataset.id === id));
     compData = await loadData(id);
     if (lastResult && lastParams) run();
   }

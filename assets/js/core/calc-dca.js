@@ -325,7 +325,7 @@
       labels.push(`${Math.floor(totalM / 12)}-${String((totalM % 12) + 1).padStart(2, '0')}`);
       volSeries.push(isFinite(vol) ? vol : 0);
 
-      if (pe10 && pe10[i] != null) {
+      if (pe10 && pe10[i] > 0) {  // > 0 exclut les nulls ET les zéros de fin de série
         capeSeries.push(pe10[i]);
         capeHistSum += pe10[i];
         capeHistCount++;
@@ -336,7 +336,11 @@
 
     const capeAvg = capeHistCount > 0 ? capeHistSum / capeHistCount : null;
     const currentVol = volSeries[volSeries.length - 1];
-    const currentCAPE = capeSeries[capeSeries.length - 1];
+    // Dernière valeur CAPE valide (la série peut se terminer par des nulls)
+    let currentCAPE = null;
+    for (let i = capeSeries.length - 1; i >= 0; i--) {
+      if (capeSeries[i] != null) { currentCAPE = capeSeries[i]; break; }
+    }
     const avgVol = volSeries.reduce((s, v) => s + v, 0) / volSeries.length;
 
     return {
@@ -362,9 +366,16 @@
       if (prices[i] && prices[i - 1]) monthlyReturns.push(prices[i] / prices[i - 1] - 1);
     }
 
-    // Dividendes mensuels moyens si dispo
+    // Rendement dividende mensuel moyen (div / prix) — pas la valeur absolue
+    // Les dividendes Shiller sont en points d'index (ex: 0.5 pts/mois), pas en %
     const avgDivYield = reinvestDivs
-      ? dividends.filter((v) => v > 0).reduce((s, v) => s + v, 0) / Math.max(1, dividends.filter((v) => v > 0).length)
+      ? (function () {
+          let sum = 0, count = 0;
+          for (let i = 0; i < dividends.length; i++) {
+            if (dividends[i] > 0 && prices[i] > 0) { sum += dividends[i] / prices[i]; count++; }
+          }
+          return count > 0 ? sum / count : 0;
+        })()
       : 0;
 
     const n = monthlyReturns.length;
