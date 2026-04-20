@@ -136,8 +136,8 @@
     requestAnimationFrame(() => {
       const labels = r.monthly_data.map((pt) => pt.date);
       CI.drawChart('cra1-chart', labels, [
-        { data: r.monthly_data.map((pt) => pt.invested), color: '#94A3B8', fill: false, width: 1.5, dash: [4, 3] },
-        { data: r.monthly_data.map((pt) => pt.value),    color: meta.color || '#F7931A', fill: true, width: 2.5 }
+        { label: 'Investi',    data: r.monthly_data.map((pt) => pt.invested), color: '#94A3B8', fill: false, width: 1.5, dash: [4, 3] },
+        { label: 'Portfolio',  data: r.monthly_data.map((pt) => pt.value),    color: meta.color || '#F7931A', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
 
@@ -288,9 +288,9 @@
       const lsAligned = labels.map((d) => lsMap[d] ?? null);
 
       CI.drawChart('cra4-chart', labels, [
-        { data: comp.dca.monthly_data.map((pt) => pt.value),   color: '#34D399', fill: false, width: 2.5 },
-        { data: lsAligned,                                       color: '#F7931A', fill: false, width: 2, dash: [5, 3] },
-        { data: comp.dca.monthly_data.map((pt) => pt.invested), color: '#94A3B8', fill: false, width: 1, dash: [2, 4] }
+        { label: 'DCA',       data: comp.dca.monthly_data.map((pt) => pt.value),   color: '#34D399', fill: false, width: 2.5 },
+        { label: 'Lump Sum',  data: lsAligned,                                      color: '#F7931A', fill: false, width: 2, dash: [5, 3] },
+        { label: 'Investi',   data: comp.dca.monthly_data.map((pt) => pt.invested), color: '#94A3B8', fill: false, width: 1, dash: [2, 4] }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
   }

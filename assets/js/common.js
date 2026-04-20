@@ -549,6 +549,131 @@
       ctx.stroke();
       ctx.setLineDash([]);
     });
+
+    /* ----------------------------------------------------------
+       Interactivité : curseur + tooltip au hover
+       ---------------------------------------------------------- */
+    // Snapshot du rendu statique (pixels bruts, ignorés par les transforms)
+    const snapshot = ctx.getImageData(0, 0, W * dpr, H * dpr);
+
+    // Tooltip HTML — créé une seule fois par canvas, réutilisé ensuite
+    const parent = canvas.parentElement;
+    if (parent && getComputedStyle(parent).position === 'static') {
+      parent.style.position = 'relative';
+    }
+    let tip = canvas._ciTooltip;
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.style.cssText = [
+        'position:absolute',
+        'background:rgba(10,15,20,.92)',
+        'border:1px solid rgba(255,255,255,.1)',
+        'border-radius:8px',
+        'padding:8px 12px',
+        'font-size:12px',
+        'font-family:"Inter",sans-serif',
+        'pointer-events:none',
+        'display:none',
+        'z-index:200',
+        'min-width:110px',
+        'box-shadow:0 6px 24px rgba(0,0,0,.5)',
+        'backdrop-filter:blur(6px)',
+        '-webkit-backdrop-filter:blur(6px)',
+        'white-space:nowrap'
+      ].join(';');
+      if (parent) parent.appendChild(tip);
+      canvas._ciTooltip = tip;
+    }
+
+    // Dessin du curseur (appelé depuis mousemove)
+    function drawCursor(idx) {
+      ctx.putImageData(snapshot, 0, 0);
+      const cx = xAt(idx);
+
+      // Ligne verticale pointillée
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth   = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cx, padT);
+      ctx.lineTo(cx, padT + h);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Points sur chaque série
+      datasets.forEach((ds) => {
+        const v = ds.data[idx];
+        if (v == null || isNaN(v)) return;
+        const cy = yAt(v);
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle   = ds.color || '#34D399';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth   = 1.5;
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    // Mise à jour du tooltip HTML
+    function updateTooltip(idx, mouseX, mouseY) {
+      const label = labels[idx];
+      const rows  = datasets.map((ds) => {
+        const v = ds.data[idx];
+        if (v == null || isNaN(v)) return '';
+        return `<div style="display:flex;align-items:center;gap:7px;margin:3px 0">` +
+          `<span style="width:8px;height:8px;border-radius:50%;background:${ds.color || '#34D399'};flex-shrink:0"></span>` +
+          (ds.label ? `<span style="color:rgba(255,255,255,.5)">${ds.label}</span>` : '') +
+          `<span style="font-weight:700;margin-left:auto;padding-left:10px">${yFmt(v)}</span>` +
+          `</div>`;
+      }).filter(Boolean).join('');
+
+      tip.innerHTML =
+        `<div style="font-weight:600;color:rgba(255,255,255,.7);margin-bottom:4px;font-size:11px">${label}</div>` +
+        rows;
+      tip.style.display = 'block';
+
+      // Position : à droite du curseur si possible, sinon à gauche
+      const tipW = tip.offsetWidth || 140;
+      const tipH = tip.offsetHeight || 60;
+      let left = mouseX + 14;
+      if (left + tipW > W - 8) left = mouseX - tipW - 14;
+      let top  = Math.max(4, mouseY - tipH / 2);
+      if (top + tipH > H - 4) top = H - tipH - 4;
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    }
+
+    // Event handlers (réassignés à chaque drawChart pour les nouvelles données)
+    canvas.onmousemove = function (e) {
+      const rect  = canvas.getBoundingClientRect();
+      const mx    = (e.clientX - rect.left) * (canvas.width  / rect.width)  / dpr;
+      const my    = (e.clientY - rect.top)  * (canvas.height / rect.height) / dpr;
+
+      // Indice le plus proche sur l'axe X
+      let best = 0, bestDist = Infinity;
+      for (let i = 0; i < n; i++) {
+        const d = Math.abs(xAt(i) - mx);
+        if (d < bestDist) { bestDist = d; best = i; }
+      }
+
+      // N'afficher que si le curseur est dans la zone de tracé
+      if (mx < padL - 4 || mx > W - padR + 4) {
+        ctx.putImageData(snapshot, 0, 0);
+        tip.style.display = 'none';
+        return;
+      }
+
+      drawCursor(best);
+      updateTooltip(best, mx, my);
+    };
+
+    canvas.onmouseleave = function () {
+      ctx.putImageData(snapshot, 0, 0);
+      tip.style.display = 'none';
+    };
   };
 
   /* ===========================================================

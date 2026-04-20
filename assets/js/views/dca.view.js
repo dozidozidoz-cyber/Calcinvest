@@ -327,10 +327,10 @@
     const pick = (arr) => idxs.map((i) => arr[i]);
 
     const datasets = [
-      { data: pick(monthly.invested), color: '#FBBF24', width: 1.8, dash: [4, 3] },
-      { data: pick(monthly.cash), color: '#60A5FA', width: 1.8 },
-      { data: pick(monthly.noFees), color: '#A78BFA', width: 1.5, dash: [2, 3] },
-      { data: pick(r.inflationAdjusted ? monthly.real : monthly.portfolio), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.15)', width: 2.5 }
+      { label: 'Versé',       data: pick(monthly.invested), color: '#FBBF24', width: 1.8, dash: [4, 3] },
+      { label: 'Cash',        data: pick(monthly.cash), color: '#60A5FA', width: 1.8 },
+      { label: 'Sans frais',  data: pick(monthly.noFees), color: '#A78BFA', width: 1.5, dash: [2, 3] },
+      { label: r.inflationAdjusted ? 'Réel (inflation)' : 'Portfolio', data: pick(r.inflationAdjusted ? monthly.real : monthly.portfolio), color: '#34D399', fill: true, width: 2.5 }
     ];
 
     requestAnimationFrame(() => CI.drawChart('d-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) }));

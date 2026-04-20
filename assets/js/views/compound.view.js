@@ -124,8 +124,8 @@
     requestAnimationFrame(() => {
       const labels = r.yearly.map((y) => 'An ' + y.year);
       CI.drawChart('ca1-chart', labels, [
-        { data: r.yearly.map((y) => y.invested),  color: '#60A5FA', fill: true, width: 1.5 },
-        { data: r.yearly.map((y) => y.value),     color: '#34D399', fill: true, width: 2.5 }
+        { label: 'Versé',  data: r.yearly.map((y) => y.invested), color: '#60A5FA', fill: true, width: 1.5 },
+        { label: 'Valeur', data: r.yearly.map((y) => y.value),    color: '#34D399', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
   }
