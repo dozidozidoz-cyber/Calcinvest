@@ -547,7 +547,7 @@
     });
 
     const perpRate = Math.max(0, annualReturn - (options.inflation || 0.02));
-    return { capital, results, perpetualMonthly: capital * perpRate / 12, annualReturn: annualReturn * 100 };
+    return { capital, horizonYears, results, perpetualMonthly: capital * perpRate / 12, annualReturn: annualReturn * 100 };
   }
 
   function computeValueAveraging(prices, dividends, seriesStart, options) {

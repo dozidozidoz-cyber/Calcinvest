@@ -418,43 +418,6 @@ if ('serviceWorker' in navigator) {
             </div>
           </div>
 
-          <div class="subsection">
-            <div class="subsection-header">
-              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l4-3 3 2 5-8"/><circle cx="13" cy="3" r="1.5" fill="currentColor" stroke="none"/></svg></div>
-              <div class="subsection-title">Comparer avec</div>
-              <div class="subsection-hint">Optionnel — même paramètres, actif différent</div>
-            </div>
-            <div class="asset-picker" id="d-comp-picker"></div>
-          </div>
-
-          <div class="subsection">
-            <div class="subsection-header">
-              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></div>
-              <div class="subsection-title">Profil fiscal</div>
-              <div class="subsection-hint">Utilisé pour l'analyse d'impact fiscal (Analyse 09)</div>
-            </div>
-            <div class="field-grid">
-              <div class="field">
-                <label class="field-label">Tranche marginale (TMI)</label>
-                <select class="select" id="d-tmi">
-                  <option value="0">0 % — non imposable</option>
-                  <option value="11">11 %</option>
-                  <option value="30" selected>30 %</option>
-                  <option value="41">41 %</option>
-                  <option value="45">45 %</option>
-                </select>
-              </div>
-              <div class="field">
-                <label class="field-label">Situation fiscale</label>
-                <div class="mode-toggle" id="d-fiscal-statut">
-                  <button data-val="seul" class="active" type="button">Célibataire</button>
-                  <button data-val="couple" type="button">Couple / PACS</button>
-                </div>
-                <div style="font-size:11px;color:var(--text-3);margin-top:5px">Abattement AV ≥ 8 ans : 4 600 € ou 9 200 €</div>
-              </div>
-            </div>
-          </div>
-
           <div class="btn-row" style="margin-top:22px">
             <button class="btn btn-primary" onclick="saveDCA()">Sauvegarder</button>
             <button class="btn btn-secondary" onclick="shareDCA()">Partager</button>
@@ -840,11 +803,47 @@ if ('serviceWorker' in navigator) {
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-3 3 2 5-8"/><circle cx="13" cy="3" r="1.5" fill="currentColor" stroke="none"/></svg></span>
         Analyse 08 · Comparaison multi-actifs
       </div>
-      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même capital, même période, deux actifs côte à côte. Sélectionne un actif dans <strong>Comparer avec</strong> (paramètres).</p>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même capital, même paramètres — deux actifs côte à côte sur la période choisie.</p>
+
+      <div class="subsection" style="margin-bottom:12px">
+        <div class="subsection-header">
+          <div class="subsection-title">Actif à comparer</div>
+          <div class="subsection-hint">Sélectionne un actif pour lancer la comparaison</div>
+        </div>
+        <div class="asset-picker" id="da8-picker"></div>
+      </div>
+
+      <div class="subsection" style="margin-bottom:14px">
+        <div class="subsection-header">
+          <div class="subsection-title">Période de comparaison</div>
+          <div class="subsection-hint">Indépendante du scénario principal</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap">
+          <div class="field">
+            <label class="field-label">Date de début</label>
+            <input class="input" type="month" id="da8-start" style="width:140px" />
+          </div>
+          <div class="field">
+            <label class="field-label">Durée</label>
+            <div class="stepper" data-step="1" data-min="1" data-max="50" style="width:auto">
+              <button class="stepper-btn" data-dir="-1" type="button">−</button>
+              <input class="stepper-input" type="number" id="da8-duration" value="10" min="1" max="50" style="width:44px" />
+              <span class="stepper-unit">ans</span>
+              <button class="stepper-btn" data-dir="1" type="button">+</button>
+            </div>
+          </div>
+          <div class="pills" data-target="da8-duration">
+            <button class="pill" data-value="5" type="button">5 ans</button>
+            <button class="pill active" data-value="10" type="button">10 ans</button>
+            <button class="pill" data-value="20" type="button">20 ans</button>
+            <button class="pill" data-value="30" type="button">30 ans</button>
+          </div>
+        </div>
+      </div>
 
       <div id="da8-empty" class="info-box" style="text-align:center;padding:24px 20px">
         <div style="font-size:14px;color:var(--text-2);margin-bottom:4px">Aucun actif de comparaison sélectionné</div>
-        <div style="font-size:12px;color:var(--text-3)">Choisis un actif dans la section <strong>Comparer avec</strong> des paramètres ci-dessus.</div>
+        <div style="font-size:12px;color:var(--text-3)">Sélectionne un actif ci-dessus pour lancer la comparaison.</div>
       </div>
 
       <div id="da8-content" style="display:none">
@@ -907,7 +906,28 @@ if ('serviceWorker' in navigator) {
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></span>
         Analyse 09 · Impact fiscal — PEA / CTO / Assurance-vie
       </div>
-      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même plus-value, fiscalité différente selon l'enveloppe. Basé sur ton profil fiscal (paramètres). <strong style="color:var(--yellow)">Indicatif — consulte un CGP pour ton cas réel.</strong></p>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même plus-value, fiscalité différente selon l'enveloppe. <strong style="color:var(--yellow)">Indicatif — consulte un CGP pour ton cas réel.</strong></p>
+
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px;padding:14px 16px;background:var(--bg-elev);border-radius:var(--r);border:1px solid var(--border-soft)">
+        <div class="field">
+          <label class="field-label">Tranche marginale (TMI)</label>
+          <select class="select" id="da9-tmi">
+            <option value="0">0 % — non imposable</option>
+            <option value="11">11 %</option>
+            <option value="30" selected>30 %</option>
+            <option value="41">41 %</option>
+            <option value="45">45 %</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Situation fiscale</label>
+          <div class="mode-toggle" id="da9-fiscal-statut">
+            <button data-val="seul" class="active" type="button">Célibataire</button>
+            <button data-val="couple" type="button">Couple / PACS</button>
+          </div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:5px">Abattement AV ≥ 8 ans : 4 600 € ou 9 200 €</div>
+        </div>
+      </div>
 
       <div class="stats-row" style="margin-bottom:18px">
         <div class="stat">
@@ -953,6 +973,16 @@ if ('serviceWorker' in navigator) {
         Analyse 10 · Plan de décaissement
       </div>
       <p class="text-muted" style="font-size:13px;margin-bottom:14px">Capital final de ta simulation → combien retirer par mois sans épuiser le portefeuille ? Basé sur la règle des 4% et plusieurs scénarios de taux.</p>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">
+        <span style="font-size:12px;color:var(--text-3)">Horizon de décaissement :</span>
+        <div class="mode-toggle" id="da10-horizon">
+          <button data-val="20" type="button">20 ans</button>
+          <button data-val="25" type="button">25 ans</button>
+          <button data-val="30" class="active" type="button">30 ans</button>
+          <button data-val="40" type="button">40 ans</button>
+        </div>
+      </div>
 
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
         <span style="font-size:12px;color:var(--text-3)">Rendement attendu post-retraite :</span>

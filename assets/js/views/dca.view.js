@@ -21,6 +21,7 @@
   let fiscalTMI = 30;
   let fiscalStatut = 'seul';
   let da10Return = 7;
+  let da10Horizon = 30;
 
   // ---------- Scénarios historiques ----------
   const SCENARIOS = [
@@ -1087,7 +1088,7 @@
   }
 
   function renderCompPicker() {
-    const c = document.getElementById('d-comp-picker');
+    const c = document.getElementById('da8-picker');
     if (!c || !manifest) return;
     const byCat = {};
     manifest.assets.filter((a) => a.available).forEach((a) => {
@@ -1123,10 +1124,23 @@
     }
 
     const compAsset = manifest.assets.find((a) => a.id === compAssetId);
+    const a8StartEl = document.getElementById('da8-start');
+    const a8DurEl = document.getElementById('da8-duration');
+    const a8StartDate = (a8StartEl && a8StartEl.value) ? a8StartEl.value : form.startDate;
+    const a8DurationMonths = (a8DurEl && a8DurEl.value) ? (parseFloat(a8DurEl.value) || 10) * 12 : form.durationMonths;
+
+    // Re-run main asset on the A8 period so comparison is on identical dates
+    const r1 = calcDCA({
+      prices: currentData.prices, dividends: currentData.dividends || null, cpi: null,
+      seriesStart: currentData.start, startDate: a8StartDate,
+      durationMonths: a8DurationMonths, monthlyAmount: form.monthlyAmount,
+      initialAmount: form.initialAmount, deployment: form.deployment,
+      feesPct: form.feesPct, cashRate: 0, dividendsReinvested: false, inflationAdjusted: false
+    });
     const r2 = calcDCA({
       prices: compData.prices, dividends: compData.dividends || null, cpi: null,
-      seriesStart: compData.start, startDate: form.startDate,
-      durationMonths: form.durationMonths, monthlyAmount: form.monthlyAmount,
+      seriesStart: compData.start, startDate: a8StartDate,
+      durationMonths: a8DurationMonths, monthlyAmount: form.monthlyAmount,
       initialAmount: form.initialAmount, deployment: form.deployment,
       feesPct: form.feesPct, cashRate: 0, dividendsReinvested: false, inflationAdjusted: false
     });
@@ -1136,6 +1150,8 @@
       if (contentEl) contentEl.style.display = 'none';
       return;
     }
+    // Use r1 if it computed correctly, otherwise fall back to the full-sim r
+    const ra = (r1 && !r1.error && r1.series.portfolio.length) ? r1 : r;
 
     if (emptyEl) emptyEl.style.display = 'none';
     if (contentEl) contentEl.style.display = '';
@@ -1144,25 +1160,25 @@
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
 
-    const win1 = r.finalValue >= r2.finalValue;
+    const win1 = ra.finalValue >= r2.finalValue;
     set('da8-l1', currentAsset.name); set('da8-l2', compAsset.name);
-    set('da8-v1', CI.fmtCompact(r.finalValue) + ' ' + curr);
+    set('da8-v1', CI.fmtCompact(ra.finalValue) + ' ' + curr);
     set('da8-v2', CI.fmtCompact(r2.finalValue) + ' ' + (compAsset.currency || '€'));
-    set('da8-s1', 'TRI ' + (r.annualReturn != null ? r.annualReturn.toFixed(1) + ' %/an' : '—'));
+    set('da8-s1', 'TRI ' + (ra.annualReturn != null ? ra.annualReturn.toFixed(1) + ' %/an' : '—'));
     set('da8-s2', 'TRI ' + (r2.annualReturn != null ? r2.annualReturn.toFixed(1) + ' %/an' : '—'));
     cls('da8-v1', win1 ? 'pos' : '');
     cls('da8-v2', !win1 ? 'pos' : '');
 
-    const tri1 = r.annualReturn != null ? r.annualReturn.toFixed(1) : '—';
+    const tri1 = ra.annualReturn != null ? ra.annualReturn.toFixed(1) : '—';
     const tri2 = r2.annualReturn != null ? r2.annualReturn.toFixed(1) : '—';
     set('da8-cagr', tri1 + ' % vs ' + tri2 + ' %');
     set('da8-cagr-sub', currentAsset.name + ' vs ' + compAsset.name);
 
-    const delta = r.finalValue - r2.finalValue;
+    const delta = ra.finalValue - r2.finalValue;
     set('da8-delta', CI.fmtCompact(Math.abs(delta)) + ' ' + curr);
     set('da8-delta-sub', (delta >= 0 ? currentAsset.name : compAsset.name) + ' surperforme');
     cls('da8-delta', delta >= 0 ? 'pos' : 'neg');
-    set('da8-meta', form.startDate + ' · ' + r.durationYears.toFixed(0) + ' ans · ' + CI.fmtNum(form.monthlyAmount) + '/mois');
+    set('da8-meta', a8StartDate + ' · ' + (a8DurationMonths / 12).toFixed(0) + ' ans · ' + CI.fmtNum(form.monthlyAmount) + '/mois');
 
     const leg1 = document.getElementById('da8-leg1'); if (leg1) leg1.textContent = currentAsset.name;
     const leg2 = document.getElementById('da8-leg2'); if (leg2) leg2.textContent = compAsset.name;
@@ -1173,11 +1189,11 @@
       const cols = 'display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px;padding:5px 0';
       const head = 'color:var(--text-3);font-size:11px;border-bottom:1px solid var(--border-soft);padding-bottom:6px;margin-bottom:4px';
       const rows = [
-        ['Valeur finale', CI.fmtNum(r.finalValue, 0) + ' ' + curr, CI.fmtNum(r2.finalValue, 0) + ' ' + curr, r.finalValue >= r2.finalValue ? 0 : 1],
-        ['Capital investi', CI.fmtNum(r.totalInvested, 0) + ' ' + curr, CI.fmtNum(r2.totalInvested, 0) + ' ' + curr, -1],
-        ['Gain net', CI.fmtNum(r.finalGain, 0) + ' ' + curr, CI.fmtNum(r2.finalGain, 0) + ' ' + curr, r.finalGain >= r2.finalGain ? 0 : 1],
-        ['TRI annualisé', tri1 + ' %', tri2 + ' %', (r.annualReturn || 0) >= (r2.annualReturn || 0) ? 0 : 1],
-        ['Drawdown max', '-' + r.maxDrawdownPct.toFixed(1) + ' %', '-' + r2.maxDrawdownPct.toFixed(1) + ' %', r.maxDrawdownPct <= r2.maxDrawdownPct ? 0 : 1],
+        ['Valeur finale', CI.fmtNum(ra.finalValue, 0) + ' ' + curr, CI.fmtNum(r2.finalValue, 0) + ' ' + curr, ra.finalValue >= r2.finalValue ? 0 : 1],
+        ['Capital investi', CI.fmtNum(ra.totalInvested, 0) + ' ' + curr, CI.fmtNum(r2.totalInvested, 0) + ' ' + curr, -1],
+        ['Gain net', CI.fmtNum(ra.finalGain, 0) + ' ' + curr, CI.fmtNum(r2.finalGain, 0) + ' ' + curr, ra.finalGain >= r2.finalGain ? 0 : 1],
+        ['TRI annualisé', tri1 + ' %', tri2 + ' %', (ra.annualReturn || 0) >= (r2.annualReturn || 0) ? 0 : 1],
+        ['Drawdown max', '-' + ra.maxDrawdownPct.toFixed(1) + ' %', '-' + r2.maxDrawdownPct.toFixed(1) + ' %', ra.maxDrawdownPct <= r2.maxDrawdownPct ? 0 : 1],
       ];
       tableEl.innerHTML =
         `<div style="${cols};${head}"><span></span><span>${currentAsset.name}</span><span>${compAsset.name}</span></div>` +
@@ -1186,7 +1202,7 @@
         ).join('');
     }
 
-    requestAnimationFrame(() => drawComparisonChart(r, r2, form));
+    requestAnimationFrame(() => drawComparisonChart(ra, r2, { ...form, startDate: a8StartDate, durationMonths: a8DurationMonths }));
   }
 
   function drawComparisonChart(r1, r2, form) {
@@ -1257,7 +1273,7 @@
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
 
-    const dc = computeDecaissement(r.finalValue, { rates: [0.03, 0.04, 0.05, 0.06], horizonYears: 30, annualReturn: da10Return, inflation: 0.02 });
+    const dc = computeDecaissement(r.finalValue, { rates: [0.03, 0.04, 0.05, 0.06], horizonYears: da10Horizon, annualReturn: da10Return, inflation: 0.02 });
 
     set('da10-capital', CI.fmtCompact(dc.capital) + ' ' + curr);
     set('da10-swr4', CI.fmtNum(dc.results[1].monthly, 0) + ' ' + curr + '/mois');
@@ -1297,7 +1313,8 @@
     const allVals = dc.results.flatMap((r) => r.yearly).filter((v) => v > 0);
     const maxV = Math.max(dc.capital, ...allVals) * 1.06;
     const minV = 0;
-    const xAt = (yr) => padL + (yr / 30) * w;
+    const horizon = dc.horizonYears || da10Horizon;
+    const xAt = (yr) => padL + (yr / horizon) * w;
     const yAt = (v) => padT + h - ((v - minV) / (maxV - minV)) * h;
 
     // Grid
@@ -1311,8 +1328,9 @@
       ctx.fillText(CI.fmtCompact(v), padL - 5, y);
     }
     // X labels
+    const step = horizon <= 20 ? 4 : horizon <= 30 ? 5 : 10;
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    for (let yr = 0; yr <= 30; yr += 5) {
+    for (let yr = 0; yr <= horizon; yr += step) {
       ctx.fillText('an ' + yr, xAt(yr), padT + h + 5);
     }
 
@@ -1426,21 +1444,36 @@
     renderCompPicker();
     CI.initAll();
 
-    // Fiscal profile
-    document.getElementById('d-tmi').addEventListener('change', () => {
-      fiscalTMI = parseInt(document.getElementById('d-tmi').value, 10) || 30;
+    // A8 — période de comparaison
+    ['da8-start', 'da8-duration'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', () => { if (lastResult && lastParams) renderAnalyse08(lastParams, lastResult); });
+    });
+
+    // A9 — profil fiscal
+    const tmiEl = document.getElementById('da9-tmi');
+    if (tmiEl) tmiEl.addEventListener('change', () => {
+      fiscalTMI = parseInt(tmiEl.value, 10) || 30;
       if (lastResult && lastParams) renderAnalyse09(lastParams, lastResult);
     });
-    document.querySelectorAll('#d-fiscal-statut button').forEach((b) => {
+    document.querySelectorAll('#da9-fiscal-statut button').forEach((b) => {
       b.addEventListener('click', () => {
-        document.querySelectorAll('#d-fiscal-statut button').forEach((x) => x.classList.remove('active'));
+        document.querySelectorAll('#da9-fiscal-statut button').forEach((x) => x.classList.remove('active'));
         b.classList.add('active');
         fiscalStatut = b.dataset.val;
         if (lastResult && lastParams) renderAnalyse09(lastParams, lastResult);
       });
     });
 
-    // Decaissement return input
+    // A10 — horizon + rendement
+    document.querySelectorAll('#da10-horizon button').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#da10-horizon button').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        da10Horizon = parseInt(b.dataset.val, 10) || 30;
+        if (lastResult && lastParams) renderAnalyse10(lastParams, lastResult);
+      });
+    });
     const da10El = document.getElementById('da10-return');
     if (da10El) {
       da10El.addEventListener('input', () => {
@@ -1507,6 +1540,12 @@
     await selectAsset(initId);
     if (start) document.getElementById('d-start').value = start;
     clampDates();
+
+    // Initialise la période A8 sur les valeurs du scénario principal
+    const da8StartEl = document.getElementById('da8-start');
+    const da8DurEl = document.getElementById('da8-duration');
+    if (da8StartEl) da8StartEl.value = document.getElementById('d-start').value || '';
+    if (da8DurEl) da8DurEl.value = document.getElementById('d-duration').value || '10';
 
     updateModeInfo();
     updateDeploymentHint();
