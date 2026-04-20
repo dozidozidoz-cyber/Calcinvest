@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Calculateur FIRE — Indépendance Financière & Retraite Anticipée | CalcInvest</title>
+<meta name="description" content="Calculateur FIRE gratuit. Règle des 4 %, capital cible, âge de retraite, coast FIRE, lean FIRE, fat FIRE. Simulation Monte Carlo pour tester la solidité de votre plan." />
+<meta name="keywords" content="calculateur FIRE, indépendance financière, retraite anticipée, règle des 4 pour cent, coast FIRE, lean FIRE, fat FIRE, simulation retraite" />
+<meta property="og:title" content="Calculateur FIRE — CalcInvest" />
+<meta property="og:description" content="Simulez votre chemin vers l'indépendance financière" />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
+</head>
+<body>
+
+<!-- ==================== TOPBAR ==================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon" style="background:linear-gradient(135deg,#FB923C,#F87171)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M8 4h8l-2 8h-4z" stroke-linejoin="round"/>
+          <path d="M10 12v8M14 12v8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">Calculateur FIRE</div>
+        <div class="logo-text-sub">Indépendance financière</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="topbar-center">
+    <div class="segmented" role="tablist">
+      <button class="segmented-btn" onclick="location.href='/simulateur-dca'">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        DCA
+      </button>
+      <button class="segmented-btn" onclick="location.href='/simulateur-interets-composes'">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+        Intérêts composés
+      </button>
+      <button class="segmented-btn active" aria-current="page">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4h5l-2 5h-3z"/><path d="M9 9v5M7 9v5"/></svg>
+        FIRE
+      </button>
+      <button class="segmented-btn" onclick="location.href='/simulateur-rendement-locatif'">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>
+        Immobilier
+      </button>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+  </div>
+</header>
+
+<!-- ==================== SHELL ==================== -->
+<div class="shell" id="page-fire">
+
+  <!-- ======== SIDEBAR ======== -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#fi-params">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h10M3 8h10M3 11h6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Exploration</div>
+          <div class="sidebar-link-title">Paramètres</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+
+      <a class="sidebar-link" href="#fia1-overview">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 01</div>
+          <div class="sidebar-link-title">Vue d'ensemble</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#fia2-trajectory">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l4-4 3 3 5-6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 02</div>
+          <div class="sidebar-link-title">Trajectoire</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#fia3-variants">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12h12M2 8h8M2 4h5"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 03</div>
+          <div class="sidebar-link-title">Variantes FIRE</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#fia4-withdrawal">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3h12v10H2z"/><path d="M7 9l-3 3M13 6l-3 3-3-3"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 04</div>
+          <div class="sidebar-link-title">Phase de retrait</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#fia5-sensitivity">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13V7l4-4 4 4v6M3 13h10"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 05</div>
+          <div class="sidebar-link-title">Sensibilité</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#fia6-montecarlo">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12c1-3 2-1 3-2s2-3 3-2 2 2 3 1 2-2 3-3"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 06</div>
+          <div class="sidebar-link-title">Monte Carlo</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======== MAIN ======== -->
+  <main class="main fade-in">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h5l-2 5h-3z"/><path d="M9 9v5M7 9v5"/></svg>
+        </span>
+        Simulateur · Indépendance financière &amp; retraite anticipée
+      </div>
+      <h1 class="page-title">Calculateur FIRE</h1>
+      <p class="page-lede">Simulez votre chemin vers la liberté financière. Capital cible, âge de retraite, règle des 4 %, Coast FIRE, Lean/Fat FIRE — et un test de stress Monte Carlo pour valider votre plan.</p>
+    </div>
+
+    <!-- ============= PARAMÈTRES ============= -->
+    <section class="accordion open" id="fi-params">
+      <div class="accordion-header">
+        <div class="accordion-icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Paramètres</div>
+          <div class="accordion-summary" id="fi-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div class="accordion-body">
+        <div class="accordion-body-inner">
+
+          <!-- Profil -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
+              </div>
+              <div class="subsection-title">Profil</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Âge actuel</label>
+                <div class="stepper" data-step="1" data-min="18" data-max="70">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-age" value="30" />
+                  <span class="stepper-unit">ans</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="fi-age">
+                  <button class="pill" data-value="25" type="button">25 ans</button>
+                  <button class="pill active" data-value="30" type="button">30 ans</button>
+                  <button class="pill" data-value="35" type="button">35 ans</button>
+                  <button class="pill" data-value="40" type="button">40 ans</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Dépenses annuelles en retraite</label>
+                <div class="stepper" data-step="500" data-min="5000">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-expenses" value="30000" />
+                  <span class="stepper-unit">€/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="fi-expenses">
+                  <button class="pill" data-value="20000" type="button">20 k</button>
+                  <button class="pill active" data-value="30000" type="button">30 k</button>
+                  <button class="pill" data-value="40000" type="button">40 k</button>
+                  <button class="pill" data-value="60000" type="button">60 k</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Capital & épargne -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M2 7h12"/><circle cx="8" cy="10.5" r="1"/></svg>
+              </div>
+              <div class="subsection-title">Capital &amp; épargne</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Capital actuel</label>
+                <div class="stepper" data-step="1000" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-savings" value="50000" />
+                  <span class="stepper-unit">€</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="fi-savings">
+                  <button class="pill" data-value="0" type="button">0</button>
+                  <button class="pill" data-value="10000" type="button">10 k</button>
+                  <button class="pill active" data-value="50000" type="button">50 k</button>
+                  <button class="pill" data-value="100000" type="button">100 k</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Versement mensuel</label>
+                <div class="stepper" data-step="100" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-monthly" value="1500" />
+                  <span class="stepper-unit">€/mois</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="fi-monthly">
+                  <button class="pill" data-value="500" type="button">500</button>
+                  <button class="pill" data-value="1000" type="button">1 000</button>
+                  <button class="pill active" data-value="1500" type="button">1 500</button>
+                  <button class="pill" data-value="2000" type="button">2 000</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hypothèses -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="11" r="2"/><path d="M7 5h7M2 11h7"/></svg>
+              </div>
+              <div class="subsection-title">Hypothèses financières</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Rendement annuel</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="20">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-return" value="7" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="fi-return">
+                  <button class="pill" data-value="5" type="button">5 %</button>
+                  <button class="pill active" data-value="7" type="button">7 %</button>
+                  <button class="pill" data-value="8" type="button">8 %</button>
+                  <button class="pill" data-value="10" type="button">10 %</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Taux de retrait</label>
+                <div class="stepper" data-step="0.5" data-min="2" data-max="8">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-withdrawal" value="4" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="fi-withdrawal">
+                  <button class="pill" data-value="3" type="button">3 % (sûr)</button>
+                  <button class="pill active" data-value="4" type="button">4 % (règle)</button>
+                  <button class="pill" data-value="4.5" type="button">4.5 %</button>
+                  <button class="pill" data-value="5" type="button">5 %</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Inflation</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-inflation" value="2" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Marge de sécurité</label>
+                <div class="stepper" data-step="5" data-min="0" data-max="50">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="fi-safety" value="0" />
+                  <span class="stepper-unit">% au-dessus</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="fi-safety">
+                  <button class="pill active" data-value="0" type="button">Aucune</button>
+                  <button class="pill" data-value="10" type="button">+10 %</button>
+                  <button class="pill" data-value="20" type="button">+20 %</button>
+                  <button class="pill" data-value="25" type="button">+25 %</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="btn-row" style="margin-top:22px">
+            <button class="btn btn-primary" onclick="saveFire()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h8l2 2v8H3z"/><path d="M5 3v4h6V3M5 13v-3h6v3"/></svg>
+              Sauvegarder
+            </button>
+            <button class="btn btn-secondary" onclick="shareFire()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="12" r="1.5"/><path d="M5.3 7.2l5.4-2.4M5.3 8.8l5.4 2.4"/></svg>
+              Partager
+            </button>
+            <button class="btn btn-secondary" onclick="resetFire()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8a5 5 0 1 1 1.5 3.5L3 13"/><path d="M3 13v-3h3"/></svg>
+              Réinitialiser
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A01 · VUE D'ENSEMBLE ============= -->
+    <section id="fia1-overview">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+        </span>
+        Analyse 01 · Vue d'ensemble
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <span id="fia1-coast" class="badge badge-warn">Coast FIRE non atteint</span>
+        <span class="text-muted" style="font-size:13px">Capital nécessaire maintenant pour ne plus verser : <strong id="fia1-coast-capital">—</strong></span>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Âge FIRE</div>
+          <div class="stat-value pos" id="fia1-age">—</div>
+          <div class="stat-sub" id="fia1-years">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Capital cible</div>
+          <div class="stat-value info stat-value-sm" id="fia1-target">—</div>
+          <div class="stat-sub">Règle des <span id="fia1-wr">4 %</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Capital atteint</div>
+          <div class="stat-value stat-value-sm" id="fia1-final">—</div>
+          <div class="stat-sub">À l'âge FIRE</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Rendement</div>
+          <div class="stat-value stat-value-sm text-muted" id="fia1-ret">—</div>
+          <div class="stat-sub" id="fia1-inf">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg>
+            </div>
+            Variantes FIRE
+          </div>
+          <div class="card-meta">Lean · Barista · Standard · Fat</div>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+            <div class="stat" style="background:var(--bg-elev);border-radius:var(--r);padding:12px">
+              <div class="stat-label" style="color:#FBBF24">Lean FIRE</div>
+              <div class="stat-value" style="color:#FBBF24;font-size:22px" id="fia1-lean-age">—</div>
+              <div class="stat-sub">dans <span id="fia1-lean-years">—</span> ans · 70 % dépenses</div>
+            </div>
+            <div class="stat" style="background:var(--bg-elev);border-radius:var(--r);padding:12px">
+              <div class="stat-label" style="color:#34D399">Barista FIRE</div>
+              <div class="stat-value" style="color:#34D399;font-size:22px" id="fia1-barista-age">—</div>
+              <div class="stat-sub">dans <span id="fia1-barista-years">—</span> ans · 50 % dépenses</div>
+            </div>
+            <div class="stat" style="background:var(--bg-elev);border-radius:var(--r);padding:12px">
+              <div class="stat-label" style="color:#60A5FA">FIRE Standard</div>
+              <div class="stat-value" style="color:#60A5FA;font-size:22px" id="fia1-std-age">—</div>
+              <div class="stat-sub">votre objectif principal</div>
+            </div>
+            <div class="stat" style="background:var(--bg-elev);border-radius:var(--r);padding:12px">
+              <div class="stat-label" style="color:#A78BFA">Fat FIRE</div>
+              <div class="stat-value" style="color:#A78BFA;font-size:22px" id="fia1-fat-age">—</div>
+              <div class="stat-sub">dans <span id="fia1-fat-years">—</span> ans · 150 % dépenses</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:12px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Règle des 4 %
+        </div>
+        Issue de l'étude Trinity (1998), la règle des 4 % stipule qu'un portefeuille peut supporter un retrait annuel de 4 % de sa valeur initiale, indexé sur l'inflation, pendant au moins 30 ans — avec un taux de succès historique supérieur à 95 % sur le marché américain.
+      </div>
+    </section>
+
+    <!-- ============= A02 · TRAJECTOIRE ============= -->
+    <section id="fia2-trajectory">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+        </span>
+        Analyse 02 · Trajectoire vers FIRE
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Progression annuelle de votre capital vers la cible FIRE, avec les variantes Lean et Standard en repères.</p>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">
+        <div class="stat" style="min-width:140px">
+          <div class="stat-label">Cible FIRE</div>
+          <div class="stat-value info stat-value-sm" id="fia2-target-label">—</div>
+        </div>
+        <div class="stat" style="min-width:140px">
+          <div class="stat-label">Cible Lean</div>
+          <div class="stat-value warn stat-value-sm" id="fia2-lean-label">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+            </div>
+            Capital accumulé vs cible
+          </div>
+          <div class="card-meta">Simulation mensuelle, affichage annuel</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="fia2-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#F87171"></span>Cible FIRE</div>
+            <div><span class="legend-dot" style="background:#FBBF24"></span>Cible Lean</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>Capital accumulé</div>
+            <div><span class="legend-dot" style="background:#60A5FA"></span>Total versé</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A03 · VARIANTES FIRE ============= -->
+    <section id="fia3-variants">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12h12M2 8h8M2 4h5"/></svg>
+        </span>
+        Analyse 03 · Variantes FIRE comparées
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Lean, Barista, Standard, Fat — chaque stratégie a un capital cible différent et un délai différent.</p>
+
+      <div id="fia3-bars" style="margin-bottom:18px"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h12v10H2z"/><path d="M2 6h12M6 3v10"/></svg>
+            </div>
+            Comparatif des variantes
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Variante</th>
+                  <th>Description</th>
+                  <th>Capital cible</th>
+                  <th>Durée</th>
+                  <th>Âge FIRE</th>
+                </tr>
+              </thead>
+              <tbody id="fia3-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:12px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Définitions
+        </div>
+        <strong>Lean FIRE</strong> : style de vie frugal, dépenses réduites à 70 %. Idéal dans des zones à faible coût de la vie (Asie du Sud-Est, Europe de l'Est).<br/>
+        <strong>Barista FIRE</strong> : capital couvre 50 % des dépenses, le reste via un petit boulot à temps partiel. La transition la plus douce.<br/>
+        <strong>Fat FIRE</strong> : mode confort, 150 % des dépenses. Pour maintenir un style de vie premium sans compromis.
+      </div>
+    </section>
+
+    <!-- ============= A04 · PHASE DE RETRAIT ============= -->
+    <section id="fia4-withdrawal">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h12v10H2z"/><path d="M7 9l-3 3M13 6l-3 3-3-3"/></svg>
+        </span>
+        Analyse 04 · Phase de décaissement
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Simulation sur 50 ans du retrait annuel indexé sur l'inflation. Le capital est investi et génère du rendement pendant la retraite.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Statut</div>
+          <div style="font-size:14px;font-weight:600;margin-top:6px" id="fia4-status">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Capital résiduel à 50 ans</div>
+          <div class="stat-value pos stat-value-sm" id="fia4-final">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+            </div>
+            Évolution du capital en phase de retrait
+          </div>
+          <div class="card-meta">Retrait indexé inflation · rendement maintenu</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="fia4-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>Capital restant</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>Dépenses annuelles (indexées)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h12v10H2z"/><path d="M2 6h12M6 3v10"/></svg>
+            </div>
+            Tableau de décaissement (tous les 5 ans)
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Période</th>
+                  <th>Capital restant</th>
+                  <th>Dépenses annuelles</th>
+                  <th>Vs capital initial</th>
+                </tr>
+              </thead>
+              <tbody id="fia4-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A05 · SENSIBILITÉ ============= -->
+    <section id="fia5-sensitivity">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13V7l4-4 4 4v6M3 13h10"/></svg>
+        </span>
+        Analyse 05 · Analyse de sensibilité
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Impact du rendement et du taux de retrait sur le nombre d'années pour atteindre FIRE. <span style="color:var(--accent)">■ Vert</span> &lt; 15 ans · <span style="color:var(--yellow)">■ Jaune</span> 15-25 ans · <span style="color:var(--red)">■ Rouge</span> &gt; 25 ans.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px" class="responsive-2col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+              </div>
+              Années vers FIRE selon le rendement
+            </div>
+          </div>
+          <div class="card-body no-pad">
+            <div class="chart-wrap" style="height:180px"><canvas id="fia5-chart-return"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+              </div>
+              Capital cible selon le taux de retrait
+            </div>
+          </div>
+          <div class="card-body no-pad">
+            <div class="chart-wrap" style="height:180px"><canvas id="fia5-chart-wr"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h12v10H2z"/><path d="M2 6h12M6 3v10"/></svg>
+            </div>
+            Grille Rendement × Taux de retrait
+          </div>
+          <div class="card-meta">Années pour atteindre FIRE</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="table-scroll" id="fia5-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A06 · MONTE CARLO ============= -->
+    <section id="fia6-montecarlo">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12c1-3 2-1 3-2s2-3 3-2 2 2 3 1 2-2 3-3"/></svg>
+        </span>
+        Analyse 06 · Test de stress Monte Carlo
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">1 000 simulations avec des rendements aléatoires (distribution log-normale basée sur votre hypothèse de rendement, volatilité 15 %/an). Mesure la probabilité de ne pas épuiser le capital sur 30 ans de retraite.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Taux de succès</div>
+          <div class="stat-value pos" id="fia6-success">—</div>
+          <div class="stat-sub">Trajectoires non épuisées</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Simulations</div>
+          <div class="stat-value stat-value-sm text-muted" id="fia6-runs">—</div>
+          <div class="stat-sub">Trajectoires testées</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12c1-3 2-1 3-2s2-3 3-2 2 2 3 1 2-2 3-3"/></svg>
+            </div>
+            Bandes de percentiles (P10 / P50 / P90)
+          </div>
+          <div class="card-meta">Valeur du capital · 30 ans de retraite</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="fia6-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>P90 (scénario optimiste)</div>
+            <div><span class="legend-dot" style="background:#60A5FA"></span>P50 (scénario médian)</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>P10 (scénario pessimiste)</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="fia6-interp" style="margin-top:12px"></div>
+
+      <div class="info-box" style="margin-top:12px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Limites du modèle
+        </div>
+        Cette simulation utilise une distribution log-normale synthétique, pas des données historiques réelles. Les marchés réels présentent des séquences de rendement qui peuvent être bien moins favorables (sequence of returns risk). Pour plus de robustesse, privilégiez un taux de retrait ≤ 3.5 % ou une marge de sécurité de 25 %+.
+      </div>
+    </section>
+
+  </main>
+</div><!-- /shell -->
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/core/calc-fire.js"></script>
+<script src="/assets/js/views/fire.view.js"></script>
+</body>
+</html>
