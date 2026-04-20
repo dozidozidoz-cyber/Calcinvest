@@ -390,6 +390,43 @@ if ('serviceWorker' in navigator) {
             </div>
           </div>
 
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l4-3 3 2 5-8"/><circle cx="13" cy="3" r="1.5" fill="currentColor" stroke="none"/></svg></div>
+              <div class="subsection-title">Comparer avec</div>
+              <div class="subsection-hint">Optionnel — même paramètres, actif différent</div>
+            </div>
+            <div class="asset-picker" id="d-comp-picker"></div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></div>
+              <div class="subsection-title">Profil fiscal</div>
+              <div class="subsection-hint">Utilisé pour l'analyse d'impact fiscal (Analyse 09)</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Tranche marginale (TMI)</label>
+                <select class="select" id="d-tmi">
+                  <option value="0">0 % — non imposable</option>
+                  <option value="11">11 %</option>
+                  <option value="30" selected>30 %</option>
+                  <option value="41">41 %</option>
+                  <option value="45">45 %</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">Situation fiscale</label>
+                <div class="mode-toggle" id="d-fiscal-statut">
+                  <button data-val="seul" class="active" type="button">Célibataire</button>
+                  <button data-val="couple" type="button">Couple / PACS</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:5px">Abattement AV ≥ 8 ans : 4 600 € ou 9 200 €</div>
+              </div>
+            </div>
+          </div>
+
           <div class="btn-row" style="margin-top:22px">
             <button class="btn btn-primary" onclick="saveDCA()">Sauvegarder</button>
             <button class="btn btn-secondary" onclick="shareDCA()">Partager</button>
@@ -766,6 +803,251 @@ if ('serviceWorker' in navigator) {
           Méthode &amp; limites
         </div>
         Bootstrap par rééchantillonnage des rendements mensuels réels. Ne modélise pas les régimes de marché, la corrélation temporelle, ni les crises inédites. La dispersion reflète la volatilité historique — les marchés futurs peuvent être différents.
+      </div>
+    </section>
+
+    <!-- ANALYSE 08 : Comparaison multi-actifs -->
+    <section id="a8">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-3 3 2 5-8"/><circle cx="13" cy="3" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+        Analyse 08 · Comparaison multi-actifs
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même capital, même période, deux actifs côte à côte. Sélectionne un actif dans <strong>Comparer avec</strong> (paramètres).</p>
+
+      <div id="da8-empty" class="info-box" style="text-align:center;padding:24px 20px">
+        <div style="font-size:14px;color:var(--text-2);margin-bottom:4px">Aucun actif de comparaison sélectionné</div>
+        <div style="font-size:12px;color:var(--text-3)">Choisis un actif dans la section <strong>Comparer avec</strong> des paramètres ci-dessus.</div>
+      </div>
+
+      <div id="da8-content" style="display:none">
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-label" id="da8-l1">Actif principal</div>
+            <div class="stat-value pos" id="da8-v1">—</div>
+            <div class="stat-sub" id="da8-s1">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label" id="da8-l2">Actif comparé</div>
+            <div class="stat-value" id="da8-v2">—</div>
+            <div class="stat-sub" id="da8-s2">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">TRI — A1 vs A2</div>
+            <div class="stat-value info" id="da8-cagr">—</div>
+            <div class="stat-sub" id="da8-cagr-sub">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Avantage absolu</div>
+            <div class="stat-value" id="da8-delta">—</div>
+            <div class="stat-sub" id="da8-delta-sub">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+              Performance comparée — base 100
+            </div>
+            <div class="card-meta" id="da8-meta">—</div>
+          </div>
+          <div class="card-body no-pad">
+            <div class="chart-wrap" style="height:280px"><canvas id="da8-chart"></canvas></div>
+            <div class="chart-legend">
+              <div><span class="legend-dot" style="background:#34D399"></span><span id="da8-leg1">Actif principal</span></div>
+              <div><span class="legend-dot" style="background:#60A5FA"></span><span id="da8-leg2">Comparaison</span></div>
+              <div><span class="legend-dot" style="background:#FBBF24;opacity:.7"></span>Capital investi</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/></svg></div>
+              Stats détaillées
+            </div>
+          </div>
+          <div class="card-body"><div id="da8-table" style="font-family:var(--font-mono);font-size:12px"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYSE 09 : Impact fiscal -->
+    <section id="a9">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></span>
+        Analyse 09 · Impact fiscal — PEA / CTO / Assurance-vie
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même plus-value, fiscalité différente selon l'enveloppe. Basé sur ton profil fiscal (paramètres). <strong style="color:var(--yellow)">Indicatif — consulte un CGP pour ton cas réel.</strong></p>
+
+      <div class="stats-row" style="margin-bottom:18px">
+        <div class="stat">
+          <div class="stat-label">Plus-value brute</div>
+          <div class="stat-value pos" id="da9-pv">—</div>
+          <div class="stat-sub">Gain avant impôts</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Meilleure enveloppe</div>
+          <div class="stat-value info" id="da9-best">—</div>
+          <div class="stat-sub" id="da9-best-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Économie vs pire choix</div>
+          <div class="stat-value pos" id="da9-saving">—</div>
+          <div class="stat-sub">Gain en choisissant bien</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Durée simulation</div>
+          <div class="stat-value info" id="da9-dur">—</div>
+          <div class="stat-sub" id="da9-dur-sub">—</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px" id="da9-cards"></div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Règles fiscales simplifiées — France 2025
+        </div>
+        <strong>PEA ≥ 5 ans :</strong> exonération IR, PS 17.2% uniquement. Plafond 150 k€ versements. ETF éligibles PEA uniquement.&nbsp;
+        <strong>Assurance-vie ≥ 8 ans :</strong> taux réduit 7.5% IR + PS, abattement annuel 4 600 € (célibataire) / 9 200 € (couple).&nbsp;
+        <strong>CTO PFU :</strong> 30% flat (12.8% IR + 17.2% PS).&nbsp;
+        <strong>CTO barème IR :</strong> TMI + PS — avantageux uniquement si TMI ≤ 11%.
+      </div>
+    </section>
+
+    <!-- ANALYSE 10 : Plan de décaissement -->
+    <section id="a10">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14V2m0 12h12"/><path d="M2 10l4-4 3 3 5-6"/></svg></span>
+        Analyse 10 · Plan de décaissement
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Capital final de ta simulation → combien retirer par mois sans épuiser le portefeuille ? Basé sur la règle des 4% et plusieurs scénarios de taux.</p>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+        <span style="font-size:12px;color:var(--text-3)">Rendement attendu post-retraite :</span>
+        <div class="stepper" data-step="0.5" data-min="1" data-max="15" style="width:auto">
+          <button class="stepper-btn" data-dir="-1" type="button">−</button>
+          <input class="stepper-input" type="number" id="da10-return" value="7" step="0.5" style="width:52px" />
+          <span class="stepper-unit">%/an</span>
+          <button class="stepper-btn" data-dir="1" type="button">+</button>
+        </div>
+        <div class="pills" data-target="da10-return">
+          <button class="pill" data-value="5" type="button">5 %</button>
+          <button class="pill active" data-value="7" type="button">7 %</button>
+          <button class="pill" data-value="9" type="button">9 %</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Capital à décaisser</div>
+          <div class="stat-value info" id="da10-capital">—</div>
+          <div class="stat-sub">Valeur finale simulation</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Règle des 4 % — mensuel</div>
+          <div class="stat-value pos" id="da10-swr4">—</div>
+          <div class="stat-sub">Retrait soutenable 30 ans</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Retrait perpétuel</div>
+          <div class="stat-value info" id="da10-perp">—</div>
+          <div class="stat-sub" id="da10-perp-sub">Rendement − inflation 2 %</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Durée à 5 %/an</div>
+          <div class="stat-value" id="da10-dur5">—</div>
+          <div class="stat-sub" id="da10-dur5-sub">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14V2m0 12h12"/><path d="M2 10l4-4 3 3 5-6"/></svg></div>
+            Évolution du capital selon le taux de retrait — horizon 30 ans
+          </div>
+          <div class="card-meta" id="da10-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:280px"><canvas id="da10-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>3 %/an</div>
+            <div><span class="legend-dot" style="background:#60A5FA"></span>4 %/an — règle des 4 %</div>
+            <div><span class="legend-dot" style="background:#FBBF24"></span>5 %/an</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>6 %/an</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          La règle des 4 % (Trinity Study)
+        </div>
+        Retirer 4 % du capital initial par an a un taux de succès de ~95 % sur 30 ans (données historiques US). En dessous : capital quasi-perpétuel. Au-dessus : risque d'épuisement selon les conditions de marché. Cette simulation utilise un rendement fixe — la réalité est plus volatile.
+      </div>
+    </section>
+
+    <!-- ANALYSE 11 : Value Averaging vs DCA -->
+    <section id="a11">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 3 3-6 3 4"/><path d="M5 8l-1.5 2m8-5 1.5-2" opacity=".5"/></svg></span>
+        Analyse 11 · Value Averaging vs DCA classique
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">DCA : versement fixe. Value averaging : on verse plus quand le portefeuille est en retard sur la cible, moins (voire rien) quand il est en avance. Même actif, même période.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">DCA classique — valeur finale</div>
+          <div class="stat-value pos" id="da11-dca-final">—</div>
+          <div class="stat-sub" id="da11-dca-tri">TRI : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Value Averaging — valeur finale</div>
+          <div class="stat-value" id="da11-va-final">—</div>
+          <div class="stat-sub" id="da11-va-tri">TRI : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Capital versé — VA</div>
+          <div class="stat-value info" id="da11-va-inv">—</div>
+          <div class="stat-sub" id="da11-va-inv-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avantage VA vs DCA</div>
+          <div class="stat-value" id="da11-delta">—</div>
+          <div class="stat-sub" id="da11-delta-sub">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+            DCA classique vs Value Averaging — évolution du portefeuille
+          </div>
+          <div class="card-meta" id="da11-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:280px"><canvas id="da11-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>DCA classique</div>
+            <div><span class="legend-dot" style="background:#A78BFA"></span>Value Averaging</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.7"></span>Capital investi (DCA)</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.35"></span>Capital investi (VA)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Value Averaging — mécanisme et limites
+        </div>
+        Chaque mois, le VA vise une valeur cible croissante (capital initial + mois × versement cible). Si le portefeuille est en dessous : on investit la différence — parfois bien plus que le DCA. Si au-dessus : on n'investit rien. Coût moyen pondéré généralement meilleur, mais capital requis variable et imprévisible. Déconseillé sans réserve de cash suffisante.
       </div>
     </section>
 

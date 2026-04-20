@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, monthDiff, addMonths, ymLabel } = window.CalcDCA;
+  const { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, monthDiff, addMonths, ymLabel } = window.CalcDCA;
   const num = window.FIN.num;
 
   // ---------- State ----------
@@ -16,6 +16,11 @@
   const dataCache = {};
   let lastResult = null;
   let lastParams = null;
+  let compAssetId = null;
+  let compData = null;
+  let fiscalTMI = 30;
+  let fiscalStatut = 'seul';
+  let da10Return = 7;
 
   // ---------- Scénarios historiques ----------
   const SCENARIOS = [
@@ -278,7 +283,7 @@
     lastResult = r;
 
     renderSummary(form, r);
-    const renders = [renderAnalyse01, renderAnalyse02, renderAnalyse03, renderAnalyse04, renderAnalyse05, renderAnalyse06, renderAnalyse07];
+    const renders = [renderAnalyse01, renderAnalyse02, renderAnalyse03, renderAnalyse04, renderAnalyse05, renderAnalyse06, renderAnalyse07, renderAnalyse08, renderAnalyse09, renderAnalyse10, renderAnalyse11];
     renders.forEach((fn) => { try { fn(form, r); } catch (e) { console.error('[CalcInvest]', fn.name, e); } });
     updateDateHint();
     syncUrl(form);
@@ -1067,6 +1072,319 @@
     });
   }
 
+  // ===== Analyse 08 : Comparaison multi-actifs =====
+  async function selectCompAsset(id) {
+    if (id === compAssetId) {
+      compAssetId = null; compData = null;
+      document.querySelectorAll('#d-comp-picker .asset-btn').forEach((b) => b.classList.remove('active'));
+      if (lastResult && lastParams) renderAnalyse08(lastParams, lastResult);
+      return;
+    }
+    compAssetId = id;
+    document.querySelectorAll('#d-comp-picker .asset-btn').forEach((b) => b.classList.toggle('active', b.dataset.id === id));
+    compData = await loadData(id);
+    if (lastResult && lastParams) run();
+  }
+
+  function renderCompPicker() {
+    const c = document.getElementById('d-comp-picker');
+    if (!c || !manifest) return;
+    const byCat = {};
+    manifest.assets.filter((a) => a.available).forEach((a) => {
+      if (!byCat[a.category]) byCat[a.category] = [];
+      byCat[a.category].push(a);
+    });
+    c.innerHTML = Object.keys(byCat).map((cat) => `
+      <div>
+        <div class="asset-group-title">${GROUP_LABELS[cat] || cat}</div>
+        <div class="asset-grid">
+          ${byCat[cat].map((a) => `
+            <button type="button" class="asset-btn" data-id="${a.id}">
+              <span class="asset-dot" style="background:${a.color}"></span>
+              <span class="asset-name">${a.name}</span>
+              ${a.pea ? '<span class="asset-badge badge-pea">PEA</span>' : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+    c.querySelectorAll('.asset-btn').forEach((btn) => {
+      btn.addEventListener('click', () => selectCompAsset(btn.dataset.id));
+    });
+  }
+
+  function renderAnalyse08(form, r) {
+    const emptyEl = document.getElementById('da8-empty');
+    const contentEl = document.getElementById('da8-content');
+    if (!compData || !compAssetId) {
+      if (emptyEl) emptyEl.style.display = '';
+      if (contentEl) contentEl.style.display = 'none';
+      return;
+    }
+
+    const compAsset = manifest.assets.find((a) => a.id === compAssetId);
+    const r2 = calcDCA({
+      prices: compData.prices, dividends: compData.dividends || null, cpi: null,
+      seriesStart: compData.start, startDate: form.startDate,
+      durationMonths: form.durationMonths, monthlyAmount: form.monthlyAmount,
+      initialAmount: form.initialAmount, deployment: form.deployment,
+      feesPct: form.feesPct, cashRate: 0, dividendsReinvested: false, inflationAdjusted: false
+    });
+
+    if (!r2 || r2.error || !r2.series.portfolio.length) {
+      if (emptyEl) { emptyEl.style.display = ''; emptyEl.innerHTML = '<div style="font-size:13px;color:var(--red);text-align:center">Données insuffisantes pour ' + (compAsset ? compAsset.name : 'cet actif') + ' sur cette période.</div>'; }
+      if (contentEl) contentEl.style.display = 'none';
+      return;
+    }
+
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = '';
+
+    const curr = currentAsset.currency;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+
+    const win1 = r.finalValue >= r2.finalValue;
+    set('da8-l1', currentAsset.name); set('da8-l2', compAsset.name);
+    set('da8-v1', CI.fmtCompact(r.finalValue) + ' ' + curr);
+    set('da8-v2', CI.fmtCompact(r2.finalValue) + ' ' + (compAsset.currency || '€'));
+    set('da8-s1', 'TRI ' + (r.annualReturn != null ? r.annualReturn.toFixed(1) + ' %/an' : '—'));
+    set('da8-s2', 'TRI ' + (r2.annualReturn != null ? r2.annualReturn.toFixed(1) + ' %/an' : '—'));
+    cls('da8-v1', win1 ? 'pos' : '');
+    cls('da8-v2', !win1 ? 'pos' : '');
+
+    const tri1 = r.annualReturn != null ? r.annualReturn.toFixed(1) : '—';
+    const tri2 = r2.annualReturn != null ? r2.annualReturn.toFixed(1) : '—';
+    set('da8-cagr', tri1 + ' % vs ' + tri2 + ' %');
+    set('da8-cagr-sub', currentAsset.name + ' vs ' + compAsset.name);
+
+    const delta = r.finalValue - r2.finalValue;
+    set('da8-delta', CI.fmtCompact(Math.abs(delta)) + ' ' + curr);
+    set('da8-delta-sub', (delta >= 0 ? currentAsset.name : compAsset.name) + ' surperforme');
+    cls('da8-delta', delta >= 0 ? 'pos' : 'neg');
+    set('da8-meta', form.startDate + ' · ' + r.durationYears.toFixed(0) + ' ans · ' + CI.fmtNum(form.monthlyAmount) + '/mois');
+
+    const leg1 = document.getElementById('da8-leg1'); if (leg1) leg1.textContent = currentAsset.name;
+    const leg2 = document.getElementById('da8-leg2'); if (leg2) leg2.textContent = compAsset.name;
+
+    // Tableau comparatif
+    const tableEl = document.getElementById('da8-table');
+    if (tableEl) {
+      const cols = 'display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px;padding:5px 0';
+      const head = 'color:var(--text-3);font-size:11px;border-bottom:1px solid var(--border-soft);padding-bottom:6px;margin-bottom:4px';
+      const rows = [
+        ['Valeur finale', CI.fmtNum(r.finalValue, 0) + ' ' + curr, CI.fmtNum(r2.finalValue, 0) + ' ' + curr, r.finalValue >= r2.finalValue ? 0 : 1],
+        ['Capital investi', CI.fmtNum(r.totalInvested, 0) + ' ' + curr, CI.fmtNum(r2.totalInvested, 0) + ' ' + curr, -1],
+        ['Gain net', CI.fmtNum(r.finalGain, 0) + ' ' + curr, CI.fmtNum(r2.finalGain, 0) + ' ' + curr, r.finalGain >= r2.finalGain ? 0 : 1],
+        ['TRI annualisé', tri1 + ' %', tri2 + ' %', (r.annualReturn || 0) >= (r2.annualReturn || 0) ? 0 : 1],
+        ['Drawdown max', '-' + r.maxDrawdownPct.toFixed(1) + ' %', '-' + r2.maxDrawdownPct.toFixed(1) + ' %', r.maxDrawdownPct <= r2.maxDrawdownPct ? 0 : 1],
+      ];
+      tableEl.innerHTML =
+        `<div style="${cols};${head}"><span></span><span>${currentAsset.name}</span><span>${compAsset.name}</span></div>` +
+        rows.map(([label, v1, v2, winner]) =>
+          `<div style="${cols}"><span style="color:var(--text-3)">${label}</span><span style="color:${winner === 0 ? 'var(--accent)' : 'inherit'}">${v1}</span><span style="color:${winner === 1 ? 'var(--accent)' : 'inherit'}">${v2}</span></div>`
+        ).join('');
+    }
+
+    requestAnimationFrame(() => drawComparisonChart(r, r2, form));
+  }
+
+  function drawComparisonChart(r1, r2, form) {
+    const canvas = document.getElementById('da8-chart');
+    if (!canvas || !r1 || !r2) return;
+    const n = Math.min(r1.series.portfolio.length, r2.series.portfolio.length);
+    const base1 = r1.series.portfolio[0] || 1;
+    const base2 = r2.series.portfolio[0] || 1;
+    const stride = Math.max(1, Math.ceil(n / 300));
+    const idxs = [];
+    for (let i = 0; i < n; i += stride) idxs.push(i);
+    if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
+    const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
+    CI.drawChart('da8-chart', labels, [
+      { data: idxs.map((i) => r1.series.invested[i] / base1 * 100), color: '#FBBF24', width: 1.5, dash: [4, 3] },
+      { data: idxs.map((i) => r2.series.portfolio[i] / base2 * 100), color: '#60A5FA', width: 2 },
+      { data: idxs.map((i) => r1.series.portfolio[i] / base1 * 100), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 }
+    ], { yFormat: (v) => v.toFixed(0) });
+  }
+
+  // ===== Analyse 09 : Impact fiscal =====
+  function renderAnalyse09(form, r) {
+    if (!r) return;
+    const fiscal = computeFiscalImpact(r.finalValue, r.totalInvested, r.durationYears, fiscalTMI, fiscalStatut);
+    if (!fiscal || !fiscal.best) return;
+    const curr = currentAsset.currency;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+    set('da9-pv', '+' + CI.fmtNum(fiscal.plusValue, 0) + ' ' + curr);
+    set('da9-best', fiscal.best.label);
+    set('da9-best-sub', 'Net : ' + CI.fmtNum(fiscal.best.net, 0) + ' ' + curr);
+    set('da9-saving', CI.fmtNum(fiscal.saving, 0) + ' ' + curr);
+    set('da9-dur', r.durationYears.toFixed(0) + ' ans');
+    set('da9-dur-sub', r.durationYears >= 8 ? '✓ PEA & AV actifs' : r.durationYears >= 5 ? '✓ PEA actif · AV non' : '⚠ PEA et AV non actifs');
+
+    const cards = document.getElementById('da9-cards');
+    if (cards) {
+      cards.innerHTML = fiscal.scenarios.map((s) => {
+        const isBest = s.id === fiscal.best.id;
+        const isWorst = s.id === fiscal.worstId;
+        const borderColor = isBest ? 'var(--accent)' : isWorst ? 'var(--red)' : 'var(--border-soft)';
+        const badge = isBest
+          ? '<span style="font-size:10px;background:var(--accent);color:#000;padding:2px 7px;border-radius:99px;font-weight:700">OPTIMAL</span>'
+          : isWorst
+          ? '<span style="font-size:10px;background:var(--red);color:#fff;padding:2px 7px;border-radius:99px;font-weight:700">DÉFAV.</span>'
+          : '';
+        return `<div style="background:var(--bg-elev);border:2px solid ${borderColor};border-radius:var(--r);padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-size:13px;font-weight:600;color:${isBest ? 'var(--accent)' : 'var(--text-1)'}">${s.label}</div>
+            ${badge}
+          </div>
+          <div style="font-size:22px;font-weight:700;color:${isBest ? 'var(--accent)' : 'var(--text-1)'}">
+            ${CI.fmtNum(s.net, 0)} <span style="font-size:13px;font-weight:400">${curr}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:4px">
+            Impôts : ${CI.fmtNum(s.tax, 0)} ${curr} · Taux eff. : ${(s.effectiveRate * 100).toFixed(1)} %
+          </div>
+          <div style="font-size:11px;color:var(--text-4);margin-top:6px;font-style:italic">${s.condNote}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ===== Analyse 10 : Plan de décaissement =====
+  function renderAnalyse10(form, r) {
+    if (!r) return;
+    const curr = currentAsset.currency;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+
+    const dc = computeDecaissement(r.finalValue, { rates: [0.03, 0.04, 0.05, 0.06], horizonYears: 30, annualReturn: da10Return, inflation: 0.02 });
+
+    set('da10-capital', CI.fmtCompact(dc.capital) + ' ' + curr);
+    set('da10-swr4', CI.fmtNum(dc.results[1].monthly, 0) + ' ' + curr + '/mois');
+    set('da10-perp', dc.perpetualMonthly > 0 ? CI.fmtNum(dc.perpetualMonthly, 0) + ' ' + curr + '/mois' : '0 €/mois');
+    set('da10-perp-sub', 'Rend. ' + da10Return + ' % − infl. 2 %');
+
+    const r5 = dc.results[2];
+    if (r5.depleted) {
+      set('da10-dur5', r5.depletedYear + ' ans'); cls('da10-dur5', 'neg');
+      set('da10-dur5-sub', 'Capital épuisé · retrait ' + CI.fmtNum(r5.monthly, 0) + ' €/mois');
+    } else {
+      set('da10-dur5', '> 30 ans'); cls('da10-dur5', 'pos');
+      set('da10-dur5-sub', 'Capital restant : ' + CI.fmtCompact(r5.finalValue) + ' ' + curr);
+    }
+
+    set('da10-meta', CI.fmtCompact(dc.capital) + ' ' + curr + ' · rend. ' + da10Return + ' %/an');
+    requestAnimationFrame(() => drawDecaissementChart(dc, curr));
+  }
+
+  function drawDecaissementChart(dc, curr) {
+    const canvas = document.getElementById('da10-chart');
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(400, Math.floor(rect.width || canvas.offsetWidth || 600));
+    const H = Math.max(250, Math.floor(rect.height || 280));
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const COLORS = ['#34D399', '#60A5FA', '#FBBF24', '#F87171'];
+    const padL = 64, padR = 16, padT = 14, padB = 30;
+    const w = W - padL - padR, h = H - padT - padB;
+
+    const allVals = dc.results.flatMap((r) => r.yearly).filter((v) => v > 0);
+    const maxV = Math.max(dc.capital, ...allVals) * 1.06;
+    const minV = 0;
+    const xAt = (yr) => padL + (yr / 30) * w;
+    const yAt = (v) => padT + h - ((v - minV) / (maxV - minV)) * h;
+
+    // Grid
+    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    for (let t = 0; t <= 5; t++) {
+      const v = minV + (maxV - minV) * (t / 5);
+      const y = yAt(v);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText(CI.fmtCompact(v), padL - 5, y);
+    }
+    // X labels
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for (let yr = 0; yr <= 30; yr += 5) {
+      ctx.fillText('an ' + yr, xAt(yr), padT + h + 5);
+    }
+
+    // Draw each rate series
+    dc.results.forEach((res, ri) => {
+      ctx.beginPath();
+      res.yearly.forEach((v, yi) => {
+        const x = xAt(yi), y = yAt(v);
+        yi === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = COLORS[ri]; ctx.lineWidth = ri === 1 ? 2.5 : 1.8;
+      ctx.setLineDash(ri === 1 ? [] : [5, 3]); ctx.lineJoin = 'round'; ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Depletion marker
+      if (res.depleted && res.depletedYear) {
+        const x = xAt(res.depletedYear);
+        ctx.beginPath(); ctx.arc(x, yAt(0), 4, 0, Math.PI * 2);
+        ctx.fillStyle = COLORS[ri]; ctx.fill();
+      }
+    });
+  }
+
+  // ===== Analyse 11 : Value Averaging vs DCA =====
+  function renderAnalyse11(form, r) {
+    if (!r || !currentData) return;
+    const curr = currentAsset.currency;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+
+    const va = computeValueAveraging(currentData.prices, currentData.dividends || null, currentData.start, {
+      startDate: form.startDate, durationMonths: form.durationMonths,
+      monthlyAmount: form.monthlyAmount, initialAmount: form.initialAmount,
+      feesPct: form.feesPct, dividendsReinvested: form.dividendsReinvested
+    });
+    if (!va) return;
+
+    const delta = va.finalValue - r.finalValue;
+    const invDelta = va.totalInvested - r.totalInvested;
+
+    set('da11-dca-final', CI.fmtCompact(r.finalValue) + ' ' + curr);
+    set('da11-dca-tri', 'TRI : ' + (r.annualReturn != null ? r.annualReturn.toFixed(1) + ' %' : '—'));
+    set('da11-va-final', CI.fmtCompact(va.finalValue) + ' ' + curr);
+    set('da11-va-tri', 'TRI : ' + (va.annualReturn != null ? va.annualReturn.toFixed(1) + ' %' : '—'));
+    set('da11-va-inv', CI.fmtCompact(va.totalInvested) + ' ' + curr);
+    set('da11-va-inv-sub', (invDelta >= 0 ? '+' : '') + CI.fmtNum(invDelta, 0) + ' vs DCA');
+    set('da11-delta', (Math.abs(delta) > 0 ? CI.fmtCompact(Math.abs(delta)) : '0') + ' ' + curr);
+    set('da11-delta-sub', (delta >= 0 ? 'VA surperforme' : 'DCA surperforme') + ' de ' + CI.fmtNum(Math.abs(delta), 0) + ' €');
+    cls('da11-va-final', delta >= 0 ? 'pos' : '');
+    cls('da11-delta', delta >= 0 ? 'pos' : 'neg');
+    set('da11-meta', currentAsset.name + ' · ' + r.durationYears.toFixed(0) + ' ans');
+
+    requestAnimationFrame(() => drawVAChart(r, va, form));
+  }
+
+  function drawVAChart(r_dca, r_va, form) {
+    const canvas = document.getElementById('da11-chart');
+    if (!canvas) return;
+    const n = Math.min(r_dca.series.portfolio.length, r_va.series.portfolio.length);
+    const stride = Math.max(1, Math.ceil(n / 300));
+    const idxs = [];
+    for (let i = 0; i < n; i += stride) idxs.push(i);
+    if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
+    const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
+    CI.drawChart('da11-chart', labels, [
+      { data: idxs.map((i) => r_dca.series.invested[i]), color: '#FBBF24', width: 1.2, dash: [4, 3] },
+      { data: idxs.map((i) => r_va.series.invested[i]), color: 'rgba(251,191,36,0.4)', width: 1.2, dash: [4, 3] },
+      { data: idxs.map((i) => r_va.series.portfolio[i]), color: '#A78BFA', width: 2 },
+      { data: idxs.map((i) => r_dca.series.portfolio[i]), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 }
+    ], { yFormat: (v) => CI.fmtCompact(v) });
+  }
+
   /* ============================================================
      URL state
      ============================================================ */
@@ -1105,7 +1423,31 @@
     await loadManifest();
     renderScenarios();
     renderAssetPicker();
+    renderCompPicker();
     CI.initAll();
+
+    // Fiscal profile
+    document.getElementById('d-tmi').addEventListener('change', () => {
+      fiscalTMI = parseInt(document.getElementById('d-tmi').value, 10) || 30;
+      if (lastResult && lastParams) renderAnalyse09(lastParams, lastResult);
+    });
+    document.querySelectorAll('#d-fiscal-statut button').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#d-fiscal-statut button').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        fiscalStatut = b.dataset.val;
+        if (lastResult && lastParams) renderAnalyse09(lastParams, lastResult);
+      });
+    });
+
+    // Decaissement return input
+    const da10El = document.getElementById('da10-return');
+    if (da10El) {
+      da10El.addEventListener('input', () => {
+        da10Return = parseFloat(da10El.value) || 7;
+        if (lastResult && lastParams) renderAnalyse10(lastParams, lastResult);
+      });
+    }
 
     // Analyse 03 spread toggle
     document.querySelectorAll('#da3-spread button').forEach((b) => {

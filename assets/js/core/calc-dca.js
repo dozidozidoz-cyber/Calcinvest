@@ -495,7 +495,110 @@
     return { entryYears, durations: durationsYears, data, durationStats };
   }
 
-  const mod = { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, monthDiff, addMonths, ymLabel };
+  function computeFiscalImpact(finalValue, totalInvested, durationYears, tmi, statut) {
+    const pv = Math.max(0, finalValue - totalInvested);
+    if (pv === 0) return { plusValue: 0, scenarios: [], best: null, saving: 0 };
+    const tmiRate = (tmi || 30) / 100;
+    const ps = 0.172;
+    const abat = statut === 'couple' ? 9200 : 4600;
+
+    function sc(id, label, tax, condNote, eligible) {
+      return { id, label, tax, condNote, eligible: eligible !== false, net: finalValue - tax, effectiveRate: pv > 0 ? tax / pv : 0 };
+    }
+
+    const scenarios = [
+      sc('pea', 'PEA',
+        durationYears >= 5 ? pv * ps : pv * 0.30,
+        durationYears >= 5 ? 'Exonéré IR · PS 17.2 %' : '⚠ < 5 ans — PFU 30 %',
+        durationYears >= 5),
+      sc('av', 'Assurance-vie',
+        durationYears >= 8 ? Math.max(0, pv - abat) * (0.075 + ps) : pv * 0.30,
+        durationYears >= 8 ? 'Taux 7.5 % + PS · abat. ' + abat.toLocaleString('fr-FR') + ' €' : '⚠ < 8 ans — PFU 30 %',
+        durationYears >= 8),
+      sc('cto-pfu', 'CTO · PFU 30 %', pv * 0.30, '12.8 % IR + 17.2 % PS'),
+      sc('cto-ir', 'CTO · Barème IR (' + (tmi || 30) + ' %)', pv * (tmiRate + ps), (tmi || 30) + ' % TMI + 17.2 % PS')
+    ];
+
+    const sorted = [...scenarios].sort((a, b) => b.net - a.net);
+    return { plusValue: pv, scenarios, best: sorted[0], worstId: sorted[sorted.length - 1].id, saving: sorted[0].net - sorted[sorted.length - 1].net };
+  }
+
+  function computeDecaissement(capital, options) {
+    options = options || {};
+    const rates = options.rates || [0.03, 0.04, 0.05, 0.06];
+    const horizonYears = options.horizonYears || 30;
+    const annualReturn = (options.annualReturn != null ? options.annualReturn : 7) / 100;
+    const mr = Math.pow(1 + annualReturn, 1 / 12) - 1;
+
+    const results = rates.map((r) => {
+      const w = capital * r / 12;
+      let v = capital;
+      const yearly = [capital];
+      let depleted = false, depletedYear = null;
+      for (let y = 0; y < horizonYears; y++) {
+        for (let m = 0; m < 12; m++) {
+          v = v * (1 + mr) - w;
+          if (v <= 0) { v = 0; depleted = true; depletedYear = y + 1; break; }
+        }
+        yearly.push(Math.round(v));
+        if (depleted) break;
+      }
+      return { rate: r, monthly: w, annual: w * 12, depleted, depletedYear, finalValue: yearly[yearly.length - 1], yearly };
+    });
+
+    const perpRate = Math.max(0, annualReturn - (options.inflation || 0.02));
+    return { capital, results, perpetualMonthly: capital * perpRate / 12, annualReturn: annualReturn * 100 };
+  }
+
+  function computeValueAveraging(prices, dividends, seriesStart, options) {
+    options = options || {};
+    const si = monthDiff(seriesStart, options.startDate || seriesStart);
+    if (si < 0 || si >= prices.length) return null;
+    const tgt = options.monthlyAmount || 500;
+    const init = options.initialAmount || 0;
+    const fm = (options.feesPct || 0) / 100 / 12;
+    const reinvDiv = options.dividendsReinvested !== false && dividends && dividends.length === prices.length;
+    const dur = Math.min(
+      options.durationMonths && options.durationMonths > 0 ? options.durationMonths : prices.length - si,
+      prices.length - si
+    );
+
+    let units = 0, totalInv = 0;
+    const cfs = [-init];
+    const portfolio = [], invSeries = [];
+
+    if (init > 0) { units += init / prices[si]; totalInv += init; }
+
+    for (let i = 0; i < dur; i++) {
+      const idx = si + i;
+      const p = prices[idx];
+      const targetV = init + (i + 1) * tgt;
+      const currV = units * p;
+      const toInvest = Math.max(0, targetV - currV);
+      if (toInvest > 0) { units += toInvest / p; totalInv += toInvest; }
+      cfs.push(-toInvest);
+      if (reinvDiv && dividends[idx] > 0) units += (units * dividends[idx]) / p;
+      if (fm > 0) units *= (1 - fm);
+      portfolio.push(units * p);
+      invSeries.push(totalInv);
+    }
+
+    const finalValue = portfolio[portfolio.length - 1] || 0;
+    const finalGain = finalValue - totalInv;
+    cfs[cfs.length - 1] += finalValue;
+    const mIRR = FIN.irr ? FIN.irr(cfs) : null;
+    const annIRR = mIRR != null ? (Math.pow(1 + mIRR, 12) - 1) * 100 : null;
+
+    return {
+      totalInvested: totalInv, finalValue, finalGain,
+      finalGainPct: totalInv > 0 ? (finalGain / totalInv) * 100 : 0,
+      annualReturn: annIRR,
+      durationMonths: dur, durationYears: dur / 12,
+      series: { portfolio, invested: invSeries }
+    };
+  }
+
+  const mod = { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, monthDiff, addMonths, ymLabel };
   if (typeof module !== 'undefined' && module.exports) module.exports = mod;
   else global.CalcDCA = mod;
 })(typeof window !== 'undefined' ? window : this);
