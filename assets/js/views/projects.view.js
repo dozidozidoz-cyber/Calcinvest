@@ -8,18 +8,20 @@
 
   // Map type → URL de l'outil (pour rouvrir un projet avec ses params)
   const TOOL_URLS = {
-    'Locatif': '/simulateur-rendement-locatif',
-    'DCA': '/simulateur-dca',
-    'Compound': '/simulateur-interets-composes',
-    'FIRE': '/calculateur-fire'
+    'Locatif':    '/simulateur-rendement-locatif',
+    'DCA':        '/simulateur-dca',
+    'Compound':   '/simulateur-interets-composes',
+    'CryptoDCA':  '/simulateur-dca-crypto',
+    'FIRE':       '/calculateur-fire'
   };
 
   // Map type → icône SVG path + couleur
   const TOOL_META = {
-    'Locatif': { color: '#34D399', icon: '<path d="M3 20V10l9-6 9 6v10"/><path d="M9 20v-6h6v6"/>' },
-    'DCA':     { color: '#60A5FA', icon: '<path d="M3 17l6-6 4 4 8-10"/><path d="M15 5h6v6"/>' },
-    'Compound':{ color: '#A78BFA', icon: '<path d="M4 20V8l8-4 8 4v12"/><path d="M4 14l8-4 8 4"/>' },
-    'FIRE':    { color: '#FB923C', icon: '<path d="M8 4h8l-2 8h-4z"/><path d="M10 12v8M14 12v8"/>' }
+    'Locatif':   { color: '#34D399', icon: '<path d="M3 20V10l9-6 9 6v10"/><path d="M9 20v-6h6v6"/>' },
+    'DCA':       { color: '#60A5FA', icon: '<path d="M3 17l6-6 4 4 8-10"/><path d="M15 5h6v6"/>' },
+    'Compound':  { color: '#A78BFA', icon: '<path d="M4 20V8l8-4 8 4v12"/><path d="M4 14l8-4 8 4"/>' },
+    'CryptoDCA': { color: '#F7931A', icon: '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>' },
+    'FIRE':      { color: '#FB923C', icon: '<path d="M8 4h8l-2 8h-4z"/><path d="M10 12v8M14 12v8"/>' }
   };
 
   function render() {
