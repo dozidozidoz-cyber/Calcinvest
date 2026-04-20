@@ -10,7 +10,7 @@
   const TOOL_URLS = {
     'Locatif': '/simulateur-rendement-locatif',
     'DCA': '/simulateur-dca',
-    'Compound': '/calculateur-interets-composes',
+    'Compound': '/simulateur-interets-composes',
     'FIRE': '/calculateur-fire'
   };
 

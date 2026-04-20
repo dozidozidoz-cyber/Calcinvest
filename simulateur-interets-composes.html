@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Simulateur Intérêts Composés — CalcInvest</title>
+<meta name="description" content="Simulateur intérêts composés gratuit. Capital final, intérêts générés, effet boule de neige. Comparez différents taux et visualisez le pouvoir des intérêts composés." />
+<meta name="keywords" content="simulateur intérêts composés, calculateur épargne, effet boule de neige, intérêts composés calcul, placement long terme" />
+<meta property="og:title" content="Simulateur Intérêts Composés — CalcInvest" />
+<meta property="og:description" content="Visualisez le pouvoir des intérêts composés sur votre épargne" />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
+</head>
+<body>
+
+<!-- ==================== TOPBAR ==================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">Intérêts composés</div>
+        <div class="logo-text-sub">Simulateur</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="topbar-center">
+    <div class="segmented" role="tablist">
+      <button class="segmented-btn" onclick="location.href='/simulateur-dca'">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        DCA
+      </button>
+      <button class="segmented-btn active" aria-current="page">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+        Intérêts composés
+      </button>
+      <button class="segmented-btn" onclick="location.href='/simulateur-rendement-locatif'">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>
+        Immobilier
+      </button>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+    <button class="btn-ghost" id="horizon-badge">
+      <span class="dot"></span>
+      <span>Horizon <span id="horizon-years">20</span> ans</span>
+    </button>
+  </div>
+</header>
+
+<!-- ==================== SHELL ==================== -->
+<div class="shell" id="page-compound">
+
+  <!-- ======== SIDEBAR ======== -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#c-params">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h10M3 8h10M3 11h6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Exploration</div>
+          <div class="sidebar-link-title">Paramètres</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+      <a class="sidebar-link" href="#ca-synthese">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 01</div>
+          <div class="sidebar-link-title">Synthèse & résultat</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ca-taux">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l3-5 3 2 3-4 3 2"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 02</div>
+          <div class="sidebar-link-title">Comparaison taux</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ca-objectif">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/><path d="M8 2v2M8 12v2M2 8h2M12 8h2"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 03</div>
+          <div class="sidebar-link-title">Calculateur d'objectif</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ca-early">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v4l3 3M2 8a6 6 0 1 0 6-6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 04</div>
+          <div class="sidebar-link-title">Commencer tôt</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ca-inflation">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 14l4-5 3 2 4-7"/><path d="M12 4h2v2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 05</div>
+          <div class="sidebar-link-title">Impact inflation</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======== MAIN ======== -->
+  <main class="main fade-in">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+        </span>
+        Simulateur · Épargne &amp; placement
+      </div>
+      <h1 class="page-title">Intérêts composés</h1>
+      <p class="page-lede">Visualisez l'effet boule de neige sur votre épargne. Capital initial, versements mensuels, taux de rendement — tout se recalcule en direct.</p>
+    </div>
+
+    <!-- ============= PARAMÈTRES ============= -->
+    <section class="accordion open" id="c-params">
+      <div class="accordion-header">
+        <div class="accordion-icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Paramètres</div>
+          <div class="accordion-summary" id="c-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div class="accordion-body">
+        <div class="accordion-body-inner">
+
+          <!-- Capital & versements -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M2 7h12"/><circle cx="8" cy="10.5" r="1"/></svg>
+              </div>
+              <div class="subsection-title">Capital &amp; versements</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Capital initial</label>
+                <div class="stepper" data-step="1000" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="c-initial" value="10000" />
+                  <span class="stepper-unit">€</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="c-initial">
+                  <button class="pill" data-value="0" type="button">0</button>
+                  <button class="pill" data-value="5000" type="button">5 k</button>
+                  <button class="pill active" data-value="10000" type="button">10 k</button>
+                  <button class="pill" data-value="50000" type="button">50 k</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Versement mensuel</label>
+                <div class="stepper" data-step="50" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="c-monthly" value="200" />
+                  <span class="stepper-unit">€/mois</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="c-monthly">
+                  <button class="pill" data-value="0" type="button">0</button>
+                  <button class="pill" data-value="100" type="button">100</button>
+                  <button class="pill active" data-value="200" type="button">200</button>
+                  <button class="pill" data-value="500" type="button">500</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rendement & durée -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l3-4 3 2 3-5 3 2"/></svg>
+              </div>
+              <div class="subsection-title">Rendement &amp; durée</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Taux de rendement</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="25">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="c-rate" value="7" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="c-rate">
+                  <button class="pill" data-value="3" type="button">3 %</button>
+                  <button class="pill" data-value="5" type="button">5 %</button>
+                  <button class="pill active" data-value="7" type="button">7 %</button>
+                  <button class="pill" data-value="10" type="button">10 %</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Durée de placement</label>
+                <div class="stepper" data-step="1" data-min="1" data-max="50">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="c-years" value="20" />
+                  <span class="stepper-unit">ans</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="c-years">
+                  <button class="pill" data-value="10" type="button">10 ans</button>
+                  <button class="pill active" data-value="20" type="button">20 ans</button>
+                  <button class="pill" data-value="30" type="button">30 ans</button>
+                  <button class="pill" data-value="40" type="button">40 ans</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Options avancées -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="11" r="2"/><path d="M7 5h7M2 11h7"/></svg>
+              </div>
+              <div class="subsection-title">Options avancées</div>
+              <div class="subsection-hint">Inflation &amp; frais de gestion</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Inflation estimée</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="c-inflation" value="2" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Frais annuels (TER)</label>
+                <div class="stepper" data-step="0.05" data-min="0" data-max="3">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="c-fees" value="0.2" step="0.05" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="c-fees">
+                  <button class="pill active" data-value="0.2" type="button">ETF 0.2 %</button>
+                  <button class="pill" data-value="0.5" type="button">0.5 %</button>
+                  <button class="pill" data-value="1.5" type="button">OPCVM 1.5 %</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="btn-row" style="margin-top:22px">
+            <button class="btn btn-primary" onclick="saveCompound()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h8l2 2v8H3z"/><path d="M5 3v4h6V3M5 13v-3h6v3"/></svg>
+              Sauvegarder
+            </button>
+            <button class="btn btn-secondary" onclick="shareCompound()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="12" r="1.5"/><path d="M5.3 7.2l5.4-2.4M5.3 8.8l5.4 2.4"/></svg>
+              Partager
+            </button>
+            <button class="btn btn-secondary" onclick="printCompound()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6V2h8v4M4 12H2V7h12v5h-2M4 10h8v4H4z"/></svg>
+              Imprimer
+            </button>
+            <button class="btn btn-secondary" onclick="resetCompound()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8a5 5 0 1 1 1.5 3.5L3 13"/><path d="M3 13v-3h3"/></svg>
+              Réinitialiser
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A01 · SYNTHÈSE ============= -->
+    <section id="ca-synthese">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+        </span>
+        Analyse 01 · Synthèse &amp; résultat
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Capital final</div>
+          <div class="stat-value pos" id="cs-final">—</div>
+          <div class="stat-sub" id="cs-interest-pct">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total versé</div>
+          <div class="stat-value stat-value-sm text-muted" id="cs-invested">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Intérêts générés</div>
+          <div class="stat-value pos" id="cs-interest">—</div>
+          <div class="stat-sub">Effet boule de neige</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Multiplication</div>
+          <div class="stat-value info" id="cs-mult">—</div>
+          <div class="stat-sub" id="cs-net-rate">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Temps de doublement</div>
+          <div class="stat-value stat-value-sm" id="cs-doubling">—</div>
+          <div class="stat-sub">Règle des 72</div>
+        </div>
+      </div>
+
+      <div class="stat" id="cs-fees-row" style="display:none;max-width:260px;margin-bottom:12px">
+        <div class="stat-label">Coût des frais TER</div>
+        <div class="stat-value neg stat-value-sm" id="cs-fees-cost">—</div>
+        <div class="stat-sub">Capital sacrifié aux frais</div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+            </div>
+            Évolution du capital
+          </div>
+          <div class="card-meta">Capital versé vs valeur totale</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ca1-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#60A5FA"></span>Capital versé</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>Valeur totale (intérêts inclus)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h12v10H2z"/><path d="M2 6h12M6 3v10"/></svg>
+            </div>
+            Tableau annuel
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Année</th>
+                  <th>Valeur totale</th>
+                  <th>Total versé</th>
+                  <th>Intérêts cumulés</th>
+                  <th>Part intérêts</th>
+                  <th>Valeur réelle</th>
+                </tr>
+              </thead>
+              <tbody id="ca1-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A02 · COMPARAISON TAUX ============= -->
+    <section id="ca-taux">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 2 3-4 3 2"/></svg>
+        </span>
+        Analyse 02 · Comparaison des taux
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même capital initial et même versement mensuel, 6 taux différents. Chaque point de rendement annuel fait une différence considérable sur le long terme.</p>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 2 3-4 3 2"/></svg>
+            </div>
+            Capital final selon le taux
+          </div>
+          <div class="card-meta" id="ca2-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ca2-chart"></canvas></div>
+          <div class="chart-legend" style="flex-wrap:wrap;gap:10px">
+            <div><span class="legend-dot" style="background:#60A5FA"></span>2 %</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>4 %</div>
+            <div><span class="legend-dot" style="background:#FBBF24"></span>6 %</div>
+            <div><span class="legend-dot" style="background:#F97316"></span>8 %</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>10 %</div>
+            <div><span class="legend-dot" style="background:#A78BFA"></span>12 %</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px" id="ca2-cards"></div>
+    </section>
+
+    <!-- ============= A03 · CALCULATEUR D'OBJECTIF ============= -->
+    <section id="ca-objectif">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/></svg>
+        </span>
+        Analyse 03 · Calculateur d'objectif
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Calculez combien épargner chaque mois pour atteindre un objectif — ou dans combien de temps vous l'atteindrez avec votre versement actuel.</p>
+
+      <div style="padding:16px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:var(--r);margin-bottom:18px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+        <div class="field">
+          <label class="field-label">Objectif financier</label>
+          <div class="stepper" data-step="10000" data-min="0" style="width:auto">
+            <button class="stepper-btn" data-dir="-1" type="button">−</button>
+            <input class="stepper-input" type="number" id="ca3-goal" value="100000" style="width:80px" />
+            <span class="stepper-unit">€</span>
+            <button class="stepper-btn" data-dir="1" type="button">+</button>
+          </div>
+          <div class="pills" data-target="ca3-goal">
+            <button class="pill" data-value="50000" type="button">50 k</button>
+            <button class="pill active" data-value="100000" type="button">100 k</button>
+            <button class="pill" data-value="250000" type="button">250 k</button>
+            <button class="pill" data-value="500000" type="button">500 k</button>
+            <button class="pill" data-value="1000000" type="button">1 M</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Mode de calcul</label>
+          <select class="select" id="ca3-mode" style="height:42px">
+            <option value="monthly">Combien épargner / mois ?</option>
+            <option value="time">Dans combien de temps ?</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="text-align:center;padding:28px 20px">
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:8px">Résultat</div>
+          <div style="font-size:36px;font-weight:700;color:var(--accent)" id="ca3-result-main">—</div>
+          <div style="font-size:14px;color:var(--text-2);margin-top:6px" id="ca3-result-sub">—</div>
+          <div style="font-size:12px;color:var(--text-4);margin-top:8px" id="ca3-result-extra">—</div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Paramètres utilisés
+        </div>
+        Le calcul utilise le taux et le capital initial définis dans les paramètres principaux ci-dessus.
+        Mode versement mensuel : durée fixée à <span id="ca3-row-years"></span> ans.
+        Mode durée : versement mensuel fixé à <span id="ca3-row-monthly"></span> €/mois.
+      </div>
+    </section>
+
+    <!-- ============= A04 · COMMENCER TÔT ============= -->
+    <section id="ca-early">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v4l3 3M2 8a6 6 0 1 0 6-6"/></svg>
+        </span>
+        Analyse 04 · L'effet de commencer tôt
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même versement mensuel, même taux — mais commencé plus tôt. Le temps est votre allié le plus puissant en matière d'investissement.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Gain avec 10 ans d'avance</div>
+          <div class="stat-value pos" id="ca4-gain10">—</div>
+          <div class="stat-sub">Capital supplémentaire à l'horizon</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Multiplicateur ×10 ans</div>
+          <div class="stat-value info" id="ca4-mult10">—</div>
+          <div class="stat-sub">vs commencer aujourd'hui</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0" id="ca4-cards"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+            </div>
+            Trajectoires selon la date de départ
+          </div>
+          <div class="card-meta">Même horizon futur pour tous</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ca4-chart"></canvas></div>
+          <div class="chart-legend" style="flex-wrap:wrap;gap:10px">
+            <div><span class="legend-dot" style="background:#60A5FA"></span>Maintenant</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>+5 ans d'avance</div>
+            <div><span class="legend-dot" style="background:#FBBF24"></span>+10 ans</div>
+            <div><span class="legend-dot" style="background:#F97316"></span>+15 ans</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>+20 ans d'avance</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A05 · IMPACT INFLATION ============= -->
+    <section id="ca-inflation">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14l4-5 3 2 4-7"/><path d="M12 4h2v2" stroke-linecap="round"/></svg>
+        </span>
+        Analyse 05 · Impact de l'inflation
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Votre capital nominal grossit, mais le pouvoir d'achat réel est érodé par l'inflation. Ce qui compte vraiment, c'est la valeur réelle.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Valeur nominale</div>
+          <div class="stat-value info" id="ca5-nominal">—</div>
+          <div class="stat-sub">Ce que vous lisez sur votre compte</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Valeur réelle</div>
+          <div class="stat-value pos" id="ca5-real">—</div>
+          <div class="stat-sub">Pouvoir d'achat d'aujourd'hui</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Érosion inflation</div>
+          <div class="stat-value neg" id="ca5-erosion">—</div>
+          <div class="stat-sub" id="ca5-inf-rate">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">1 000 € dans <span id="ca5-inf-years">20</span> ans</div>
+          <div class="stat-value warn" id="ca5-ppa">—</div>
+          <div class="stat-sub">Pouvoir d'achat équivalent aujourd'hui</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:14px 0" id="ca5-inf-cards"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg>
+            </div>
+            Valeur réelle vs nominale selon l'inflation
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ca5-chart"></canvas></div>
+          <div class="chart-legend" style="flex-wrap:wrap;gap:10px">
+            <div><span class="legend-dot" style="background:#60A5FA;opacity:.7"></span>Valeur nominale</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>Réelle 0 %</div>
+            <div><span class="legend-dot" style="background:#FBBF24"></span>Réelle (actuel)</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>Réelle 4 %</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Rendement réel vs nominal
+        </div>
+        Pour que votre épargne <strong>conserve</strong> son pouvoir d'achat, le taux de rendement net doit dépasser l'inflation. Avec 7 %/an de rendement et 2 % d'inflation, votre taux réel est d'environ 4,9 % (équation de Fisher : (1+r)/(1+i)−1).
+        Les ETF actions (S&P 500, MSCI World) ont historiquement délivré un rendement réel de 5–7 %/an sur le long terme.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div>© 2026 CalcInvest — Simulation informative</div>
+  <div>
+    <a href="/">Accueil</a> ·
+    <a href="/mes-projets">Mes projets</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/core/calc-compound.js"></script>
+<script src="/assets/js/views/compound.view.js"></script>
+<script>
+  // Sync horizon badge
+  (function(){
+    const years = document.getElementById('c-years');
+    const badge = document.getElementById('horizon-years');
+    if (!years || !badge) return;
+    const update = () => { badge.textContent = years.value; };
+    years.addEventListener('input', update);
+    setTimeout(update, 100);
+  })();
+
+  // Smooth scroll sidebar
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
