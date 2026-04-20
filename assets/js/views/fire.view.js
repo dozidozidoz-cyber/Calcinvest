@@ -259,18 +259,19 @@
   /* ------------------------------------------------------------------ */
   function renderA06(p, r) {
     // Générer des rendements mensuels simulés à partir du rendement annuel et d'une vol réaliste
-    const annualReturn = p.annualReturn / 100;
+    const annualRetPct = p.annualReturn / 100;
     const annualVol    = 0.15; // 15 % vol annuelle S&P 500 long terme
-    const mu           = annualReturn / 12;
-    const sigma        = annualVol / Math.sqrt(12);
+    // Log-normale : mu_ln = log(1+r) - sigma²/2, sigma_ln = sigma/sqrt(12)
+    const mu_ln    = Math.log(1 + annualRetPct) / 12;
+    const sigma_ln = annualVol / Math.sqrt(12);
 
-    // Générer 240 mois de rendements synthétiques (distribution log-normale)
+    // Grand pool de 3600 rendements mensuels synthétiques (log-normale)
     const syntheticMonthly = [];
-    for (let i = 0; i < 240; i++) {
+    for (let i = 0; i < 3600; i++) {
       // Box-Muller pour normale
-      const u1 = Math.random(), u2 = Math.random();
+      const u1 = Math.max(1e-10, Math.random()), u2 = Math.random();
       const z  = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-      syntheticMonthly.push(mu + sigma * z);
+      syntheticMonthly.push(Math.exp(mu_ln + sigma_ln * z) - 1);
     }
 
     const mc = CF.calcMonteCarloFIRE(
