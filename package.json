@@ -1,0 +1,14 @@
+{
+  "name": "calcinvest",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CalcInvest — simulateurs financiers (engine-core).",
+  "scripts": {
+    "test": "node --test --test-reporter=spec tests/engine/*.test.js tests/sim/*.test.js",
+    "test:engine": "node --test --test-reporter=spec tests/engine/*.test.js",
+    "test:sim": "node --test --test-reporter=spec tests/sim/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

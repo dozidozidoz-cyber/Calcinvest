@@ -132,6 +132,10 @@
       }
     }
 
+    // Mettre à jour la couleur de la légende
+    const legendDot = document.getElementById('cr1-legend-dot');
+    if (legendDot) legendDot.style.background = meta.color || '#F7931A';
+
     // Chart
     requestAnimationFrame(() => {
       const labels = r.monthly_data.map((pt) => pt.date);
@@ -448,6 +452,15 @@
           }).join('');
         }
 
+        // Légende A07
+        const legendEl = document.getElementById('cra7-legend');
+        if (legendEl) {
+          legendEl.innerHTML = results.map((c) => {
+            const m = CRYPTOS_META[c.id];
+            return `<div><span class="legend-dot" style="background:${m.color}"></span>${m.symbol}</div>`;
+          }).join('');
+        }
+
         // Chart
         requestAnimationFrame(() => {
           // Trouver la période commune la plus longue
@@ -460,6 +473,7 @@
               const dateMap = {};
               c.result.monthly_data.forEach((pt) => { dateMap[pt.date] = pt.value; });
               return {
+                label: CRYPTOS_META[c.id].symbol,
                 data:  labels.map((d) => dateMap[d] ?? null),
                 color: CRYPTOS_META[c.id].color,
                 width: 2,
