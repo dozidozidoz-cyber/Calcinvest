@@ -170,14 +170,19 @@
   /* renderA04 — Phase de retrait                                          */
   /* ------------------------------------------------------------------ */
   function renderA04(p, r) {
-    const ws = r.withdrawalSimulation;
+    // Horizon dynamique : du jour FIRE jusqu'à 95 ans (espérance de vie raisonnable),
+    // au lieu d'un 50 ans fixe qui peut être trop court ou trop long.
+    const retireHorizon = Math.max(20, Math.round(95 - r.fireAge));
+    const ws = CF.simulateWithdrawal(
+      r.fireTarget, p.annualExpenses, p.annualReturn, p.inflation, retireHorizon
+    );
 
     if (ws.depleted) {
-      set('fia4-status', `⚠ Capital épuisé à l'année ${ws.depletedYear}`);
+      set('fia4-status', `⚠ Capital épuisé à l'année ${ws.depletedYear} (à ${(r.fireAge + ws.depletedYear).toFixed(0)} ans)`);
       const el = $('fia4-status');
       if (el) el.style.color = 'var(--red)';
     } else {
-      set('fia4-status', '✓ Capital non épuisé sur 50 ans de simulation');
+      set('fia4-status', `✓ Capital non épuisé sur ${retireHorizon} ans (jusqu'à ~${(r.fireAge + retireHorizon).toFixed(0)} ans)`);
       const el = $('fia4-status');
       if (el) el.style.color = 'var(--accent)';
     }
@@ -258,29 +263,38 @@
   /* renderA06 — Monte Carlo                                               */
   /* ------------------------------------------------------------------ */
   function renderA06(p, r) {
-    // Générer des rendements mensuels simulés à partir du rendement annuel et d'une vol réaliste
+    // Pool de rendements mensuels synthétiques basé sur le rendement annuel choisi
+    // et 15 % de vol (S&P 500 long terme). Génération seedée pour reproductibilité.
     const annualRetPct = p.annualReturn / 100;
-    const annualVol    = 0.15; // 15 % vol annuelle S&P 500 long terme
-    // Log-normale : mu_ln = log(1+r) - sigma²/2, sigma_ln = sigma/sqrt(12)
+    const annualVol    = 0.15;
     const mu_ln    = Math.log(1 + annualRetPct) / 12;
     const sigma_ln = annualVol / Math.sqrt(12);
 
-    // Grand pool de 3600 rendements mensuels synthétiques (log-normale)
+    const ENGINE = window.ENGINE;
+    const rand = ENGINE.rng.mulberry32(42);
+    const norm = ENGINE.rng.normal(rand);
     const syntheticMonthly = [];
     for (let i = 0; i < 3600; i++) {
-      // Box-Muller pour normale
-      const u1 = Math.max(1e-10, Math.random()), u2 = Math.random();
-      const z  = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-      syntheticMonthly.push(Math.exp(mu_ln + sigma_ln * z) - 1);
+      syntheticMonthly.push(Math.exp(mu_ln + sigma_ln * norm()) - 1);
     }
 
-    const mc = CF.calcMonteCarloFIRE(
-      r.fireTarget,
-      p.annualExpenses,
-      syntheticMonthly,
-      30,
-      1000
-    );
+    // Horizon dynamique : âge actuel → espérance de vie ~95 ans.
+    // Si l'utilisateur n'atteint pas FIRE, fallback 30 ans.
+    const horizon = r.achieved
+      ? Math.max(20, Math.round(95 - r.fireAge))
+      : 30;
+
+    const mc = CF.calcMonteCarloFIRE({
+      capital: r.fireTarget,
+      annualExpenses: p.annualExpenses,
+      monthlyReturns: syntheticMonthly,
+      years: horizon,
+      simulations: 2000,
+      seed: 42,
+      inflation: (p.inflation || 0) / 100,
+      method: 'block-bootstrap',
+      blockLen: 12
+    });
 
     // Stats
     set('fia6-success', mc.successRate.toFixed(1) + ' %');
@@ -288,7 +302,7 @@
     if (succEl) {
       succEl.className = 'stat-value ' + (mc.successRate >= 90 ? 'pos' : mc.successRate >= 70 ? 'warn' : 'neg');
     }
-    set('fia6-runs', mc.runs.toLocaleString('fr-FR'));
+    set('fia6-runs', mc.runs.toLocaleString('fr-FR') + ' · ' + horizon + ' ans');
 
     // Chart percentiles
     const labels = mc.percentiles.map((pt) => 'Année ' + pt.year);
@@ -304,7 +318,7 @@
       const rate = mc.successRate;
       let msg, cls;
       if (rate >= 95) {
-        msg = `Excellent — ${rate.toFixed(0)} % de chances de ne pas épuiser votre capital sur 30 ans. Votre plan est très robuste.`;
+        msg = `Excellent — ${rate.toFixed(0)} % de chances de ne pas épuiser votre capital sur ${horizon} ans. Votre plan est très robuste.`;
         cls = 'info-box info-box-success';
       } else if (rate >= 85) {
         msg = `Bon — ${rate.toFixed(0)} % de réussite. Plan solide, envisagez une légère marge de sécurité supplémentaire.`;
