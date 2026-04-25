@@ -47,7 +47,10 @@
      DATA LOADING
      ============================================================ */
   async function loadManifest() {
-    const res = await fetch('/assets/data/manifest.json');
+    // Cache-bust : manifest.json contrôle la liste des actifs disponibles
+    // (badge SOON / actif). Doit toujours être frais, même si un vieux
+    // service worker (v10-v13) le sert en cache-first.
+    const res = await fetch('/assets/data/manifest.json?v=' + Date.now(), { cache: 'no-store' });
     manifest = await res.json();
   }
   async function loadData(id) {
