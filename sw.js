@@ -1,15 +1,16 @@
 // CalcInvest Service Worker
 // Stratégie :
 //   - HTML + JS applicatif : network-first (toujours à jour)
-//   - Data JSON, CSS, icons  : cache-first (stable, gros fichiers)
+//   - manifest.json (data + PWA) : network-first (source de vérité features)
+//   - Data prix JSON, CSS, icons : cache-first (stable, gros fichiers)
 
-const CACHE_VERSION = 'calcinvest-v13';
+const CACHE_VERSION = 'calcinvest-v14';
 
-// Seuls les assets vraiment stables vont en cache-first
+// Seuls les assets vraiment stables vont en cache-first.
+// manifest.json est volontairement EXCLU : il contrôle quels actifs
+// sont disponibles, donc doit toujours être frais.
 const STATIC_ASSETS = [
   '/assets/css/style.css',
-  '/assets/data/manifest.json',
-  '/manifest.json',
   '/assets/icons/icon-192.svg',
   '/assets/icons/icon-512.svg',
   '/assets/data/sp500.json',
@@ -33,10 +34,12 @@ const STATIC_ASSETS = [
   '/assets/data/sol.json'
 ];
 
-// JS et HTML → toujours network-first
+// JS, HTML, et manifest → toujours network-first
 const NETWORK_FIRST_PATTERNS = [
   /\.html$/,
   /\/assets\/js\//,
+  /\/manifest\.json$/,            // PWA manifest
+  /\/assets\/data\/manifest\.json$/, // catalogue des actifs
   /^\/$/
 ];
 
