@@ -286,6 +286,7 @@ if ('serviceWorker' in navigator) {
               <div class="mode-toggle" id="d-mode">
                 <button data-mode="fixed-duration" class="active">Durée fixe</button>
                 <button data-mode="fixed-exit">Sortie fixe</button>
+                <button data-mode="custom-range">Plage perso</button>
               </div>
               <div style="font-size:12px;color:var(--text-3);font-family:var(--font-mono)" id="d-mode-info">Durée fixe : entrée + horizon définissent la sortie</div>
             </div>
@@ -309,6 +310,11 @@ if ('serviceWorker' in navigator) {
                 <label class="field-label" id="d-date-label">Date d'entrée</label>
                 <input class="select" type="month" id="d-start" />
                 <div style="font-size:11px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)" id="d-date-hint">Sortie : —</div>
+              </div>
+              <div class="field" id="d-end-field" hidden>
+                <label class="field-label">Date de sortie</label>
+                <input class="select" type="month" id="d-end" />
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)" id="d-end-hint">Plage : —</div>
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@
 //   - HTML + JS applicatif : network-first (toujours à jour)
 //   - Data JSON, CSS, icons  : cache-first (stable, gros fichiers)
 
-const CACHE_VERSION = 'calcinvest-v10';
+const CACHE_VERSION = 'calcinvest-v11';
 
 // Seuls les assets vraiment stables vont en cache-first
 const STATIC_ASSETS = [
@@ -22,6 +22,10 @@ const STATIC_ASSETS = [
   '/assets/data/silver.json',
   '/assets/data/oil_brent.json',
   '/assets/data/oil_wti.json',
+  '/assets/data/cw8.json',
+  '/assets/data/cspx.json',
+  '/assets/data/eimi.json',
+  '/assets/data/panx.json',
   '/assets/data/btc.json',
   '/assets/data/eth.json',
   '/assets/data/xrp.json',
