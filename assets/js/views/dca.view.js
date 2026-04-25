@@ -33,7 +33,8 @@
     { id: 'oct2007', icon: '⚠', label: 'Oct 2007', date: '2007-10', dd: '-51 %' },
     { id: 'feb2020', icon: '⚠', label: 'Fév 2020', date: '2020-02', dd: '-19 %' },
     { id: 'jan2022', icon: '⚠', label: 'Janv 2022', date: '2022-01', dd: '-19 %' },
-    { id: 'today', icon: '✓', label: "Aujourd'hui", date: null, dd: null }
+    { id: 'today', icon: '✓', label: "Aujourd'hui", date: null, dd: null },
+    { id: 'custom', icon: '✎', label: 'Personnalisé', date: null, dd: null, custom: true }
   ];
 
   const GROUP_LABELS = {
@@ -157,7 +158,18 @@
 
     if (!currentData) return;
 
-    // Default duration 20 years
+    // "Personnalisé" → bascule en mode custom-range, prend toute la plage dispo
+    if (s.custom) {
+      setMode('custom-range');
+      document.getElementById('d-start').value = currentData.start;
+      document.getElementById('d-end').value = currentData.end;
+      syncDurationFromRange();
+      run();
+      return;
+    }
+
+    // Sinon, mode durée fixe + date d'entrée du scénario
+    setMode('fixed-duration');
     document.getElementById('d-duration').value = 20;
 
     let target;
@@ -171,6 +183,51 @@
     }
     document.getElementById('d-start').value = target;
     run();
+  }
+
+  function setMode(modeId) {
+    document.querySelectorAll('#d-mode button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.mode === modeId);
+    });
+    updateModeInfo();
+    updateModeUI();
+  }
+
+  function updateModeUI() {
+    const mode = getMode();
+    const endField = document.getElementById('d-end-field');
+    const durStepper = document.getElementById('d-duration').closest('.field');
+    if (mode === 'custom-range') {
+      endField.hidden = false;
+      durStepper.style.opacity = '0.55';
+      durStepper.style.pointerEvents = 'none';
+    } else {
+      endField.hidden = true;
+      durStepper.style.opacity = '';
+      durStepper.style.pointerEvents = '';
+    }
+  }
+
+  function syncDurationFromRange() {
+    const s = document.getElementById('d-start').value;
+    const e = document.getElementById('d-end').value;
+    if (!s || !e) return;
+    const months = monthDiff(s, e) + 1;
+    if (months <= 0) return;
+    document.getElementById('d-duration').value = Math.max(1, Math.round(months / 12));
+    updateRangeHint();
+  }
+
+  function updateRangeHint() {
+    const s = document.getElementById('d-start').value;
+    const e = document.getElementById('d-end').value;
+    const hint = document.getElementById('d-end-hint');
+    if (!hint) return;
+    if (!s || !e) { hint.textContent = 'Plage : —'; return; }
+    const months = monthDiff(s, e) + 1;
+    if (months <= 0) { hint.textContent = '⚠ Dates invalides'; return; }
+    const yrs = (months / 12).toFixed(1);
+    hint.textContent = `Plage : ${ymLabel(s)} → ${ymLabel(e)} (${yrs} ans)`;
   }
 
   /* ============================================================
@@ -192,6 +249,9 @@
     if (mode === 'fixed-exit') {
       info.textContent = 'Sortie fixe : horizon + date de sortie = date d\'entrée recalculée';
       label.textContent = 'Date de sortie';
+    } else if (mode === 'custom-range') {
+      info.textContent = 'Plage perso : choisis librement entrée et sortie dans les données dispo';
+      label.textContent = "Date d'entrée";
     } else {
       info.textContent = "Durée fixe : entrée + horizon définissent la sortie";
       label.textContent = "Date d'entrée";
@@ -216,7 +276,18 @@
       i.value = addMonths(currentData.end, -20 * 12);
       if (i.value < currentData.start) i.value = currentData.start;
     }
+    const e = document.getElementById('d-end');
+    if (e) {
+      e.min = currentData.start;
+      e.max = currentData.end;
+      if (!e.value || e.value < currentData.start || e.value > currentData.end) {
+        e.value = currentData.end;
+      }
+    }
+    // Show full data window in start-input hint title for discoverability
+    i.title = `Données disponibles : ${currentData.start} → ${currentData.end}`;
     updateDateHint();
+    updateRangeHint();
   }
 
   function updateDateHint() {
@@ -239,17 +310,22 @@
      ============================================================ */
   function readForm() {
     const mode = getMode();
-    const dur = num(document.getElementById('d-duration').value) || 20;
+    let dur = num(document.getElementById('d-duration').value) || 20;
     let startDate = document.getElementById('d-start').value;
+    let durationMonths = dur * 12;
     if (mode === 'fixed-exit') {
       startDate = addMonths(startDate, -dur * 12 + 1);
       if (startDate < currentData.start) startDate = currentData.start;
+    } else if (mode === 'custom-range') {
+      const endDate = document.getElementById('d-end').value;
+      const months = monthDiff(startDate, endDate) + 1;
+      if (months > 0) durationMonths = months;
     }
     return {
       assetId: currentAsset.id,
       mode,
       startDate,
-      durationMonths: dur * 12,
+      durationMonths,
       monthlyAmount: num(document.getElementById('d-monthly').value),
       initialAmount: num(document.getElementById('d-initial').value),
       deployment: getDeployment(),
@@ -1508,8 +1584,29 @@
         document.querySelectorAll('#d-mode button').forEach((x) => x.classList.remove('active'));
         b.classList.add('active');
         updateModeInfo();
+        updateModeUI();
+        if (b.dataset.mode === 'custom-range') {
+          // Reset range to full data window when entering custom mode
+          if (currentData) {
+            document.getElementById('d-start').value = currentData.start;
+            document.getElementById('d-end').value = currentData.end;
+            syncDurationFromRange();
+          }
+        }
         run();
       });
+    });
+    // End-date input (custom-range only)
+    const endEl = document.getElementById('d-end');
+    if (endEl) {
+      endEl.addEventListener('change', () => {
+        syncDurationFromRange();
+        run();
+      });
+    }
+    // Start-date sync in custom mode
+    document.getElementById('d-start').addEventListener('change', () => {
+      if (getMode() === 'custom-range') syncDurationFromRange();
     });
     document.querySelectorAll('#d-deployment button').forEach((b) => {
       b.addEventListener('click', () => {
@@ -1548,6 +1645,7 @@
     if (da8DurEl) da8DurEl.value = document.getElementById('d-duration').value || '10';
 
     updateModeInfo();
+    updateModeUI();
     updateDeploymentHint();
 
     // Bind inputs → run

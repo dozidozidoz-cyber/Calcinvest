@@ -69,7 +69,7 @@
       "category": "etf",
       "currency": "EUR",
       "pea": true,
-      "available": false,
+      "available": true,
       "color": "#34D399",
       "desc": "ETF monde éligible PEA. Le plus populaire en France pour le DCA mondial.",
       "dataSince": "2009-05"
@@ -81,7 +81,7 @@
       "category": "etf",
       "currency": "USD",
       "pea": false,
-      "available": false,
+      "available": true,
       "color": "#60A5FA",
       "desc": "ETF UCITS S&P 500 capitalisant. Accessible via CTO et assurance-vie.",
       "dataSince": "2010-05"
@@ -93,7 +93,7 @@
       "category": "etf",
       "currency": "USD",
       "pea": false,
-      "available": false,
+      "available": true,
       "color": "#FB923C",
       "desc": "Marchés émergents (Chine, Inde, Brésil...) via ETF UCITS.",
       "dataSince": "2014-06"
@@ -105,7 +105,7 @@
       "category": "etf",
       "currency": "EUR",
       "pea": true,
-      "available": false,
+      "available": true,
       "color": "#818CF8",
       "desc": "NASDAQ 100 éligible PEA. Exposition tech US sans sortir du cadre PEA.",
       "dataSince": "2014-01"
