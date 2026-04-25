@@ -336,6 +336,29 @@
     };
   }
 
+  /**
+   * Slice currentData arrays to the form-selected window.
+   * Toutes les analyses 02..06 doivent travailler sur cette fenêtre,
+   * pas sur toute la série historique.
+   */
+  function getWindow(form) {
+    if (!currentData || !form) return null;
+    const startIdx = Math.max(0, monthDiff(currentData.start, form.startDate));
+    const len = Math.max(2, form.durationMonths || 0);
+    const endIdx = Math.min(currentData.prices.length - 1, startIdx + len - 1);
+    if (endIdx <= startIdx) return null;
+    const slice = (arr) => Array.isArray(arr) ? arr.slice(startIdx, endIdx + 1) : null;
+    return {
+      prices: slice(currentData.prices),
+      dividends: slice(currentData.dividends),
+      cpi: slice(currentData.cpi),
+      pe10: slice(currentData.pe10),
+      start: form.startDate,
+      end: addMonths(form.startDate, endIdx - startIdx),
+      months: endIdx - startIdx + 1
+    };
+  }
+
   function run() {
     if (!currentAsset || !currentData) return;
     const form = readForm();
@@ -419,10 +442,12 @@
     if (!currentData) return;
     const capital = form.initialAmount || 10000;
     const durationYears = Math.round(r.durationYears) || 10;
+    const win = getWindow(form);
+    if (!win) return;
 
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
-    const res = computeLumpVsDCA(currentData.prices, currentData.start, {
+    const res = computeLumpVsDCA(win.prices, win.start, {
       capital,
       durationYears,
       dcaMonths: da3SpreadMonths,
@@ -445,7 +470,7 @@
     set('da3-median', medSign + s.medianDiffPct.toFixed(1) + ' %');
     set('da3-avg', avgSign + s.avgDiffPct.toFixed(1) + ' %');
     set('da3-dur-label', durationYears + ' an' + (durationYears > 1 ? 's' : ''));
-    set('da3-meta', `${currentAsset.name} · capital ${CI.fmtNum(capital, 0)} ${currentAsset.currency}`);
+    set('da3-meta', `${currentAsset.name} · ${win.start} → ${win.end} · capital ${CI.fmtNum(capital, 0)} ${currentAsset.currency}`);
 
     const lumpEl = document.getElementById('da3-lump-pct');
     if (lumpEl) { lumpEl.className = 'stat-value ' + (s.lumpWinsPct >= 50 ? 'pos' : 'neg'); }
@@ -539,7 +564,9 @@
 
   function renderAnalyse02(form, r) {
     if (!currentData) return;
-    const rolling = computeRollingReturns(currentData.prices, currentData.start, HEATMAP_DURATIONS);
+    const win = getWindow(form);
+    if (!win) return;
+    const rolling = computeRollingReturns(win.prices, win.start, HEATMAP_DURATIONS);
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
     // Référence : 10 ans si dispo, sinon plus long avec données
@@ -566,7 +593,9 @@
     set('da2-safe', safeD ? safeD + ' ans' : '> 30 ans');
 
     if (rolling.entryYears.length) {
-      set('da2-meta', `${rolling.entryYears[0]} → ${rolling.entryYears[rolling.entryYears.length - 1]} · ${rolling.entryYears.length} entrées`);
+      set('da2-meta', `${win.start} → ${win.end} · ${rolling.entryYears[0]}–${rolling.entryYears[rolling.entryYears.length - 1]} · ${rolling.entryYears.length} entrées`);
+    } else {
+      set('da2-meta', `${win.start} → ${win.end} · plage trop courte pour des fenêtres glissantes`);
     }
 
     requestAnimationFrame(() => drawHeatmap(rolling));
@@ -667,7 +696,9 @@
 
   // ===== Analyse 04 : Rendements annuels =====
   function renderAnalyse04(form, r) {
-    const stats = computeAssetStats(currentData.prices, currentData.start);
+    const win = getWindow(form);
+    if (!win) return;
+    const stats = computeAssetStats(win.prices, win.start);
     const s = stats.stats;
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
@@ -685,7 +716,9 @@
     set('da4-pos-sub', `${s.positive} sur ${s.total}`);
 
     if (stats.calYears.length) {
-      set('da4-years-range', `${stats.calYears[0].year} → ${stats.calYears[stats.calYears.length - 1].year} · ${stats.calYears.length} ans`);
+      set('da4-years-range', `${stats.calYears[0].year} → ${stats.calYears[stats.calYears.length - 1].year} · ${stats.calYears.length} ans · plage ${win.start} → ${win.end}`);
+    } else {
+      set('da4-years-range', `${win.start} → ${win.end} · plage trop courte`);
     }
 
     // Render histogram as bars (custom)
@@ -751,12 +784,14 @@
 
   // ===== Analyse 05 : Drawdown =====
   function renderAnalyse05(form, r) {
-    const stats = computeAssetStats(currentData.prices, currentData.start);
+    const win = getWindow(form);
+    if (!win) return;
+    const stats = computeAssetStats(win.prices, win.start);
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
     set('da5-maxdd', '-' + stats.drawdown.maxPct.toFixed(1) + ' %');
     const ddIdx = stats.drawdown.atIdx;
-    set('da5-maxdd-date', `en ${ymLabel(addMonths(currentData.start, ddIdx))}`);
+    set('da5-maxdd-date', `en ${ymLabel(addMonths(win.start, ddIdx))} · plage ${win.start} → ${win.end}`);
 
     set('da5-simdd', '-' + r.maxDrawdownPct.toFixed(1) + ' %');
     if (r.recoveryMonths != null) {
@@ -767,8 +802,8 @@
       set('da5-simdd-recovery', 'Pas encore récupéré');
     }
 
-    // Compute drawdown series on full history
-    const prices = currentData.prices;
+    // Compute drawdown series on the windowed prices
+    const prices = win.prices;
     let peak = prices[0];
     const dd = prices.map((p) => { if (p > peak) peak = p; return -(peak - p) / peak * 100; });
 
@@ -778,7 +813,7 @@
     const sampled = [], labels = [];
     for (let i = 0; i < dd.length; i += stride) {
       sampled.push(dd[i]);
-      labels.push(addMonths(currentData.start, i).slice(0, 4));
+      labels.push(addMonths(win.start, i).slice(0, 4));
     }
 
     requestAnimationFrame(() => drawUnderwaterChart(sampled, labels));
@@ -856,11 +891,13 @@
   // ===== Analyse 06 : Volatilité & CAPE =====
   function renderAnalyse06(form, r) {
     if (!currentData) return;
-    const hasCAPE = !!(currentData.pe10 && currentData.pe10.length);
+    const win = getWindow(form);
+    if (!win) return;
+    const hasCAPE = !!(win.pe10 && win.pe10.length);
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
 
-    const vc = computeVolatilityCAPE(currentData.prices, currentData.start, hasCAPE ? currentData.pe10 : null);
+    const vc = computeVolatilityCAPE(win.prices, win.start, hasCAPE ? win.pe10 : null);
 
     // Note CAPE
     const note = document.getElementById('da6-cape-note');
@@ -880,7 +917,7 @@
     set('da6-vol-signal-sub', ((volRatio - 1) * 100).toFixed(0) + ' % vs moyenne');
     cls('da6-vol-signal', volCls);
     cls('da6-vol-current', volCls);
-    set('da6-vol-meta', currentAsset.name + ' · fenêtre 12 mois');
+    set('da6-vol-meta', currentAsset.name + ' · plage ' + win.start + ' → ' + win.end + ' · fenêtre 12 mois');
 
     // CAPE stats
     if (hasCAPE && s.currentCAPE != null && s.capeAvg != null) {

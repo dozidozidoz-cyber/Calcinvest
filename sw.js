@@ -3,7 +3,7 @@
 //   - HTML + JS applicatif : network-first (toujours à jour)
 //   - Data JSON, CSS, icons  : cache-first (stable, gros fichiers)
 
-const CACHE_VERSION = 'calcinvest-v11';
+const CACHE_VERSION = 'calcinvest-v12';
 
 // Seuls les assets vraiment stables vont en cache-first
 const STATIC_ASSETS = [
