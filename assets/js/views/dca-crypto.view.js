@@ -7,6 +7,9 @@
   'use strict';
 
   const CC = window.CalcDCACrypto;
+  // CalcDCA loaded from /assets/js/core/calc-dca.js — used here only for
+  // computeValueAveraging dans la 2e tab "Stratégies de déploiement".
+  const VAfn = (window.CalcDCA && window.CalcDCA.computeValueAveraging) || null;
 
   /* ------------------------------------------------------------------ */
   /* Catalogue des cryptos                                                 */
@@ -21,6 +24,8 @@
 
   /* Cache des données JSON chargées */
   const DATA_CACHE = {};
+  /* Last successful render — pour ré-afficher onglet VA quand on clique */
+  let lastRender = null;
 
   /* ------------------------------------------------------------------ */
   /* Chargement données JSON                                               */
@@ -300,6 +305,71 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* A04 (tab VA) — DCA classique vs Value Averaging                      */
+  /* ------------------------------------------------------------------ */
+  function renderA04VA(p, r, data) {
+    if (!VAfn) {
+      console.warn('[CalcInvest] computeValueAveraging not loaded (calc-dca.js missing).');
+      return;
+    }
+    if (!r) return;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+
+    // Window in months between start and end
+    const [sy, sm] = p.startDate.split('-').map(Number);
+    const [ey, em] = (p.endDate || data.end).split('-').map(Number);
+    const months = (ey - sy) * 12 + (em - sm) + 1;
+
+    const va = VAfn(data.prices, null /* no dividends on crypto */, data.start, {
+      startDate: p.startDate,
+      durationMonths: months,
+      monthlyAmount: p.monthlyAmount,
+      initialAmount: p.initialAmount || 0,
+      feesPct: p.feesPct,
+      dividendsReinvested: false
+    });
+    if (!va) return;
+
+    // DCA-equivalent values from r (CalcDCACrypto)
+    const dcaFinal = r.finalValue;
+    const dcaInv   = r.finalInvested;
+    const delta    = va.finalValue - dcaFinal;
+    const invDelta = va.totalInvested - dcaInv;
+
+    set('cr4v-dca-final', CI.fmtCompact(dcaFinal) + ' €');
+    set('cr4v-dca-tri', 'TRI : ' + (r.cagr != null ? r.cagr.toFixed(1) + ' %' : '—'));
+    set('cr4v-va-final', CI.fmtCompact(va.finalValue) + ' €');
+    set('cr4v-va-tri', 'TRI : ' + (va.annualReturn != null ? va.annualReturn.toFixed(1) + ' %' : '—'));
+    set('cr4v-va-inv', CI.fmtCompact(va.totalInvested) + ' €');
+    set('cr4v-va-inv-sub', (invDelta >= 0 ? '+' : '') + CI.fmtNum(invDelta, 0) + ' € vs DCA');
+    set('cr4v-delta', (Math.abs(delta) > 0 ? CI.fmtCompact(Math.abs(delta)) : '0') + ' €');
+    set('cr4v-delta-sub', (delta >= 0 ? 'VA surperforme' : 'DCA surperforme') + ' de ' + CI.fmtNum(Math.abs(delta), 0) + ' €');
+    cls('cr4v-va-final', delta >= 0 ? 'pos' : '');
+    cls('cr4v-delta', delta >= 0 ? 'pos' : 'neg');
+    set('cr4v-meta', (CRYPTOS_META[p.cryptoId] || {name: p.cryptoId}).name + ' · ' + p.startDate + ' → ' + (p.endDate || data.end));
+
+    requestAnimationFrame(() => {
+      // Build aligned series. r.monthly_data has full DCA portfolio per month.
+      const dcaPts = r.monthly_data || [];
+      const vaSeries = va.series || { portfolio: [], invested: [] };
+      const n = Math.min(dcaPts.length, vaSeries.portfolio.length);
+      if (n < 2) return;
+      const stride = Math.max(1, Math.ceil(n / 300));
+      const idxs = [];
+      for (let i = 0; i < n; i += stride) idxs.push(i);
+      if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
+      const labels = idxs.map((i) => dcaPts[i].date);
+      CI.drawChart('cr4v-chart', labels, [
+        { data: idxs.map((i) => dcaPts[i].invested), color: '#FBBF24', width: 1.2, dash: [4, 3] },
+        { data: idxs.map((i) => vaSeries.invested[i]), color: 'rgba(251,191,36,0.4)', width: 1.2, dash: [4, 3] },
+        { data: idxs.map((i) => vaSeries.portfolio[i]), color: '#A78BFA', width: 2 },
+        { data: idxs.map((i) => dcaPts[i].value), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 }
+      ], { yFormat: (v) => CI.fmtCompact(v) });
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* A05 — Volatilité & risque                                             */
   /* ------------------------------------------------------------------ */
   function renderA05(p, data) {
@@ -525,6 +595,9 @@
         renderA02(p, data);
         renderA03(p, r);
         renderA04(p, data);
+        renderA04VA(p, r, data);
+        // Cache last call so tab clicks can re-render
+        lastRender = { p: p, r: r, data: data };
         renderA05(p, data);
         renderA06(p, data);
         renderA07(p);
@@ -560,6 +633,23 @@
     document.querySelectorAll('#cr-params input, #cr-params select').forEach((el) => {
       el.addEventListener('change', run);
       el.addEventListener('input',  run);
+    });
+
+    // Strategy tabs (Lump vs DCA / DCA vs VA)
+    document.querySelectorAll('#cr4-tabs .tab-btn').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#cr4-tabs .tab-btn').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        const target = b.dataset.stratTab;
+        document.querySelectorAll('#cra-lumpvsdca [data-strat-pane]').forEach((p) => {
+          p.hidden = (p.dataset.stratPane !== target);
+        });
+        // Re-render to size canvas correctly after pane becomes visible
+        if (lastRender) {
+          if (target === 'va') renderA04VA(lastRender.p, lastRender.r, lastRender.data);
+          else renderA04(lastRender.p, lastRender.data);
+        }
+      });
     });
 
     // Changer de crypto : reset les dates
