@@ -170,7 +170,7 @@ if ('serviceWorker' in navigator) {
         <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13h3v-8h3v6h3v-10h3v12"/></svg></div>
         <div class="sidebar-link-text">
           <div class="sidebar-link-label">Analyse 03</div>
-          <div class="sidebar-link-title">Lump vs DCA</div>
+          <div class="sidebar-link-title">Stratégies de déploiement</div>
         </div>
       </a>
       <a class="sidebar-link" href="#a4">
@@ -220,13 +220,6 @@ if ('serviceWorker' in navigator) {
         <div class="sidebar-link-text">
           <div class="sidebar-link-label">Analyse 10</div>
           <div class="sidebar-link-title">Phase décaissement</div>
-        </div>
-      </a>
-      <a class="sidebar-link" href="#a11">
-        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l4-6 2 3 2-5 4 4"/><circle cx="4" cy="11" r="1" fill="currentColor"/><circle cx="10" cy="8" r="1" fill="currentColor"/></svg></div>
-        <div class="sidebar-link-text">
-          <div class="sidebar-link-label">Analyse 11</div>
-          <div class="sidebar-link-title">Value Averaging</div>
         </div>
       </a>
     </div>
@@ -541,12 +534,21 @@ if ('serviceWorker' in navigator) {
       </div>
     </section>
 
-    <!-- ANALYSE 03 : Lump vs DCA -->
+    <!-- ANALYSE 03 : Stratégies de déploiement (Lump vs DCA + DCA vs VA) -->
     <section id="a3">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13h3v-8h3v6h3v-10h3v12"/></svg></span>
-        Analyse 03 · Lump sum vs DCA étalé
+        Analyse 03 · Stratégies de déploiement
       </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Trois façons de déployer un capital sur la période choisie. Compare-les côte à côte pour voir laquelle aurait dominé.</p>
+
+      <div class="tabs" id="da3-tabs" role="tablist" style="margin-bottom:18px">
+        <button class="tab-btn active" data-strat-tab="lump" type="button">Lump sum vs DCA</button>
+        <button class="tab-btn" data-strat-tab="va" type="button">DCA vs Value Averaging</button>
+      </div>
+
+      <!-- ===== Tab 1 : Lump sum vs DCA étalé ===== -->
+      <div data-strat-pane="lump">
       <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même capital, deux stratégies : tout investir d'un coup vs l'étaler sur plusieurs mois. Testé sur <strong id="da3-periods">—</strong> périodes historiques. Résultat : <strong id="da3-verdict" style="color:var(--accent)">—</strong></p>
 
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px">
@@ -607,6 +609,62 @@ if ('serviceWorker' in navigator) {
         </div>
         Les marchés montent structurellement sur le long terme. Rester en cash pendant l'étalement a un coût d'opportunité. Le DCA étalé est utile psychologiquement — il réduit le risque d'entrer exactement au plus haut — mais statistiquement sous-optimal. Il gagne surtout en période de baisse prolongée post-entrée.
       </div>
+      </div><!-- /pane lump -->
+
+      <!-- ===== Tab 2 : DCA vs Value Averaging ===== -->
+      <div data-strat-pane="va" hidden>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">DCA : versement fixe. Value averaging : on verse plus quand le portefeuille est en retard sur la cible, moins (voire rien) quand il est en avance. Même actif, même période.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">DCA classique — valeur finale</div>
+          <div class="stat-value pos" id="da11-dca-final">—</div>
+          <div class="stat-sub" id="da11-dca-tri">TRI : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Value Averaging — valeur finale</div>
+          <div class="stat-value" id="da11-va-final">—</div>
+          <div class="stat-sub" id="da11-va-tri">TRI : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Capital versé — VA</div>
+          <div class="stat-value info" id="da11-va-inv">—</div>
+          <div class="stat-sub" id="da11-va-inv-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avantage VA vs DCA</div>
+          <div class="stat-value" id="da11-delta">—</div>
+          <div class="stat-sub" id="da11-delta-sub">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+            DCA classique vs Value Averaging — évolution du portefeuille
+          </div>
+          <div class="card-meta" id="da11-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:280px"><canvas id="da11-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>DCA classique</div>
+            <div><span class="legend-dot" style="background:#A78BFA"></span>Value Averaging</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.7"></span>Capital investi (DCA)</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.35"></span>Capital investi (VA)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Value Averaging — mécanisme et limites
+        </div>
+        Chaque mois, le VA vise une valeur cible croissante (capital initial + mois × versement cible). Si le portefeuille est en dessous : on investit la différence — parfois bien plus que le DCA. Si au-dessus : on n'investit rien. Coût moyen pondéré généralement meilleur, mais capital requis variable et imprévisible. Déconseillé sans réserve de cash suffisante.
+      </div>
+      </div><!-- /pane va -->
     </section>
 
     <!-- ANALYSE 04 : Rendements annuels -->
@@ -1056,64 +1114,6 @@ if ('serviceWorker' in navigator) {
       </div>
     </section>
 
-    <!-- ANALYSE 11 : Value Averaging vs DCA -->
-    <section id="a11">
-      <div class="page-eyebrow" style="margin-top:32px">
-        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 3 3-6 3 4"/><path d="M5 8l-1.5 2m8-5 1.5-2" opacity=".5"/></svg></span>
-        Analyse 11 · Value Averaging vs DCA classique
-      </div>
-      <p class="text-muted" style="font-size:13px;margin-bottom:14px">DCA : versement fixe. Value averaging : on verse plus quand le portefeuille est en retard sur la cible, moins (voire rien) quand il est en avance. Même actif, même période.</p>
-
-      <div class="stats-row">
-        <div class="stat">
-          <div class="stat-label">DCA classique — valeur finale</div>
-          <div class="stat-value pos" id="da11-dca-final">—</div>
-          <div class="stat-sub" id="da11-dca-tri">TRI : —</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Value Averaging — valeur finale</div>
-          <div class="stat-value" id="da11-va-final">—</div>
-          <div class="stat-sub" id="da11-va-tri">TRI : —</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Capital versé — VA</div>
-          <div class="stat-value info" id="da11-va-inv">—</div>
-          <div class="stat-sub" id="da11-va-inv-sub">—</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Avantage VA vs DCA</div>
-          <div class="stat-value" id="da11-delta">—</div>
-          <div class="stat-sub" id="da11-delta-sub">—</div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <div class="card-header">
-          <div class="card-title">
-            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
-            DCA classique vs Value Averaging — évolution du portefeuille
-          </div>
-          <div class="card-meta" id="da11-meta">—</div>
-        </div>
-        <div class="card-body no-pad">
-          <div class="chart-wrap" style="height:280px"><canvas id="da11-chart"></canvas></div>
-          <div class="chart-legend">
-            <div><span class="legend-dot" style="background:#34D399"></span>DCA classique</div>
-            <div><span class="legend-dot" style="background:#A78BFA"></span>Value Averaging</div>
-            <div><span class="legend-dot" style="background:#FBBF24;opacity:.7"></span>Capital investi (DCA)</div>
-            <div><span class="legend-dot" style="background:#FBBF24;opacity:.35"></span>Capital investi (VA)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="info-box" style="margin-top:14px">
-        <div class="info-box-title">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
-          Value Averaging — mécanisme et limites
-        </div>
-        Chaque mois, le VA vise une valeur cible croissante (capital initial + mois × versement cible). Si le portefeuille est en dessous : on investit la différence — parfois bien plus que le DCA. Si au-dessus : on n'investit rien. Coût moyen pondéré généralement meilleur, mais capital requis variable et imprévisible. Déconseillé sans réserve de cash suffisante.
-      </div>
-    </section>
 
     <div class="info-box warn" style="margin-top:32px">
       <div class="info-box-title">

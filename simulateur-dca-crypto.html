@@ -125,7 +125,7 @@ if ('serviceWorker' in navigator) {
         </div>
         <div class="sidebar-link-text">
           <div class="sidebar-link-label">Analyse 04</div>
-          <div class="sidebar-link-title">Lump Sum vs DCA</div>
+          <div class="sidebar-link-title">Stratégies de déploiement</div>
         </div>
       </a>
 
@@ -558,14 +558,23 @@ if ('serviceWorker' in navigator) {
     </section>
 
 
-    <!-- ============= A04 · LUMP SUM VS DCA ============= -->
+    <!-- ============= A04 · STRATÉGIES DE DÉPLOIEMENT ============= -->
     <section id="cra-lumpvsdca">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg>
         </span>
-        Analyse 04 · Lump Sum vs DCA
+        Analyse 04 · Stratégies de déploiement
       </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Trois façons de déployer un capital sur la période choisie. Sur les marchés volatils comme la crypto, l'écart entre stratégies peut être énorme.</p>
+
+      <div class="tabs" id="cr4-tabs" role="tablist" style="margin-bottom:18px">
+        <button class="tab-btn active" data-strat-tab="lump" type="button">Lump Sum vs DCA</button>
+        <button class="tab-btn" data-strat-tab="va" type="button">DCA vs Value Averaging</button>
+      </div>
+
+      <!-- ===== Tab 1 : Lump Sum vs DCA ===== -->
+      <div data-strat-pane="lump">
       <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même montant total, deux stratégies : tout investir dès le départ vs étaler chaque mois. Sur les marchés haussiers, le Lump Sum gagne. Sur les marchés volatils crypto, le DCA réduit le risque de mauvais timing.</p>
 
       <div class="stats-row">
@@ -607,6 +616,62 @@ if ('serviceWorker' in navigator) {
           </div>
         </div>
       </div>
+      </div><!-- /pane lump -->
+
+      <!-- ===== Tab 2 : DCA vs Value Averaging ===== -->
+      <div data-strat-pane="va" hidden>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">DCA : versement mensuel fixe. Value Averaging : on vise une valeur cible croissante chaque mois — on verse plus quand le marché baisse, moins (voire rien) quand il monte. Avec la volatilité crypto, le VA peut creuser un avantage important, mais demande une réserve de cash variable.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">DCA classique — valeur finale</div>
+          <div class="stat-value pos" id="cr4v-dca-final">—</div>
+          <div class="stat-sub" id="cr4v-dca-tri">TRI : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Value Averaging — valeur finale</div>
+          <div class="stat-value" id="cr4v-va-final">—</div>
+          <div class="stat-sub" id="cr4v-va-tri">TRI : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Capital versé — VA</div>
+          <div class="stat-value info" id="cr4v-va-inv">—</div>
+          <div class="stat-sub" id="cr4v-va-inv-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avantage VA vs DCA</div>
+          <div class="stat-value" id="cr4v-delta">—</div>
+          <div class="stat-sub" id="cr4v-delta-sub">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+            DCA classique vs Value Averaging — évolution du portefeuille
+          </div>
+          <div class="card-meta" id="cr4v-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap" style="height:280px"><canvas id="cr4v-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#34D399"></span>DCA classique</div>
+            <div><span class="legend-dot" style="background:#A78BFA"></span>Value Averaging</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.7"></span>Capital investi (DCA)</div>
+            <div><span class="legend-dot" style="background:#FBBF24;opacity:.35"></span>Capital investi (VA)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Value Averaging sur crypto — à manier avec précaution
+        </div>
+        Le VA shine sur les actifs très volatils : il force à acheter mécaniquement plus en bas. Mais lors d'un krach prolongé (-80 % comme en 2018 ou 2022), les versements requis peuvent exploser au-delà de ta réserve cash. À utiliser avec une enveloppe de sécurité dédiée et un cap mensuel max.
+      </div>
+      </div><!-- /pane va -->
     </section>
 
 
@@ -769,6 +834,7 @@ if ('serviceWorker' in navigator) {
 <script src="/assets/js/common.js"></script>
 <script src="/assets/js/core/engine.bundle.js"></script>
 <script src="/assets/js/core/calc-dca-crypto.js"></script>
+<script src="/assets/js/core/calc-dca.js"></script><!-- pour computeValueAveraging (Stratégies VA) -->
 <script src="/assets/js/views/dca-crypto.view.js"></script>
 
 <script>

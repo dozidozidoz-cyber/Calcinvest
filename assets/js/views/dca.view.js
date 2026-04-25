@@ -1615,6 +1615,23 @@
       });
     });
 
+    // Strategy tabs (Lump vs DCA / DCA vs VA) inside Analyse 03
+    document.querySelectorAll('#da3-tabs .tab-btn').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#da3-tabs .tab-btn').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        const target = b.dataset.stratTab;
+        document.querySelectorAll('[data-strat-pane]').forEach((p) => {
+          p.hidden = (p.dataset.stratPane !== target);
+        });
+        // Re-render the now-visible pane (canvas needs a layout to size correctly)
+        if (lastResult && lastParams) {
+          if (target === 'va') renderAnalyse11(lastParams, lastResult);
+          else renderAnalyse03(lastParams, lastResult);
+        }
+      });
+    });
+
     // Mode toggle
     document.querySelectorAll('#d-mode button').forEach((b) => {
       b.addEventListener('click', () => {
