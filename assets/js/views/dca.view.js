@@ -555,10 +555,11 @@
   }
 
   function cagrColor(cagr) {
-    if (cagr === null || !isFinite(cagr)) return '#0D1620';
+    if (cagr === null || !isFinite(cagr)) return '#F1F4F8';
     const t = Math.max(-1, Math.min(1, cagr / 15));
-    if (t < 0) return lerpRGB([30, 41, 59], [127, 29, 29], -t);
-    return lerpRGB([30, 41, 59], [6, 95, 70], t);
+    // Fond clair : on part d'un blanc cassé et on lerp vers la couleur signal
+    if (t < 0) return lerpRGB([254, 242, 242], [220, 38, 38], -t);   // red-50 → red-600
+    return lerpRGB([236, 253, 245], [4, 120, 87], t);                 // emerald-50 → emerald-700
   }
 
   function renderAnalyse02(form, r) {
@@ -619,7 +620,7 @@
 
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
-    ctx.fillStyle = '#0D1620';
+    ctx.fillStyle = '#FAFBFC';
     ctx.fillRect(0, 0, W, H);
 
     const years = rolling.entryYears;
@@ -636,7 +637,7 @@
         ctx.fillRect(cx, cy, Math.max(1, cellW - (cellW > 3 ? 0.5 : 0)), cellH - 1);
 
         if (cellW >= 30 && cagr !== null) {
-          ctx.fillStyle = 'rgba(255,255,255,0.82)';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
           ctx.font = `bold ${Math.min(10, Math.floor(cellW * 0.32))}px "JetBrains Mono", monospace`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
@@ -644,7 +645,7 @@
         }
       });
 
-      ctx.fillStyle = '#6B7684';
+      ctx.fillStyle = '#94A3B8';
       ctx.font = '10px "JetBrains Mono", monospace';
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
@@ -653,7 +654,7 @@
 
     // X labels
     const labelStep = Math.max(1, Math.ceil(numYears / 14));
-    ctx.fillStyle = '#6B7684';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '10px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -749,8 +750,8 @@
     const zeroY = yAt(0);
 
     // Grid & labels
-    ctx.strokeStyle = 'rgba(36, 46, 59, 0.6)';
-    ctx.fillStyle = '#6B7684';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '10px "JetBrains Mono", monospace';
     ctx.lineWidth = 1;
     const yTicks = [min, min / 2, 0, max / 2, max];
@@ -772,7 +773,7 @@
     });
 
     // X labels (sparse)
-    ctx.fillStyle = '#6B7684';
+    ctx.fillStyle = '#94A3B8';
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     const tickStep = Math.max(1, Math.ceil(calYears.length / 10));
     for (let i = 0; i < calYears.length; i += tickStep) {
@@ -844,8 +845,8 @@
     const xAt = (i) => padL + (sampled.length <= 1 ? w / 2 : (i / (sampled.length - 1)) * w);
 
     // Grid
-    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
     const nTicks = 5;
     for (let t = 0; t <= nTicks; t++) {
       const v = yMin + (yMax - yMin) * (t / nTicks);
@@ -857,7 +858,7 @@
 
     // Zero line
     const zeroY = yAt(0);
-    ctx.strokeStyle = 'rgba(107,118,132,0.5)'; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.18)'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(padL, zeroY); ctx.lineTo(W - padR, zeroY); ctx.stroke();
 
     // Fill area under zero
@@ -880,7 +881,7 @@
 
     // X labels
     const tickStep = Math.max(1, Math.ceil(labels.length / 10));
-    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     ctx.font = '10px "JetBrains Mono", monospace';
     for (let i = 0; i < labels.length; i += tickStep) {
       ctx.fillText(String(labels[i]), xAt(i), padT + h + 5);
@@ -1014,8 +1015,8 @@
     const yAt = (v) => padT + h - ((v - yMin) / (yMax - yMin)) * h;
 
     // Grid
-    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
     for (let t = 0; t <= 5; t++) {
       const v = yMin + (yMax - yMin) * (t / 5);
       const y = yAt(v);
@@ -1026,7 +1027,7 @@
 
     // X labels
     const tickStep = Math.max(1, Math.ceil(n / 10));
-    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     for (let i = 0; i < n; i += tickStep) ctx.fillText(String(labels[i]), xAt(i), padT + h + 5);
 
     // Draw each series
@@ -1134,8 +1135,8 @@
     const yAt = (v) => padT + h - ((v - minV) / (maxV - minV)) * h;
 
     // Grid
-    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
     const yTicks = 5;
     for (let t = 0; t <= yTicks; t++) {
       const v = minV + (maxV - minV) * (t / yTicks);
@@ -1180,7 +1181,7 @@
     drawLine(allInv, '#FBBF24', 1.8, [5, 4]);
 
     // X labels (années)
-    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     ctx.font = '10px "JetBrains Mono", monospace';
     allYears.forEach((yr, i) => {
       if (yr % 5 === 0) {
@@ -1434,8 +1435,8 @@
     const yAt = (v) => padT + h - ((v - minV) / (maxV - minV)) * h;
 
     // Grid
-    ctx.strokeStyle = 'rgba(36,46,59,0.7)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#6B7684'; ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
     for (let t = 0; t <= 5; t++) {
       const v = minV + (maxV - minV) * (t / 5);
       const y = yAt(v);

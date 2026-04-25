@@ -1,62 +1,63 @@
 /* ============================================================
    CalcInvest — Design System
-   Inspired by modern fintech dashboards (dark, mint accent)
+   Light premium · épuré · accent emerald
+   Inspiration : Linear / Vercel / Stripe dashboards
    ============================================================ */
 
 /* ---------- Tokens ---------- */
 :root {
-  /* Backgrounds (nuance vert-bleu sombre, pas pur noir) */
-  --bg:          #0A0F14;
-  --bg-2:        #0F1519;
-  --bg-3:        #151C23;
-  --bg-card:     #111820;
-  --bg-elev:     #1A2128;
-  --bg-hover:    #1E262F;
+  /* Backgrounds — palette cool gray nuancée, jamais pur blanc */
+  --bg:          #FAFBFC;   /* canvas principal */
+  --bg-2:        #F5F7FA;   /* sidebar / topbar bg */
+  --bg-3:        #EEF1F5;   /* sub-panels */
+  --bg-card:     #FFFFFF;   /* cartes (surface élevée) */
+  --bg-elev:     #FFFFFF;
+  --bg-hover:    #F1F4F8;
 
-  /* Borders */
-  --border:      #1C2430;
-  --border-soft: #242E3B;
-  --border-strong: #2F3A47;
+  /* Borders — hairlines fines */
+  --border:        #E5E9EE;
+  --border-soft:   #ECEFF3;
+  --border-strong: #D5DBE2;
 
-  /* Text */
-  --text:        #E7ECEF;
-  --text-2:      #9AA3AE;
-  --text-3:      #6B7684;
-  --text-4:      #4A5361;
+  /* Text — hiérarchie nette */
+  --text:        #0F172A;   /* slate-900, presque noir */
+  --text-2:      #475569;   /* slate-600 */
+  --text-3:      #64748B;   /* slate-500 */
+  --text-4:      #94A3B8;   /* slate-400 */
 
-  /* Accent mint (principal) */
-  --accent:      #34D399;
-  --accent-2:    #2EC28A;
-  --accent-soft: rgba(52, 211, 153, 0.10);
-  --accent-mid:  rgba(52, 211, 153, 0.18);
-  --accent-glow: rgba(52, 211, 153, 0.35);
+  /* Accent emerald (principal) — adapté pour fond clair */
+  --accent:      #059669;   /* emerald-600, contraste WCAG AA sur blanc */
+  --accent-2:    #047857;   /* emerald-700 (hover) */
+  --accent-soft: rgba(5, 150, 105, 0.08);
+  --accent-mid:  rgba(5, 150, 105, 0.16);
+  --accent-glow: rgba(5, 150, 105, 0.25);
 
-  /* Signals */
-  --red:         #F87171;
-  --red-soft:    rgba(248, 113, 113, 0.10);
-  --yellow:      #FBBF24;
-  --yellow-soft: rgba(251, 191, 36, 0.10);
-  --purple:      #A78BFA;
-  --purple-soft: rgba(167, 139, 250, 0.10);
-  --blue:        #60A5FA;
-  --blue-soft:   rgba(96, 165, 250, 0.10);
-  --orange:      #FB923C;
+  /* Signals — versions adaptées au fond clair */
+  --red:         #DC2626;
+  --red-soft:    rgba(220, 38, 38, 0.08);
+  --yellow:      #D97706;
+  --yellow-soft: rgba(217, 119, 6, 0.08);
+  --purple:      #7C3AED;
+  --purple-soft: rgba(124, 58, 237, 0.08);
+  --blue:        #2563EB;
+  --blue-soft:   rgba(37, 99, 235, 0.08);
+  --orange:      #EA580C;
 
   /* Typography */
   --font-sans:   'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono:   'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
-  /* Radius */
+  /* Radius — généreux, premium */
   --r-sm:        6px;
   --r:           10px;
   --r-lg:        14px;
   --r-xl:        20px;
   --r-full:      999px;
 
-  /* Shadows */
-  --shadow-sm:   0 1px 2px rgba(0,0,0,0.2);
-  --shadow:      0 4px 12px rgba(0,0,0,0.3);
-  --shadow-lg:   0 20px 40px rgba(0,0,0,0.4);
+  /* Shadows — subtiles, layered (style Linear / Stripe) */
+  --shadow-sm:   0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
+  --shadow:      0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-lg:   0 4px 12px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.08);
 
   /* Transitions */
   --t-fast:      120ms ease;
@@ -78,11 +79,13 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-h1, h2, h3, h4, h5, h6 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+h1, h2, h3, h4, h5, h6 { margin: 0; font-weight: 600; letter-spacing: -0.022em; }
+h1 { letter-spacing: -0.03em; }
 p { margin: 0; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
@@ -102,9 +105,9 @@ table { border-collapse: collapse; width: 100%; }
   top: 0;
   z-index: 50;
   height: var(--topbar-h);
-  background: rgba(10, 15, 20, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -573,9 +576,14 @@ table { border-collapse: collapse; width: 100%; }
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 16px 18px;
-  transition: var(--t-fast);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
 }
-.stat:hover { border-color: var(--border-soft); }
+.stat:hover {
+  border-color: var(--border-soft);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
 .stat-label {
   font-size: 10px;
   letter-spacing: 0.15em;
@@ -611,7 +619,10 @@ table { border-collapse: collapse; width: 100%; }
   border-radius: var(--r-lg);
   margin-bottom: 14px;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t-fast), border-color var(--t-fast);
 }
+.card:hover { box-shadow: var(--shadow); border-color: var(--border-soft); }
 .card-header {
   display: flex;
   align-items: center;
@@ -878,8 +889,9 @@ table { border-collapse: collapse; width: 100%; }
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 900;
   display: grid;
   place-items: center;

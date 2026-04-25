@@ -480,10 +480,10 @@
     const yAt = (v) => padT + h - ((v - yMin) / (yMax - yMin)) * h;
 
     // Grid
-    ctx.strokeStyle = 'rgba(36, 46, 59, 0.6)';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)';
     ctx.lineWidth = 1;
     ctx.font = '10px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#6B7684';
+    ctx.fillStyle = '#94A3B8';
     const yFmt = opts.yFormat || ((v) => CI.fmtCompact(v));
 
     const yTicks = 5;
@@ -566,8 +566,9 @@
       tip = document.createElement('div');
       tip.style.cssText = [
         'position:absolute',
-        'background:rgba(10,15,20,.92)',
-        'border:1px solid rgba(255,255,255,.1)',
+        'background:rgba(255,255,255,0.96)',
+        'color:#0F172A',
+        'border:1px solid #E5E9EE',
         'border-radius:8px',
         'padding:8px 12px',
         'font-size:12px',
@@ -576,9 +577,9 @@
         'display:none',
         'z-index:200',
         'min-width:110px',
-        'box-shadow:0 6px 24px rgba(0,0,0,.5)',
-        'backdrop-filter:blur(6px)',
-        '-webkit-backdrop-filter:blur(6px)',
+        'box-shadow:0 4px 12px rgba(15,23,42,0.06), 0 12px 32px rgba(15,23,42,0.08)',
+        'backdrop-filter:blur(8px) saturate(180%)',
+        '-webkit-backdrop-filter:blur(8px) saturate(180%)',
         'white-space:nowrap'
       ].join(';');
       if (parent) parent.appendChild(tip);
@@ -592,7 +593,7 @@
 
       // Ligne verticale pointillée
       ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeStyle = 'rgba(15,23,42,0.25)';
       ctx.lineWidth   = 1;
       ctx.setLineDash([4, 4]);
       ctx.beginPath();
@@ -610,8 +611,8 @@
         ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
         ctx.fillStyle   = ds.color || '#34D399';
         ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth   = 1.5;
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth   = 2;
         ctx.stroke();
       });
       ctx.restore();
@@ -625,13 +626,13 @@
         if (v == null || isNaN(v)) return '';
         return `<div style="display:flex;align-items:center;gap:7px;margin:3px 0">` +
           `<span style="width:8px;height:8px;border-radius:50%;background:${ds.color || '#34D399'};flex-shrink:0"></span>` +
-          (ds.label ? `<span style="color:rgba(255,255,255,.5)">${ds.label}</span>` : '') +
+          (ds.label ? `<span style="color:#64748B">${ds.label}</span>` : '') +
           `<span style="font-weight:700;margin-left:auto;padding-left:10px">${yFmt(v)}</span>` +
           `</div>`;
       }).filter(Boolean).join('');
 
       tip.innerHTML =
-        `<div style="font-weight:600;color:rgba(255,255,255,.7);margin-bottom:4px;font-size:11px">${label}</div>` +
+        `<div style="font-weight:600;color:#475569;margin-bottom:4px;font-size:11px">${label}</div>` +
         rows;
       tip.style.display = 'block';
 
