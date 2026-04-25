@@ -24,8 +24,6 @@
 
   /* Cache des données JSON chargées */
   const DATA_CACHE = {};
-  /* Last successful render — pour ré-afficher onglet VA quand on clique */
-  let lastRender = null;
 
   /* ------------------------------------------------------------------ */
   /* Chargement données JSON                                               */
@@ -262,56 +260,9 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* A04 — Lump Sum vs DCA                                                 */
+  /* A04 — Stratégies de déploiement (DCA vs VA vs Lump Sum)              */
   /* ------------------------------------------------------------------ */
-  function renderA04(p, data) {
-    const comp = CC.calcLumpSumVsDCA({
-      prices:        data.prices,
-      dataStart:     data.start,
-      startDate:     p.startDate,
-      endDate:       p.endDate || data.end,
-      initialAmount: 0,
-      monthlyAmount: p.monthlyAmount,
-      feesPct:       p.feesPct,
-      taxRate:       0
-    });
-    if (!comp) return;
-
-    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
-
-    set('cr4-dca-value',  CI.fmtMoney(comp.dca.finalValue, 0));
-    set('cr4-ls-value',   CI.fmtMoney(comp.lumpSum.finalValue, 0));
-    set('cr4-winner',     comp.winner === 'dca' ? 'DCA gagne' : 'Lump Sum gagne');
-    set('cr4-diff',       '+' + CI.fmtMoney(comp.difference, 0) + ' (' + comp.diffPct.toFixed(1) + ' %)');
-    set('cr4-total',      CI.fmtMoney(comp.totalAmount, 0) + ' investi');
-
-    cls('cr4-dca-value',  comp.winner === 'dca'     ? 'pos' : '');
-    cls('cr4-ls-value',   comp.winner === 'lumpsum' ? 'pos' : '');
-
-    requestAnimationFrame(() => {
-      const labels = comp.dca.monthly_data.map((pt) => pt.date);
-      // Aligner lumpSum sur les mêmes dates (peut différer si startDate différente)
-      const lsMap = {};
-      comp.lumpSum.monthly_data.forEach((pt) => { lsMap[pt.date] = pt.value; });
-      const lsAligned = labels.map((d) => lsMap[d] ?? null);
-
-      CI.drawChart('cra4-chart', labels, [
-        { label: 'DCA',       data: comp.dca.monthly_data.map((pt) => pt.value),   color: '#34D399', fill: false, width: 2.5 },
-        { label: 'Lump Sum',  data: lsAligned,                                      color: '#F7931A', fill: false, width: 2, dash: [5, 3] },
-        { label: 'Investi',   data: comp.dca.monthly_data.map((pt) => pt.invested), color: '#94A3B8', fill: false, width: 1, dash: [2, 4] }
-      ], { yFormat: (v) => CI.fmtCompact(v) });
-    });
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* A04 (tab VA) — DCA classique vs Value Averaging                      */
-  /* ------------------------------------------------------------------ */
-  function renderA04VA(p, r, data) {
-    if (!VAfn) {
-      console.warn('[CalcInvest] computeValueAveraging not loaded (calc-dca.js missing).');
-      return;
-    }
+  function renderA04(p, r, data) {
     if (!r) return;
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
@@ -321,50 +272,91 @@
     const [ey, em] = (p.endDate || data.end).split('-').map(Number);
     const months = (ey - sy) * 12 + (em - sm) + 1;
 
-    const va = VAfn(data.prices, null /* no dividends on crypto */, data.start, {
-      startDate: p.startDate,
-      durationMonths: months,
-      monthlyAmount: p.monthlyAmount,
-      initialAmount: p.initialAmount || 0,
-      feesPct: p.feesPct,
-      dividendsReinvested: false
-    });
-    if (!va) return;
-
-    // DCA-equivalent values from r (CalcDCACrypto)
+    // 1) DCA = déjà calculé (r) — finalValue, finalInvested, monthly_data
     const dcaFinal = r.finalValue;
     const dcaInv   = r.finalInvested;
-    const delta    = va.finalValue - dcaFinal;
-    const invDelta = va.totalInvested - dcaInv;
 
-    set('cr4v-dca-final', CI.fmtCompact(dcaFinal) + ' €');
-    set('cr4v-dca-tri', 'TRI : ' + (r.cagr != null ? r.cagr.toFixed(1) + ' %' : '—'));
-    set('cr4v-va-final', CI.fmtCompact(va.finalValue) + ' €');
-    set('cr4v-va-tri', 'TRI : ' + (va.annualReturn != null ? va.annualReturn.toFixed(1) + ' %' : '—'));
-    set('cr4v-va-inv', CI.fmtCompact(va.totalInvested) + ' €');
-    set('cr4v-va-inv-sub', (invDelta >= 0 ? '+' : '') + CI.fmtNum(invDelta, 0) + ' € vs DCA');
-    set('cr4v-delta', (Math.abs(delta) > 0 ? CI.fmtCompact(Math.abs(delta)) : '0') + ' €');
-    set('cr4v-delta-sub', (delta >= 0 ? 'VA surperforme' : 'DCA surperforme') + ' de ' + CI.fmtNum(Math.abs(delta), 0) + ' €');
-    cls('cr4v-va-final', delta >= 0 ? 'pos' : '');
-    cls('cr4v-delta', delta >= 0 ? 'pos' : 'neg');
-    set('cr4v-meta', (CRYPTOS_META[p.cryptoId] || {name: p.cryptoId}).name + ' · ' + p.startDate + ' → ' + (p.endDate || data.end));
+    // 2) Lump Sum = même montant total versé, tout au mois 1
+    const lump = CC.calcCryptoDCA({
+      prices: data.prices,
+      dataStart: data.start,
+      startDate: p.startDate,
+      endDate: p.endDate || data.end,
+      initialAmount: dcaInv,
+      monthlyAmount: 0,
+      feesPct: p.feesPct,
+      taxRate: 0
+    });
+
+    // 3) Value Averaging — réutilise computeValueAveraging du module stocks
+    let va = null;
+    if (VAfn) {
+      va = VAfn(data.prices, null, data.start, {
+        startDate: p.startDate,
+        durationMonths: months,
+        monthlyAmount: p.monthlyAmount,
+        initialAmount: p.initialAmount || 0,
+        feesPct: p.feesPct,
+        dividendsReinvested: false
+      });
+    }
+
+    if (!lump || !va) return;
+
+    const lumpFinal = lump.finalValue;
+    const vaFinal = va.finalValue;
+    const vaInv = va.totalInvested;
+
+    // Vainqueur
+    const finals = [
+      { id: 'dca', label: 'DCA', val: dcaFinal, color: '#34D399' },
+      { id: 'va', label: 'Value Averaging', val: vaFinal, color: '#A78BFA' },
+      { id: 'lump', label: 'Lump Sum', val: lumpFinal, color: '#F7931A' }
+    ].sort((a, b) => b.val - a.val);
+    const winner = finals[0];
+    const runner = finals[1];
+    const gap = winner.val - runner.val;
+    const gapPct = runner.val > 0 ? (gap / runner.val) * 100 : 0;
+
+    set('cr4-winner', winner.label);
+    set('cr4-winner-sub', '+' + CI.fmtCompact(gap) + ' € (+' + gapPct.toFixed(1) + ' % vs ' + runner.label + ')');
+    const winEl = document.getElementById('cr4-winner');
+    if (winEl) winEl.style.color = winner.color;
+
+    const triFmt = (val) => CI.fmtCompact(val) + ' €';
+    const triPct = (a, b) => b > 0 ? ((a / b - 1) * 100).toFixed(1) + ' %' : '—';
+
+    set('cr4-dca-final', triFmt(dcaFinal));
+    set('cr4-dca-detail', 'Versé ' + CI.fmtCompact(dcaInv) + ' · gain ' + triPct(dcaFinal, dcaInv));
+    cls('cr4-dca-final', winner.id === 'dca' ? 'pos' : '');
+
+    set('cr4-va-final', triFmt(vaFinal));
+    set('cr4-va-detail', 'Versé ' + CI.fmtCompact(vaInv) + ' · gain ' + triPct(vaFinal, vaInv));
+    cls('cr4-va-final', winner.id === 'va' ? 'pos' : '');
+
+    set('cr4-lump-final', triFmt(lumpFinal));
+    set('cr4-lump-detail', 'Versé ' + CI.fmtCompact(dcaInv) + ' · gain ' + triPct(lumpFinal, dcaInv));
+    cls('cr4-lump-final', winner.id === 'lump' ? 'pos' : '');
+
+    set('cr4-meta', (CRYPTOS_META[p.cryptoId] || {name: p.cryptoId}).name + ' · ' + p.startDate + ' → ' + (p.endDate || data.end));
 
     requestAnimationFrame(() => {
-      // Build aligned series. r.monthly_data has full DCA portfolio per month.
       const dcaPts = r.monthly_data || [];
+      const lumpPts = lump.monthly_data || [];
       const vaSeries = va.series || { portfolio: [], invested: [] };
-      const n = Math.min(dcaPts.length, vaSeries.portfolio.length);
+      const n = Math.min(dcaPts.length, lumpPts.length, vaSeries.portfolio.length);
       if (n < 2) return;
       const stride = Math.max(1, Math.ceil(n / 300));
       const idxs = [];
       for (let i = 0; i < n; i += stride) idxs.push(i);
       if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
       const labels = idxs.map((i) => dcaPts[i].date);
-      CI.drawChart('cr4v-chart', labels, [
-        { data: idxs.map((i) => dcaPts[i].invested), color: '#FBBF24', width: 1.2, dash: [4, 3] },
-        { data: idxs.map((i) => vaSeries.invested[i]), color: 'rgba(251,191,36,0.4)', width: 1.2, dash: [4, 3] },
+      CI.drawChart('cra4-chart', labels, [
+        { data: idxs.map((i) => dcaPts[i].invested), color: '#94A3B8', width: 1, dash: [3, 3] },
+        { data: idxs.map((i) => vaSeries.invested[i]), color: '#FBBF24', width: 1, dash: [3, 3] },
+        { data: idxs.map((i) => lumpPts[i].value), color: '#F7931A', width: 2 },
         { data: idxs.map((i) => vaSeries.portfolio[i]), color: '#A78BFA', width: 2 },
-        { data: idxs.map((i) => dcaPts[i].value), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 }
+        { data: idxs.map((i) => dcaPts[i].value), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.08)', width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
   }
@@ -594,10 +586,7 @@
         renderA01(p, r, data);
         renderA02(p, data);
         renderA03(p, r);
-        renderA04(p, data);
-        renderA04VA(p, r, data);
-        // Cache last call so tab clicks can re-render
-        lastRender = { p: p, r: r, data: data };
+        renderA04(p, r, data);
         renderA05(p, data);
         renderA06(p, data);
         renderA07(p);
@@ -633,23 +622,6 @@
     document.querySelectorAll('#cr-params input, #cr-params select').forEach((el) => {
       el.addEventListener('change', run);
       el.addEventListener('input',  run);
-    });
-
-    // Strategy tabs (Lump vs DCA / DCA vs VA)
-    document.querySelectorAll('#cr4-tabs .tab-btn').forEach((b) => {
-      b.addEventListener('click', () => {
-        document.querySelectorAll('#cr4-tabs .tab-btn').forEach((x) => x.classList.remove('active'));
-        b.classList.add('active');
-        const target = b.dataset.stratTab;
-        document.querySelectorAll('#cra-lumpvsdca [data-strat-pane]').forEach((p) => {
-          p.hidden = (p.dataset.stratPane !== target);
-        });
-        // Re-render to size canvas correctly after pane becomes visible
-        if (lastRender) {
-          if (target === 'va') renderA04VA(lastRender.p, lastRender.r, lastRender.data);
-          else renderA04(lastRender.p, lastRender.data);
-        }
-      });
     });
 
     // Changer de crypto : reset les dates

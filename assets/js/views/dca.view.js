@@ -386,7 +386,7 @@
     lastResult = r;
 
     renderSummary(form, r);
-    const renders = [renderAnalyse01, renderAnalyse02, renderAnalyse03, renderAnalyse04, renderAnalyse05, renderAnalyse06, renderAnalyse07, renderAnalyse08, renderAnalyse09, renderAnalyse10, renderAnalyse11];
+    const renders = [renderAnalyse01, renderAnalyse02, renderAnalyse03, renderAnalyse04, renderAnalyse05, renderAnalyse06, renderAnalyse07, renderAnalyse08, renderAnalyse09, renderAnalyse10];
     renders.forEach((fn) => { try { fn(form, r); } catch (e) { console.error('[CalcInvest]', fn.name, e); } });
     updateDateHint();
     syncUrl(form);
@@ -438,114 +438,110 @@
     requestAnimationFrame(() => CI.drawChart('d-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) }));
   }
 
-  // ===== Analyse 03 : Lump sum vs DCA étalé =====
-  let da3SpreadMonths = 12;
-
+  // ===== Analyse 03 : Stratégies de déploiement (DCA vs VA vs Lump Sum) =====
   function renderAnalyse03(form, r) {
-    if (!currentData) return;
-    const capital = form.initialAmount || 10000;
-    const durationYears = Math.round(r.durationYears) || 10;
+    if (!currentData || !r) return;
     const win = getWindow(form);
     if (!win) return;
-
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+    const curr = currentAsset.currency;
 
-    const res = computeLumpVsDCA(win.prices, win.start, {
-      capital,
-      durationYears,
-      dcaMonths: da3SpreadMonths,
-      feesPct: form.feesPct
+    // 1) DCA = ce qui est déjà calculé par calcDCA → r
+    const dcaFinal = r.finalValue;
+    const dcaInv = r.totalInvested;
+
+    // 2) Lump Sum = même montant total versé, mais TOUT au mois 1
+    const lumpInitial = dcaInv; // capital initial = somme totale qui aurait été DCAée
+    const lumpRes = calcDCA({
+      prices: currentData.prices,
+      dividends: currentData.dividends,
+      cpi: null,
+      seriesStart: currentData.start,
+      startDate: form.startDate,
+      durationMonths: form.durationMonths,
+      monthlyAmount: 0,
+      initialAmount: lumpInitial,
+      deployment: 'lump',
+      feesPct: form.feesPct,
+      cashRate: 0,
+      dividendsReinvested: form.dividendsReinvested,
+      inflationAdjusted: false
     });
 
-    if (!res) return;
-    const s = res.stats;
+    // 3) Value Averaging
+    const va = computeValueAveraging(currentData.prices, currentData.dividends || null, currentData.start, {
+      startDate: form.startDate, durationMonths: form.durationMonths,
+      monthlyAmount: form.monthlyAmount, initialAmount: form.initialAmount,
+      feesPct: form.feesPct, dividendsReinvested: form.dividendsReinvested
+    });
 
-    set('da3-capital', CI.fmtNum(capital, 0) + ' ' + currentAsset.currency);
-    set('da3-periods', s.total + ' périodes');
-    set('da3-verdict', s.lumpWinsPct.toFixed(0) + ' % du temps, le lump sum gagne');
-    set('da3-lump-pct', s.lumpWinsPct.toFixed(0) + ' %');
-    set('da3-lump-sub', s.lumpWins + ' périodes sur ' + s.total);
-    set('da3-dca-pct', s.dcaWinsPct.toFixed(0) + ' %');
-    set('da3-dca-sub', (s.total - s.lumpWins) + ' périodes sur ' + s.total);
+    if (!lumpRes || !va) return;
 
-    const medSign = s.medianDiffPct >= 0 ? '+' : '';
-    const avgSign = s.avgDiffPct >= 0 ? '+' : '';
-    set('da3-median', medSign + s.medianDiffPct.toFixed(1) + ' %');
-    set('da3-avg', avgSign + s.avgDiffPct.toFixed(1) + ' %');
-    set('da3-dur-label', durationYears + ' an' + (durationYears > 1 ? 's' : ''));
-    set('da3-meta', `${currentAsset.name} · ${win.start} → ${win.end} · capital ${CI.fmtNum(capital, 0)} ${currentAsset.currency}`);
+    const lumpFinal = lumpRes.finalValue;
+    const vaFinal = va.finalValue;
+    const vaInv = va.totalInvested;
 
-    const lumpEl = document.getElementById('da3-lump-pct');
-    if (lumpEl) { lumpEl.className = 'stat-value ' + (s.lumpWinsPct >= 50 ? 'pos' : 'neg'); }
-    const medEl = document.getElementById('da3-median');
-    if (medEl) { medEl.className = 'stat-value ' + (s.medianDiffPct >= 0 ? 'pos' : 'neg'); }
-    const avgEl = document.getElementById('da3-avg');
-    if (avgEl) { avgEl.className = 'stat-value ' + (s.avgDiffPct >= 0 ? 'pos' : 'neg'); }
+    // Détermine le vainqueur
+    const finals = [
+      { id: 'dca', label: 'DCA', val: dcaFinal, color: '#34D399' },
+      { id: 'va', label: 'Value Averaging', val: vaFinal, color: '#A78BFA' },
+      { id: 'lump', label: 'Lump Sum', val: lumpFinal, color: '#F7931A' }
+    ].sort((a, b) => b.val - a.val);
+    const winner = finals[0];
+    const runner = finals[1];
+    const gap = winner.val - runner.val;
+    const gapPct = (gap / runner.val) * 100;
 
-    requestAnimationFrame(() => renderLumpBars(res.yearlyDiff));
+    set('da3-winner', winner.label);
+    set('da3-winner-sub', '+' + CI.fmtCompact(gap) + ' ' + curr + ' (+' + gapPct.toFixed(1) + ' % vs ' + runner.label + ')');
+    const winEl = document.getElementById('da3-winner');
+    if (winEl) winEl.style.color = winner.color;
+
+    // Détails par stratégie
+    const triFmt = (val) => CI.fmtCompact(val) + ' ' + curr;
+    const triPct = (a, b) => b > 0 ? ((a / b - 1) * 100).toFixed(1) + ' %' : '—';
+
+    set('da3-dca-final', triFmt(dcaFinal));
+    set('da3-dca-detail', 'Versé ' + CI.fmtCompact(dcaInv) + ' · gain ' + triPct(dcaFinal, dcaInv));
+    cls('da3-dca-final', winner.id === 'dca' ? 'pos' : '');
+
+    set('da3-va-final', triFmt(vaFinal));
+    set('da3-va-detail', 'Versé ' + CI.fmtCompact(vaInv) + ' · gain ' + triPct(vaFinal, vaInv));
+    cls('da3-va-final', winner.id === 'va' ? 'pos' : '');
+
+    set('da3-lump-final', triFmt(lumpFinal));
+    set('da3-lump-detail', 'Versé ' + CI.fmtCompact(lumpInitial) + ' · gain ' + triPct(lumpFinal, lumpInitial));
+    cls('da3-lump-final', winner.id === 'lump' ? 'pos' : '');
+
+    set('da3-meta', `${currentAsset.name} · ${win.start} → ${win.end} · ${(form.durationMonths/12).toFixed(1)} ans`);
+
+    requestAnimationFrame(() => drawTripleStratChart(r, va, lumpRes, form));
   }
 
-  function renderLumpBars(yearlyDiff) {
+  function drawTripleStratChart(rDca, rVa, rLump, form) {
     const canvas = document.getElementById('da3-chart');
-    if (!canvas || !yearlyDiff.length) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(320, Math.floor(rect.width || 600));
-    const H = Math.max(200, Math.floor(rect.height || 260));
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, W, H);
-
-    const padL = 52, padR = 14, padT = 14, padB = 30;
-    const w = W - padL - padR, h = H - padT - padB;
-
-    const vals = yearlyDiff.map((d) => d.diffPct);
-    let maxV = Math.max(...vals, 5), minV = Math.min(...vals, -5);
-    maxV = Math.ceil(maxV / 5) * 5; minV = Math.floor(minV / 5) * 5;
-    const span = maxV - minV;
-    const yAt = (v) => padT + h - ((v - minV) / span) * h;
-    const zeroY = yAt(0);
-
-    // Grid
-    const ticks = [];
-    const step = Math.ceil(Math.abs(span) / 6 / 5) * 5;
-    for (let v = Math.ceil(minV / step) * step; v <= maxV; v += step) ticks.push(v);
-    ctx.strokeStyle = 'rgba(36,46,59,0.7)';
-    ctx.fillStyle = '#6B7684';
-    ctx.font = '10px "JetBrains Mono", monospace';
-    ctx.lineWidth = 1;
-    ticks.forEach((v) => {
-      const y = yAt(v);
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText((v >= 0 ? '+' : '') + v.toFixed(0) + ' %', padL - 5, y);
-    });
-
-    // Zero line
-    ctx.strokeStyle = 'rgba(107,118,132,0.5)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(padL, zeroY); ctx.lineTo(W - padR, zeroY); ctx.stroke();
-
-    // Bars
-    const barW = Math.max(2, w / yearlyDiff.length - 1);
-    yearlyDiff.forEach((d, i) => {
-      const x = padL + (i / yearlyDiff.length) * w;
-      const topY = yAt(Math.max(0, d.diffPct));
-      const botY = yAt(Math.min(0, d.diffPct));
-      ctx.fillStyle = d.diffPct >= 0 ? 'rgba(52,211,153,0.85)' : 'rgba(248,113,113,0.85)';
-      ctx.fillRect(x, topY, barW, Math.max(1, botY - topY));
-    });
-
-    // X labels
-    const tickStep = Math.max(1, Math.ceil(yearlyDiff.length / 10));
-    ctx.fillStyle = '#6B7684'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    ctx.font = '10px "JetBrains Mono", monospace';
-    for (let i = 0; i < yearlyDiff.length; i += tickStep) {
-      const x = padL + (i / yearlyDiff.length) * w + barW / 2;
-      ctx.fillText(String(yearlyDiff[i].year), x, padT + h + 5);
-    }
+    if (!canvas) return;
+    const n = Math.min(
+      rDca.series.portfolio.length,
+      rVa.series.portfolio.length,
+      rLump.series.portfolio.length
+    );
+    if (n < 2) return;
+    const stride = Math.max(1, Math.ceil(n / 300));
+    const idxs = [];
+    for (let i = 0; i < n; i += stride) idxs.push(i);
+    if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
+    const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
+    CI.drawChart('da3-chart', labels, [
+      // Lignes capital investi (en arrière-plan, mono dashées)
+      { data: idxs.map((i) => rDca.series.invested[i]), color: '#94A3B8', width: 1, dash: [3, 3] },
+      { data: idxs.map((i) => rVa.series.invested[i]), color: '#FBBF24', width: 1, dash: [3, 3] },
+      // Portefeuilles (au-dessus)
+      { data: idxs.map((i) => rLump.series.portfolio[i]), color: '#F7931A', width: 2 },
+      { data: idxs.map((i) => rVa.series.portfolio[i]), color: '#A78BFA', width: 2 },
+      { data: idxs.map((i) => rDca.series.portfolio[i]), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.08)', width: 2.5 }
+    ], { yFormat: (v) => CI.fmtCompact(v) });
   }
 
   // ===== Analyse 02 : Rendements glissants (heatmap) =====
@@ -1474,55 +1470,6 @@
     });
   }
 
-  // ===== Analyse 11 : Value Averaging vs DCA =====
-  function renderAnalyse11(form, r) {
-    if (!r || !currentData) return;
-    const curr = currentAsset.currency;
-    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
-
-    const va = computeValueAveraging(currentData.prices, currentData.dividends || null, currentData.start, {
-      startDate: form.startDate, durationMonths: form.durationMonths,
-      monthlyAmount: form.monthlyAmount, initialAmount: form.initialAmount,
-      feesPct: form.feesPct, dividendsReinvested: form.dividendsReinvested
-    });
-    if (!va) return;
-
-    const delta = va.finalValue - r.finalValue;
-    const invDelta = va.totalInvested - r.totalInvested;
-
-    set('da11-dca-final', CI.fmtCompact(r.finalValue) + ' ' + curr);
-    set('da11-dca-tri', 'TRI : ' + (r.annualReturn != null ? r.annualReturn.toFixed(1) + ' %' : '—'));
-    set('da11-va-final', CI.fmtCompact(va.finalValue) + ' ' + curr);
-    set('da11-va-tri', 'TRI : ' + (va.annualReturn != null ? va.annualReturn.toFixed(1) + ' %' : '—'));
-    set('da11-va-inv', CI.fmtCompact(va.totalInvested) + ' ' + curr);
-    set('da11-va-inv-sub', (invDelta >= 0 ? '+' : '') + CI.fmtNum(invDelta, 0) + ' vs DCA');
-    set('da11-delta', (Math.abs(delta) > 0 ? CI.fmtCompact(Math.abs(delta)) : '0') + ' ' + curr);
-    set('da11-delta-sub', (delta >= 0 ? 'VA surperforme' : 'DCA surperforme') + ' de ' + CI.fmtNum(Math.abs(delta), 0) + ' €');
-    cls('da11-va-final', delta >= 0 ? 'pos' : '');
-    cls('da11-delta', delta >= 0 ? 'pos' : 'neg');
-    set('da11-meta', currentAsset.name + ' · ' + r.durationYears.toFixed(0) + ' ans');
-
-    requestAnimationFrame(() => drawVAChart(r, va, form));
-  }
-
-  function drawVAChart(r_dca, r_va, form) {
-    const canvas = document.getElementById('da11-chart');
-    if (!canvas) return;
-    const n = Math.min(r_dca.series.portfolio.length, r_va.series.portfolio.length);
-    const stride = Math.max(1, Math.ceil(n / 300));
-    const idxs = [];
-    for (let i = 0; i < n; i += stride) idxs.push(i);
-    if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
-    const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
-    CI.drawChart('da11-chart', labels, [
-      { data: idxs.map((i) => r_dca.series.invested[i]), color: '#FBBF24', width: 1.2, dash: [4, 3] },
-      { data: idxs.map((i) => r_va.series.invested[i]), color: 'rgba(251,191,36,0.4)', width: 1.2, dash: [4, 3] },
-      { data: idxs.map((i) => r_va.series.portfolio[i]), color: '#A78BFA', width: 2 },
-      { data: idxs.map((i) => r_dca.series.portfolio[i]), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 }
-    ], { yFormat: (v) => CI.fmtCompact(v) });
-  }
-
   /* ============================================================
      URL state
      ============================================================ */
@@ -1602,16 +1549,6 @@
       });
     }
 
-    // Analyse 03 spread toggle
-    document.querySelectorAll('#da3-spread button').forEach((b) => {
-      b.addEventListener('click', () => {
-        document.querySelectorAll('#da3-spread button').forEach((x) => x.classList.remove('active'));
-        b.classList.add('active');
-        da3SpreadMonths = parseInt(b.dataset.val, 10);
-        if (lastResult && lastParams) renderAnalyse03(lastParams, lastResult);
-      });
-    });
-
     // Wire toggle rows
     document.querySelectorAll('[data-toggle]').forEach((row) => {
       row.addEventListener('click', () => {
@@ -1619,23 +1556,6 @@
         if (sw.classList.contains('disabled')) return;
         sw.classList.toggle('on');
         run();
-      });
-    });
-
-    // Strategy tabs (Lump vs DCA / DCA vs VA) inside Analyse 03
-    document.querySelectorAll('#da3-tabs .tab-btn').forEach((b) => {
-      b.addEventListener('click', () => {
-        document.querySelectorAll('#da3-tabs .tab-btn').forEach((x) => x.classList.remove('active'));
-        b.classList.add('active');
-        const target = b.dataset.stratTab;
-        document.querySelectorAll('[data-strat-pane]').forEach((p) => {
-          p.hidden = (p.dataset.stratPane !== target);
-        });
-        // Re-render the now-visible pane (canvas needs a layout to size correctly)
-        if (lastResult && lastParams) {
-          if (target === 'va') renderAnalyse11(lastParams, lastResult);
-          else renderAnalyse03(lastParams, lastResult);
-        }
       });
     });
 
