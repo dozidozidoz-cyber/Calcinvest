@@ -1060,11 +1060,15 @@
   // ===== Analyse 07 : Monte Carlo =====
   function renderAnalyse07(form, r) {
     if (!currentData) return;
+    const win = getWindow(form);
+    if (!win) return;
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
     const curr = currentAsset.currency;
 
-    const mc = computeMonteCarlo(currentData.prices, currentData.dividends || null, {
+    // Bootstrap des rendements UNIQUEMENT sur la fenêtre choisie par l'utilisateur,
+    // pas sur toute l'histoire de l'actif.
+    const mc = computeMonteCarlo(win.prices, win.dividends, {
       simulations: 1000,
       horizonYears: Math.max(1, Math.round(r.durationYears)),
       monthlyAmount: form.monthlyAmount,
@@ -1077,7 +1081,7 @@
     const fs = mc.finalStats;
 
     set('da7-n-sims', fs.simulations.toLocaleString('fr-FR'));
-    set('da7-meta', currentAsset.name + ' · ' + Math.round(r.durationYears) + ' ans · ' + fs.simulations.toLocaleString('fr-FR') + ' simulations');
+    set('da7-meta', currentAsset.name + ' · plage ' + win.start + ' → ' + win.end + ' · ' + Math.round(r.durationYears) + ' ans · ' + fs.simulations.toLocaleString('fr-FR') + ' simulations');
 
     const fmt = (v) => CI.fmtCompact(v) + ' ' + curr;
     const gainPct = (v) => ((v - fs.totalInvested) / fs.totalInvested * 100).toFixed(0) + ' %';
