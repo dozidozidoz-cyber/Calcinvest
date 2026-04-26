@@ -4,7 +4,7 @@
 //   - manifest.json (data + PWA) : network-first (source de vérité features)
 //   - Data prix JSON, CSS, icons : cache-first (stable, gros fichiers)
 
-const CACHE_VERSION = 'calcinvest-v19';
+const CACHE_VERSION = 'calcinvest-v20';
 
 // Seuls les assets vraiment stables vont en cache-first.
 // manifest.json est volontairement EXCLU : il contrôle quels actifs
