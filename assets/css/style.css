@@ -5,38 +5,48 @@
    ============================================================ */
 
 /* ---------- Tokens ---------- */
-:root {
-  /* ============================================================
-     PALETTES DISPONIBLES — décommenter celle qui te plaît
-     ============================================================
-     Toutes les palettes restent en tons clairs mais avec une
-     teinte affirmée (jamais pur blanc/grisâtre). Sidebar et body
-     partagent --bg → effet visuellement homogène.
+/* ============================================================
+   6 palettes premium · switchables via <html data-theme="X">
+   --------------------------------------------------------------
+   stone     · A · beige parchemin chaud (défaut)
+   mist      · B · gris-bleu froid (Linear/Vercel)
+   sage      · C · vert sage tamisé (nature)
+   champagne · D · beige doré (luxe discret)
+   terra     · E · terracotta clay (warm earth)
+   lavender  · F · lavande poussiéreuse (premium pastel)
+   --------------------------------------------------------------
+   Chaque palette définit :
+   - --bg, --bg-2, --bg-3, --bg-card, --bg-hover, --bg-elev
+   - --border, --border-soft, --border-strong
+   - --text, --text-2, --text-3, --text-4
+   - --bg-grad-top, --bg-grad-bot (linear-gradient body)
+   - --aurora-1..4 (radial-gradients)
+   ============================================================ */
 
-     A · STONE WARM  — beige chaud type parchemin, accueillant
-     B · MIST COOL   — gris-bleu froid, fintech serein
-     C · SAGE        — vert sage très tamisé, calme nature
-     D · CHAMPAGNE   — beige doré avec hint d'amber, premium
-     ============================================================ */
-
-  /* ───── A · STONE WARM (actif) ───── */
-  --bg:          #F1EDE5;   /* warm beige parchment */
-  --bg-2:        #EDE8DE;   /* sidebar (un cran plus chaud) */
-  --bg-3:        #E5DFD3;   /* sub-panels */
-  --bg-card:     #FBF9F4;   /* cartes (surface élevée subtile, pas pur blanc) */
-  --bg-elev:     #FFFFFF;   /* hover/élévation max */
+:root, html[data-theme="stone"] {
+  --bg:          #F1EDE5;
+  --bg-2:        #EDE8DE;
+  --bg-3:        #E5DFD3;
+  --bg-card:     #FBF9F4;
+  --bg-elev:     #FFFFFF;
   --bg-hover:    #E9E3D6;
-
   --border:        #E0DAC9;
   --border-soft:   #E8E2D2;
   --border-strong: #C9C2AF;
-
-  --text:        #1F1B14;   /* near-black warm */
+  --text:        #1F1B14;
   --text-2:      #524D40;
   --text-3:      #756F5E;
   --text-4:      #A39C8A;
+  --bg-grad-top: #F5F1E9;
+  --bg-grad-bot: #ECE6D8;
+  --aurora-1: rgba(5, 150, 105, 0.10);
+  --aurora-2: rgba(217, 119, 6, 0.11);
+  --aurora-3: rgba(245, 158, 11, 0.08);
+  --aurora-4: rgba(124, 58, 237, 0.05);
+  --topbar-rgba: 241, 237, 229;
+}
 
-  /* ───── B · MIST COOL ─────
+html[data-theme="mist"] {
   --bg:          #E9ECF1;
   --bg-2:        #E2E6EC;
   --bg-3:        #D7DBE4;
@@ -50,9 +60,16 @@
   --text-2:      #475569;
   --text-3:      #64748B;
   --text-4:      #94A3B8;
-  */
+  --bg-grad-top: #EEF1F5;
+  --bg-grad-bot: #E2E6EE;
+  --aurora-1: rgba(37, 99, 235, 0.10);
+  --aurora-2: rgba(124, 58, 237, 0.10);
+  --aurora-3: rgba(56, 189, 248, 0.07);
+  --aurora-4: rgba(99, 102, 241, 0.05);
+  --topbar-rgba: 233, 236, 241;
+}
 
-  /* ───── C · SAGE ─────
+html[data-theme="sage"] {
   --bg:          #ECEFE7;
   --bg-2:        #E5E9E0;
   --bg-3:        #DAE0D2;
@@ -66,9 +83,16 @@
   --text-2:      #4D5544;
   --text-3:      #6E7763;
   --text-4:      #A0A88F;
-  */
+  --bg-grad-top: #F0F2EB;
+  --bg-grad-bot: #E4E9DA;
+  --aurora-1: rgba(5, 150, 105, 0.13);
+  --aurora-2: rgba(132, 204, 22, 0.10);
+  --aurora-3: rgba(34, 197, 94, 0.07);
+  --aurora-4: rgba(217, 119, 6, 0.05);
+  --topbar-rgba: 236, 239, 231;
+}
 
-  /* ───── D · CHAMPAGNE ─────
+html[data-theme="champagne"] {
   --bg:          #F2EDE0;
   --bg-2:        #ECE5D2;
   --bg-3:        #E2D9C0;
@@ -82,7 +106,60 @@
   --text-2:      #564E33;
   --text-3:      #7A7150;
   --text-4:      #A89E7A;
-  */
+  --bg-grad-top: #F6F2E6;
+  --bg-grad-bot: #ECE3CC;
+  --aurora-1: rgba(217, 119, 6, 0.13);
+  --aurora-2: rgba(245, 158, 11, 0.13);
+  --aurora-3: rgba(251, 191, 36, 0.09);
+  --aurora-4: rgba(5, 150, 105, 0.05);
+  --topbar-rgba: 242, 237, 224;
+}
+
+html[data-theme="terra"] {
+  --bg:          #F0E5DC;
+  --bg-2:        #E9DCD0;
+  --bg-3:        #DECEC0;
+  --bg-card:     #FAF3EC;
+  --bg-elev:     #FFFFFF;
+  --bg-hover:    #E2D2C2;
+  --border:        #DCC9B7;
+  --border-soft:   #E5D5C5;
+  --border-strong: #C0A992;
+  --text:        #221A12;
+  --text-2:      #5A4636;
+  --text-3:      #7E6650;
+  --text-4:      #A98F75;
+  --bg-grad-top: #F4EAE0;
+  --bg-grad-bot: #EAD9CA;
+  --aurora-1: rgba(234, 88, 12, 0.10);
+  --aurora-2: rgba(217, 119, 6, 0.11);
+  --aurora-3: rgba(244, 114, 22, 0.07);
+  --aurora-4: rgba(5, 150, 105, 0.05);
+  --topbar-rgba: 240, 229, 220;
+}
+
+html[data-theme="lavender"] {
+  --bg:          #EEEAF2;
+  --bg-2:        #E7E2ED;
+  --bg-3:        #DCD4E5;
+  --bg-card:     #F8F5FB;
+  --bg-elev:     #FFFFFF;
+  --bg-hover:    #DFD8EA;
+  --border:        #D7CEE3;
+  --border-soft:   #E0D8E9;
+  --border-strong: #B7AAC9;
+  --text:        #1C1A26;
+  --text-2:      #4E4861;
+  --text-3:      #6E6786;
+  --text-4:      #A29ABA;
+  --bg-grad-top: #F1ECF5;
+  --bg-grad-bot: #E5DEEE;
+  --aurora-1: rgba(124, 58, 237, 0.11);
+  --aurora-2: rgba(168, 85, 247, 0.10);
+  --aurora-3: rgba(219, 39, 119, 0.06);
+  --aurora-4: rgba(37, 99, 235, 0.05);
+  --topbar-rgba: 238, 234, 242;
+}
 
   /* Accent emerald (principal) — saturated pour pop sur warm bg */
   --accent:      #059669;   /* emerald-600, AA */
@@ -137,7 +214,6 @@
 html, body { height: 100%; }
 body {
   margin: 0;
-  background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -145,15 +221,18 @@ body {
   font-feature-settings: 'cv11', 'ss01', 'ss03', 'cv02';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Aurora premium : multi-radial gradients harmonisés avec la palette warm.
-     Volontairement visibles sans surcharger — opacités 6-12 %. */
-  background-image:
-    radial-gradient(ellipse 1200px 800px at 8% 0%, rgba(5, 150, 105, 0.09) 0%, transparent 55%),
-    radial-gradient(ellipse 900px 700px at 95% 5%, rgba(217, 119, 6, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse 800px 600px at 50% 100%, rgba(245, 158, 11, 0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 1000px 600px at 100% 70%, rgba(124, 58, 237, 0.05) 0%, transparent 55%);
+  /* Aurora premium : 4 radials harmonisés à la palette + linear-gradient
+     subtil top→bottom pour la profondeur. Variables --aurora-1..4 et
+     --bg-grad-top/bot définies par chaque [data-theme]. */
+  background:
+    radial-gradient(ellipse 1200px 800px at 8% 0%,  var(--aurora-1) 0%, transparent 55%),
+    radial-gradient(ellipse 900px 700px at 95% 5%,  var(--aurora-2) 0%, transparent 55%),
+    radial-gradient(ellipse 800px 600px at 50% 100%, var(--aurora-3) 0%, transparent 60%),
+    radial-gradient(ellipse 1000px 600px at 100% 70%, var(--aurora-4) 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-grad-top) 0%, var(--bg-grad-bot) 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
+  transition: background 400ms ease;
 }
 h1, h2, h3, h4, h5, h6 { margin: 0; font-weight: 600; letter-spacing: -0.025em; color: var(--text); }
 h1 { letter-spacing: -0.035em; font-weight: 700; }
@@ -176,7 +255,7 @@ table { border-collapse: collapse; width: 100%; }
   top: 0;
   z-index: 50;
   height: var(--topbar-h);
-  background: rgba(241, 237, 229, 0.72);  /* assorti au --bg actuel (Stone Warm) */
+  background: rgba(var(--topbar-rgba), 0.72);  /* suit la palette active */
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border-soft);
@@ -1428,6 +1507,67 @@ table { border-collapse: collapse; width: 100%; }
 }
 
 /* ---------- Print ---------- */
+/* ---------- Theme switcher widget (floating bottom-right) ---------- */
+.theme-switcher {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.theme-switcher-label {
+  padding: 0 6px 0 4px;
+  font-weight: 600;
+}
+.theme-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-soft);
+  cursor: pointer;
+  transition: var(--t-fast);
+  position: relative;
+}
+.theme-swatch:hover {
+  transform: scale(1.12);
+  border-color: var(--text-3);
+}
+.theme-swatch.active {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--accent);
+}
+.theme-swatch[data-theme="stone"]     { background: linear-gradient(135deg, #F1EDE5 0%, #D9CDB3 100%); }
+.theme-swatch[data-theme="mist"]      { background: linear-gradient(135deg, #E9ECF1 0%, #B7C2D5 100%); }
+.theme-swatch[data-theme="sage"]      { background: linear-gradient(135deg, #ECEFE7 0%, #B8C4A2 100%); }
+.theme-swatch[data-theme="champagne"] { background: linear-gradient(135deg, #F2EDE0 0%, #D4B976 100%); }
+.theme-swatch[data-theme="terra"]     { background: linear-gradient(135deg, #F0E5DC 0%, #C99878 100%); }
+.theme-swatch[data-theme="lavender"]  { background: linear-gradient(135deg, #EEEAF2 0%, #A99ACE 100%); }
+
+@media (max-width: 640px) {
+  .theme-switcher {
+    bottom: 12px;
+    right: 12px;
+    padding: 6px 8px;
+  }
+  .theme-switcher-label { display: none; }
+  .theme-swatch { width: 20px; height: 20px; }
+}
+
 @media print {
   .topbar, .sidebar, .footer, .btn-row, .card-header button, .tabs { display: none !important; }
   .shell { grid-template-columns: 1fr; }
