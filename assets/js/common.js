@@ -518,8 +518,20 @@
       // Fill area
       if (ds.fill) {
         const grad = ctx.createLinearGradient(0, padT, 0, padT + h);
-        grad.addColorStop(0, ds.fillColor || (color + '33'));
-        grad.addColorStop(1, (ds.fillColor || color) + '00');
+        // Stop 0 (top, line area) : couleur visible. Stop 1 (bas) : transparent.
+        // Supporte hex (#34D399 → '#34D39900' pour transparent) ET rgba(r,g,b,a)
+        // (→ rgba(r,g,b,0) pour transparent). L'ancien `+ '00'` cassait sur rgba.
+        const top = ds.fillColor || (color + '33');
+        let bottom;
+        if (ds.fillColor) {
+          bottom = /^rgba/i.test(ds.fillColor)
+            ? ds.fillColor.replace(/,\s*[\d.]+\s*\)$/, ', 0)')
+            : (ds.fillColor.length === 7 ? ds.fillColor + '00' : ds.fillColor); // #RRGGBB → #RRGGBB00
+        } else {
+          bottom = color + '00';
+        }
+        grad.addColorStop(0, top);
+        grad.addColorStop(1, bottom);
         ctx.beginPath();
         ds.data.forEach((v, i) => {
           const x = xAt(i), y = yAt(v == null ? yMin : v);
