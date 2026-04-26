@@ -14,7 +14,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/assets/css/style.css" />\r\n<script>\r\nif ('serviceWorker' in navigator) {\r\n  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });\r\n  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });\r\n}\r\n</script>
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
 </head>
 <body>
 
@@ -58,8 +64,41 @@
       <span>●</span>
       Plateforme de simulation financière
     </div>
-    <h1 class="hero-title">Simulez avant<br/>d'<em>investir</em>.</h1>
-    <p class="hero-lede">Des outils précis pour valider vos stratégies d'investissement. DCA, intérêts composés, rendement locatif, FIRE — tout en un seul endroit. Gratuit, sans inscription, vos données restent sur votre appareil.</p>
+    <h1 class="hero-title">Simuler. Comparer.<br/><em>Décider.</em></h1>
+    <p class="hero-lede">CalcInvest est la suite d'outils qui transforme vos hypothèses en projections fiables. Backtests historiques, Monte Carlo seedé, fiscalité française réelle — pour <strong style="color:var(--text)">prendre vos décisions financières en confiance</strong>, sans bullshit.</p>
+    <div class="hero-cta">
+      <a href="/simulateur-dca" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l4 4 6-8"/></svg>
+        Démarrer gratuitement
+      </a>
+      <a href="#tools" class="btn btn-secondary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Voir les 5 calculateurs
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num"><em>5</em> outils</div>
+        <div class="hero-stat-label">Bourse · Crypto · Composés · Locatif · FIRE</div>
+      </div>
+      <div>
+        <div class="hero-stat-num"><em>13</em> actifs</div>
+        <div class="hero-stat-label">S&amp;P 500 depuis 1871, ETF UCITS, BTC, ETH…</div>
+      </div>
+      <div>
+        <div class="hero-stat-num"><em>100 %</em> local</div>
+        <div class="hero-stat-label">Aucune donnée envoyée, aucun tracking</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tools" style="margin-top:36px;margin-bottom:18px">
+    <div class="section-eyebrow">
+      <span></span>
+      Les calculateurs
+    </div>
+    <h2 class="section-heading">Cinq simulateurs pour piloter votre patrimoine.</h2>
+    <p class="section-sub">Chacun est pensé pour une décision précise — du choix d'un ETF au plan de retraite anticipée. Tous travaillent sur des données réelles, pas des moyennes optimistes.</p>
   </div>
 
   <div class="tools-grid">
