@@ -43,20 +43,28 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <div class="topbar-center">
-    <div class="segmented" role="tablist">
-      <button class="segmented-btn" onclick="location.href='/simulateur-dca'">
+    <nav class="segmented" role="tablist" aria-label="Calculateurs">
+      <a class="segmented-btn" href="/simulateur-dca">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
-        DCA
-      </button>
-      <button class="segmented-btn active" aria-current="page">
+        Bourse
+      </a>
+      <a class="segmented-btn" href="/simulateur-dca-crypto">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2L2 5l6 3 6-3-6-3zM2 11l6 3 6-3M2 8l6 3 6-3"/></svg>
+        Crypto
+      </a>
+      <a class="segmented-btn active" aria-current="page" href="/simulateur-interets-composes">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
-        Intérêts composés
-      </button>
-      <button class="segmented-btn" onclick="location.href='/simulateur-rendement-locatif'">
+        Composés
+      </a>
+      <a class="segmented-btn" href="/simulateur-rendement-locatif">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>
         Immobilier
-      </button>
-    </div>
+      </a>
+      <a class="segmented-btn" href="/calculateur-fire">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4h5l-2 5h-3z"/><path d="M9 9v5M7 9v5"/></svg>
+        FIRE
+      </a>
+    </nav>
   </div>
 
   <div class="topbar-right">
