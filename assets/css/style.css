@@ -166,33 +166,38 @@ table { border-collapse: collapse; width: 100%; }
   text-transform: uppercase;
 }
 
-/* Topbar toggle (Bourse / Immobilier / etc.) */
+/* Topbar toggle (Bourse / Crypto / Composés / Immobilier / FIRE) */
 .segmented {
   display: inline-flex;
-  background: var(--bg-2);
+  background: var(--bg-3);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 4px;
   gap: 2px;
+  white-space: nowrap;
 }
 .segmented-btn {
-  padding: 6px 14px;
-  font-size: 13px;
+  padding: 7px 12px;
+  font-size: 12.5px;
   font-weight: 500;
-  color: var(--text-2);
+  color: var(--text-3);
   border-radius: calc(var(--r) - 4px);
   display: inline-flex;
   align-items: center;
   gap: 6px;
   transition: var(--t-fast);
+  text-decoration: none;
+  letter-spacing: -0.005em;
 }
-.segmented-btn:hover { color: var(--text); }
+.segmented-btn:hover { color: var(--text); background: var(--bg-hover); }
 .segmented-btn.active {
-  background: var(--bg-elev);
+  background: var(--bg-card);
   color: var(--text);
   box-shadow: var(--shadow-sm);
 }
-.segmented-btn svg { width: 14px; height: 14px; opacity: 0.8; }
+.segmented-btn.active:hover { background: var(--bg-card); }
+.segmented-btn svg { width: 13px; height: 13px; opacity: 0.85; }
+.segmented-btn.active svg { color: var(--accent); opacity: 1; }
 
 /* Topbar secondary button */
 .btn-ghost {
@@ -1219,6 +1224,8 @@ table { border-collapse: collapse; width: 100%; }
   .topbar { padding: 0 14px; }
   .topbar-center { position: static; transform: none; }
   .logo-text-sub { display: none; }
+  /* Pack 5 buttons tighter on small screens */
+  .segmented-btn { padding: 6px 9px; font-size: 12px; gap: 5px; }
 }
 @media (max-width: 640px) {
   .topbar-center { display: none; }
