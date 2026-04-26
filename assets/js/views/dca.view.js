@@ -362,6 +362,26 @@
     };
   }
 
+  /**
+   * Set the dynamic insight text under an analysis section.
+   * Creates the .insight DOM if missing, populates with HTML.
+   * Use <em> for accent values, .pos / .neg / .warn for signed numbers.
+   */
+  const INSIGHT_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5l1.6 4.4 4.4 1.6-4.4 1.6L8 13.5l-1.6-4.4L2 7.5l4.4-1.6z" stroke-linejoin="round"/></svg>';
+  function setInsight(sectionId, html) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    let box = section.querySelector(':scope > .insight');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'insight';
+      box.innerHTML = '<div class="insight-icon">' + INSIGHT_ICON + '</div><div class="insight-text"></div>';
+      section.appendChild(box);
+    }
+    const txt = box.querySelector('.insight-text');
+    if (txt) txt.innerHTML = html;
+  }
+
   function run() {
     if (!currentAsset || !currentData) return;
     const form = readForm();
@@ -436,6 +456,21 @@
     ];
 
     requestAnimationFrame(() => CI.drawChart('d-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) }));
+
+    // Insight A01
+    const gainCls = r.finalGain >= 0 ? 'pos' : 'neg';
+    const triCls = (r.annualReturn || 0) >= 0 ? 'pos' : 'neg';
+    const triTxt = r.annualReturn != null ? `<span class="${triCls}">${(r.annualReturn >= 0 ? '+' : '') + r.annualReturn.toFixed(2)} %/an</span>` : '<span class="muted">—</span>';
+    const realLine = r.inflationAdjusted
+      ? ` Pouvoir d'achat ajusté inflation : <em>${CI.fmtNum(r.finalValueReal, 0)} ${curr}</em>.`
+      : '';
+    setInsight('a1',
+      `Sur <strong>${r.durationYears.toFixed(0)} ans</strong> avec ${currentAsset.name}, ` +
+      `<strong>${CI.fmtNum(r.totalInvested, 0)} ${curr}</strong> versés deviennent ` +
+      `<em>${CI.fmtNum(r.finalValue, 0)} ${curr}</em> ` +
+      `(<span class="${gainCls}">${(r.finalGain >= 0 ? '+' : '') + CI.fmtNum(r.finalGain, 0)} ${curr}</span>, ` +
+      `TRI ${triTxt}).${realLine}`
+    );
   }
 
   // ===== Analyse 03 : Stratégies de déploiement (DCA vs VA vs Lump Sum) =====
@@ -517,6 +552,15 @@
     set('da3-meta', `${currentAsset.name} · ${win.start} → ${win.end} · ${(form.durationMonths/12).toFixed(1)} ans`);
 
     requestAnimationFrame(() => drawTripleStratChart(r, va, lumpRes, form));
+
+    // Insight A03 — gagnant + écarts
+    const winnerColorMap = { dca: 'DCA', va: 'Value Averaging', lump: 'Lump Sum' };
+    setInsight('a3',
+      `<strong>${winnerColorMap[winner.id]}</strong> domine sur cette plage avec ` +
+      `<em>${CI.fmtCompact(winner.val)} ${curr}</em>, soit <span class="pos">+${CI.fmtCompact(gap)} ${curr}</span> ` +
+      `(<strong>+${gapPct.toFixed(1)} %</strong>) de plus que ${runner.label}. ` +
+      `<span class="muted">DCA ${CI.fmtCompact(dcaFinal)} · VA ${CI.fmtCompact(vaFinal)} · Lump ${CI.fmtCompact(lumpFinal)}.</span>`
+    );
   }
 
   function drawTripleStratChart(rDca, rVa, rLump, form) {
@@ -599,6 +643,22 @@
     }
 
     requestAnimationFrame(() => drawHeatmap(rolling));
+
+    // Insight A02
+    if (refStats && rolling.entryYears.length) {
+      const safeMsg = safeD
+        ? ` Au-delà de <em>${safeD} ans</em> de détention, <strong>100 % des entrées</strong> finissent positives.`
+        : ` Aucune durée jusqu'à 30 ans ne garantit 100 % des entrées positives — preuve que la patience a une limite, le timing aussi.`;
+      const worstCls = refStats.worst >= 0 ? 'pos' : 'neg';
+      const worstSign = refStats.worst >= 0 ? '+' : '';
+      setInsight('a2',
+        `Sur <strong>${rolling.entryYears.length}</strong> dates d'entrée possibles entre ${rolling.entryYears[0]} et ${rolling.entryYears[rolling.entryYears.length - 1]}, ` +
+        `<em>${refStats.positivePct.toFixed(0)} %</em> des fenêtres ${refLabel} ont fini positives. ` +
+        `Meilleure entrée : <span class="pos">+${refStats.best.toFixed(1)} %/an</span> (${refStats.bestYear}). ` +
+        `Pire : <span class="${worstCls}">${worstSign}${refStats.worst.toFixed(1)} %/an</span> (${refStats.worstYear}).` +
+        safeMsg
+      );
+    }
   }
 
   function drawHeatmap(rolling) {
@@ -723,6 +783,22 @@
 
     // Render histogram as bars (custom)
     renderYearBars(stats.calYears);
+
+    // Insight A04 — la "lecture d'analyse" comme dans le screenshot du user
+    if (s.best && s.worst && s.total > 0) {
+      const bestSign = s.best.pct >= 0 ? '+' : '';
+      const worstSign = s.worst.pct >= 0 ? '+' : '';
+      const meanSign = s.mean >= 0 ? '+' : '';
+      const meanCls = s.mean >= 0 ? 'pos' : 'neg';
+      setInsight('a4',
+        `Sur <strong>${s.total} années</strong>, ` +
+        `<em>${s.positive}</em> ont été positives (<strong>${s.positivePct.toFixed(0)} %</strong>). ` +
+        `Une année typique délivre <span class="${meanCls}">${meanSign}${s.mean.toFixed(1)} %</span>, ` +
+        `mais les extrêmes vont de <span class="neg">${worstSign}${s.worst.pct.toFixed(1)} %</span> (${s.worst.year}) ` +
+        `à <span class="pos">${bestSign}${s.best.pct.toFixed(1)} %</span> (${s.best.year}). ` +
+        `<span class="muted">La volatilité annuelle est l'exception qui se lisse avec la durée de détention.</span>`
+      );
+    }
   }
 
   function renderYearBars(calYears) {
@@ -817,6 +893,18 @@
     }
 
     requestAnimationFrame(() => drawUnderwaterChart(sampled, labels));
+
+    // Insight A05
+    const ddDate = ymLabel(addMonths(win.start, ddIdx));
+    const recoveryMsg = r.recoveryMonths != null
+      ? `récupéré en <strong>${(r.recoveryMonths / 12).toFixed(1)} ans</strong>`
+      : `<span class="warn">pas encore récupéré</span> à ce stade de la simulation`;
+    setInsight('a5',
+      `Le pire drawdown historique de <strong>${currentAsset.name}</strong> sur cette plage : ` +
+      `<span class="neg">−${stats.drawdown.maxPct.toFixed(1)} %</span> en ${ddDate}. ` +
+      `Ton DCA a, lui, encaissé un drawdown max de <span class="neg">−${r.maxDrawdownPct.toFixed(1)} %</span>, ${recoveryMsg}. ` +
+      `<span class="muted">Les chocs de marché sont normaux ; la durée de détention efface la majorité.</span>`
+    );
   }
 
   function drawUnderwaterChart(sampled, labels) {
@@ -904,6 +992,22 @@
       drawVolatilityChart(sampledLabels, sampledVol);
       if (hasCAPE && sampledCAPE.length > 0) drawCAPEChart(sampledLabels, sampledCAPE, capeAvgLine);
     });
+
+    // Insight A06
+    if (s.currentVol != null && s.avgVol > 0) {
+      const volRatio = s.currentVol / s.avgVol;
+      const volSignal = volRatio < 0.75 ? 'calme' : volRatio < 1.25 ? 'normale' : volRatio < 1.75 ? 'élevée' : 'très élevée';
+      const volCls = volRatio < 0.75 ? 'pos' : volRatio < 1.25 ? 'muted' : 'warn';
+      let line = `Volatilité actuelle : <em>${s.currentVol.toFixed(1)} %</em> ` +
+                 `(<span class="${volCls}">${volSignal}</span>, ${s.avgVol > 0 ? ((volRatio - 1) * 100).toFixed(0) : 0} % vs moyenne historique de ${s.avgVol.toFixed(1)} %).`;
+      if (hasCAPE && s.currentCAPE != null && s.capeAvg != null) {
+        const capeRatio = s.currentCAPE / s.capeAvg;
+        const capeLabel = capeRatio < 0.8 ? 'sous-évalué' : capeRatio < 1.1 ? 'à juste valeur' : capeRatio < 1.5 ? 'surévalué' : 'très surévalué';
+        const capeCls = capeRatio < 0.8 ? 'pos' : capeRatio < 1.1 ? 'muted' : 'warn';
+        line += ` Côté valorisation, CAPE Shiller à <strong>${s.currentCAPE.toFixed(1)}x</strong> (moy. ${s.capeAvg.toFixed(1)}x) → <span class="${capeCls}">${capeLabel}</span>.`;
+      }
+      setInsight('a6', line);
+    }
   }
 
   function drawVolatilityChart(labels, volData) {
@@ -962,6 +1066,17 @@
     cls('da7-prob', fs.probPositive >= 80 ? 'pos' : fs.probPositive >= 50 ? 'info' : 'neg');
 
     requestAnimationFrame(() => drawMonteCarlo(mc, curr));
+
+    // Insight A07
+    const probCls = fs.probPositive >= 80 ? 'pos' : fs.probPositive >= 50 ? 'warn' : 'neg';
+    setInsight('a7',
+      `Sur <strong>${fs.simulations.toLocaleString('fr-FR')}</strong> trajectoires Monte Carlo (${Math.round(r.durationYears)} ans), ` +
+      `<span class="${probCls}">${fs.probPositive.toFixed(0) + ' %'}</span> finissent en gain. ` +
+      `Médiane (P50) à <em>${CI.fmtCompact(fs.p50)} ${curr}</em>. ` +
+      `Scénario pessimiste P10 : <span class="${fs.p10 >= fs.totalInvested ? 'pos' : 'neg'}">${CI.fmtCompact(fs.p10)} ${curr}</span> · ` +
+      `optimiste P90 : <span class="pos">${CI.fmtCompact(fs.p90)} ${curr}</span>. ` +
+      `<span class="muted">L'écart entre P10 et P90 mesure ton risque de timing — plus il est large, plus la durée de détention compte.</span>`
+    );
   }
 
   function drawMonteCarlo(mc, curr) {
@@ -1118,6 +1233,18 @@
     }
 
     requestAnimationFrame(() => drawComparisonChart(ra, r2, { ...form, startDate: a8StartDate, durationMonths: a8DurationMonths }));
+
+    // Insight A08
+    const wonByMain = ra.finalValue >= r2.finalValue;
+    const winName = wonByMain ? currentAsset.name : compAsset.name;
+    const lossName = wonByMain ? compAsset.name : currentAsset.name;
+    const gap = Math.abs(ra.finalValue - r2.finalValue);
+    const gapPct = (gap / Math.min(ra.finalValue, r2.finalValue)) * 100;
+    setInsight('a8',
+      `Sur cette période, <strong>${winName}</strong> aurait surperformé <strong>${lossName}</strong> de ` +
+      `<em>${CI.fmtCompact(gap)} ${curr}</em> (<span class="pos">+${gapPct.toFixed(1)} %</span>). ` +
+      `<span class="muted">Compare aussi le drawdown max et le TRI : la perf brute ne dit pas tout du parcours.</span>`
+    );
   }
 
   function drawComparisonChart(r1, r2, form) {
@@ -1179,6 +1306,17 @@
         </div>`;
       }).join('');
     }
+
+    // Insight A09
+    const worstScenario = fiscal.scenarios.find((s) => s.id === fiscal.worstId);
+    const savingPct = worstScenario && worstScenario.tax > 0 ? (fiscal.saving / worstScenario.tax * 100).toFixed(0) : 0;
+    setInsight('a9',
+      `Sur une plus-value de <strong>${CI.fmtNum(fiscal.plusValue, 0)} ${curr}</strong>, ` +
+      `l'enveloppe optimale est <em>${fiscal.best.label}</em> avec ${CI.fmtNum(fiscal.best.tax, 0)} ${curr} d'impôts ` +
+      `(<span class="pos">économie ${CI.fmtNum(fiscal.saving, 0)} ${curr}</span> vs ${worstScenario ? worstScenario.label : 'défavorable'}, ` +
+      `soit <strong>${savingPct} %</strong> d'impôts en moins). ` +
+      `<span class="muted">L'enveloppe fiscale change tout sur le long terme — privilégie PEA/AV à durée suffisante.</span>`
+    );
   }
 
   // ===== Analyse 10 : Plan de décaissement =====
@@ -1206,6 +1344,22 @@
 
     set('da10-meta', CI.fmtCompact(dc.capital) + ' ' + curr + ' · rend. ' + da10Return + ' %/an');
     requestAnimationFrame(() => drawDecaissementChart(dc, curr));
+
+    // Insight A10
+    const swr4 = dc.results[1];
+    const swr5 = dc.results[2];
+    const swr5Status = swr5.depleted
+      ? `<span class="neg">épuisé en ${swr5.depletedYear} ans</span>`
+      : `<span class="pos">tient les ${da10Horizon} ans</span>`;
+    const perpLine = dc.perpetualMonthly > 0
+      ? `Pour vivre <strong>perpétuellement</strong> sans entamer le capital (rendement réel ${(da10Return - 2).toFixed(0)} %), max <em>${CI.fmtNum(dc.perpetualMonthly, 0)} ${curr}/mois</em>.`
+      : `<span class="warn">Le rendement net d'inflation est trop faible pour un retrait perpétuel.</span>`;
+    setInsight('a10',
+      `Avec <strong>${CI.fmtCompact(dc.capital)} ${curr}</strong> de capital, ` +
+      `la règle des 4 % te donne <em>${CI.fmtNum(swr4.monthly, 0)} ${curr}/mois</em>. ` +
+      `À 5 % de retrait : ${swr5Status}. ` +
+      perpLine
+    );
   }
 
   function drawDecaissementChart(dc, curr) {

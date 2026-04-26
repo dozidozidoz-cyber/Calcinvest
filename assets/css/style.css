@@ -862,6 +862,45 @@ table { border-collapse: collapse; width: 100%; }
 .info-box.warn { border-left-color: var(--yellow); }
 .info-box.warn .info-box-title { color: var(--yellow); }
 
+/* ---------- Insight box (lecture d'analyse, généré dynamiquement) ---------- */
+.insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--accent-soft) 100%);
+  border: 1px solid var(--accent-mid);
+  border-radius: var(--r-lg);
+  padding: 14px 18px;
+  margin-top: 14px;
+  margin-bottom: 22px;
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  box-shadow: var(--shadow-sm);
+}
+.insight-icon {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #FFFFFF;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+  box-shadow: 0 1px 2px rgba(5, 150, 105, 0.20);
+}
+.insight-icon svg { width: 14px; height: 14px; }
+.insight-text { flex: 1; min-width: 0; }
+.insight strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.insight em { font-style: normal; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+.insight .pos { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+.insight .neg { color: var(--red); font-weight: 600; font-variant-numeric: tabular-nums; }
+.insight .warn { color: var(--yellow); font-weight: 600; font-variant-numeric: tabular-nums; }
+.insight .muted { color: var(--text-3); }
+.insight:empty { display: none; }
+
 /* ---------- Tool cards (landing) ---------- */
 .tools-grid {
   display: grid;
