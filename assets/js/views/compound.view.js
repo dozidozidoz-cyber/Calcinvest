@@ -12,6 +12,22 @@
   let lastParams = null;
   let lastResult = null;
 
+  /* Insight box helper */
+  const INSIGHT_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5l1.6 4.4 4.4 1.6-4.4 1.6L8 13.5l-1.6-4.4L2 7.5l4.4-1.6z" stroke-linejoin="round"/></svg>';
+  function setInsight(sectionId, html) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    let box = section.querySelector(':scope > .insight');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'insight';
+      box.innerHTML = '<div class="insight-icon">' + INSIGHT_ICON + '</div><div class="insight-text"></div>';
+      section.appendChild(box);
+    }
+    const txt = box.querySelector('.insight-text');
+    if (txt) txt.innerHTML = html;
+  }
+
   const RATE_COLORS = {
     2:  '#60A5FA',
     4:  '#34D399',
@@ -128,6 +144,19 @@
         { label: 'Valeur', data: r.yearly.map((y) => y.value),    color: '#34D399', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
+
+    // Insight A01
+    const interestShare = (r.finalInterest / r.finalValue * 100).toFixed(0);
+    const doublingLine = r.doublingYears != null
+      ? ` Le capital double tous les <strong>${r.doublingYears.toFixed(1)} ans</strong> à ce rythme.`
+      : '';
+    setInsight('ca-synthese',
+      `À <strong>${p.annualRate} %/an</strong> sur <strong>${p.years} ans</strong>, ` +
+      `<em>${CI.fmtMoney(r.finalInvested, 0)}</em> versés deviennent <em>${CI.fmtMoney(r.finalValue, 0)}</em> ` +
+      `(×${r.multiplier.toFixed(2)}). Les intérêts représentent <span class="pos">${CI.fmtMoney(r.finalInterest, 0)}</span>, ` +
+      `soit <strong>${interestShare} %</strong> du capital final.${doublingLine}` +
+      ` <span class="muted">C'est ça la magie des intérêts composés : plus longtemps tu laisses tourner, plus la part des intérêts explose.</span>`
+    );
   }
 
   /* ------------------------------------------------------------
@@ -172,6 +201,20 @@
     // Meta
     const meta = document.getElementById('ca2-meta');
     if (meta) meta.textContent = CI.fmtCompact(p.initialAmount) + ' initial · ' + CI.fmtNum(p.monthlyAmount, 0) + ' €/mois · ' + p.years + ' ans';
+
+    // Insight A02
+    const at4 = comps.find((c) => c.rate === 4);
+    const at8 = comps.find((c) => c.rate === 8);
+    const at12 = comps.find((c) => c.rate === 12);
+    if (at4 && at8 && at12) {
+      setInsight('ca-taux',
+        `À <strong>${p.years} ans</strong>, passer de <strong>4 %</strong> à <strong>8 %/an</strong> ` +
+        `transforme <em>${CI.fmtCompact(at4.finalValue)}</em> en <em>${CI.fmtCompact(at8.finalValue)}</em> ` +
+        `(<span class="pos">×${(at8.finalValue / at4.finalValue).toFixed(2)}</span>). ` +
+        `À 12 % : <span class="pos">${CI.fmtCompact(at12.finalValue)}</span>. ` +
+        `<span class="muted">Chaque point de rendement supplémentaire compose exponentiellement — le choix du véhicule (livret, ETF, actions) compte plus que le montant initial.</span>`
+      );
+    }
   }
 
   /* ------------------------------------------------------------
@@ -217,6 +260,39 @@
       }
       show('ca3-row-years', false);
       show('ca3-row-monthly', true);
+    }
+
+    // Insight A03
+    if (mode === 'monthly') {
+      const g = calcGoal({ ...p, goalAmount: goal });
+      const monthly = g.requiredMonthly;
+      const total = p.initialAmount + Math.ceil(monthly) * p.years * 12;
+      const interestPart = goal - total;
+      setInsight('ca-objectif',
+        `Pour atteindre <strong>${CI.fmtCompact(goal)}</strong> en <strong>${p.years} ans</strong> à ${p.annualRate} %/an, ` +
+        `il faut épargner <em>${CI.fmtMoney(Math.ceil(monthly), 0)}/mois</em>. ` +
+        `Au total, tu versera <strong>${CI.fmtMoney(total, 0)}</strong>, et les intérêts apporteront ` +
+        `<span class="pos">${CI.fmtMoney(interestPart, 0)}</span> de plus. ` +
+        `<span class="muted">Plus le taux est élevé et l'horizon long, plus la part des intérêts dépasse celle des versements.</span>`
+      );
+    } else {
+      const g = calcGoal({ ...p, goalAmount: goal, years: null, monthlyAmount: p.monthlyAmount });
+      const yrs = g.yearsToGoal;
+      if (yrs == null || yrs < 0) {
+        setInsight('ca-objectif',
+          `<span class="warn">Avec ${CI.fmtNum(p.monthlyAmount, 0)} €/mois et ${p.annualRate} %/an, ` +
+          `tu n'atteindras jamais ${CI.fmtCompact(goal)}.</span> ` +
+          `Augmente le versement ou le taux de rendement.`
+        );
+      } else {
+        const total = p.initialAmount + p.monthlyAmount * yrs * 12;
+        setInsight('ca-objectif',
+          `Avec <strong>${CI.fmtNum(p.monthlyAmount, 0)} €/mois</strong> à ${p.annualRate} %/an, ` +
+          `tu atteindra <strong>${CI.fmtCompact(goal)}</strong> en <em>${yrs.toFixed(1)} ans</em>. ` +
+          `Total versé : ${CI.fmtMoney(total, 0)}, soit <span class="pos">${CI.fmtMoney(goal - total, 0)}</span> d'intérêts générés. ` +
+          `<span class="muted">Augmenter le versement de 50 % réduit le temps d'environ 25 %.</span>`
+        );
+      }
     }
   }
 
@@ -269,6 +345,22 @@
         { yFormat: (v) => CI.fmtCompact(v) }
       );
     });
+
+    // Insight A04
+    if (base && plus10) {
+      const plus20 = scenarios.find((s) => s.extra === 20);
+      const gain10 = plus10.valueAtHorizon - base.valueAtHorizon;
+      const ratio10 = plus10.valueAtHorizon / base.valueAtHorizon;
+      const line20 = plus20
+        ? ` Avec <strong>20 ans d'avance</strong>, le capital final est multiplié par <span class="pos">×${(plus20.valueAtHorizon / base.valueAtHorizon).toFixed(2)}</span>.`
+        : '';
+      setInsight('ca-early',
+        `Commencer <strong>10 ans plus tôt</strong> à ${p.annualRate} %/an = ` +
+        `<span class="pos">+${CI.fmtMoney(gain10, 0)}</span> en plus à l'horizon, ` +
+        `soit un capital final ×<em>${ratio10.toFixed(2)}</em>.${line20} ` +
+        `<span class="muted">Le temps est l'allié n°1 de l'épargnant — chaque année gagnée vaut plus que la précédente.</span>`
+      );
+    }
   }
 
   /* ------------------------------------------------------------
@@ -335,6 +427,17 @@
     requestAnimationFrame(() => {
       CI.drawChart('ca5-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) });
     });
+
+    // Insight A05
+    const erosionPct = (erosion / nominal * 100).toFixed(0);
+    const ppaValue = 1000 / ppa;
+    setInsight('ca-inflation',
+      `À <strong>${(p.inflation || 2).toFixed(1)} %/an</strong> d'inflation sur ${p.years} ans, ` +
+      `<em>${CI.fmtMoney(nominal, 0)}</em> nominal valent en réalité <em>${CI.fmtMoney(real, 0)}</em> en pouvoir d'achat ` +
+      `(<span class="neg">−${erosionPct} %</span>). ` +
+      `1 000 € d'aujourd'hui équivaudront à <strong>${CI.fmtMoney(ppaValue, 0)}</strong> dans ${p.years} ans. ` +
+      `<span class="muted">Le rendement nominal trompe : seul le rendement réel (rendement − inflation) construit le pouvoir d'achat.</span>`
+    );
   }
 
   /* ------------------------------------------------------------

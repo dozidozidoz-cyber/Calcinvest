@@ -25,6 +25,22 @@
   /* Cache des données JSON chargées */
   const DATA_CACHE = {};
 
+  /* Insight box helper (matching dca.view.js component) */
+  const INSIGHT_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5l1.6 4.4 4.4 1.6-4.4 1.6L8 13.5l-1.6-4.4L2 7.5l4.4-1.6z" stroke-linejoin="round"/></svg>';
+  function setInsight(sectionId, html) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    let box = section.querySelector(':scope > .insight');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'insight';
+      box.innerHTML = '<div class="insight-icon">' + INSIGHT_ICON + '</div><div class="insight-text"></div>';
+      section.appendChild(box);
+    }
+    const txt = box.querySelector('.insight-text');
+    if (txt) txt.innerHTML = html;
+  }
+
   /* ------------------------------------------------------------------ */
   /* Chargement données JSON                                               */
   /* ------------------------------------------------------------------ */
@@ -171,6 +187,21 @@
         </tr>`;
       }).join('');
     }
+
+    // Insight A01
+    const pnlCls = r.finalPnL >= 0 ? 'pos' : 'neg';
+    const cagrCls = r.cagr >= 0 ? 'pos' : 'neg';
+    const taxLine = p.taxRate > 0
+      ? ` Après flat tax ${p.taxRate} %, il te reste <em>${CI.fmtMoney(r.netAfterTax, 0)}</em>.`
+      : '';
+    setInsight('cra-overview',
+      `Sur <strong>${(r.months / 12).toFixed(1)} ans</strong> de DCA sur <strong>${meta.name}</strong>, ` +
+      `<em>${CI.fmtMoney(r.finalInvested, 0)}</em> versés deviennent ` +
+      `<em>${CI.fmtMoney(r.finalValue, 0)}</em> ` +
+      `(<span class="${pnlCls}">${r.finalPnL >= 0 ? '+' : ''}${CI.fmtMoney(r.finalPnL, 0)}</span>, ` +
+      `CAGR <span class="${cagrCls}">${r.cagr >= 0 ? '+' : ''}${r.cagr.toFixed(1)} %/an</span>, ×${r.multiplier.toFixed(2)}). ` +
+      `Prix moyen d'achat <strong>${CI.fmtNum(r.avgBuyPrice, 0)} $</strong>.${taxLine}`
+    );
   }
 
   /* ------------------------------------------------------------------ */
@@ -229,6 +260,18 @@
         halvEl.style.display = 'none';
       }
     }
+
+    // Insight A02
+    if (yearly.length > 0) {
+      const posPct = (posYears / yearly.length * 100).toFixed(0);
+      setInsight('cra-yearly',
+        `Sur <strong>${yearly.length} années</strong> de données ${meta.name}, ` +
+        `<em>${posYears}</em> ont fini en hausse (<strong>${posPct} %</strong>). ` +
+        `Plus belle année : <span class="pos">+${best.ret.toFixed(0)} %</span> (${best.year}). ` +
+        `Pire : <span class="neg">${worst.ret.toFixed(0)} %</span> (${worst.year}). ` +
+        `<span class="muted">La crypto amplifie tout — gains comme pertes — d'où l'intérêt du DCA pour lisser.</span>`
+      );
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -257,6 +300,18 @@
         { data: ddData, color: '#F87171', fill: true, width: 1.5 }
       ], { yFormat: (v) => v.toFixed(0) + ' %' });
     });
+
+    // Insight A03
+    const meta = CRYPTOS_META[p.cryptoId] || {};
+    const ddCurrentLine = lastDD && lastDD.drawdown < -1
+      ? ` Actuellement le portefeuille est en drawdown de <span class="neg">${lastDD.drawdown.toFixed(1)} %</span>.`
+      : ` Le portefeuille est actuellement <span class="pos">proche de son sommet</span>.`;
+    setInsight('cra-drawdown',
+      `Pire chute historique de <strong>${meta.name}</strong> sur cette plage : ` +
+      `<span class="neg">${dd.maxDD.toFixed(1)} %</span> (${dd.maxDDStart || '—'} → ${dd.maxDDEnd || '—'}). ` +
+      `<strong>${dd.deepDrawdowns}</strong> drawdowns sévères (>50 %) dans l'histoire de l'actif.${ddCurrentLine} ` +
+      `<span class="muted">Sur crypto, viser ${'>'} 4 ans d'horizon minimum pour absorber un cycle bear complet.</span>`
+    );
   }
 
   /* ------------------------------------------------------------------ */
@@ -359,6 +414,13 @@
         { label: 'DCA classique',    data: idxs.map((i) => dcaPts[i].value),       color: '#34D399', width: 3 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
+
+    // Insight A04
+    setInsight('cra-lumpvsdca',
+      `<strong>${winner.label}</strong> domine sur cette plage avec <em>${CI.fmtCompact(winner.val)} €</em>, ` +
+      `soit <span class="pos">+${CI.fmtCompact(gap)} €</span> (<strong>+${gapPct.toFixed(1)} %</strong>) de plus que ${runner.label}. ` +
+      `<span class="muted">DCA ${CI.fmtCompact(dcaFinal)} · VA ${CI.fmtCompact(vaFinal)} · Lump ${CI.fmtCompact(lumpFinal)}.</span>`
+    );
   }
 
   /* ------------------------------------------------------------------ */
@@ -398,6 +460,19 @@
           color: '#F87171', fill: false, width: 1.5, dash: [3, 3] }
       ], { yFormat: (v) => v.toFixed(0) + ' %' });
     });
+
+    // Insight A05
+    const meta = CRYPTOS_META[p.cryptoId] || {};
+    if (vol.currentVol != null && vol.histVol != null) {
+      const ratioNum = parseFloat(ratio);
+      const ratioCls = ratioNum > 4 ? 'neg' : ratioNum > 2.5 ? 'warn' : 'muted';
+      setInsight('cra-volatility',
+        `Volatilité actuelle de <strong>${meta.name}</strong> : <em>${vol.currentVol.toFixed(1)} %/an</em> ` +
+        `(moyenne historique <strong>${vol.histVol.toFixed(1)} %/an</strong>). ` +
+        `Soit <span class="${ratioCls}">${ratio}× plus volatile que le S&P 500</span>. ` +
+        `<span class="muted">À retenir : un actif crypto demande une enveloppe psychologique solide et un horizon long.</span>`
+      );
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -459,6 +534,19 @@
         { data: prices, color: '#60A5FA', fill: false, width: 2 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
+
+    // Insight A06
+    const metaA6 = CRYPTOS_META[p.cryptoId] || {};
+    const currentCycle = cycles[cycles.length - 1];
+    const cycleLine = currentCycle && currentCycle.current
+      ? ` Cycle actuel : <span class="${currentCycle.type === 'bull' ? 'pos' : 'neg'}">${currentCycle.type === 'bull' ? 'BULL' : 'BEAR'}</span> depuis ${currentCycle.start} (${currentCycle.months} mois, ${currentCycle.ret >= 0 ? '+' : ''}${currentCycle.ret.toFixed(0)} %).`
+      : '';
+    setInsight('cra-cycles',
+      `<strong>${metaA6.name}</strong> a connu <em>${bulls.length}</em> cycles bull (perf moyenne ` +
+      `<span class="pos">+${avgBull.toFixed(0)} %</span>) et <em>${bears.length}</em> cycles bear ` +
+      `(<span class="neg">${avgBear.toFixed(0)} %</span>) sur cette plage.${cycleLine} ` +
+      `<span class="muted">Acheter pendant un bear et tenir jusqu'au prochain bull = la stratégie historique gagnante.</span>`
+    );
   }
 
   // Helpers locaux (répliques simplifiées des fonctions du core)
@@ -545,6 +633,23 @@
             { yFormat: (v) => CI.fmtCompact(v) }
           );
         });
+
+        // Insight A07
+        const sorted = [...results].sort((a, b) => b.result.finalValue - a.result.finalValue);
+        const winner = sorted[0];
+        const loser  = sorted[sorted.length - 1];
+        const wMeta  = CRYPTOS_META[winner.id];
+        const lMeta  = CRYPTOS_META[loser.id];
+        const ratio  = loser.result.finalValue > 0
+          ? (winner.result.finalValue / loser.result.finalValue).toFixed(1)
+          : '∞';
+        setInsight('cra-multi',
+          `Sur la période commune (${winner.start} → ${winner.end}), <strong>${wMeta.name}</strong> ` +
+          `domine avec <em>${CI.fmtCompact(winner.result.finalValue)} €</em> (×${winner.result.multiplier.toFixed(1)}). ` +
+          `Le pire (${lMeta.name}) finit à <strong>${CI.fmtCompact(loser.result.finalValue)} €</strong>, ` +
+          `soit un écart de <span class="warn">${ratio}×</span>. ` +
+          `<span class="muted">Diversifier sur 2-3 cryptos lisse les paris perdus, mais BTC reste le benchmark.</span>`
+        );
       })
       .catch((e) => console.error('A07 multi-crypto error:', e));
   }
