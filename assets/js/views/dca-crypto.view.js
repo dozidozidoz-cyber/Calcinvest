@@ -352,11 +352,11 @@
       if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
       const labels = idxs.map((i) => dcaPts[i].date);
       CI.drawChart('cra4-chart', labels, [
-        { data: idxs.map((i) => dcaPts[i].invested), color: '#94A3B8', width: 1, dash: [3, 3] },
-        { data: idxs.map((i) => vaSeries.invested[i]), color: '#FBBF24', width: 1, dash: [3, 3] },
-        { data: idxs.map((i) => lumpPts[i].value), color: '#F7931A', width: 2 },
-        { data: idxs.map((i) => vaSeries.portfolio[i]), color: '#A78BFA', width: 2 },
-        { data: idxs.map((i) => dcaPts[i].value), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.08)', width: 2.5 }
+        { label: 'Versé DCA / Lump', data: idxs.map((i) => dcaPts[i].invested), color: '#94A3B8', width: 1, dash: [3, 3] },
+        { label: 'Versé VA',         data: idxs.map((i) => vaSeries.invested[i]), color: '#FBBF24', width: 1, dash: [3, 3] },
+        { label: 'Lump Sum',         data: idxs.map((i) => lumpPts[i].value),     color: '#F7931A', width: 2.5 },
+        { label: 'Value Averaging',  data: idxs.map((i) => vaSeries.portfolio[i]), color: '#A78BFA', width: 2.5 },
+        { label: 'DCA classique',    data: idxs.map((i) => dcaPts[i].value),       color: '#34D399', width: 3 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
   }

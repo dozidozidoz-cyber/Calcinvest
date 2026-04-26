@@ -534,13 +534,13 @@
     if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
     const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
     CI.drawChart('da3-chart', labels, [
-      // Lignes capital investi (en arrière-plan, mono dashées)
-      { data: idxs.map((i) => rDca.series.invested[i]), color: '#94A3B8', width: 1, dash: [3, 3] },
-      { data: idxs.map((i) => rVa.series.invested[i]), color: '#FBBF24', width: 1, dash: [3, 3] },
-      // Portefeuilles (au-dessus)
-      { data: idxs.map((i) => rLump.series.portfolio[i]), color: '#F7931A', width: 2 },
-      { data: idxs.map((i) => rVa.series.portfolio[i]), color: '#A78BFA', width: 2 },
-      { data: idxs.map((i) => rDca.series.portfolio[i]), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.08)', width: 2.5 }
+      // Lignes capital investi (arrière-plan, mono dashées)
+      { label: 'Versé DCA / Lump', data: idxs.map((i) => rDca.series.invested[i]), color: '#94A3B8', width: 1, dash: [3, 3] },
+      { label: 'Versé VA',         data: idxs.map((i) => rVa.series.invested[i]),  color: '#FBBF24', width: 1, dash: [3, 3] },
+      // Portefeuilles (au-dessus, ordre du plus haut au plus bas pour empilement visuel)
+      { label: 'Lump Sum',         data: idxs.map((i) => rLump.series.portfolio[i]), color: '#F7931A', width: 2.5 },
+      { label: 'Value Averaging',  data: idxs.map((i) => rVa.series.portfolio[i]),   color: '#A78BFA', width: 2.5 },
+      { label: 'DCA classique',    data: idxs.map((i) => rDca.series.portfolio[i]),  color: '#34D399', width: 3 }
     ], { yFormat: (v) => CI.fmtCompact(v) });
   }
 
@@ -822,70 +822,17 @@
   function drawUnderwaterChart(sampled, labels) {
     const canvas = document.getElementById('da5-chart');
     if (!canvas || !sampled.length) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(320, Math.floor(rect.width || canvas.offsetWidth || 600));
-    const H = Math.max(180, Math.floor(rect.height || 220));
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, W, H);
-
-    const padL = 52, padR = 14, padT = 14, padB = 30;
-    const w = W - padL - padR, h = H - padT - padB;
-
-    let yMin = Math.min(...sampled);
-    let yMax = 0; // drawdown always ≤ 0
-    if (yMin === yMax) yMin = -1;
-    const span = yMax - yMin;
-    yMin -= span * 0.05;
-    yMax += span * 0.05;
-    const yAt = (v) => padT + h - ((v - yMin) / (yMax - yMin)) * h;
-    const xAt = (i) => padL + (sampled.length <= 1 ? w / 2 : (i / (sampled.length - 1)) * w);
-
-    // Grid
-    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
-    const nTicks = 5;
-    for (let t = 0; t <= nTicks; t++) {
-      const v = yMin + (yMax - yMin) * (t / nTicks);
-      const y = yAt(v);
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText(v.toFixed(0) + ' %', padL - 5, y);
-    }
-
-    // Zero line
-    const zeroY = yAt(0);
-    ctx.strokeStyle = 'rgba(15, 23, 42, 0.18)'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(padL, zeroY); ctx.lineTo(W - padR, zeroY); ctx.stroke();
-
-    // Fill area under zero
-    const grad = ctx.createLinearGradient(0, padT, 0, padT + h);
-    grad.addColorStop(0, 'rgba(248,113,113,0.35)');
-    grad.addColorStop(1, 'rgba(248,113,113,0.04)');
-    ctx.beginPath();
-    sampled.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
-    ctx.lineTo(xAt(sampled.length - 1), zeroY);
-    ctx.lineTo(xAt(0), zeroY);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    // Line
-    ctx.beginPath();
-    sampled.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
-    ctx.strokeStyle = '#F87171'; ctx.lineWidth = 1.5; ctx.lineJoin = 'round';
-    ctx.setLineDash([]); ctx.stroke();
-
-    // X labels
-    const tickStep = Math.max(1, Math.ceil(labels.length / 10));
-    ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    ctx.font = '10px "JetBrains Mono", monospace';
-    for (let i = 0; i < labels.length; i += tickStep) {
-      ctx.fillText(String(labels[i]), xAt(i), padT + h + 5);
-    }
+    // Use CI.drawChart pour avoir le tooltip + cursor au hover
+    CI.drawChart(canvas, labels, [
+      {
+        label: 'Drawdown',
+        data: sampled,
+        color: '#DC2626',
+        fill: true,
+        fillColor: 'rgba(220, 38, 38, 0.18)',
+        width: 1.8
+      }
+    ], { yFormat: (v) => v.toFixed(0) + ' %' });
   }
 
   // ===== Analyse 06 : Volatilité & CAPE =====
@@ -960,98 +907,16 @@
   }
 
   function drawVolatilityChart(labels, volData) {
-    const canvas = document.getElementById('da6-vol-chart');
-    if (!canvas || !volData.length) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(320, Math.floor(rect.width || canvas.offsetWidth || 600));
-    const H = Math.max(180, Math.floor(rect.height || 220));
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, W, H);
-    _drawLineAreaChart(ctx, W, H, labels, [
-      { data: volData, color: '#A78BFA', fillColor: 'rgba(167,139,250,0.2)', lineWidth: 1.8 }
-    ], (v) => v.toFixed(0) + ' %');
+    CI.drawChart('da6-vol-chart', labels, [
+      { label: 'Volatilité 12m', data: volData, color: '#7C3AED', fill: true, fillColor: 'rgba(124, 58, 237, 0.15)', width: 2 }
+    ], { yFormat: (v) => v.toFixed(0) + ' %' });
   }
 
   function drawCAPEChart(labels, capeData, avgLine) {
-    const canvas = document.getElementById('da6-cape-chart');
-    if (!canvas || !capeData.length) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(320, Math.floor(rect.width || canvas.offsetWidth || 600));
-    const H = Math.max(180, Math.floor(rect.height || 220));
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, W, H);
-    _drawLineAreaChart(ctx, W, H, labels, [
-      { data: avgLine, color: '#FBBF24', lineWidth: 1.5, dash: [5, 4] },
-      { data: capeData, color: '#60A5FA', fillColor: 'rgba(96,165,250,0.15)', lineWidth: 1.8 }
-    ], (v) => v.toFixed(0) + 'x');
-  }
-
-  // Shared helper : draw a line+area chart on an already-sized canvas context
-  function _drawLineAreaChart(ctx, W, H, labels, series, yFmt) {
-    const padL = 52, padR = 14, padT = 14, padB = 30;
-    const w = W - padL - padR, h = H - padT - padB;
-    const n = labels.length;
-    if (n < 2 || h <= 0) return;
-
-    // Domain
-    let yMin = Infinity, yMax = -Infinity;
-    series.forEach((s) => s.data.forEach((v) => { if (v < yMin) yMin = v; if (v > yMax) yMax = v; }));
-    if (!isFinite(yMin)) { yMin = 0; yMax = 1; }
-    if (yMin === yMax) yMax = yMin + 1;
-    const span = yMax - yMin;
-    yMin -= span * 0.05;
-    yMax += span * 0.08;
-    if (yMin > 0 && yMin < span * 0.2) yMin = 0;
-
-    const xAt = (i) => padL + (i / (n - 1)) * w;
-    const yAt = (v) => padT + h - ((v - yMin) / (yMax - yMin)) * h;
-
-    // Grid
-    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
-    for (let t = 0; t <= 5; t++) {
-      const v = yMin + (yMax - yMin) * (t / 5);
-      const y = yAt(v);
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText(yFmt ? yFmt(v) : v.toFixed(0), padL - 5, y);
-    }
-
-    // X labels
-    const tickStep = Math.max(1, Math.ceil(n / 10));
-    ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    for (let i = 0; i < n; i += tickStep) ctx.fillText(String(labels[i]), xAt(i), padT + h + 5);
-
-    // Draw each series
-    series.forEach((s) => {
-      if (s.fillColor) {
-        // Area fill
-        const grad = ctx.createLinearGradient(0, padT, 0, padT + h);
-        grad.addColorStop(0, s.fillColor);
-        grad.addColorStop(1, s.fillColor.replace(/[\d.]+\)$/, '0)'));
-        ctx.beginPath();
-        s.data.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
-        ctx.lineTo(xAt(n - 1), yAt(yMin));
-        ctx.lineTo(xAt(0), yAt(yMin));
-        ctx.closePath();
-        ctx.fillStyle = grad;
-        ctx.fill();
-      }
-      // Line
-      ctx.beginPath();
-      s.data.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
-      ctx.strokeStyle = s.color; ctx.lineWidth = s.lineWidth || 1.8;
-      ctx.setLineDash(s.dash || []); ctx.lineJoin = 'round'; ctx.stroke();
-      ctx.setLineDash([]);
-    });
+    CI.drawChart('da6-cape-chart', labels, [
+      { label: 'Moyenne hist.', data: avgLine,  color: '#D97706', width: 1.5, dash: [5, 4] },
+      { label: 'CAPE actuel',   data: capeData, color: '#2563EB', fill: true, fillColor: 'rgba(37, 99, 235, 0.12)', width: 2 }
+    ], { yFormat: (v) => v.toFixed(0) + 'x' });
   }
 
   // ===== Analyse 07 : Monte Carlo =====
@@ -1100,94 +965,27 @@
   }
 
   function drawMonteCarlo(mc, curr) {
-    const canvas = document.getElementById('da7-chart');
-    if (!canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(400, Math.floor(rect.width || 600));
-    const H = Math.max(250, Math.floor(rect.height || 300));
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, W, H);
-
-    const padL = 64, padR = 16, padT = 14, padB = 30;
-    const w = W - padL - padR, h = H - padT - padB;
-
     const pd = mc.percentileData;
     const years = mc.years;
-    // Prepend year 0 (initial)
-    const inv0 = mc.investedLine[0] - (mc.investedLine[1] - mc.investedLine[0]);
     const allYears = [0, ...years];
-    const allP10 = [mc.finalStats.totalInvested > 0 ? mc.investedLine[0] : 0, ...pd.p10];
-    const allP25 = [allP10[0], ...pd.p25];
-    const allP50 = [allP10[0], ...pd.p50];
-    const allP75 = [allP10[0], ...pd.p75];
-    const allP90 = [allP10[0], ...pd.p90];
+    const initVal = mc.investedLine[0] - (mc.investedLine[1] - mc.investedLine[0]);
+    const start0 = Math.max(0, initVal);
+    const allP10 = [start0, ...pd.p10];
+    const allP25 = [start0, ...pd.p25];
+    const allP50 = [start0, ...pd.p50];
+    const allP75 = [start0, ...pd.p75];
+    const allP90 = [start0, ...pd.p90];
     const allInv = [mc.investedLine[0], ...mc.investedLine];
+    const labels = allYears.map((y) => 'an ' + y);
 
-    const allVals = [...allP10, ...allP90, ...allInv].filter(Boolean);
-    const maxV = Math.max(...allVals) * 1.05;
-    const minV = 0;
-
-    const xAt = (i) => padL + (i / (allYears.length - 1)) * w;
-    const yAt = (v) => padT + h - ((v - minV) / (maxV - minV)) * h;
-
-    // Grid
-    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
-    const yTicks = 5;
-    for (let t = 0; t <= yTicks; t++) {
-      const v = minV + (maxV - minV) * (t / yTicks);
-      const y = yAt(v);
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText(CI.fmtCompact(v), padL - 5, y);
-    }
-
-    // Helper: draw filled band between two arrays
-    const fillBand = (upper, lower, color) => {
-      ctx.beginPath();
-      upper.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
-      for (let i = lower.length - 1; i >= 0; i--) ctx.lineTo(xAt(i), yAt(lower[i]));
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
-    };
-
-    // Helper: draw line
-    const drawLine = (arr, color, width, dash) => {
-      ctx.beginPath();
-      arr.forEach((v, i) => { const x = xAt(i), y = yAt(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
-      ctx.strokeStyle = color; ctx.lineWidth = width;
-      ctx.setLineDash(dash || []);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    };
-
-    // Bandes
-    fillBand(allP90, allP10, 'rgba(52,211,153,0.08)');
-    fillBand(allP75, allP25, 'rgba(52,211,153,0.18)');
-
-    // Lignes percentiles
-    drawLine(allP10, 'rgba(52,211,153,0.35)', 1, [3, 3]);
-    drawLine(allP90, 'rgba(52,211,153,0.35)', 1, [3, 3]);
-    drawLine(allP25, 'rgba(52,211,153,0.6)', 1.2);
-    drawLine(allP75, 'rgba(52,211,153,0.6)', 1.2);
-    drawLine(allP50, '#34D399', 2.5);
-
-    // Capital investi
-    drawLine(allInv, '#FBBF24', 1.8, [5, 4]);
-
-    // X labels (années)
-    ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    ctx.font = '10px "JetBrains Mono", monospace';
-    allYears.forEach((yr, i) => {
-      if (yr % 5 === 0) {
-        ctx.fillText('an ' + yr, xAt(i), padT + h + 5);
-      }
-    });
+    CI.drawChart('da7-chart', labels, [
+      { label: 'P10 pessimiste', data: allP10, color: 'rgba(5, 150, 105, 0.45)', width: 1, dash: [3, 3] },
+      { label: 'P25',            data: allP25, color: 'rgba(5, 150, 105, 0.65)', width: 1.2 },
+      { label: 'P75',            data: allP75, color: 'rgba(5, 150, 105, 0.65)', width: 1.2 },
+      { label: 'P90 optimiste',  data: allP90, color: 'rgba(5, 150, 105, 0.45)', width: 1, dash: [3, 3] },
+      { label: 'Capital investi',data: allInv, color: '#D97706', width: 1.5, dash: [5, 4] },
+      { label: 'P50 médian',     data: allP50, color: '#059669', fill: true, fillColor: 'rgba(5, 150, 105, 0.10)', width: 2.5 }
+    ], { yFormat: (v) => CI.fmtCompact(v) });
   }
 
   // ===== Analyse 08 : Comparaison multi-actifs =====
@@ -1411,64 +1209,25 @@
   }
 
   function drawDecaissementChart(dc, curr) {
-    const canvas = document.getElementById('da10-chart');
-    if (!canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(400, Math.floor(rect.width || canvas.offsetWidth || 600));
-    const H = Math.max(250, Math.floor(rect.height || 280));
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, W, H);
-
-    const COLORS = ['#34D399', '#60A5FA', '#FBBF24', '#F87171'];
-    const padL = 64, padR = 16, padT = 14, padB = 30;
-    const w = W - padL - padR, h = H - padT - padB;
-
-    const allVals = dc.results.flatMap((r) => r.yearly).filter((v) => v > 0);
-    const maxV = Math.max(dc.capital, ...allVals) * 1.06;
-    const minV = 0;
+    const COLORS = ['#059669', '#2563EB', '#D97706', '#DC2626'];
     const horizon = dc.horizonYears || da10Horizon;
-    const xAt = (yr) => padL + (yr / horizon) * w;
-    const yAt = (v) => padT + h - ((v - minV) / (maxV - minV)) * h;
+    // Aligner toutes les séries à la même longueur (horizon + 1 points pour an 0..horizon)
+    const labels = [];
+    for (let yr = 0; yr <= horizon; yr++) labels.push('an ' + yr);
 
-    // Grid
-    ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)'; ctx.lineWidth = 1;
-    ctx.fillStyle = '#94A3B8'; ctx.font = '10px "JetBrains Mono", monospace';
-    for (let t = 0; t <= 5; t++) {
-      const v = minV + (maxV - minV) * (t / 5);
-      const y = yAt(v);
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText(CI.fmtCompact(v), padL - 5, y);
-    }
-    // X labels
-    const step = horizon <= 20 ? 4 : horizon <= 30 ? 5 : 10;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    for (let yr = 0; yr <= horizon; yr += step) {
-      ctx.fillText('an ' + yr, xAt(yr), padT + h + 5);
-    }
-
-    // Draw each rate series
-    dc.results.forEach((res, ri) => {
-      ctx.beginPath();
-      res.yearly.forEach((v, yi) => {
-        const x = xAt(yi), y = yAt(v);
-        yi === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = COLORS[ri]; ctx.lineWidth = ri === 1 ? 2.5 : 1.8;
-      ctx.setLineDash(ri === 1 ? [] : [5, 3]); ctx.lineJoin = 'round'; ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Depletion marker
-      if (res.depleted && res.depletedYear) {
-        const x = xAt(res.depletedYear);
-        ctx.beginPath(); ctx.arc(x, yAt(0), 4, 0, Math.PI * 2);
-        ctx.fillStyle = COLORS[ri]; ctx.fill();
-      }
+    const datasets = dc.results.map((res, ri) => {
+      // Étendre la série courte (cas dépléteur) avec des null pour remplir l'axe X
+      const padded = labels.map((_, i) => res.yearly[i] != null ? res.yearly[i] : null);
+      return {
+        label: (res.rate * 100).toFixed(1) + ' %/an',
+        data: padded,
+        color: COLORS[ri],
+        width: ri === 1 ? 2.5 : 1.8,
+        dash: ri === 1 ? null : [5, 3]
+      };
     });
+
+    CI.drawChart('da10-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) });
   }
 
   /* ============================================================
