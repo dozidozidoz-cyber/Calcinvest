@@ -690,10 +690,61 @@
   };
 
   /* ===========================================================
+     THEME SWITCHER — 6 palettes light premium
+     =========================================================== */
+  const THEMES = [
+    { id: 'stone',     label: 'Stone' },
+    { id: 'mist',      label: 'Mist' },
+    { id: 'sage',      label: 'Sage' },
+    { id: 'champagne', label: 'Gold' },
+    { id: 'terra',     label: 'Terra' },
+    { id: 'lavender',  label: 'Lilas' }
+  ];
+  const THEME_KEY = 'calcinvest_theme_v1';
+
+  CI.applyTheme = function (id) {
+    if (!THEMES.find((t) => t.id === id)) id = 'stone';
+    document.documentElement.setAttribute('data-theme', id);
+    try { localStorage.setItem(THEME_KEY, id); } catch (e) {}
+    document.querySelectorAll('.theme-swatch').forEach((el) => {
+      el.classList.toggle('active', el.dataset.theme === id);
+    });
+  };
+
+  CI.getStoredTheme = function () {
+    try { return localStorage.getItem(THEME_KEY) || 'stone'; }
+    catch (e) { return 'stone'; }
+  };
+
+  CI.mountThemeSwitcher = function () {
+    if (document.querySelector('.theme-switcher')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'theme-switcher';
+    wrap.innerHTML =
+      '<div class="theme-switcher-label">Thème</div>' +
+      THEMES.map((t) =>
+        `<div class="theme-swatch" data-theme="${t.id}" title="${t.label}" role="button" tabindex="0"></div>`
+      ).join('');
+    wrap.addEventListener('click', (e) => {
+      const sw = e.target.closest('.theme-swatch');
+      if (sw) CI.applyTheme(sw.dataset.theme);
+    });
+    document.body.appendChild(wrap);
+    CI.applyTheme(CI.getStoredTheme());
+  };
+
+  // Apply theme ASAP (avant DOMContentLoaded) pour éviter le flash
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored) document.documentElement.setAttribute('data-theme', stored);
+  } catch (e) {}
+
+  /* ===========================================================
      DOM READY + PWA REGISTRATION
      =========================================================== */
   document.addEventListener('DOMContentLoaded', () => {
     CI.initAll();
+    CI.mountThemeSwitcher();
   });
 
   if ('serviceWorker' in navigator) {
