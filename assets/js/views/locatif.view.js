@@ -14,6 +14,22 @@
   let lastResult = null;
   let la7Indexation = 0;
 
+  /* Insight box helper */
+  const INSIGHT_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5l1.6 4.4 4.4 1.6-4.4 1.6L8 13.5l-1.6-4.4L2 7.5l4.4-1.6z" stroke-linejoin="round"/></svg>';
+  function setInsight(sectionId, html) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    let box = section.querySelector(':scope > .insight');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'insight';
+      box.innerHTML = '<div class="insight-icon">' + INSIGHT_ICON + '</div><div class="insight-text"></div>';
+      section.appendChild(box);
+    }
+    const txt = box.querySelector('.insight-text');
+    if (txt) txt.innerHTML = html;
+  }
+
   /* ------------------------------------------------------------
      Read form inputs → params object
      ------------------------------------------------------------ */
@@ -374,7 +390,96 @@
     renderCashflowProj(p);
     renderRevente(p, r);
     requestAnimationFrame(() => renderChart(r));
+    renderInsights(p, r);
     syncUrl(p);
+  }
+
+  /* ------------------------------------------------------------
+     Insights — encarts dynamiques sous chaque analyse
+     ------------------------------------------------------------ */
+  function renderInsights(p, r) {
+    if (!r) return;
+    const cf = r.cashflowMonthly;
+    const cfCls = cf >= 0 ? 'pos' : 'neg';
+    const cfSign = cf >= 0 ? '+' : '';
+    const yieldNetCls = r.yieldNet > 4 ? 'pos' : r.yieldNet > 2 ? 'warn' : 'neg';
+    const triCls = r.tri != null && r.tri > 0 ? 'pos' : 'neg';
+    const triLine = r.tri != null
+      ? `, TRI <span class="${triCls}">${r.tri.toFixed(2)} %/an</span>`
+      : '';
+
+    // A01 Synthèse (section #synthese)
+    setInsight('synthese',
+      `Bien à <strong>${CI.fmtMoney(p.price, 0)}</strong>, loyer ${CI.fmtMoney(p.rent, 0)}/mois → ` +
+      `rendement net <span class="${yieldNetCls}">${r.yieldNet.toFixed(2)} %</span> ` +
+      `(brut ${r.yieldGross.toFixed(2)} %, net-net ${r.yieldNetNet.toFixed(2)} %)${triLine}. ` +
+      `Cashflow mensuel : <span class="${cfCls}">${cfSign}${CI.fmtMoney(cf, 0)}</span>, ` +
+      `patrimoine après ${p.holdYears} ans : <em>${CI.fmtMoney(r.finalEquity, 0)}</em>. ` +
+      `<span class="muted">Un rendement net &gt; 4 % avec cashflow positif est rare et excellent.</span>`
+    );
+
+    // A05 Amortissement crédit
+    if (p.loan > 0) {
+      const interestPct = (r.totalInterest / p.loan * 100).toFixed(0);
+      setInsight('l-amort-credit',
+        `Sur <strong>${p.loanYears} ans</strong> à ${p.loanRate.toFixed(2)} %, l'emprunt de ` +
+        `<strong>${CI.fmtMoney(p.loan, 0)}</strong> coûte <span class="neg">${CI.fmtMoney(r.totalInterest, 0)}</span> ` +
+        `d'intérêts (<em>${interestPct} %</em> du capital emprunté). Mensualité : ` +
+        `<strong>${CI.fmtMoney(r.monthlyPayment, 0)}/mois</strong>. ` +
+        `<span class="muted">Le poids des intérêts diminue avec la durée — un crédit court coûte moins, mais réduit l'effet de levier.</span>`
+      );
+    }
+
+    // A06 Fiscalité comparée
+    const comp = calcComp(p);
+    if (comp && comp.results && comp.bestId) {
+      const best = comp.results.find((x) => x.id === comp.bestId);
+      const worst = comp.results.find((x) => x.id === comp.worstId);
+      const curr = comp.results.find((x) => x.id === p.regime);
+      const saving = worst ? worst.year1Tax - best.year1Tax : 0;
+      const optimalLine = curr && curr.id !== best.id
+        ? ` Tu es actuellement en <strong>${curr.label}</strong> — passer en ${best.label} économiserait ` +
+          `<span class="pos">${CI.fmtMoney(saving, 0)}/an</span>.`
+        : ` Tu es déjà au régime optimal (<span class="pos">${best.label}</span>).`;
+      setInsight('l-fiscal-comp',
+        `Le régime fiscal le plus avantageux ici est <em>${best.label}</em> ` +
+        `avec un rendement net-net de <strong>${best.yieldNetNet.toFixed(2)} %</strong>.${optimalLine} ` +
+        `<span class="muted">Le bon régime change selon le ratio loyer/prix et l'amortissement disponible (LMNP réel souvent gagnant).</span>`
+      );
+    }
+
+    // A07 Cashflows projetés (avec indexation)
+    const rIdx = calc(Object.assign({}, p, { rentIndexation: la7Indexation }));
+    const cf1 = (rIdx.yearly[0] ? rIdx.yearly[0].cashflow : 0) / 12;
+    const cfn = (rIdx.yearly[rIdx.yearly.length - 1] ? rIdx.yearly[rIdx.yearly.length - 1].cashflow : 0) / 12;
+    let cumCF = 0, breakevenYear = null;
+    rIdx.yearly.forEach((yr) => { cumCF += yr.cashflow; if (cumCF >= 0 && breakevenYear === null) breakevenYear = yr.year; });
+    const beLine = breakevenYear
+      ? `Le seuil de rentabilité (cashflow cumulé positif) est atteint à <strong>l'an ${breakevenYear}</strong>.`
+      : `<span class="warn">Le cashflow cumulé reste négatif sur ${p.holdYears} ans</span> — l'enrichissement vient de la valorisation du bien et de l'amortissement du capital.`;
+    const idxLine = la7Indexation > 0
+      ? `Avec ${la7Indexation} %/an d'indexation des loyers, le cashflow passe de ${cfSign}${CI.fmtMoney(cf1, 0)}/mois à <em>${CI.fmtMoney(cfn, 0)}/mois</em> en fin de période. `
+      : `Sans indexation, le cashflow reste stable à environ <strong>${CI.fmtMoney(cf1, 0)}/mois</strong>. `;
+    setInsight('l-cashflow-proj', idxLine + beLine);
+
+    // A08 Revente plus-value
+    const sellY = Math.min(Math.max(1, p.holdYears), r.yearly.length);
+    const yrData = r.yearly[sellY - 1];
+    if (yrData) {
+      const pv = calcPV(p.price, yrData.propertyValue, sellY, 4, yrData.balance);
+      const irLine = sellY >= 22
+        ? `<span class="pos">exonéré IR</span>`
+        : `IR ${(pv.abattIR * 100).toFixed(0)} % d'abattement (encore ${22 - sellY} ans pour exonération)`;
+      const psLine = sellY >= 30
+        ? `<span class="pos">exonéré PS</span>`
+        : `PS ${(pv.abattPS * 100).toFixed(0)} % d'abattement (encore ${30 - sellY} ans pour exonération)`;
+      setInsight('l-revente',
+        `Revente an <strong>${sellY}</strong> à <em>${CI.fmtMoney(yrData.propertyValue, 0)}</em>, ` +
+        `plus-value <span class="pos">+${CI.fmtMoney(pv.pv, 0)}</span>, impôts <span class="neg">−${CI.fmtMoney(pv.totalTax, 0)}</span> ` +
+        `(${irLine}, ${psLine}). Net vendeur après remboursement crédit : <em>${CI.fmtMoney(pv.netVendeur, 0)}</em>. ` +
+        `<span class="muted">Le timing de revente compte : 22 ans d'IR exonéré et 30 ans pour les PS, c'est la règle d'or fiscale.</span>`
+      );
+    }
   }
 
   function share() {

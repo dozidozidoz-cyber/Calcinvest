@@ -16,6 +16,22 @@
   const show = (id) => { const e = $(id); if (e) e.style.display = ''; };
   const hide = (id) => { const e = $(id); if (e) e.style.display = 'none'; };
 
+  /* Insight box helper */
+  const INSIGHT_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5l1.6 4.4 4.4 1.6-4.4 1.6L8 13.5l-1.6-4.4L2 7.5l4.4-1.6z" stroke-linejoin="round"/></svg>';
+  function setInsight(sectionId, html) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    let box = section.querySelector(':scope > .insight');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'insight';
+      box.innerHTML = '<div class="insight-icon">' + INSIGHT_ICON + '</div><div class="insight-text"></div>';
+      section.appendChild(box);
+    }
+    const txt = box.querySelector('.insight-text');
+    if (txt) txt.innerHTML = html;
+  }
+
   /* ------------------------------------------------------------------ */
   /* Lecture formulaire                                                    */
   /* ------------------------------------------------------------------ */
@@ -95,6 +111,22 @@
     set('fia1-wr',  r.withdrawalRate.toFixed(1) + ' %');
     set('fia1-ret', r.annualReturn.toFixed(1) + ' %');
     set('fia1-inf', r.inflation.toFixed(1) + ' %');
+
+    // Insight A01
+    const ageCls = r.achieved ? 'pos' : 'neg';
+    const coastLine = r.isCoastFIRE
+      ? `<span class="pos">Coast FIRE atteint</span> — tu peux arrêter de cotiser, ton capital actuel suffit.`
+      : `Pour <em>Coast FIRE</em>, il faudrait avoir <strong>${CI.fmtCompact(r.coastCapital)}</strong> aujourd'hui (manque ${CI.fmtCompact(Math.max(0, r.coastCapital - p.currentSavings))}).`;
+    setInsight('fia1-overview',
+      r.achieved
+        ? `Tu atteindras la <strong>cible FIRE</strong> de <em>${CI.fmtCompact(r.fireTarget)}</em> à ` +
+          `<span class="${ageCls}">${r.fireAge.toFixed(1)} ans</span> ` +
+          `(<strong>${r.yearsToFire.toFixed(1)} ans</strong> à partir de maintenant). ${coastLine} ` +
+          `<span class="muted">À ${p.annualReturn} %/an avec ${CI.fmtNum(p.monthlyContrib, 0)} €/mois d'apport, c'est tenable mais demande de la discipline.</span>`
+        : `À ce rythme (<strong>${CI.fmtNum(p.monthlyContrib, 0)} €/mois</strong> à ${p.annualReturn} %/an), ` +
+          `tu n'atteindras pas <em>${CI.fmtCompact(r.fireTarget)}</em> dans les 50 prochaines années. ` +
+          `<span class="warn">Augmente le versement, le rendement (ETF agressif) ou réduis la cible (Lean FIRE).</span> ${coastLine}`
+    );
   }
 
   /* ------------------------------------------------------------------ */
@@ -121,6 +153,16 @@
     // Ligne d'indication
     set('fia2-target-label', CI.fmtCompact(r.fireTarget));
     set('fia2-lean-label',   CI.fmtCompact(r.leanTarget));
+
+    // Insight A02
+    const totalContributed = p.currentSavings + p.monthlyContrib * (r.yearsToFire * 12);
+    const interestPart = r.finalValue - totalContributed;
+    setInsight('fia2-trajectory',
+      `Sur ta trajectoire, tu versera <strong>${CI.fmtMoney(totalContributed, 0)}</strong> en ${r.yearsToFire.toFixed(1)} ans, ` +
+      `et le marché ajoutera <span class="pos">${CI.fmtMoney(interestPart, 0)}</span> de plus-values composées. ` +
+      `La <em>cible Lean FIRE</em> (${CI.fmtCompact(r.leanTarget)}) est atteinte à <strong>${r.leanAge.toFixed(1)} ans</strong>. ` +
+      `<span class="muted">Le coude exponentiel arrive ~10 ans avant FIRE — c'est là que ton capital travaille plus que toi.</span>`
+    );
   }
 
   /* ------------------------------------------------------------------ */
@@ -164,6 +206,16 @@
         </div>`;
       }).join('');
     }
+
+    // Insight A03
+    const gap = r.yearsToFire - r.baristaYears;
+    setInsight('fia3-variants',
+      `<strong>Barista FIRE</strong> (50 % des dépenses) à <em>${r.baristaAge.toFixed(1)} ans</em> = ` +
+      `<span class="pos">${gap.toFixed(1)} ans plus tôt</span> que FIRE Standard. ` +
+      `<strong>Lean FIRE</strong> (70 %) à <em>${r.leanAge.toFixed(1)} ans</em>, ` +
+      `<strong>Fat FIRE</strong> (150 %) à <em>${r.fatAge.toFixed(1)} ans</em>. ` +
+      `<span class="muted">Réduire ses dépenses de 30 % réduit le temps à FIRE de plusieurs années — la frugalité est le levier le plus puissant.</span>`
+    );
   }
 
   /* ------------------------------------------------------------------ */
@@ -214,6 +266,23 @@
           <td class="font-mono text-muted">${pt.value > 0 ? '+' + ((pt.value / r.fireTarget - 1) * 100).toFixed(1) + ' %' : '—'}</td>
         </tr>`).join('');
     }
+
+    // Insight A04
+    if (ws.depleted) {
+      setInsight('fia4-withdrawal',
+        `<span class="neg">⚠ Le capital de ${CI.fmtCompact(r.fireTarget)} s'épuise à l'an ${ws.depletedYear}</span> ` +
+        `(soit à <strong>${(r.fireAge + ws.depletedYear).toFixed(0)} ans</strong>) avec ` +
+        `${CI.fmtCompact(p.annualExpenses)}/an de dépenses indexées sur l'inflation. ` +
+        `<span class="muted">Pour tenir, il faudrait soit un capital plus élevé, soit moins de dépenses, soit un meilleur rendement.</span>`
+      );
+    } else {
+      setInsight('fia4-withdrawal',
+        `Avec <strong>${CI.fmtCompact(r.fireTarget)}</strong> et ${CI.fmtCompact(p.annualExpenses)}/an de dépenses, ` +
+        `le capital tient sur <em>${retireHorizon} ans</em> (jusqu'à <strong>${(r.fireAge + retireHorizon).toFixed(0)} ans</strong>) ` +
+        `et il reste <span class="pos">${CI.fmtCompact(ws.finalValue)}</span> en fin de période. ` +
+        `<span class="muted">La règle du ${r.withdrawalRate.toFixed(1)} % fonctionne ici, mais teste différents scénarios de marché en A06 pour valider la robustesse.</span>`
+      );
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -256,6 +325,21 @@
       });
       html += '</tbody></table>';
       gridEl.innerHTML = html;
+    }
+
+    // Insight A05
+    const at5 = sens.byReturn.find((x) => x.return === 5);
+    const at10 = sens.byReturn.find((x) => x.return === 10);
+    const wr3 = sens.byWithdrawal.find((x) => x.rate === 3);
+    const wr5 = sens.byWithdrawal.find((x) => x.rate === 5);
+    if (at5 && at10 && wr3 && wr5) {
+      setInsight('fia5-sensitivity',
+        `À <strong>5 %/an</strong>, FIRE en <em>${at5.years.toFixed(1)} ans</em> ; à <strong>10 %/an</strong>, en ` +
+        `<span class="pos">${at10.years.toFixed(1)} ans</span> seulement. ` +
+        `Côté retrait : à <strong>3 %</strong> il faut ${CI.fmtCompact(wr3.target)} (sécurité maximale), ` +
+        `à <strong>5 %</strong> seulement ${CI.fmtCompact(wr5.target)} (mais risque de manque). ` +
+        `<span class="muted">Le couple rendement/retrait est le pivot — vise un mix réaliste ${'(7 %/4 %)'} pour calibrer.</span>`
+      );
     }
   }
 
@@ -312,7 +396,7 @@
       { data: mc.percentiles.map((pt) => pt.p10), color: '#F87171', width: 1.5, label: 'P10 (pessimiste)' }
     ], { yLabel: '€' });
 
-    // Interprétation
+    // Interprétation (legacy info-box, gardée)
     const interpEl = $('fia6-interp');
     if (interpEl) {
       const rate = mc.successRate;
@@ -332,6 +416,20 @@
       }
       interpEl.innerHTML = `<div class="${cls}">${msg}</div>`;
     }
+
+    // Insight A06 — synthèse percentiles
+    const finalP10 = mc.percentiles[mc.percentiles.length - 1].p10;
+    const finalP50 = mc.percentiles[mc.percentiles.length - 1].p50;
+    const finalP90 = mc.percentiles[mc.percentiles.length - 1].p90;
+    const successCls = mc.successRate >= 90 ? 'pos' : mc.successRate >= 70 ? 'warn' : 'neg';
+    setInsight('fia6-montecarlo',
+      `Sur <strong>${mc.runs.toLocaleString('fr-FR')} simulations</strong> (${horizon} ans, vol 15 %, seedé), ` +
+      `<span class="${successCls}">${mc.successRate.toFixed(1)} %</span> de chances que ton capital tienne. ` +
+      `Scénario médian (P50) : <em>${CI.fmtCompact(finalP50)}</em> restant. ` +
+      `Pessimiste (P10) : <span class="neg">${CI.fmtCompact(finalP10)}</span>. ` +
+      `Optimiste (P90) : <span class="pos">${CI.fmtCompact(finalP90)}</span>. ` +
+      `<span class="muted">Le sequence-of-returns risk (chocs en début de retraite) est intégré — c'est pour ça que P10 peut être très bas.</span>`
+    );
   }
 
   /* ------------------------------------------------------------------ */
