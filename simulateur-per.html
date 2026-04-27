@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#059669" />
+<title>Simulateur PER — CalcInvest</title>
+<meta name="description" content="Simulateur Plan Épargne Retraite (PER) gratuit. Économie fiscale, capital final, comparaison rente vs capital, vs CTO. Règles fiscales françaises 2026." />
+<meta name="keywords" content="simulateur PER, plan épargne retraite, déduction fiscale, sortie capital rente, comparaison CTO" />
+<meta property="og:title" content="Simulateur PER — CalcInvest" />
+<meta property="og:description" content="Calculez votre PER : économie fiscale, capital, rente, comparaison CTO" />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
+</head>
+<body>
+
+<!-- ==================== TOPBAR ==================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">PER</div>
+        <div class="logo-text-sub">Simulateur</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="topbar-center">
+    <nav class="segmented" role="tablist" aria-label="Calculateurs">
+      <a class="segmented-btn" href="/simulateur-dca">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Bourse
+      </a>
+      <a class="segmented-btn" href="/simulateur-dca-crypto">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2L2 5l6 3 6-3-6-3zM2 11l6 3 6-3M2 8l6 3 6-3"/></svg>
+        Crypto
+      </a>
+      <a class="segmented-btn" href="/simulateur-interets-composes">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+        Composés
+      </a>
+      <a class="segmented-btn" href="/simulateur-rendement-locatif">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>
+        Immobilier
+      </a>
+      <a class="segmented-btn" href="/calculateur-fire">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4h5l-2 5h-3z"/><path d="M9 9v5M7 9v5"/></svg>
+        FIRE
+      </a>
+      <a class="segmented-btn active" aria-current="page" href="/simulateur-per">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="10" height="8" rx="1"/><path d="M5 6V4a3 3 0 0 1 6 0v2"/></svg>
+        PER
+      </a>
+    </nav>
+  </div>
+
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+    <button class="btn-ghost" id="horizon-badge">
+      <span class="dot"></span>
+      <span>Retraite à <span id="per-age-badge">65</span> ans</span>
+    </button>
+  </div>
+</header>
+
+<!-- ==================== SHELL ==================== -->
+<div class="shell" id="page-per">
+
+  <!-- ======== SIDEBAR ======== -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#per-params">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h10M3 8h10M3 11h6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Exploration</div>
+          <div class="sidebar-link-title">Paramètres</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+      <a class="sidebar-link" href="#pa-synthese">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 01</div><div class="sidebar-link-title">Synthèse</div></div>
+      </a>
+      <a class="sidebar-link" href="#pa-trajectoire">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l3-5 3 2 3-6 3 4"/></svg></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 02</div><div class="sidebar-link-title">Trajectoire & versements</div></div>
+      </a>
+      <a class="sidebar-link" href="#pa-sortie">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h8M7 5l3 3-3 3"/><circle cx="13" cy="8" r="1"/></svg></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 03</div><div class="sidebar-link-title">Sortie capital vs rente</div></div>
+      </a>
+      <a class="sidebar-link" href="#pa-vscto">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="6" width="5" height="7"/></svg></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 04</div><div class="sidebar-link-title">PER vs CTO</div></div>
+      </a>
+      <a class="sidebar-link" href="#pa-sensitivity">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="3" height="3"/><rect x="6" y="2" width="3" height="3"/><rect x="10" y="2" width="3" height="3"/><rect x="2" y="6" width="3" height="3"/><rect x="6" y="6" width="3" height="3"/><rect x="10" y="6" width="3" height="3"/><rect x="2" y="10" width="3" height="3"/><rect x="6" y="10" width="3" height="3"/><rect x="10" y="10" width="3" height="3"/></svg></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 05</div><div class="sidebar-link-title">Sensibilité TMI</div></div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======== MAIN ======== -->
+  <main class="main fade-in">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="10" height="8" rx="1"/><path d="M5 6V4a3 3 0 0 1 6 0v2"/></svg>
+        </span>
+        Simulateur · PER
+      </div>
+      <h1 class="page-title">Le PER vaut-il vraiment le coup pour vous ?</h1>
+      <p class="page-lede">Économie fiscale aujourd'hui contre fiscalité à la sortie demain — l'arbitrage dépend de votre <strong style="color:var(--text)">TMI à l'entrée vs à la retraite</strong>. Capital cible, rente vs capital, comparaison vs CTO classique. Règles fiscales françaises 2026.</p>
+    </div>
+
+    <!-- ============= PARAMÈTRES ============= -->
+    <section class="accordion open" id="per-params">
+      <div class="accordion-header">
+        <div class="accordion-icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Paramètres</div>
+          <div class="accordion-summary" id="per-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+
+      <div class="accordion-body">
+        <div class="accordion-body-inner">
+
+          <!-- Âges -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3 3-5 6-5s6 2 6 5"/></svg></div>
+              <div class="subsection-title">Âges</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Âge actuel</label>
+                <div class="stepper" data-step="1" data-min="18" data-max="70">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-age" value="35" />
+                  <span class="stepper-unit">ans</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Âge de retraite</label>
+                <div class="stepper" data-step="1" data-min="55" data-max="75">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-retire-age" value="65" />
+                  <span class="stepper-unit">ans</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="per-retire-age">
+                  <button class="pill" data-value="60" type="button">60</button>
+                  <button class="pill" data-value="62" type="button">62</button>
+                  <button class="pill active" data-value="65" type="button">65</button>
+                  <button class="pill" data-value="67" type="button">67</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Versements -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M2 7h12"/><circle cx="8" cy="10.5" r="1"/></svg></div>
+              <div class="subsection-title">Versements</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Capital initial PER</label>
+                <div class="stepper" data-step="500" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-initial" value="0" />
+                  <span class="stepper-unit">€</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="per-initial">
+                  <button class="pill active" data-value="0" type="button">0</button>
+                  <button class="pill" data-value="5000" type="button">5 k€</button>
+                  <button class="pill" data-value="20000" type="button">20 k€</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Versement mensuel</label>
+                <div class="stepper" data-step="50" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-monthly" value="200" />
+                  <span class="stepper-unit">€/mois</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="per-monthly">
+                  <button class="pill" data-value="100" type="button">100</button>
+                  <button class="pill active" data-value="200" type="button">200</button>
+                  <button class="pill" data-value="500" type="button">500</button>
+                  <button class="pill" data-value="1000" type="button">1 000</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rendement -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l3-4 3 2 3-5 3 2"/></svg></div>
+              <div class="subsection-title">Rendement &amp; frais</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Rendement attendu</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="15">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-return" value="6" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="per-return">
+                  <button class="pill" data-value="3" type="button">3 %</button>
+                  <button class="pill active" data-value="6" type="button">6 %</button>
+                  <button class="pill" data-value="8" type="button">8 %</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Frais annuels (PER)</label>
+                <div class="stepper" data-step="0.1" data-min="0" data-max="3">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-fees" value="1" step="0.1" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="per-fees">
+                  <button class="pill" data-value="0.5" type="button">PER ETF 0.5 %</button>
+                  <button class="pill active" data-value="1" type="button">Banque 1 %</button>
+                  <button class="pill" data-value="2" type="button">Assureur 2 %</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Inflation estimée</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-inflation" value="2" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fiscalité -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 11l9-9M5 3h4v4"/><circle cx="10.5" cy="10.5" r="2.5"/></svg></div>
+              <div class="subsection-title">TMI</div>
+              <div class="subsection-hint">Tranche marginale d'imposition</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">TMI aujourd'hui (entrée)</label>
+                <select id="per-tmi-in" class="select">
+                  <option value="0">0 %</option>
+                  <option value="11">11 %</option>
+                  <option value="30" selected>30 %</option>
+                  <option value="41">41 %</option>
+                  <option value="45">45 %</option>
+                </select>
+                <div class="field-hint" style="font-size:11px;color:var(--text-3);margin-top:4px">
+                  Économie d'impôt sur le versement de l'année
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">TMI estimée à la retraite</label>
+                <select id="per-tmi-out" class="select">
+                  <option value="0">0 %</option>
+                  <option value="11" selected>11 %</option>
+                  <option value="30">30 %</option>
+                  <option value="41">41 %</option>
+                </select>
+                <div class="field-hint" style="font-size:11px;color:var(--text-3);margin-top:4px">
+                  Souvent plus basse à la retraite (revenus réduits)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="btn-row" style="margin-top:22px">
+            <button class="btn btn-primary" onclick="savePER()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h8l2 2v8H3z"/><path d="M5 3v4h6V3M5 13v-3h6v3"/></svg>
+              Sauvegarder
+            </button>
+            <button class="btn btn-secondary" onclick="sharePER()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="12" r="1.5"/><path d="M5.3 7.2l5.4-2.4M5.3 8.8l5.4 2.4"/></svg>
+              Partager
+            </button>
+            <button class="btn btn-secondary" onclick="resetPER()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8a5 5 0 1 1 1.5 3.5L3 13"/><path d="M3 13v-3h3"/></svg>
+              Réinitialiser
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A01 · SYNTHÈSE ============= -->
+    <section id="pa-synthese">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></span>
+        Analyse 01 · Synthèse
+      </div>
+      <h2 style="font-size:20px;margin-bottom:8px">Combien votre PER vaudra-t-il à la retraite ?</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Capital final brut, économie fiscale cumulée pendant la phase d'épargne, et pouvoir d'achat ajusté de l'inflation.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Capital final brut</div>
+          <div class="stat-value pos" id="pa1-final">—</div>
+          <div class="stat-sub" id="pa1-final-real">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total versé</div>
+          <div class="stat-value" id="pa1-contrib">—</div>
+          <div class="stat-sub" id="pa1-contrib-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Plus-values</div>
+          <div class="stat-value pos" id="pa1-gain">—</div>
+          <div class="stat-sub" id="pa1-gain-pct">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Économie fiscale cumulée</div>
+          <div class="stat-value pos" id="pa1-tax-saving">—</div>
+          <div class="stat-sub" id="pa1-tax-saving-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A02 · TRAJECTOIRE ============= -->
+    <section id="pa-trajectoire">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 2 3-6 3 4"/></svg></span>
+        Analyse 02 · Trajectoire
+      </div>
+      <h2 style="font-size:20px;margin-bottom:8px">Évolution du capital et des versements</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">L'écart entre la courbe verte (capital) et bleue (versements) = vos plus-values composées année après année.</p>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+            Phase d'épargne — capital vs versements
+          </div>
+          <div class="card-meta" id="pa2-meta">—</div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="pa2-chart"></canvas></div>
+          <div class="chart-legend">
+            <div><span class="legend-dot" style="background:#059669"></span>Capital PER</div>
+            <div><span class="legend-dot" style="background:#2563EB"></span>Total versé</div>
+            <div><span class="legend-dot" style="background:#D97706"></span>Économie fiscale cumulée</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A03 · SORTIE ============= -->
+    <section id="pa-sortie">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8h8M7 5l3 3-3 3"/><circle cx="13" cy="8" r="1"/></svg></span>
+        Analyse 03 · Sortie
+      </div>
+      <h2 style="font-size:20px;margin-bottom:8px">Sortir en capital ou en rente ?</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">À la sortie, vous avez le choix : retirer tout d'un coup (capital, fiscalisé en une fois) ou en rente viagère (régulière, fiscalisée chaque année).</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label" style="color:#059669">Sortie capital — net</div>
+          <div class="stat-value pos" id="pa3-cap-net">—</div>
+          <div class="stat-sub" id="pa3-cap-tax">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label" style="color:#7C3AED">Sortie rente — net mensuel</div>
+          <div class="stat-value" id="pa3-rente-monthly">—</div>
+          <div class="stat-sub" id="pa3-rente-horizon">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Rente — total perçu</div>
+          <div class="stat-value info" id="pa3-rente-total">—</div>
+          <div class="stat-sub" id="pa3-rente-vs-cap">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Imposition à la sortie (capital)</div>
+          <div class="stat-value neg" id="pa3-cap-tax-total">—</div>
+          <div class="stat-sub" id="pa3-cap-tax-detail">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A04 · PER vs CTO ============= -->
+    <section id="pa-vscto">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="6" width="5" height="7"/></svg></span>
+        Analyse 04 · PER vs CTO
+      </div>
+      <h2 style="font-size:20px;margin-bottom:8px">Le PER bat-il un CTO classique ?</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Comparaison équivalente : si vous aviez investi le même montant net (versement × (1 − TMI)) en CTO avec PFU 30 % à la sortie, qu'auriez-vous eu ?</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label" style="color:#059669">PER — net après impôts</div>
+          <div class="stat-value" id="pa4-per-net">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label" style="color:#2563EB">CTO équivalent — net</div>
+          <div class="stat-value" id="pa4-cto-net">—</div>
+          <div class="stat-sub" id="pa4-cto-detail">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avantage PER</div>
+          <div class="stat-value" id="pa4-delta">—</div>
+          <div class="stat-sub" id="pa4-verdict">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A05 · SENSIBILITÉ ============= -->
+    <section id="pa-sensitivity" style="margin-bottom:48px">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="3" height="3"/><rect x="6" y="2" width="3" height="3"/><rect x="10" y="2" width="3" height="3"/><rect x="2" y="6" width="3" height="3"/></svg></span>
+        Analyse 05 · Sensibilité TMI
+      </div>
+      <h2 style="font-size:20px;margin-bottom:8px">L'arbitrage TMI entrée vs sortie</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Le PER est avantageux quand votre TMI à l'entrée est plus élevée qu'à la sortie. Cette matrice montre, pour chaque combo, le gain net du PER vs un CTO équivalent.</p>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="12" height="12" rx="1"/></svg></div>
+            Avantage PER (€) selon TMI entrée × TMI sortie
+          </div>
+          <div class="card-meta">Chiffres en gain net vs CTO</div>
+        </div>
+        <div class="card-body" id="pa5-grid"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div>© 2026 CalcInvest — Outils de simulation à titre informatif</div>
+  <div>
+    <a href="#">Mentions légales</a> ·
+    <a href="#">Confidentialité</a> ·
+    <a href="mailto:contact@calcinvest.fr">Contact</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/core/engine.bundle.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/core/calc-per.js"></script>
+<script src="/assets/js/views/per.view.js"></script>
+
+</body>
+</html>
