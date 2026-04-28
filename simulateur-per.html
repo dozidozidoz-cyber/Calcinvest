@@ -16,6 +16,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+  /* Slider mix capital/rente */
+  .exit-mix-slider { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: var(--border); outline: none; }
+  .exit-mix-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .exit-mix-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; }
+  /* Tax method toggle */
+  .tax-toggle { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .tax-toggle label { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px; transition: all .15s; }
+  .tax-toggle label:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .tax-toggle input[type="radio"] { display: none; }
+</style>
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
@@ -106,11 +117,11 @@ if ('serviceWorker' in navigator) {
       </a>
       <a class="sidebar-link" href="#pa-trajectoire">
         <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l3-5 3 2 3-6 3 4"/></svg></div>
-        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 02</div><div class="sidebar-link-title">Trajectoire & versements</div></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 02</div><div class="sidebar-link-title">Trajectoire</div></div>
       </a>
       <a class="sidebar-link" href="#pa-sortie">
         <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h8M7 5l3 3-3 3"/><circle cx="13" cy="8" r="1"/></svg></div>
-        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 03</div><div class="sidebar-link-title">Sortie capital vs rente</div></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 03</div><div class="sidebar-link-title">Sortie capital / rente</div></div>
       </a>
       <a class="sidebar-link" href="#pa-vscto">
         <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="6" width="5" height="7"/></svg></div>
@@ -119,6 +130,10 @@ if ('serviceWorker' in navigator) {
       <a class="sidebar-link" href="#pa-sensitivity">
         <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="3" height="3"/><rect x="6" y="2" width="3" height="3"/><rect x="10" y="2" width="3" height="3"/><rect x="2" y="6" width="3" height="3"/><rect x="6" y="6" width="3" height="3"/><rect x="10" y="6" width="3" height="3"/><rect x="2" y="10" width="3" height="3"/><rect x="6" y="10" width="3" height="3"/><rect x="10" y="10" width="3" height="3"/></svg></div>
         <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 05</div><div class="sidebar-link-title">Sensibilité TMI</div></div>
+      </a>
+      <a class="sidebar-link" href="#pa-plafond">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 5h12M4 5V3h8v2M4 14V9h8v5H4z"/></svg></div>
+        <div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 06</div><div class="sidebar-link-title">Plafond &amp; optimisation</div></div>
       </a>
     </div>
   </aside>
@@ -135,7 +150,7 @@ if ('serviceWorker' in navigator) {
         Simulateur · PER
       </div>
       <h1 class="page-title">Le PER vaut-il vraiment le coup pour vous ?</h1>
-      <p class="page-lede">Économie fiscale aujourd'hui contre fiscalité à la sortie demain — l'arbitrage dépend de votre <strong style="color:var(--text)">TMI à l'entrée vs à la retraite</strong>. Capital cible, rente vs capital, comparaison vs CTO classique. Règles fiscales françaises 2026.</p>
+      <p class="page-lede">Économie fiscale aujourd'hui contre fiscalité à la sortie demain — l'arbitrage dépend de votre <strong style="color:var(--text)">TMI à l'entrée vs à la retraite</strong>. Capital cible, mix capital/rente, profils, comparaison vs CTO. Règles fiscales françaises 2026.</p>
     </div>
 
     <!-- ============= PARAMÈTRES ============= -->
@@ -153,6 +168,22 @@ if ('serviceWorker' in navigator) {
 
       <div class="accordion-body">
         <div class="accordion-body-inner">
+
+          <!-- Profils PER -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="6" r="3"/><path d="M3 14c0-2.5 2-4 5-4s5 1.5 5 4"/></svg></div>
+              <div class="subsection-title">Profil de gestion</div>
+              <div class="subsection-hint">Rendement et frais typiques du marché 2026</div>
+            </div>
+            <div id="per-profile-btns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+              <button class="pill" data-profile="prudent" type="button" onclick="selectPERProfile('prudent')">🛡 Prudent (4 %)</button>
+              <button class="pill active" data-profile="balanced" type="button" onclick="selectPERProfile('balanced')">⚖ Équilibré (6 %)</button>
+              <button class="pill" data-profile="dynamic" type="button" onclick="selectPERProfile('dynamic')">🚀 Dynamique (8 %)</button>
+              <button class="pill" data-profile="custom" type="button" onclick="selectPERProfile('custom')">✏ Personnalisé</button>
+            </div>
+            <div id="per-profile-desc" style="font-size:12px;color:var(--text-3);margin-bottom:4px">50/50 actions/obligations · 10-20 ans</div>
+          </div>
 
           <!-- Âges -->
           <div class="subsection">
@@ -242,11 +273,6 @@ if ('serviceWorker' in navigator) {
                   <span class="stepper-unit">%/an</span>
                   <button class="stepper-btn" data-dir="1" type="button">+</button>
                 </div>
-                <div class="pills" data-target="per-return">
-                  <button class="pill" data-value="3" type="button">3 %</button>
-                  <button class="pill active" data-value="6" type="button">6 %</button>
-                  <button class="pill" data-value="8" type="button">8 %</button>
-                </div>
               </div>
               <div class="field">
                 <label class="field-label">Frais annuels (PER)</label>
@@ -255,11 +281,6 @@ if ('serviceWorker' in navigator) {
                   <input class="stepper-input" type="number" id="per-fees" value="1" step="0.1" />
                   <span class="stepper-unit">%/an</span>
                   <button class="stepper-btn" data-dir="1" type="button">+</button>
-                </div>
-                <div class="pills" data-target="per-fees">
-                  <button class="pill" data-value="0.5" type="button">PER ETF 0.5 %</button>
-                  <button class="pill active" data-value="1" type="button">Banque 1 %</button>
-                  <button class="pill" data-value="2" type="button">Assureur 2 %</button>
                 </div>
               </div>
               <div class="field">
@@ -310,6 +331,94 @@ if ('serviceWorker' in navigator) {
             </div>
           </div>
 
+          <!-- Plafond fiscal (optionnel) -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 5h12M4 5V3h8v2M4 14V9h8v5H4z"/></svg></div>
+              <div class="subsection-title">Plafond fiscal (optionnel)</div>
+              <div class="subsection-hint">Pour calculer votre déductibilité réelle</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Revenu professionnel net</label>
+                <div class="stepper" data-step="1000" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-revenu-pro" value="" placeholder="ex: 45000" />
+                  <span class="stepper-unit">€/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="per-revenu-pro">
+                  <button class="pill" data-value="30000" type="button">30 k€</button>
+                  <button class="pill" data-value="45000" type="button">45 k€</button>
+                  <button class="pill" data-value="70000" type="button">70 k€</button>
+                  <button class="pill" data-value="100000" type="button">100 k€</button>
+                </div>
+                <div class="field-hint" style="font-size:11px;color:var(--text-3);margin-top:4px">
+                  Laissez vide = pas de plafonnement (simulation libre)
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Reports non utilisés (3 ans)</label>
+                <div class="stepper" data-step="500" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="per-cumulated-unused" value="0" />
+                  <span class="stepper-unit">€</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="field-hint" style="font-size:11px;color:var(--text-3);margin-top:4px">
+                  Plafonds non utilisés des 3 dernières années (reportables)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sortie — mix capital/rente -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h8M7 5l3 3-3 3"/><circle cx="13" cy="8" r="1"/></svg></div>
+              <div class="subsection-title">Mode de sortie</div>
+              <div class="subsection-hint">Répartition capital / rente à la retraite</div>
+            </div>
+            <div class="field">
+              <label class="field-label">
+                Mix sortie : <strong id="per-exit-mix-display">100 % capital</strong>
+              </label>
+              <input
+                type="range" id="per-exit-capital-pct"
+                class="exit-mix-slider"
+                min="0" max="100" step="5" value="100"
+                oninput="onPERSliderChange()"
+              />
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-top:2px">
+                <span>100 % rente</span>
+                <span>50 / 50</span>
+                <span>100 % capital</span>
+              </div>
+            </div>
+
+            <!-- Forfait fiscal sortie -->
+            <div class="field" style="margin-top:14px">
+              <label class="field-label">Méthode d'imposition à la sortie (capital)</label>
+              <div class="tax-toggle">
+                <label>
+                  <input type="radio" name="per-tax-method" value="auto" checked />
+                  🤖 Auto (minimum)
+                </label>
+                <label>
+                  <input type="radio" name="per-tax-method" value="baremeIR" />
+                  📊 Barème IR + PFU sur PV
+                </label>
+                <label>
+                  <input type="radio" name="per-tax-method" value="flatTax" />
+                  📋 Flat tax 30 % sur tout
+                </label>
+              </div>
+              <div class="field-hint" style="font-size:11px;color:var(--text-3);margin-top:4px">
+                Auto = calcule les deux et choisit le plus avantageux pour vous
+              </div>
+            </div>
+          </div>
+
           <!-- Actions -->
           <div class="btn-row" style="margin-top:22px">
             <button class="btn btn-primary" onclick="savePER()">
@@ -336,7 +445,8 @@ if ('serviceWorker' in navigator) {
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></span>
         Analyse 01 · Synthèse
       </div>
-      <h2 style="font-size:20px;margin-bottom:8px">Combien votre PER vaudra-t-il à la retraite ?</h2>
+      <h2 style="font-size:20px;margin-bottom:4px">Combien votre PER vaudra-t-il à la retraite ?</h2>
+      <div id="pa1-profile-badge" style="display:inline-block;font-size:12px;color:var(--text-3);margin-bottom:10px">—</div>
       <p class="text-muted" style="font-size:13px;margin-bottom:14px">Capital final brut, économie fiscale cumulée pendant la phase d'épargne, et pouvoir d'achat ajusté de l'inflation.</p>
 
       <div class="stats-row">
@@ -397,25 +507,35 @@ if ('serviceWorker' in navigator) {
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8h8M7 5l3 3-3 3"/><circle cx="13" cy="8" r="1"/></svg></span>
         Analyse 03 · Sortie
       </div>
-      <h2 style="font-size:20px;margin-bottom:8px">Sortir en capital ou en rente ?</h2>
-      <p class="text-muted" style="font-size:13px;margin-bottom:14px">À la sortie, vous avez le choix : retirer tout d'un coup (capital, fiscalisé en une fois) ou en rente viagère (régulière, fiscalisée chaque année).</p>
+      <h2 style="font-size:20px;margin-bottom:8px">Sortir en capital, en rente, ou un mix ?</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Réglez le slider de mix dans les paramètres (0-100 % capital). <strong>Auto</strong> choisit automatiquement la méthode d'imposition la plus avantageuse.</p>
+
+      <div id="pa3-tax-method-badge" style="font-size:12px;color:var(--text-3);margin-bottom:12px;padding:6px 10px;background:var(--bg-2);border-radius:6px;display:inline-block">—</div>
 
       <div class="stats-row">
         <div class="stat">
-          <div class="stat-label" style="color:#059669">Sortie capital — net</div>
+          <div class="stat-label" style="color:#059669">Capital (<span id="pa3-cap-pct">100 %</span>)</div>
           <div class="stat-value pos" id="pa3-cap-net">—</div>
           <div class="stat-sub" id="pa3-cap-tax">—</div>
         </div>
         <div class="stat">
-          <div class="stat-label" style="color:#7C3AED">Sortie rente — net mensuel</div>
+          <div class="stat-label" style="color:#7C3AED">Rente (<span id="pa3-rente-pct">0 %</span>) — net/mois</div>
           <div class="stat-value" id="pa3-rente-monthly">—</div>
           <div class="stat-sub" id="pa3-rente-horizon">—</div>
         </div>
         <div class="stat">
-          <div class="stat-label">Rente — total perçu</div>
+          <div class="stat-label">Rente — total sur horizon</div>
           <div class="stat-value info" id="pa3-rente-total">—</div>
           <div class="stat-sub" id="pa3-rente-vs-cap">—</div>
         </div>
+        <div class="stat">
+          <div class="stat-label">Total net (capital + rente)</div>
+          <div class="stat-value pos" id="pa3-total-net">—</div>
+          <div class="stat-sub" id="pa3-total-net-sub">—</div>
+        </div>
+      </div>
+
+      <div class="stats-row" style="margin-top:12px">
         <div class="stat">
           <div class="stat-label">Imposition à la sortie (capital)</div>
           <div class="stat-value neg" id="pa3-cap-tax-total">—</div>
@@ -452,7 +572,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A05 · SENSIBILITÉ ============= -->
-    <section id="pa-sensitivity" style="margin-bottom:48px">
+    <section id="pa-sensitivity">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="3" height="3"/><rect x="6" y="2" width="3" height="3"/><rect x="10" y="2" width="3" height="3"/><rect x="2" y="6" width="3" height="3"/></svg></span>
         Analyse 05 · Sensibilité TMI
@@ -469,6 +589,53 @@ if ('serviceWorker' in navigator) {
           <div class="card-meta">Chiffres en gain net vs CTO</div>
         </div>
         <div class="card-body" id="pa5-grid"></div>
+      </div>
+    </section>
+
+    <!-- ============= A06 · PLAFOND & OPTIMISATION ============= -->
+    <section id="pa-plafond" style="margin-bottom:48px">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 5h12M4 5V3h8v2M4 14V9h8v5H4z"/></svg></span>
+        Analyse 06 · Plafond &amp; optimisation
+      </div>
+      <h2 style="font-size:20px;margin-bottom:8px">Êtes-vous dans les clous fiscaux ?</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Plafond de déduction (10 % du revenu pro, plafonné 8 PASS), reports sur 3 ans, et fraction non déductible. <strong>Renseignez votre revenu pro</strong> dans les paramètres pour activer cette analyse.</p>
+
+      <div id="pa6-alert" class="info-box" style="display:none;margin-bottom:16px"></div>
+
+      <div id="pa6-content">
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-label">Plafond annuel (10 % rev.)</div>
+            <div class="stat-value" id="pa6-plafond">—</div>
+            <div class="stat-sub" style="font-size:11px;color:var(--text-3)">Basé sur votre revenu pro</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Votre versement annuel</div>
+            <div class="stat-value" id="pa6-versement">—</div>
+            <div class="stat-sub" id="pa6-utilisation-label">Taux d'utilisation : <span id="pa6-utilisation">—</span></div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Reports disponibles</div>
+            <div class="stat-value info" id="pa6-reportable">—</div>
+            <div class="stat-sub" style="font-size:11px;color:var(--text-3)">Plafonds 3 ans non utilisés</div>
+          </div>
+        </div>
+
+        <div id="pa6-utilisation-bar" style="margin:8px 0 16px"></div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-label">Total déductible (sur toute la durée)</div>
+            <div class="stat-value pos" id="pa6-deductible-total">—</div>
+            <div class="stat-sub" style="font-size:11px;color:var(--text-3)">Versements dans le plafond</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Total non déductible</div>
+            <div class="stat-value" id="pa6-excess-total">—</div>
+            <div class="stat-sub" style="font-size:11px;color:var(--text-3)">Versements hors plafond (investi sans avantage)</div>
+          </div>
+        </div>
       </div>
     </section>
 

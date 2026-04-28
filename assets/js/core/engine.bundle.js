@@ -2423,11 +2423,14 @@
    CalcInvest — Calculator : PER (Plan Épargne Retraite)
    Règles fiscales françaises 2026 :
    - Versement déductible à concurrence de 10 % des revenus pro
-     (plafonné à 8 PASS, ~37k€)
-   - Économie d'impôt entrée = versement × TMI
-   - Sortie capital : versements imposés au barème IR (TMI sortie),
-     plus-values en PFU 30 % (12.8 IR + 17.2 PS)
+     (plancher 10 % PASS, plafond 8 PASS, ~37k€)
+   - Plafond non utilisé reportable sur 3 années suivantes
+   - Économie d'impôt entrée = versement déductible × TMI
+   - Sortie capital : 2 options
+       a) barème IR sur versés + PFU 30 % sur plus-values (défaut)
+       b) flat tax 30 % sur tout
    - Sortie rente : barème IR avec abattement 10 % + PS 17.2 %
+   - Sortie mixte (X % capital + (100-X) % rente) supportée
    ============================================================ */
 (function (root) {
   'use strict';
@@ -2440,13 +2443,44 @@
   const RENTE_ABATTEMENT_IR = 0.10;  // Abattement 10 % sur la rente
   const PFU_RATE = 0.30;             // 12.8 IR + 17.2 PS
 
+  /** Profils PER prédéfinis (returns + frais typiques marché 2026). */
+  const PROFILES = {
+    prudent:   { id: 'prudent',   label: 'Prudent',   annualReturn: 4, feesPct: 1.5, desc: '60 % obligations · pour <10 ans avant retraite' },
+    balanced:  { id: 'balanced',  label: 'Équilibré', annualReturn: 6, feesPct: 1.0, desc: '50/50 actions/obligations · 10-20 ans' },
+    dynamic:   { id: 'dynamic',   label: 'Dynamique', annualReturn: 8, feesPct: 0.7, desc: '80 % actions · >20 ans avant retraite' }
+  };
+
+  /**
+   * Calcule la part déductible et l'économie fiscale RÉELLE en tenant
+   * compte du plafond et du report 3 ans.
+   * @param {number} annualVersement
+   * @param {number|null} plafondAnnuel — null si pas de revenu pro fourni → pas de cap
+   * @param {number} reportable — plafonds non utilisés des 3 dernières années
+   * @param {number} tmiEntreeDecimal
+   */
+  function computeDeductibleSavings(annualVersement, plafondAnnuel, reportable, tmiEntreeDecimal) {
+    const plafond = plafondAnnuel != null ? plafondAnnuel : Infinity;
+    const totalDispo = plafond + (reportable || 0);
+    const deductible = Math.min(annualVersement, totalDispo);
+    const excess = Math.max(0, annualVersement - totalDispo);
+    const taxSaving = deductible * tmiEntreeDecimal;
+    const usedFromReport = Math.max(0, annualVersement - plafond);
+    const newReportable = Math.max(0, (reportable || 0) - usedFromReport) +
+                          Math.max(0, plafond - annualVersement);
+    return { deductible, excess, taxSaving, newReportable };
+  }
+
   /**
    * Simulation principale PER.
    * @param {object} p {
    *   currentAge, retirementAge, currentSavings, monthlyContrib,
    *   annualReturn, inflation, feesPct,
    *   tmiEntree, tmiSortie,
-   *   exitMode: 'capital' | 'rente' (par défaut capital)
+   *   revenuPro?,           // € — pour calculer le plafond annuel
+   *   cumulatedUnused?,     // € — plafond reportable (cumul 3 dernières années)
+   *   exitCapitalPct?,      // 0..1 — fraction du capital à sortir en capital (reste = rente). Défaut 1.
+   *   exitTaxMethod?,       // 'auto' | 'baremeIR' | 'flatTax' — défaut 'auto' (min des deux)
+   *   profileId?            // pass-through, 'prudent' | 'balanced' | 'dynamic' | 'custom'
    * }
    */
   function calcPER(p) {
@@ -2468,31 +2502,40 @@
     const tmiSortie = (p.tmiSortie || 11) / 100;
 
     const inflation = (p.inflation || 0) / 100;
-    const inflationMonthly = Math.pow(1 + inflation, 1 / 12) - 1;
 
-    // Trajectoire mois par mois
+    // ============= Plafond de déduction (avec report 3 ans) =============
+    const plafondAnnuel = p.revenuPro ? calcPlafondDeductible(p.revenuPro) : null;
+    const initialReportable = p.cumulatedUnused || 0;
+
+    // Trajectoire mois par mois + tracking du report année par année
     let value = initialSavings;
     let totalContributed = initialSavings;
     let cumulatedTaxSaving = 0;
+    let cumulatedDeductible = 0;
+    let cumulatedExcess = 0;
+    let currentReportable = initialReportable;
 
     const yearly = [];
     for (let m = 1; m <= months; m++) {
       value = (value + monthlyContrib) * (1 + monthlyRate);
       totalContributed += monthlyContrib;
-      // Économie fiscale : sur les versements de l'année (pas l'initial)
-      // On l'accumule en simulant un crédit d'impôt versé l'année suivante
       if (m % 12 === 0) {
-        const yearlyContribThis = annualContrib;
-        const taxSaving = yearlyContribThis * tmiEntree;
-        cumulatedTaxSaving += taxSaving;
+        const ds = computeDeductibleSavings(annualContrib, plafondAnnuel, currentReportable, tmiEntree);
+        cumulatedTaxSaving += ds.taxSaving;
+        cumulatedDeductible += ds.deductible;
+        cumulatedExcess += ds.excess;
+        currentReportable = ds.newReportable;
         const yr = m / 12;
         yearly.push({
           year: yr,
           age: currentAge + yr,
           value: value,
           contributed: totalContributed,
-          taxSaving: taxSaving,
-          cumTaxSaving: cumulatedTaxSaving
+          taxSaving: ds.taxSaving,
+          cumTaxSaving: cumulatedTaxSaving,
+          deductibleThisYear: ds.deductible,
+          excessThisYear: ds.excess,
+          reportableEnd: currentReportable
         });
       }
     }
@@ -2500,31 +2543,58 @@
     const finalCapital = value;
     const totalGain = finalCapital - totalContributed;
     const totalContributions = annualContrib * years; // versements seuls (hors initial)
-
-    // ============= Sortie en capital =============
-    // Part "versements déductibles" → imposée au barème IR (TMI sortie)
-    // Part "plus-values" → PFU 30 %
-    // Note simplifiée : on considère initialSavings + contributions = "déductible"
     const baseDeductible = initialSavings + totalContributions;
     const plusValues = Math.max(0, finalCapital - baseDeductible);
-    const taxOnDeductibleCapital = baseDeductible * tmiSortie;
-    const taxOnGainsCapital = plusValues * PFU_RATE;
-    const totalTaxCapital = taxOnDeductibleCapital + taxOnGainsCapital;
-    const netCapital = finalCapital - totalTaxCapital;
 
-    // ============= Sortie en rente =============
-    // Rente viagère : on calcule une rente théorique sur (95 - retirementAge) ans
-    // Simplification : rente annuelle = capital / espérance restante (no actualisation)
+    // ============= Sortie : split capital/rente =============
+    const capitalPct = (p.exitCapitalPct != null) ? Math.max(0, Math.min(1, p.exitCapitalPct)) : 1;
+    const rentePct = 1 - capitalPct;
+    const capitalPart = finalCapital * capitalPct;
+    const rentePart = finalCapital * rentePct;
+
+    // -- Imposition sur la part CAPITAL --
+    // Méthode A : barème IR sur versés (au prorata) + PFU 30 % sur PV
+    const capitalDeductibleFraction = baseDeductible * capitalPct;
+    const capitalGainsFraction = plusValues * capitalPct;
+    const taxIR_deductible = capitalDeductibleFraction * tmiSortie;
+    const taxPFU_gains = capitalGainsFraction * PFU_RATE;
+    const exitTaxBaremeIR = taxIR_deductible + taxPFU_gains;
+    // Méthode B : flat tax 30 % sur tout le capital part
+    const exitTaxFlatTax = capitalPart * PFU_RATE;
+    // Choix
+    const taxMethodPref = p.exitTaxMethod || 'auto';
+    let chosenCapitalTax, chosenMethod;
+    if (taxMethodPref === 'flatTax') {
+      chosenCapitalTax = exitTaxFlatTax;
+      chosenMethod = 'flatTax';
+    } else if (taxMethodPref === 'baremeIR') {
+      chosenCapitalTax = exitTaxBaremeIR;
+      chosenMethod = 'baremeIR';
+    } else {
+      // auto = min des deux
+      if (exitTaxBaremeIR <= exitTaxFlatTax) {
+        chosenCapitalTax = exitTaxBaremeIR;
+        chosenMethod = 'baremeIR';
+      } else {
+        chosenCapitalTax = exitTaxFlatTax;
+        chosenMethod = 'flatTax';
+      }
+    }
+    const netCapitalPart = capitalPart - chosenCapitalTax;
+
+    // -- Rente sur la part RENTE --
     const renteHorizon = Math.max(15, 95 - retirementAge);
-    const annualRente = finalCapital / renteHorizon;
+    const annualRente = rentePart > 0 ? rentePart / renteHorizon : 0;
     const renteAfterAbattement = annualRente * (1 - RENTE_ABATTEMENT_IR);
     const annualTaxRente = renteAfterAbattement * tmiSortie + annualRente * SOCIAL_TAX;
     const annualNetRente = annualRente - annualTaxRente;
     const monthlyNetRente = annualNetRente / 12;
+    const totalNetRenteOverHorizon = annualNetRente * renteHorizon;
+
+    // Total net après impôts (capital + rente cumulée)
+    const totalNetExit = netCapitalPart + totalNetRenteOverHorizon;
 
     // ============= Comparaison sans déduction (CTO équivalent) =============
-    // Si on avait investi le MÊME montant net (versement × (1 - tmi)) en CTO
-    // Approximation : versement net = monthlyContrib × (1 - tmiEntree)
     const ctoMonthlyNet = monthlyContrib * (1 - tmiEntree);
     let ctoValue = initialSavings * (1 - tmiEntree);
     for (let m = 1; m <= months; m++) {
@@ -2532,39 +2602,66 @@
     }
     const ctoContributed = (initialSavings * (1 - tmiEntree)) + ctoMonthlyNet * months;
     const ctoGain = ctoValue - ctoContributed;
-    const ctoTax = ctoGain * PFU_RATE; // PFU sur plus-values seulement
+    const ctoTax = ctoGain * PFU_RATE;
     const ctoNet = ctoValue - ctoTax;
 
     // Pouvoir d'achat
     const realFactor = Math.pow(1 + inflation, years);
-    const netCapitalReal = netCapital / realFactor;
+    const netCapitalReal = netCapitalPart / realFactor;
+
+    // ============= Plafond de déduction summary =============
+    const plafondSummary = plafondAnnuel != null ? {
+      annualPlafond: plafondAnnuel,
+      initialReportable: initialReportable,
+      cumulatedDeductible: cumulatedDeductible,
+      cumulatedExcess: cumulatedExcess,
+      finalReportable: currentReportable,
+      annualVersement: annualContrib,
+      isOverPlafond: annualContrib > (plafondAnnuel + initialReportable),
+      utilisationRatio: plafondAnnuel > 0 ? Math.min(1, annualContrib / plafondAnnuel) : 0
+    } : null;
 
     return {
-      // Trajectoire
       yearly: yearly,
       years: years,
-      // Capitaux bruts
       finalCapital: finalCapital,
       totalContributed: totalContributed,
       totalGain: totalGain,
-      // Avantage fiscal entrée
-      annualTaxSaving: annualContrib * tmiEntree,
+
+      // Avantage fiscal entrée (RÉEL, plafonné)
+      annualTaxSaving: yearly[0] ? yearly[0].taxSaving : 0,
       cumulatedTaxSaving: cumulatedTaxSaving,
-      // Sortie capital
-      netCapital: netCapital,
-      taxOnExit: totalTaxCapital,
+      cumulatedDeductible: cumulatedDeductible,
+      cumulatedExcess: cumulatedExcess,
+      plafond: plafondSummary,
+
+      // Sortie capital (sur la part capitalPct)
+      exitCapitalPct: capitalPct,
+      capitalPart: capitalPart,
+      netCapital: netCapitalPart,           // net après impôts sur la part capital
+      taxOnExit: chosenCapitalTax,           // impôt total sur la part capital
+      taxMethod: chosenMethod,                // 'baremeIR' | 'flatTax'
       taxBreakdown: {
-        onDeductible: taxOnDeductibleCapital,
-        onGains: taxOnGainsCapital
+        baremeIR: exitTaxBaremeIR,
+        flatTax: exitTaxFlatTax,
+        onDeductible: taxIR_deductible,
+        onGains: taxPFU_gains
       },
-      // Sortie rente
+
+      // Rente (sur la part 1 - capitalPct)
+      rentePart: rentePart,
       rente: {
         horizonYears: renteHorizon,
         annualGross: annualRente,
         annualNet: annualNetRente,
         monthlyNet: monthlyNetRente,
-        annualTax: annualTaxRente
+        annualTax: annualTaxRente,
+        totalNetOverHorizon: totalNetRenteOverHorizon
       },
+
+      // Total cumulé sortie (capital immédiat + rente sur l'horizon)
+      totalNetExit: totalNetExit,
+
       // Comparaison CTO
       cto: {
         finalValue: ctoValue,
@@ -2573,19 +2670,20 @@
         tax: ctoTax,
         net: ctoNet
       },
-      perVsCtoDelta: netCapital - ctoNet,
-      // Pouvoir d'achat
+      perVsCtoDelta: netCapitalPart - ctoNet,
+
       netCapitalReal: netCapitalReal,
       inflation: p.inflation || 0,
-      // Paramètres exposés
+
+      // Pass-through
       tmiEntree: p.tmiEntree || 30,
-      tmiSortie: p.tmiSortie || 11
+      tmiSortie: p.tmiSortie || 11,
+      profileId: p.profileId || 'custom'
     };
   }
 
   /**
    * Matrice de sensibilité TMI entrée × TMI sortie.
-   * Retourne pour chaque combo le gain net du PER vs CTO.
    */
   function sensitivityMatrix(p, tmiEntreeList, tmiSortieList) {
     tmiEntreeList = tmiEntreeList || [11, 30, 41, 45];
@@ -2610,7 +2708,7 @@
 
   /**
    * Plafond de déductibilité (10 % du revenu pro net, plafonné 8 PASS).
-   * PASS 2026 ≈ 47 100 € → 8 PASS ≈ 376 800 €.
+   * PASS 2026 ≈ 47 100 €.
    */
   function calcPlafondDeductible(revenuPro) {
     const PASS_2026 = 47100;
@@ -2622,7 +2720,9 @@
   const mod = {
     calcPER: calcPER,
     sensitivityMatrix: sensitivityMatrix,
-    calcPlafondDeductible: calcPlafondDeductible
+    calcPlafondDeductible: calcPlafondDeductible,
+    computeDeductibleSavings: computeDeductibleSavings,
+    PROFILES: PROFILES
   };
 
   if (isNode) {
