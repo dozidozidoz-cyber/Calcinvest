@@ -1,6 +1,6 @@
 /* ============================================================
    CalcInvest — PER VIEW (DOM binding)
-   Reads form → calls CalcPER.* → renders 5 analyses
+   Reads form → calls CalcPER.* → renders 6 analyses
    ============================================================ */
 (function () {
   'use strict';
@@ -32,16 +32,34 @@
      ------------------------------------------------------------ */
   function readForm() {
     const v = (id) => num(document.getElementById(id)?.value);
+
+    // Active profile
+    const activeProfile = document.querySelector('#per-profile-btns .pill.active')?.dataset.profile || 'custom';
+
+    // Exit capital slider (0..100 → 0..1)
+    const sliderEl = document.getElementById('per-exit-capital-pct');
+    const exitCapitalPct = sliderEl ? parseFloat(sliderEl.value) / 100 : 1;
+
+    // Exit tax method toggle
+    const taxMethodEl = document.querySelector('input[name="per-tax-method"]:checked');
+    const exitTaxMethod = taxMethodEl ? taxMethodEl.value : 'auto';
+
     return {
-      currentAge:     v('per-age') || 35,
-      retirementAge:  v('per-retire-age') || 65,
-      currentSavings: v('per-initial') || 0,
-      monthlyContrib: v('per-monthly') || 0,
-      annualReturn:   v('per-return') || 6,
-      feesPct:        v('per-fees') || 0,
-      inflation:      v('per-inflation') || 0,
-      tmiEntree:      parseFloat(document.getElementById('per-tmi-in').value) || 30,
-      tmiSortie:      parseFloat(document.getElementById('per-tmi-out').value) || 11
+      currentAge:      v('per-age') || 35,
+      retirementAge:   v('per-retire-age') || 65,
+      currentSavings:  v('per-initial') || 0,
+      monthlyContrib:  v('per-monthly') || 0,
+      annualReturn:    v('per-return') || 6,
+      feesPct:         v('per-fees') || 0,
+      inflation:       v('per-inflation') || 0,
+      tmiEntree:       parseFloat(document.getElementById('per-tmi-in').value) || 30,
+      tmiSortie:       parseFloat(document.getElementById('per-tmi-out').value) || 11,
+      // New fields
+      revenuPro:       v('per-revenu-pro') || null,
+      cumulatedUnused: v('per-cumulated-unused') || 0,
+      exitCapitalPct:  exitCapitalPct,
+      exitTaxMethod:   exitTaxMethod,
+      profileId:       activeProfile
     };
   }
 
@@ -56,15 +74,67 @@
     set('per-inflation', p.inflation);
     set('per-tmi-in', p.tmiEntree);
     set('per-tmi-out', p.tmiSortie);
+    if (p.revenuPro) set('per-revenu-pro', p.revenuPro);
+    if (p.cumulatedUnused) set('per-cumulated-unused', p.cumulatedUnused);
+    // Exit capital slider
+    const slider = document.getElementById('per-exit-capital-pct');
+    if (slider) slider.value = Math.round((p.exitCapitalPct ?? 1) * 100);
+    updateSliderDisplay();
+  }
+
+  /* Slider display update */
+  function updateSliderDisplay() {
+    const slider = document.getElementById('per-exit-capital-pct');
+    const display = document.getElementById('per-exit-mix-display');
+    if (!slider || !display) return;
+    const capPct = parseInt(slider.value, 10);
+    const rentePct = 100 - capPct;
+    if (capPct === 100) {
+      display.textContent = '100 % capital';
+    } else if (capPct === 0) {
+      display.textContent = '100 % rente';
+    } else {
+      display.textContent = capPct + ' % capital · ' + rentePct + ' % rente';
+    }
+  }
+
+  /* Profile preset handler */
+  function applyProfile(profileId) {
+    const profiles = PER.PROFILES;
+    const profile = profiles[profileId];
+    if (!profile) return;
+
+    // Highlight button
+    document.querySelectorAll('#per-profile-btns .pill').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.profile === profileId);
+    });
+
+    // Apply return + fees
+    const setInput = (id, val) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = val;
+      el.dispatchEvent(new Event('input'));
+    };
+    setInput('per-return', profile.annualReturn);
+    setInput('per-fees', profile.feesPct);
+
+    // Update profile desc
+    const descEl = document.getElementById('per-profile-desc');
+    if (descEl) descEl.textContent = profile.desc;
   }
 
   /* ------------------------------------------------------------
      URL state
      ------------------------------------------------------------ */
-  const URL_KEYS = ['currentAge','retirementAge','currentSavings','monthlyContrib','annualReturn','feesPct','inflation','tmiEntree','tmiSortie'];
+  const URL_KEYS = [
+    'currentAge', 'retirementAge', 'currentSavings', 'monthlyContrib',
+    'annualReturn', 'feesPct', 'inflation', 'tmiEntree', 'tmiSortie',
+    'revenuPro', 'cumulatedUnused', 'exitCapitalPct'
+  ];
   function syncUrl(p) {
     const out = {};
-    URL_KEYS.forEach((k) => { out[k] = p[k]; });
+    URL_KEYS.forEach((k) => { if (p[k] != null) out[k] = p[k]; });
     CI.setUrlParams(out);
   }
   function loadFromUrl() {
@@ -72,7 +142,8 @@
       currentAge: 35, retirementAge: 65,
       currentSavings: 0, monthlyContrib: 200,
       annualReturn: 6, feesPct: 1, inflation: 2,
-      tmiEntree: 30, tmiSortie: 11
+      tmiEntree: 30, tmiSortie: 11,
+      revenuPro: null, cumulatedUnused: 0, exitCapitalPct: 1
     };
     URL_KEYS.forEach((k) => {
       const v = CI.getUrlParam(k);
@@ -95,6 +166,13 @@
     set('pa1-gain-pct', r.totalContributed > 0 ? `+${(r.totalGain / r.totalContributed * 100).toFixed(0)} % vs versé` : '—');
     set('pa1-tax-saving', CI.fmtMoney(r.cumulatedTaxSaving, 0));
     set('pa1-tax-saving-sub', `${CI.fmtMoney(r.annualTaxSaving, 0)}/an × ${r.years} ans à TMI ${p.tmiEntree} %`);
+
+    // Profil badge
+    const profileBadge = document.getElementById('pa1-profile-badge');
+    if (profileBadge) {
+      const pInfo = PER.PROFILES[r.profileId];
+      profileBadge.textContent = pInfo ? `Profil : ${pInfo.label}` : `Profil personnalisé`;
+    }
 
     // Insight A01
     const horizonAge = p.currentAge + r.years;
@@ -137,33 +215,68 @@
   }
 
   /* ------------------------------------------------------------
-     A03 — Sortie capital vs rente
+     A03 — Sortie capital/rente (mix)
      ------------------------------------------------------------ */
   function renderA03(p, r) {
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
+    const capPct = Math.round(r.exitCapitalPct * 100);
+    const rentePct = 100 - capPct;
+
+    // Capital part
+    set('pa3-cap-pct', `${capPct} %`);
     set('pa3-cap-net', CI.fmtMoney(r.netCapital, 0));
-    set('pa3-cap-tax', `Brut ${CI.fmtMoney(r.finalCapital, 0)} − impôts ${CI.fmtMoney(r.taxOnExit, 0)}`);
+    set('pa3-cap-tax', `Brut ${CI.fmtMoney(r.capitalPart, 0)} − impôts ${CI.fmtMoney(r.taxOnExit, 0)}`);
 
-    set('pa3-rente-monthly', CI.fmtMoney(r.rente.monthlyNet, 0) + '/mois');
-    set('pa3-rente-horizon', `Sur ${r.rente.horizonYears} ans (jusqu'à ~95 ans)`);
+    // Tax method badge
+    const methodBadge = document.getElementById('pa3-tax-method-badge');
+    if (methodBadge) {
+      if (r.taxMethod === 'baremeIR') {
+        methodBadge.textContent = `Barème IR (barème: ${CI.fmtMoney(r.taxBreakdown.baremeIR, 0)} · flat tax: ${CI.fmtMoney(r.taxBreakdown.flatTax, 0)}) — barème retenu`;
+      } else {
+        methodBadge.textContent = `Flat tax 30 % (barème: ${CI.fmtMoney(r.taxBreakdown.baremeIR, 0)} · flat tax: ${CI.fmtMoney(r.taxBreakdown.flatTax, 0)}) — flat retenu`;
+      }
+    }
 
-    const renteTotal = r.rente.annualNet * r.rente.horizonYears;
-    set('pa3-rente-total', CI.fmtMoney(renteTotal, 0));
-    const diffRente = renteTotal - r.netCapital;
-    set('pa3-rente-vs-cap', `${diffRente >= 0 ? '+' : ''}${CI.fmtMoney(diffRente, 0)} vs sortie capital`);
-
+    // Tax breakdown
     set('pa3-cap-tax-total', '−' + CI.fmtMoney(r.taxOnExit, 0));
     set('pa3-cap-tax-detail', `IR sur versés ${CI.fmtMoney(r.taxBreakdown.onDeductible, 0)} · PFU sur PV ${CI.fmtMoney(r.taxBreakdown.onGains, 0)}`);
 
+    // Rente part
+    set('pa3-rente-pct', `${rentePct} %`);
+    if (r.rente.annualGross > 0) {
+      set('pa3-rente-monthly', CI.fmtMoney(r.rente.monthlyNet, 0) + '/mois');
+      set('pa3-rente-horizon', `Sur ${r.rente.horizonYears} ans (jusqu'à ~95 ans)`);
+      set('pa3-rente-total', CI.fmtMoney(r.rente.totalNetOverHorizon, 0));
+      set('pa3-rente-vs-cap', `Rente nette sur ${r.rente.horizonYears} ans`);
+    } else {
+      set('pa3-rente-monthly', '—');
+      set('pa3-rente-horizon', 'Tout en capital (100 %)');
+      set('pa3-rente-total', '—');
+      set('pa3-rente-vs-cap', 'Sortie 100 % capital sélectionnée');
+    }
+
+    // Total net all-in
+    set('pa3-total-net', CI.fmtMoney(r.totalNetExit, 0));
+    set('pa3-total-net-sub', capPct === 100 ? 'Capital uniquement' : capPct === 0 ? 'Rente uniquement' : `${capPct} % cap. + ${rentePct} % rente (sur ${r.rente.horizonYears} ans)`);
+
     // Insight A03
-    const winnerLine = renteTotal > r.netCapital
-      ? `La <strong>rente</strong> finit gagnante (<span class="pos">+${CI.fmtMoney(renteTotal - r.netCapital, 0)}</span> sur ${r.rente.horizonYears} ans), mais étalée — pas de capital disponible immédiatement.`
-      : `Le <strong>capital</strong> est gagnant (<span class="pos">+${CI.fmtMoney(r.netCapital - renteTotal, 0)}</span>) — vous gardez la liberté de l'investir ou le dépenser à votre rythme.`;
+    const showRente = r.rente.annualGross > 0;
+    const winnerLine = showRente && r.rente.totalNetOverHorizon > r.netCapital
+      ? `La <strong>rente</strong> finit gagnante (<span class="pos">+${CI.fmtMoney(r.rente.totalNetOverHorizon - r.netCapital, 0)}</span> sur ${r.rente.horizonYears} ans), mais étalée.`
+      : r.netCapital > 0
+      ? `Le <strong>capital</strong> est votre poche disponible immédiatement — liberté de réinvestir à votre guise.`
+      : `Tout part en rente : ${CI.fmtMoney(r.rente.monthlyNet, 0)}/mois pendant ${r.rente.horizonYears} ans.`;
+
+    const taxMethodLine = r.taxMethod === 'flatTax'
+      ? `Flat tax 30 % retenue (plus avantageuse que le barème IR dans votre cas).`
+      : `Barème IR retenu (${p.tmiSortie} % sur les versements + PFU 30 % sur les PV).`;
+
     setInsight('pa-sortie',
-      `Sortie capital : <em>${CI.fmtMoney(r.netCapital, 0)}</em> net après impôts. ` +
-      `Sortie rente : <em>${CI.fmtMoney(r.rente.monthlyNet, 0)}/mois</em> pendant ${r.rente.horizonYears} ans. ` +
-      winnerLine + ` <span class="muted">Choix selon votre besoin de liquidité et votre TMI à la retraite.</span>`
+      (r.netCapital > 0 ? `Capital net : <em>${CI.fmtMoney(r.netCapital, 0)}</em>. ` : '') +
+      (showRente ? `Rente nette : <em>${CI.fmtMoney(r.rente.monthlyNet, 0)}/mois</em> pendant ${r.rente.horizonYears} ans. ` : '') +
+      winnerLine + ` ${taxMethodLine} ` +
+      `<span class="muted">Utilisez le slider de mix pour trouver votre équilibre liquidité / rente garantie.</span>`
     );
   }
 
@@ -241,6 +354,87 @@
   }
 
   /* ------------------------------------------------------------
+     A06 — Plafond & optimisation fiscale
+     ------------------------------------------------------------ */
+  function renderA06(p, r) {
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = c; };
+
+    if (!r.plafond) {
+      // No revenuPro provided: show prompt
+      const container = document.getElementById('pa6-content');
+      if (container) {
+        container.innerHTML = '<p class="text-muted" style="font-size:13px;padding:16px 0">Renseignez votre <strong>revenu professionnel</strong> dans les paramètres pour voir votre plafond de déduction réel et les éventuels reports disponibles.</p>';
+      }
+      return;
+    }
+
+    const pl = r.plafond;
+    const annualVers = pl.annualVersement;
+    const utilisationPct = Math.round(pl.utilisationRatio * 100);
+
+    set('pa6-plafond', CI.fmtMoney(pl.annualPlafond, 0) + '/an');
+    set('pa6-versement', CI.fmtMoney(annualVers, 0) + '/an');
+    set('pa6-reportable', CI.fmtMoney(pl.initialReportable, 0));
+    set('pa6-utilisation', utilisationPct + ' %');
+    set('pa6-deductible-total', CI.fmtMoney(r.cumulatedDeductible, 0));
+    set('pa6-excess-total', CI.fmtMoney(r.cumulatedExcess, 0));
+
+    // Alert banner
+    const alertEl = document.getElementById('pa6-alert');
+    if (alertEl) {
+      if (pl.isOverPlafond) {
+        alertEl.style.display = '';
+        alertEl.className = 'info-box warn';
+        alertEl.innerHTML =
+          '<strong>⚠ Versement supérieur au plafond disponible</strong><br>' +
+          `Votre versement annuel (${CI.fmtMoney(annualVers, 0)}) dépasse votre plafond + reports ` +
+          `(${CI.fmtMoney(pl.annualPlafond + pl.initialReportable, 0)}). ` +
+          `La part non déductible (${CI.fmtMoney(annualVers - pl.annualPlafond - pl.initialReportable, 0)}) ` +
+          `sera tout de même investie mais sans avantage fiscal à l'entrée.`;
+      } else {
+        const marge = pl.annualPlafond - annualVers;
+        if (marge > 500) {
+          alertEl.style.display = '';
+          alertEl.className = 'info-box';
+          alertEl.innerHTML =
+            `<strong>💡 Marge disponible</strong> : vous pouvez encore verser <strong>${CI.fmtMoney(marge, 0)}</strong> ` +
+            `cette année et déduire à ${p.tmiEntree} % (économie potentielle : ${CI.fmtMoney(marge * p.tmiEntree / 100, 0)}).`;
+        } else {
+          alertEl.style.display = 'none';
+        }
+      }
+    }
+
+    // Report bar chart (simple HTML bars)
+    const barEl = document.getElementById('pa6-utilisation-bar');
+    if (barEl) {
+      const pct = Math.min(100, utilisationPct);
+      const color = pct > 100 ? 'var(--red)' : pct > 85 ? 'var(--yellow)' : 'var(--accent)';
+      barEl.innerHTML = `
+        <div style="background:var(--border);border-radius:4px;height:8px;margin:6px 0">
+          <div style="background:${color};border-radius:4px;height:8px;width:${Math.min(100, pct)}%;transition:width .3s"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-3)">
+          ${CI.fmtMoney(annualVers, 0)} versé / ${CI.fmtMoney(pl.annualPlafond, 0)} plafond annuel
+          ${pl.initialReportable > 0 ? ` · ${CI.fmtMoney(pl.initialReportable, 0)} de reports disponibles` : ''}
+        </div>`;
+    }
+
+    // Insight A06
+    const deductInsight = pl.isOverPlafond
+      ? `<span class="warn">Votre versement dépasse le plafond.</span> Sur ${r.years} ans, <strong>${CI.fmtMoney(r.cumulatedDeductible, 0)} seront déductibles</strong> et ${CI.fmtMoney(r.cumulatedExcess, 0)} ne le seront pas.`
+      : `Votre versement est <strong>dans le plafond</strong> (${utilisationPct} % utilisé). Sur ${r.years} ans, <strong>100 % de vos versements sont déductibles</strong> — ${CI.fmtMoney(r.cumulatedTaxSaving, 0)} d'économies fiscales.`;
+    setInsight('pa-plafond',
+      deductInsight + ` ` +
+      (pl.initialReportable > 0
+        ? `Les reports des 3 dernières années (<strong>${CI.fmtMoney(pl.initialReportable, 0)}</strong>) augmentent votre enveloppe disponible. `
+        : '') +
+      `<span class="muted">Plafond calculé sur votre revenu pro (10 % du revenu, plancher 10 % PASS = 4 710 €, plafond 8 PASS = 376 800 €).</span>`
+    );
+  }
+
+  /* ------------------------------------------------------------
      run() — point d'entrée principal
      ------------------------------------------------------------ */
   function run() {
@@ -263,6 +457,7 @@
     renderA03(p, r);
     renderA04(p, r);
     renderA05(p, r);
+    renderA06(p, r);
     syncUrl(p);
   }
 
@@ -277,6 +472,18 @@
   window.sharePER = function () { if (lastParams) syncUrl(lastParams); CI.copyShareUrl(); };
   window.resetPER = function () { window.location.search = ''; };
 
+  /* Profile button click */
+  window.selectPERProfile = function (profileId) {
+    applyProfile(profileId);
+    run();
+  };
+
+  /* Slider live update */
+  window.onPERSliderChange = function () {
+    updateSliderDisplay();
+    run();
+  };
+
   /* ------------------------------------------------------------
      Init
      ------------------------------------------------------------ */
@@ -284,6 +491,7 @@
     writeForm(loadFromUrl());
     CI.initAll();
 
+    // Listen on all form inputs
     document.querySelectorAll('#per-params input, #per-params select').forEach((el) => {
       el.addEventListener('input', run);
       el.addEventListener('change', run);
