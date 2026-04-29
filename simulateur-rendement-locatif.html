@@ -175,6 +175,15 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Simulation de revente</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#l-vs-bourse">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 14V8l3 2 3-5 3 4 3-3"/><path d="M2 14h12"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 09</div>
+          <div class="sidebar-link-title">Achat vs bourse</div>
+        </div>
+      </a>
       <a class="sidebar-link" href="#l-patrimoine" id="link-patrimoine" style="display:none">
         <div class="sidebar-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="4" height="8"/><rect x="6" y="3" width="4" height="11"/><rect x="10" y="8" width="4" height="6"/></svg>
@@ -433,7 +442,7 @@ if ('serviceWorker' in navigator) {
                 </div>
               </div>
 
-              <div class="field field-full">
+              <div class="field">
                 <label class="field-label">Entretien annuel</label>
                 <div class="stepper" data-step="0.25" data-min="0" data-max="5">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
@@ -441,6 +450,22 @@ if ('serviceWorker' in navigator) {
                   <span class="stepper-unit">% du prix</span>
                   <button class="stepper-btn" data-dir="1" type="button">+</button>
                 </div>
+              </div>
+
+              <div class="field">
+                <label class="field-label">Travaux récurrents (provision)</label>
+                <div class="stepper" data-step="0.25" data-min="0" data-max="3">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="l-recurring" value="0" step="0.25" />
+                  <span class="stepper-unit">% du prix</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="l-recurring">
+                  <button class="pill active" data-value="0" type="button">0 %</button>
+                  <button class="pill" data-value="0.5" type="button">0.5 %</button>
+                  <button class="pill" data-value="1" type="button">1 %</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px">Toiture, façade, gros œuvre — provision annuelle moyenne</div>
               </div>
             </div>
           </div>
@@ -912,6 +937,77 @@ if ('serviceWorker' in navigator) {
         <strong>Exonération IR (19 %) :</strong> 6 %/an de la 6ème à la 21ème année, +4 % la 22ème → exonération totale après <strong>22 ans</strong>.&nbsp;
         <strong>Exonération PS (17,2 %) :</strong> 1,65 %/an de la 6ème à la 21ème, +9 % la 22ème, 1,60 %/an de la 23ème à la 30ème → exonération totale après <strong>30 ans</strong>.
         Ces règles s'appliquent aux résidences secondaires et investissements locatifs (hors résidence principale, totalement exonérée).
+      </div>
+    </section>
+
+    <!-- ============= A09 · ACHAT IMMOBILIER vs DCA BOURSE ============= -->
+    <section id="l-vs-bourse">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14V8l3 2 3-5 3 4 3-3"/><path d="M2 14h12"/></svg>
+        </span>
+        Analyse 09 · Achat immobilier vs DCA bourse
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">L'opportunité du capital : si tu avais placé ton apport en bourse plutôt que d'acheter, où serais-tu aujourd'hui ? Comparaison sur ton horizon de détention.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Net immobilier (revente)</div>
+          <div class="stat-value pos" id="la9-real-net">—</div>
+          <div class="stat-sub" id="la9-real-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Net bourse (apport placé)</div>
+          <div class="stat-value info" id="la9-stocks-net">—</div>
+          <div class="stat-sub" id="la9-stocks-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Différentiel</div>
+          <div class="stat-value" id="la9-delta">—</div>
+          <div class="stat-sub" id="la9-delta-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Horizon</div>
+          <div class="stat-value info" id="la9-horizon">—</div>
+          <div class="stat-sub">Période de comparaison</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg>
+            </div>
+            Trajectoires : équité immo vs portefeuille bourse
+          </div>
+          <div id="la9-rate-btns" style="display:flex;gap:5px;flex-wrap:wrap">
+            <button data-val="4" type="button" class="pill">4 %</button>
+            <button data-val="6" type="button" class="pill">6 %</button>
+            <button data-val="7" type="button" class="pill active">7 %</button>
+            <button data-val="9" type="button" class="pill">9 %</button>
+            <button data-val="11" type="button" class="pill">11 %</button>
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="la9-chart"></canvas></div>
+          <div class="chart-legend" style="flex-wrap:wrap;gap:10px">
+            <div><span class="legend-dot" style="background:#34D399"></span>Équité immobilier</div>
+            <div><span class="legend-dot" style="background:#60A5FA"></span>Portefeuille bourse (brut)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Hypothèses de comparaison
+        </div>
+        <strong>Apport bourse :</strong> ton apport immobilier (+ frais de notaire et travaux non empruntés) placé en lump sum sur un ETF S&P 500.<br>
+        <strong>Frais ETF :</strong> 0.2 %/an (TER moyen UCITS).<br>
+        <strong>Fiscalité bourse :</strong> Flat tax PFU 30 % (12.8 % IR + 17.2 % PS) sur les plus-values. En PEA après 5 ans, ce serait 17.2 %.<br>
+        <strong>Fiscalité immobilier :</strong> abattements PV (IR exonéré à 22 ans, PS à 30 ans) + frais de revente 4 %.<br>
+        <em>Comparaison conceptuelle : le DCA bourse n'inclut pas le levier crédit dont bénéficie l'immobilier.</em>
       </div>
     </section>
 

@@ -6,11 +6,12 @@
 (function () {
   'use strict';
 
-  const calc      = window.CalcLocatif.calcLocatif;
-  const calcComp  = window.CalcLocatif.computeRegimeComparison;
-  const calcPV    = window.CalcLocatif.computePlusValue;
-  const calcAggr  = window.CalcLocatif.computeAggregate;
-  const num       = window.FIN.num;
+  const calc       = window.CalcLocatif.calcLocatif;
+  const calcComp   = window.CalcLocatif.computeRegimeComparison;
+  const calcPV     = window.CalcLocatif.computePlusValue;
+  const calcAggr   = window.CalcLocatif.computeAggregate;
+  const calcStocks = window.CalcLocatif.compareWithStocks;
+  const num        = window.FIN.num;
 
   // Multi-biens state
   let biens          = [];   // [{ id, name, params, result }]
@@ -57,6 +58,7 @@
       insurance: v('l-insurance'),
       mgmtPct: v('l-mgmt'),
       maintPct: v('l-maint'),
+      recurringWorksRate: v('l-recurring'),
       loan: v('l-loan'),
       loanRate: v('l-loanrate'),
       loanYears: v('l-loanyears'),
@@ -85,6 +87,7 @@
     set('l-insurance', p.insurance);
     set('l-mgmt', p.mgmtPct);
     set('l-maint', p.maintPct);
+    set('l-recurring', p.recurringWorksRate ?? 0);
     set('l-loan', p.loan);
     set('l-loanrate', p.loanRate);
     set('l-loanyears', p.loanYears);
@@ -385,6 +388,62 @@
   /* ------------------------------------------------------------
      Actions publiques (bindées aux boutons en HTML)
      ------------------------------------------------------------ */
+  /* ------------------------------------------------------------
+     A09 — Achat immobilier vs DCA bourse
+     ------------------------------------------------------------ */
+  let la9StockRate = 7;
+
+  function renderA09(p, r) {
+    if (!calcStocks) return;
+    const cmp = calcStocks(p, r, { stockRate: la9StockRate });
+    if (!cmp) return;
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
+
+    set('la9-real-net',  CI.fmtMoney(cmp.realEstateNet, 0));
+    set('la9-real-sub',  'Net vendeur après crédit + plus-value');
+    set('la9-stocks-net', CI.fmtMoney(cmp.stocksNet, 0));
+    set('la9-stocks-sub', `Apport ${CI.fmtCompact(cmp.apport)} placé à ${cmp.stockRate} %/an, PFU ${cmp.taxRate} %`);
+
+    const winner = cmp.delta >= 0 ? 'real' : 'stocks';
+    set('la9-delta',     (cmp.delta >= 0 ? '+' : '') + CI.fmtMoney(cmp.delta, 0));
+    set('la9-delta-sub', cmp.delta >= 0 ? 'L\'immobilier l\'emporte' : 'La bourse l\'emporte');
+    cls('la9-delta',     winner === 'real' ? 'pos' : 'neg');
+
+    cls('la9-real-net',   winner === 'real'   ? 'pos' : 'info');
+    cls('la9-stocks-net', winner === 'stocks' ? 'pos' : 'info');
+
+    set('la9-horizon', cmp.yearsCompared + ' ans');
+
+    // Chart : équité immo vs valeur stocks par année
+    requestAnimationFrame(() => {
+      const labels   = r.yearly.map((y) => 'An ' + y.year);
+      const realData = r.yearly.map((y) => y.equity);
+      // Stocks yearly : on a cmp.stocksYearly avec value par année
+      const stocksData = cmp.stocksYearly ? cmp.stocksYearly.map((y) => y.value) : [];
+      CI.drawChart('la9-chart', labels, [
+        { label: 'Équité immo',   data: realData,   color: '#34D399', fill: true,  width: 2.5 },
+        { label: 'Bourse (brut)', data: stocksData, color: '#60A5FA', fill: false, width: 2, dash: [4, 3] }
+      ], { yFormat: (v) => CI.fmtCompact(v) });
+    });
+
+    // Insight
+    const verb     = cmp.delta >= 0 ? 'l\'immobilier rapporte' : 'la bourse rapporte';
+    const ratio    = cmp.stocksNet > 0 ? (cmp.realEstateNet / cmp.stocksNet).toFixed(2) : '—';
+    const peaNote  = cmp.taxRate === 30
+      ? ' <span class="muted">Note : en PEA après 5 ans, l\'imposition tomberait à 17.2 %, augmentant le score bourse.</span>'
+      : '';
+    setInsight('l-vs-bourse',
+      `Sur <strong>${cmp.yearsCompared} ans</strong>, en plaçant ton apport de <em>${CI.fmtMoney(cmp.apport, 0)}</em> ` +
+      `à <strong>${cmp.stockRate} %/an</strong> (S&P 500 historique) au lieu d'acheter, tu aurais ` +
+      `<em>${CI.fmtMoney(cmp.stocksNet, 0)}</em> nets après PFU. ` +
+      `Ton bien immobilier rapporte <em>${CI.fmtMoney(cmp.realEstateNet, 0)}</em> nets — ` +
+      `<span class="${cmp.delta >= 0 ? 'pos' : 'neg'}">${verb} ${CI.fmtMoney(Math.abs(cmp.delta), 0)} de plus</span> ` +
+      `(ratio ×${ratio}). <span class="muted">L'immobilier gagne quand le levier crédit + plus-value compensent l'illiquidité et les frais.</span>${peaNote}`
+    );
+  }
+
   function run() {
     if (switchingBien) return; // ignore form events pendant un swap programmatique
     const p = readForm();
@@ -407,6 +466,7 @@
     renderRevente(p, r);
     requestAnimationFrame(() => renderChart(r));
     renderInsights(p, r);
+    renderA09(p, r);
     renderBiensTabs();
     renderAggregate();
     renderComparison();
@@ -463,6 +523,7 @@
     renderRevente(b.params, b.result);
     requestAnimationFrame(() => renderChart(b.result));
     renderInsights(b.params, b.result);
+    renderA09(b.params, b.result);
     renderBiensTabs();
     renderAggregate();
     renderComparison();
@@ -725,6 +786,16 @@
     document.querySelectorAll('#params input, #params select').forEach((el) => {
       el.addEventListener('input', run);
       el.addEventListener('change', run);
+    });
+
+    // A09 — taux bourse pills
+    document.querySelectorAll('#la9-rate-btns button').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#la9-rate-btns button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        la9StockRate = parseFloat(b.dataset.val) || 7;
+        if (lastParams && lastResult) renderA09(lastParams, lastResult);
+      });
     });
 
     // A07 — indexation loyers

@@ -1782,7 +1782,8 @@
     const effectiveRent = grossRent * (1 - p.vacancy / 100);
     const mgmt = effectiveRent * (p.mgmtPct / 100);
     const maint = p.price * (p.maintPct / 100);
-    const totalCharges = p.propTax + p.copro + p.insurance + mgmt + maint;
+    const recurringWorks = p.price * ((p.recurringWorksRate || 0) / 100);
+    const totalCharges = p.propTax + p.copro + p.insurance + mgmt + maint + recurringWorks;
     const netRentBeforeLoan = effectiveRent - totalCharges;
 
     const yieldGross = (grossRent / p.price) * 100;
@@ -1794,7 +1795,7 @@
       const insuranceYear = yearLoan ? yearLoan.insurance : 0;
       const effRentYear = grossRentYear * (1 - p.vacancy / 100);
       const mgmtYear = effRentYear * (p.mgmtPct / 100);
-      const chargesYear = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100);
+      const chargesYear = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100) + p.price * ((p.recurringWorksRate || 0) / 100);
       const tr = p.tmi / 100;
       const sr = SOCIAL_TAX;
       let taxableBase = 0;
@@ -1831,7 +1832,7 @@
       const grossRentYear = grossRent * rentFactor;
       const rentYear = grossRentYear * (1 - p.vacancy / 100);
       const mgmtYear = rentYear * (p.mgmtPct / 100);
-      const chargesYear = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100);
+      const chargesYear = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100) + p.price * ((p.recurringWorksRate || 0) / 100);
       const loanYear = (y <= p.loanYears && p.loan > 0) ? amort.total * 12 : 0;
       const tax = computeTax(grossRentYear, yearLoan);
       const cashflowYear = rentYear - chargesYear - loanYear - tax;
@@ -2022,11 +2023,71 @@
     };
   }
 
+  /**
+   * Compare l'achat immobilier à un placement bourse (S&P 500) avec le même apport.
+   *
+   * Hypothèse : le downPayment (apport + frais bloqués) aurait pu être investi en bourse
+   * à un rendement annuel constant, frais ETF, fiscalité PFU 30 %.
+   *
+   * @param {Object} p — params calcLocatif
+   * @param {Object} r — résultat calcLocatif
+   * @param {Object} [opts] — { stockRate=7, feesPct=0.2, taxRate=30 }
+   * @returns {Object|null} données comparaison
+   */
+  function compareWithStocks(p, r, opts) {
+    opts = opts || {};
+    var stockRate = opts.stockRate != null ? opts.stockRate : 7;
+    var feesPct   = opts.feesPct   != null ? opts.feesPct   : 0.2;
+    var taxRate   = opts.taxRate   != null ? opts.taxRate   : 30;
+
+    // Récupérer calcCompound : Node = require, browser = root.Calculators.compound
+    var compound = isNode
+      ? require('./compound')
+      : (root.Calculators && root.Calculators.compound);
+    if (!compound || !compound.calcCompound) return null;
+
+    var compoundResult = compound.calcCompound({
+      initialAmount: r.downPayment,
+      monthlyAmount: 0,
+      annualRate:    stockRate,
+      feesPct:       feesPct,
+      years:         p.holdYears
+    });
+
+    var stocksGross = compoundResult.finalValue;
+    var stocksGains = Math.max(0, stocksGross - r.downPayment);
+    var stocksTax   = stocksGains * (taxRate / 100);
+    var stocksNet   = stocksGross - stocksTax;
+
+    // Net vendeur immobilier (revente fin d'horizon, frais 4 %, abattements PV)
+    var lastYr = r.yearly[r.yearly.length - 1];
+    var pv = computePlusValue(p.price, lastYr.propertyValue, p.holdYears, 4, lastYr.balance);
+    var realEstateNet = pv.netVendeur;
+
+    return {
+      stocksGross:      stocksGross,
+      stocksGains:      stocksGains,
+      stocksTax:        stocksTax,
+      stocksNet:        stocksNet,
+      stocksYearly:     compoundResult.yearly,
+      realEstateNet:    realEstateNet,
+      realEstateValue:  lastYr.propertyValue,
+      realEstateEquity: lastYr.equity,
+      delta:            realEstateNet - stocksNet,
+      stockRate:        stockRate,
+      taxRate:          taxRate,
+      feesPct:          feesPct,
+      yearsCompared:    p.holdYears,
+      apport:           r.downPayment
+    };
+  }
+
   const mod = {
     calcLocatif: calcLocatif,
     computeRegimeComparison: computeRegimeComparison,
     computePlusValue: computePlusValue,
-    computeAggregate: computeAggregate
+    computeAggregate: computeAggregate,
+    compareWithStocks: compareWithStocks
   };
 
   if (isNode) {
