@@ -448,6 +448,139 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* DeFi yield strategies                                                */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Taux DeFi historiques moyens 2022-2026 (données indicatives).
+   * Organisés par type de stratégie + par actif pour le staking.
+   */
+  var DEFI_YIELDS = {
+    staking: {
+      btc: { apy: 1.5, label: 'Lending BTC (wrapped, Aave)' },
+      eth: { apy: 3.5, label: 'Staking ETH liquid (Lido)' },
+      bnb: { apy: 4.0, label: 'Staking BNB (native)' },
+      sol: { apy: 6.5, label: 'Staking SOL (liquid)' },
+      xrp: { apy: 2.0, label: 'Lending XRP (Nexo/Aave)' }
+    },
+    lending:  { apy: 5.0, label: 'Lending stablecoins (Aave/Compound)', risk: 'Dépeg stablecoin · Smart contract' },
+    lp:       { apy: 8.0, label: 'Liquidity Providing (Uniswap V3)',    risk: 'Perte impermanente · Smart contract' }
+  };
+
+  /**
+   * Simule 4 stratégies DeFi sur un résultat DCA existant.
+   *
+   * @param {Array}  monthlyData  r.monthly_data de calcCryptoDCA
+   * @param {string} assetId      'btc' | 'eth' | 'sol' | 'bnb' | 'xrp'
+   * @param {Object} [opts]       override APY : { stakingApy, lendingApy, lpApy, lendingStablePct }
+   *
+   * @returns {{ scenarios, hodlFinal }}
+   *   scenarios: [{ id, label, color, yearly, finalValue, yieldEarned, apy, risk }]
+   */
+  function computeDeFiStrategies(monthlyData, assetId, opts) {
+    opts = opts || {};
+    var asset   = assetId || 'eth';
+    var stInfo  = DEFI_YIELDS.staking[asset] || DEFI_YIELDS.staking.eth;
+    var stakingAPR  = ((opts.stakingApy  != null ? opts.stakingApy  : stInfo.apy)          ) / 100 / 12;
+    var lendingAPR  = ((opts.lendingApy  != null ? opts.lendingApy  : DEFI_YIELDS.lending.apy)) / 100 / 12;
+    var lpAPR       = ((opts.lpApy       != null ? opts.lpApy       : DEFI_YIELDS.lp.apy)     ) / 100 / 12;
+    var stablePct   =  (opts.lendingStablePct != null ? opts.lendingStablePct : 30) / 100;
+    var ilAnnual    = 0.03;   // ~3 % IL/an estimé pour paire volatile/stable
+    var ilMonthly   = ilAnnual / 12;
+
+    var cumStaking = 0;
+    var cumLending = 0;
+    var cumLpFees  = 0;
+    var cumIL      = 0;
+
+    var hodlMonthly    = [];
+    var stakingMonthly = [];
+    var lendingMonthly = [];
+    var lpMonthly      = [];
+
+    for (var i = 0; i < monthlyData.length; i++) {
+      var m = monthlyData[i];
+      var hodlVal = m.value;
+
+      // Staking : rendement composé sur (portfolio + cumul rewards)
+      cumStaking += (hodlVal + cumStaking) * stakingAPR;
+
+      // Lending : yield sur la fraction stablecoin (stablePct du capital investi)
+      // Les stables ne suivent pas le prix → valeur = capital stable + yield
+      cumLending += m.invested * stablePct * lendingAPR;
+
+      // LP : frais sur la totalité du portfolio, moins perte impermanente estimée
+      cumLpFees += hodlVal * lpAPR;
+      cumIL     += hodlVal * ilMonthly;
+
+      hodlMonthly.push(hodlVal);
+      stakingMonthly.push(hodlVal + cumStaking);
+      // Lending : (1 - stablePct) suit le prix + portion stable au coût + yield
+      lendingMonthly.push(hodlVal * (1 - stablePct) + m.invested * stablePct + cumLending);
+      lpMonthly.push(hodlVal + Math.max(0, cumLpFees - cumIL));
+    }
+
+    var n    = monthlyData.length;
+    var yrs  = Math.ceil(n / 12);
+
+    function toYearly(vals) {
+      var out = [];
+      for (var y = 1; y <= yrs; y++) {
+        var idx = Math.min(y * 12 - 1, n - 1);
+        out.push({ year: y, value: vals[idx] });
+      }
+      return out;
+    }
+
+    var fi = n - 1;
+    var stakingApyVal = opts.stakingApy != null ? opts.stakingApy : stInfo.apy;
+    var lendingApyVal = opts.lendingApy != null ? opts.lendingApy : DEFI_YIELDS.lending.apy;
+    var lpApyVal      = opts.lpApy      != null ? opts.lpApy      : DEFI_YIELDS.lp.apy;
+
+    return {
+      scenarios: [
+        {
+          id: 'hodl', label: 'HODL pur',
+          color: '#60A5FA',
+          yearly: toYearly(hodlMonthly),
+          finalValue: hodlMonthly[fi],
+          yieldEarned: 0,
+          apy: 0,
+          risk: '—'
+        },
+        {
+          id: 'staking', label: stInfo.label,
+          color: '#34D399',
+          yearly: toYearly(stakingMonthly),
+          finalValue: stakingMonthly[fi],
+          yieldEarned: cumStaking,
+          apy: stakingApyVal,
+          risk: DEFI_YIELDS.staking[asset] ? 'Slashing · Smart contract' : 'Smart contract'
+        },
+        {
+          id: 'lending', label: DEFI_YIELDS.lending.label,
+          color: '#FBBF24',
+          yearly: toYearly(lendingMonthly),
+          finalValue: lendingMonthly[fi],
+          yieldEarned: cumLending,
+          apy: lendingApyVal,
+          risk: DEFI_YIELDS.lending.risk
+        },
+        {
+          id: 'lp', label: DEFI_YIELDS.lp.label,
+          color: '#F87171',
+          yearly: toYearly(lpMonthly),
+          finalValue: lpMonthly[fi],
+          yieldEarned: Math.max(0, cumLpFees - cumIL),
+          apy: lpApyVal,
+          risk: DEFI_YIELDS.lp.risk
+        }
+      ],
+      hodlFinal: hodlMonthly[fi]
+    };
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Exports                                                               */
   /* ------------------------------------------------------------------ */
   const mod = {
@@ -457,7 +590,9 @@
     computeRollingVolatility,
     detectCycles,
     calcLumpSumVsDCA,
-    calcMultiCryptoComp
+    calcMultiCryptoComp,
+    computeDeFiStrategies,
+    DEFI_YIELDS
   };
 
   if (typeof module !== 'undefined' && module.exports) {
