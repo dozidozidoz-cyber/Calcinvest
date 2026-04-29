@@ -824,5 +824,20 @@
     }
 
     run();
+
+    // Public actions (window-scoped)
+    window.resetCrypto = () => { window.location.search = ''; };
+    window.exportCryptoPDF = () => {
+      const sel = document.getElementById('cr-asset');
+      const meta = sel ? CRYPTOS_META[sel.value] : null;
+      const monthly = parseFloat(document.getElementById('cr-monthly').value) || 0;
+      const summary = (meta ? meta.name : 'Crypto') + ' · ' + monthly + ' €/mois · début ' + (document.getElementById('cr-start').value || '—');
+      CI.exportPDF({
+        title:    'CalcInvest — DCA Crypto',
+        summary:  summary,
+        sectionIds: ['cra-overview','cra-yearly','cra-drawdown','cra-lumpvsdca','cra-volatility','cra-cycles','cra-multi','cra-defi'],
+        fileName: 'calcinvest-dca-crypto'
+      });
+    };
   });
 })();

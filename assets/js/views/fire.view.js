@@ -460,6 +460,17 @@
 
   window.shareFire = function () { CI.copyShareUrl(); };
 
+  window.exportFirePDF = function () {
+    const p = readForm();
+    const summary = `Âge ${p.age || '—'} · dépenses ${CI.fmtMoney(p.annualExpenses || 0, 0)}/an · épargne ${CI.fmtNum(p.monthlySavings || 0, 0)} €/mois · ${p.annualReturn || 7} %/an`;
+    CI.exportPDF({
+      title:    'CalcInvest — FIRE',
+      summary:  summary,
+      sectionIds: ['fia1-overview','fia2-trajectory','fia3-variants','fia4-withdrawal','fia5-sensitivity','fia6-montecarlo'],
+      fileName: 'calcinvest-fire'
+    });
+  };
+
   window.resetFire = function () {
     const defaults = {
       'fi-age':        '30',

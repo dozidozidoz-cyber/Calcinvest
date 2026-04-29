@@ -1416,6 +1416,18 @@
     if (!lastResult) return CI.toast("Lance un calcul d'abord", 'error');
     CI.promptSave('DCA', lastParams, `DCA ${currentAsset.name}`, () => {});
   };
+  window.exportDCAPDF = () => {
+    if (!lastResult || !lastParams) return CI.toast("Lance un calcul d'abord", 'error');
+    const p = lastParams;
+    const summary = `${currentAsset ? currentAsset.name : 'Asset'} · ${CI.fmtNum(p.monthlyAmount, 0)} €/mois · début ${p.startDate}` +
+      (p.contributionGrowth > 0 ? ` · versements +${p.contributionGrowth} %/an` : '');
+    CI.exportPDF({
+      title:    'CalcInvest — DCA Bourse',
+      summary:  summary,
+      sectionIds: ['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10'],
+      fileName: 'calcinvest-dca-bourse'
+    });
+  };
 
   /* ============================================================
      INIT

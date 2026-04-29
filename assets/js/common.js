@@ -690,6 +690,199 @@
   };
 
   /* ===========================================================
+     EXPORT PDF (lazy-load jsPDF + html2canvas)
+     ===========================================================
+     Usage:
+       CI.exportPDF({
+         title:     'CalcInvest — Rendement Locatif',
+         summary:   'Résumé une ligne (params clés)',
+         sectionIds: ['synthese', 'cashflow', 'amort', ...],
+         fileName:  'calcinvest-locatif'
+       });
+     =========================================================== */
+  let _pdfLibsPromise = null;
+  function _loadPdfLibs() {
+    if (_pdfLibsPromise) return _pdfLibsPromise;
+    _pdfLibsPromise = new Promise((resolve, reject) => {
+      function loadScript(src) {
+        return new Promise((res, rej) => {
+          const s = document.createElement('script');
+          s.src = src;
+          s.onload = () => res();
+          s.onerror = () => rej(new Error('CDN load failed: ' + src));
+          document.head.appendChild(s);
+        });
+      }
+      // jsPDF UMD + html2canvas — versions stables CDN
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js')
+        .then(() => loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'))
+        .then(() => resolve())
+        .catch((e) => { _pdfLibsPromise = null; reject(e); });
+    });
+    return _pdfLibsPromise;
+  }
+
+  CI.exportPDF = async function (opts) {
+    opts = opts || {};
+    const title       = opts.title     || 'CalcInvest';
+    const summary     = opts.summary   || '';
+    const sectionIds  = opts.sectionIds || [];
+    const fileName    = opts.fileName   || 'calcinvest';
+
+    if (sectionIds.length === 0) {
+      CI.toast('Aucune section à exporter', 'error');
+      return;
+    }
+
+    // Visual feedback — bouton + toast
+    CI.toast('Génération PDF en cours…', 'info', 8000);
+
+    try {
+      await _loadPdfLibs();
+    } catch (e) {
+      CI.toast('Échec du chargement des librairies PDF (vérifie ta connexion)', 'error');
+      console.error(e);
+      return;
+    }
+
+    const html2canvas = window.html2canvas;
+    const jsPDFCtor   = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+    if (!html2canvas || !jsPDFCtor) {
+      CI.toast('Librairies PDF non disponibles', 'error');
+      return;
+    }
+
+    // Format A4 portrait, marges 12mm
+    const pdf = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const PAGE_W  = pdf.internal.pageSize.getWidth();
+    const PAGE_H  = pdf.internal.pageSize.getHeight();
+    const MARGIN  = 12;
+    const CONTENT_W = PAGE_W - 2 * MARGIN;
+
+    // ---- HEADER ----
+    function drawHeader(pageNo, totalPagesPlaceholder) {
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(14);
+      pdf.setTextColor(20, 20, 20);
+      pdf.text(title, MARGIN, MARGIN + 5);
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(120, 120, 120);
+      const today = new Date().toLocaleDateString('fr-FR');
+      pdf.text(today + ' · CalcInvest', PAGE_W - MARGIN, MARGIN + 5, { align: 'right' });
+
+      pdf.setDrawColor(220, 220, 220);
+      pdf.line(MARGIN, MARGIN + 8, PAGE_W - MARGIN, MARGIN + 8);
+    }
+    function drawFooter(pageNo) {
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text('Page ' + pageNo, PAGE_W / 2, PAGE_H - 6, { align: 'center' });
+      pdf.text('calcinvest.com — Simulation à titre informatif', PAGE_W - MARGIN, PAGE_H - 6, { align: 'right' });
+    }
+
+    let pageNo = 1;
+    drawHeader(pageNo);
+
+    // Cursor Y starts after header
+    const HEADER_Y = MARGIN + 14;
+    let cursorY = HEADER_Y;
+
+    // Optional summary line
+    if (summary) {
+      pdf.setFont('helvetica', 'italic');
+      pdf.setFontSize(10);
+      pdf.setTextColor(80, 80, 80);
+      const wrapped = pdf.splitTextToSize(summary, CONTENT_W);
+      pdf.text(wrapped, MARGIN, cursorY);
+      cursorY += wrapped.length * 5 + 4;
+    }
+
+    // ---- ITERATE SECTIONS ----
+    for (let i = 0; i < sectionIds.length; i++) {
+      const id = sectionIds[i];
+      const el = document.getElementById(id);
+      if (!el) continue;
+
+      // Skip if section is hidden (display:none)
+      const style = window.getComputedStyle(el);
+      if (style.display === 'none') continue;
+
+      // Capture element to canvas (scale 2x for retina)
+      let canvas;
+      try {
+        canvas = await html2canvas(el, {
+          scale:           2,
+          backgroundColor: '#ffffff',
+          useCORS:         true,
+          logging:         false,
+          windowWidth:     el.scrollWidth || 1200
+        });
+      } catch (e) {
+        console.warn('html2canvas failed for', id, e);
+        continue;
+      }
+
+      const imgData    = canvas.toDataURL('image/jpeg', 0.92);
+      const imgRatio   = canvas.height / canvas.width;
+      const renderW    = CONTENT_W;
+      const renderH    = renderW * imgRatio;
+
+      // Si trop grand pour la page actuelle → nouvelle page
+      const remaining = PAGE_H - MARGIN - 10 - cursorY;
+      if (renderH > remaining && cursorY > HEADER_Y + 4) {
+        drawFooter(pageNo);
+        pdf.addPage();
+        pageNo++;
+        drawHeader(pageNo);
+        cursorY = HEADER_Y;
+      }
+
+      // Si l'image elle-même dépasse une page entière → on la slice verticalement
+      const usableH = PAGE_H - HEADER_Y - MARGIN - 8;
+      if (renderH > usableH) {
+        // Découpe par tranches : chaque tranche = un canvas partiel
+        const sliceH    = usableH;
+        const sliceRatio = sliceH / renderW; // ratio mm
+        const sliceCanvasH = (sliceH / renderH) * canvas.height;
+        let yOffset = 0;
+        while (yOffset < canvas.height) {
+          const tmp = document.createElement('canvas');
+          const tmpH = Math.min(sliceCanvasH, canvas.height - yOffset);
+          tmp.width  = canvas.width;
+          tmp.height = tmpH;
+          tmp.getContext('2d').drawImage(canvas, 0, -yOffset);
+          const tmpData = tmp.toDataURL('image/jpeg', 0.92);
+          const tmpRender = (tmpH / canvas.height) * renderH;
+
+          if (cursorY + tmpRender > PAGE_H - MARGIN - 8 && cursorY > HEADER_Y + 4) {
+            drawFooter(pageNo);
+            pdf.addPage();
+            pageNo++;
+            drawHeader(pageNo);
+            cursorY = HEADER_Y;
+          }
+          pdf.addImage(tmpData, 'JPEG', MARGIN, cursorY, renderW, tmpRender);
+          cursorY += tmpRender + 4;
+          yOffset += tmpH;
+        }
+      } else {
+        pdf.addImage(imgData, 'JPEG', MARGIN, cursorY, renderW, renderH);
+        cursorY += renderH + 4;
+      }
+    }
+
+    drawFooter(pageNo);
+
+    // Save
+    const today = new Date().toISOString().slice(0, 10);
+    pdf.save(fileName + '-' + today + '.pdf');
+    CI.toast('PDF généré', 'success');
+  };
+
+  /* ===========================================================
      DOM READY + PWA REGISTRATION
      =========================================================== */
   document.addEventListener('DOMContentLoaded', () => {

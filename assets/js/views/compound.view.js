@@ -559,16 +559,29 @@
     if (!lastResult) { CI.toast('Lance un calcul d\'abord', 'error'); return; }
     CI.promptSave('Compound', lastParams, 'Simulation intérêts composés', () => {});
   }
+  function exportPDF() {
+    if (!lastResult) { CI.toast('Lance un calcul d\'abord', 'error'); return; }
+    const p = lastParams;
+    const summary = `${CI.fmtMoney(p.initialAmount, 0)} initial + ${CI.fmtNum(p.monthlyAmount, 0)} €/mois · ${p.annualRate} %/an net · ${p.years} ans` +
+      (p.contributionGrowth > 0 ? ` · versements +${p.contributionGrowth} %/an` : '');
+    CI.exportPDF({
+      title:    'CalcInvest — Intérêts composés',
+      summary:  summary,
+      sectionIds: ['ca-synthese','ca-taux','ca-objectif','ca-early','ca-inflation','ca-enveloppes'],
+      fileName: 'calcinvest-composes'
+    });
+  }
 
   /* ------------------------------------------------------------
      Init
      ------------------------------------------------------------ */
   window.addEventListener('DOMContentLoaded', () => {
-    window.runCompound   = run;
-    window.shareCompound = share;
-    window.printCompound = print;
-    window.resetCompound = reset;
-    window.saveCompound  = save;
+    window.runCompound    = run;
+    window.shareCompound  = share;
+    window.printCompound  = print;
+    window.resetCompound  = reset;
+    window.saveCompound   = save;
+    window.exportCompoundPDF = exportPDF;
 
     writeForm(loadFromUrl());
     CI.initAll();

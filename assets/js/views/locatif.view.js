@@ -754,16 +754,29 @@
     CI.promptSave('Locatif', lastParams, 'Projet Locatif', () => {});
   }
 
+  function exportPDF() {
+    if (!lastResult) { CI.toast('Lance un calcul d\'abord', 'error'); return; }
+    const p = lastParams;
+    const summary = `Bien ${CI.fmtMoney(p.price, 0)} · loyer ${CI.fmtMoney(p.rent, 0)}/mois · crédit ${p.loanYears} ans @ ${p.loanRate} % · horizon ${p.holdYears} ans · régime ${p.regime}`;
+    CI.exportPDF({
+      title:    'CalcInvest — Rendement Locatif',
+      summary:  summary,
+      sectionIds: ['synthese','cashflow','amort','fisca','l-amort-credit','l-fiscal-comp','l-cashflow-proj','l-revente','l-vs-bourse','l-patrimoine','l-comparaison'],
+      fileName: 'calcinvest-locatif'
+    });
+  }
+
   /* ------------------------------------------------------------
      Init
      ------------------------------------------------------------ */
   window.addEventListener('DOMContentLoaded', () => {
     // Expose pour les onclick HTML
-    window.runLocatif = run;
-    window.shareLocatif = share;
-    window.printLocatif = print;
-    window.resetLocatif = reset;
-    window.saveLocatif = save;
+    window.runLocatif       = run;
+    window.shareLocatif     = share;
+    window.printLocatif     = print;
+    window.resetLocatif     = reset;
+    window.saveLocatif      = save;
+    window.exportLocatifPDF = exportPDF;
 
     // Load defaults + URL params + create initial bien
     const initParams = loadFromUrl();

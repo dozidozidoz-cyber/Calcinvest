@@ -471,6 +471,17 @@
   };
   window.sharePER = function () { if (lastParams) syncUrl(lastParams); CI.copyShareUrl(); };
   window.resetPER = function () { window.location.search = ''; };
+  window.exportPERPDF = function () {
+    if (!lastResult || !lastParams) { CI.toast('Lance un calcul d\'abord', 'error'); return; }
+    const p = lastParams;
+    const summary = `${CI.fmtNum(p.monthlyContribution || 0, 0)} €/mois · TMI ${p.tmi || 30} % · ${p.years || 20} ans`;
+    CI.exportPDF({
+      title:    'CalcInvest — PER',
+      summary:  summary,
+      sectionIds: ['pa-synthese','pa-trajectoire','pa-sortie','pa-vscto','pa-sensitivity','pa-plafond'],
+      fileName: 'calcinvest-per'
+    });
+  };
 
   /* Profile button click */
   window.selectPERProfile = function (profileId) {
