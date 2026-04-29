@@ -148,6 +148,15 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Impact inflation</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#ca-enveloppes">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 7h6M5 10h4"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 06</div>
+          <div class="sidebar-link-title">Enveloppes fiscales</div>
+        </div>
+      </a>
     </div>
   </aside>
 
@@ -635,6 +644,70 @@ if ('serviceWorker' in navigator) {
         </div>
         Pour que votre épargne <strong>conserve</strong> son pouvoir d'achat, le taux de rendement net doit dépasser l'inflation. Avec 7 %/an de rendement et 2 % d'inflation, votre taux réel est d'environ 4,9 % (équation de Fisher : (1+r)/(1+i)−1).
         Les ETF actions (S&P 500, MSCI World) ont historiquement délivré un rendement réel de 5–7 %/an sur le long terme.
+      </div>
+    </section>
+
+    <!-- ============= A06 — ENVELOPPES FISCALES ============= -->
+    <section id="ca-enveloppes">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 7h6M5 10h4"/></svg>
+        </span>
+        Analyse 06 · Comparaison enveloppes fiscales
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même plan d'épargne, même rendement, 4 enveloppes différentes. La fiscalité à la sortie peut changer le classement du simple au double.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:14px 0" id="ca6-cards"></div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg>
+            </div>
+            Valeur nette par enveloppe
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ca6-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
+            </div>
+            Tableau comparatif
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Enveloppe</th>
+                <th>Valeur brute</th>
+                <th>Impôts &amp; PS</th>
+                <th>Net perçu</th>
+                <th>vs CTO</th>
+              </tr>
+            </thead>
+            <tbody id="ca6-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Hypothèses de calcul
+        </div>
+        <strong>Livret A</strong> : taux réglementé 3 %, totalement exonéré d'impôt et de prélèvements sociaux.<br>
+        <strong>PEA</strong> : ton taux de rendement, 0 % de frais. Exonéré d'IR après 5 ans, PS 17.2 % sur les gains.<br>
+        <strong>Assurance-Vie</strong> : ton taux de rendement, frais de gestion 0.8 %/an. Après 8 ans : taux 7.5 % + PS, abattement 4 600 € sur les gains.<br>
+        <strong>CTO</strong> : ton taux de rendement, flat tax 30 % (PFU) sur les plus-values.<br>
+        <em>Simulation en nominal (hors inflation). Les règles fiscales peuvent évoluer.</em>
       </div>
     </section>
 

@@ -159,11 +159,95 @@
     }]).sort(function (a, b) { return a.extra - b.extra; });
   }
 
+  /**
+   * Compare the same savings plan under 4 French tax wrappers.
+   * Returns envelopes sorted by netValue descending.
+   *
+   * Fiscal rules FR 2026:
+   *   Livret A  — taux réglementé 3 %, totalement exonéré
+   *   PEA       — annualRate user, exonéré IR après 5 ans (PS 17.2 % sur gains)
+   *   AV        — annualRate user, frais 0.8 %/an, abat. 4 600 € après 8 ans (taux 7.5 % + PS)
+   *   CTO       — annualRate user, flat tax PFU 30 % sur plus-values
+   */
+  function compareEnveloppes(params) {
+    var p = normalize(params);
+    var PS = 0.172; // prélèvements sociaux
+    var AV_FEES_PCT = 0.8; // frais UC AV typiques (%/an)
+
+    function sim(rateOverride, feesOverride) {
+      return calcCompound(Object.assign({}, params, {
+        annualRate: rateOverride != null ? rateOverride : params.annualRate,
+        feesPct:    feesOverride != null ? feesOverride : 0,
+        inflation:  0  // comparaison en nominal
+      }));
+    }
+
+    // Livret A : taux fixe réglementé, exonéré total
+    var livR   = sim(3, 0);
+    var livNet = livR.finalValue;
+
+    // PEA : rendement user, exonéré IR après 5 ans (PS seulement)
+    var peaR    = sim(null, 0);
+    var peaGains = Math.max(0, peaR.finalValue - peaR.finalInvested);
+    var peaTax   = p.years >= 5 ? peaGains * PS : peaGains * 0.30;
+    var peaNet   = peaR.finalValue - peaTax;
+
+    // Assurance-Vie : rendement user, frais 0.8 %/an
+    // Après 8 ans : taux 7.5 % + PS, abattement 4 600 €
+    var avR     = sim(null, AV_FEES_PCT);
+    var avGains  = Math.max(0, avR.finalValue - avR.finalInvested);
+    var abat     = 4600;
+    var avTaxBase = p.years >= 8 ? Math.max(0, avGains - abat) : avGains;
+    var avTaxRate = p.years >= 8 ? (0.075 + PS) : 0.30;
+    var avTax    = avTaxBase * avTaxRate;
+    var avNet    = avR.finalValue - avTax;
+
+    // CTO : rendement user, PFU 30 % sur plus-values
+    var ctoR    = sim(null, 0);
+    var ctoGains = Math.max(0, ctoR.finalValue - ctoR.finalInvested);
+    var ctoTax   = ctoGains * 0.30;
+    var ctoNet   = ctoR.finalValue - ctoTax;
+
+    var envelopes = [
+      {
+        id: 'livret', label: 'Livret A',
+        grossValue: livR.finalValue, taxAmount: 0, netValue: livNet,
+        note: 'Taux réglementé 3 % · Exonéré d\'impôt et de PS'
+      },
+      {
+        id: 'pea', label: 'PEA',
+        grossValue: peaR.finalValue, taxAmount: peaTax, netValue: peaNet,
+        note: p.years >= 5 ? 'PS 17.2 % sur gains · Exonéré IR après 5 ans' : '⚠ < 5 ans — PFU 30 %'
+      },
+      {
+        id: 'av', label: 'Assurance-Vie',
+        grossValue: avR.finalValue, taxAmount: avTax, netValue: avNet,
+        note: p.years >= 8
+          ? 'Taux 7.5 % + PS 17.2 % · abat. ' + abat.toLocaleString('fr-FR') + ' €'
+          : '⚠ < 8 ans — PFU 30 %'
+      },
+      {
+        id: 'cto', label: 'CTO',
+        grossValue: ctoR.finalValue, taxAmount: ctoTax, netValue: ctoNet,
+        note: 'Flat tax 30 % (12.8 % IR + 17.2 % PS) sur plus-values'
+      }
+    ];
+
+    envelopes.sort(function (a, b) { return b.netValue - a.netValue; });
+
+    return {
+      envelopes: envelopes,
+      years: p.years,
+      invested: peaR.finalInvested
+    };
+  }
+
   const mod = {
     calcCompound: calcCompound,
     calcCompoundMultiRate: calcCompoundMultiRate,
     calcGoal: calcGoal,
-    calcEarlyStart: calcEarlyStart
+    calcEarlyStart: calcEarlyStart,
+    compareEnveloppes: compareEnveloppes
   };
 
   if (isNode) {

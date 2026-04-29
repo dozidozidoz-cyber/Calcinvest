@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const { calcCompound, calcCompoundMultiRate, calcGoal, calcEarlyStart } = window.CalcCompound;
+  const { calcCompound, calcCompoundMultiRate, calcGoal, calcEarlyStart, compareEnveloppes } = window.CalcCompound;
   const num = window.FIN.num;
 
   let lastParams = null;
@@ -446,6 +446,92 @@
   }
 
   /* ------------------------------------------------------------
+     A06 — Comparaison enveloppes fiscales
+     ------------------------------------------------------------ */
+  const ENVELOPE_COLORS = {
+    livret: '#34D399',
+    pea:    '#60A5FA',
+    av:     '#FBBF24',
+    cto:    '#F87171'
+  };
+
+  function renderA06(p) {
+    const res = compareEnveloppes(p);
+    const envelopes = res.envelopes;
+    const best = envelopes[0];
+
+    // Cards
+    const cards = document.getElementById('ca6-cards');
+    if (cards) {
+      cards.innerHTML = envelopes.map((e, i) => {
+        const isBest   = i === 0;
+        const border   = isBest ? 'var(--accent)' : 'var(--border-soft)';
+        const badge    = isBest ? '<span style="font-size:10px;background:var(--accent);color:#000;padding:2px 7px;border-radius:99px;font-weight:700">MEILLEUR</span>' : '';
+        const taxLine  = e.taxAmount > 0
+          ? '<div style="font-size:11px;color:var(--red);margin-top:2px">Impôts : −' + CI.fmtMoney(e.taxAmount, 0) + '</div>'
+          : '<div style="font-size:11px;color:var(--accent);margin-top:2px">Exonéré</div>';
+        return `<div style="background:var(--bg-elev);border:2px solid ${border};border-radius:var(--r);padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="font-size:13px;font-weight:700;color:${ENVELOPE_COLORS[e.id] || 'var(--text-1)'}">${e.label}</div>${badge}
+          </div>
+          <div style="font-size:20px;font-weight:700">${CI.fmtCompact(e.netValue)}<span style="font-size:11px;font-weight:400;color:var(--text-3);margin-left:4px">net</span></div>
+          ${taxLine}
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px">${e.note}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // Tableau comparatif
+    const tbody = document.getElementById('ca6-tbody');
+    if (tbody) {
+      tbody.innerHTML = envelopes.map((e) => {
+        const isBest = e.id === best.id;
+        const diff   = e.netValue - envelopes[envelopes.length - 1].netValue;
+        return `<tr${isBest ? ' style="background:rgba(52,211,153,.06)"' : ''}>
+          <td style="font-weight:600;color:${ENVELOPE_COLORS[e.id] || 'var(--text-1)'}">${e.label}</td>
+          <td>${CI.fmtMoney(e.grossValue, 0)}</td>
+          <td class="neg">${e.taxAmount > 0 ? '−' + CI.fmtMoney(e.taxAmount, 0) : '—'}</td>
+          <td class="pos" style="font-weight:700">${CI.fmtMoney(e.netValue, 0)}</td>
+          <td>${diff > 0 ? '<span class="pos">+' + CI.fmtMoney(diff, 0) + '</span>' : '—'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Chart barres horizontales (barres verticales ici via CI.drawChart)
+    requestAnimationFrame(() => {
+      const labels = envelopes.map((e) => e.label);
+      CI.drawChart('ca6-chart', labels, [
+        {
+          data:  envelopes.map((e) => e.netValue),
+          color: envelopes.map((e) => ENVELOPE_COLORS[e.id] || '#888')
+        }
+      ], { yFormat: (v) => CI.fmtCompact(v) });
+    });
+
+    // Insight A06
+    const worst  = envelopes[envelopes.length - 1];
+    const gain   = best.netValue - worst.netValue;
+    const gainPct = worst.netValue > 0 ? (gain / worst.netValue * 100).toFixed(0) : 0;
+    const aveLine = envelopes.find((e) => e.id === 'av');
+    const avNote  = aveLine && p.years < 8
+      ? ' <span class="warn">L\'Assurance-Vie n\'a pas encore atteint 8 ans — sa fiscalité avantageuse (7.5 %) ne s\'applique pas encore.</span>'
+      : '';
+    const peaLine = envelopes.find((e) => e.id === 'pea');
+    const peaNote = peaLine && p.years < 5
+      ? ' <span class="warn">Le PEA est taxé à 30 % car < 5 ans — attends le seuil pour bénéficier de l\'exonération IR.</span>'
+      : '';
+    setInsight('ca-enveloppes',
+      `Sur <strong>${p.years} ans</strong> à <strong>${p.annualRate} %/an</strong>, ` +
+      `<span style="color:${ENVELOPE_COLORS[best.id]}">${best.label}</span> ressort à ` +
+      `<em>${CI.fmtMoney(best.netValue, 0)}</em> net — ` +
+      `<span class="pos">+${CI.fmtMoney(gain, 0)} (+${gainPct} %)</span> vs ` +
+      `<span style="color:${ENVELOPE_COLORS[worst.id]}">${worst.label}</span>. ` +
+      `Le choix de l'enveloppe peut peser autant que plusieurs points de rendement.` +
+      avNote + peaNote
+    );
+  }
+
+  /* ------------------------------------------------------------
      run()
      ------------------------------------------------------------ */
   function run() {
@@ -459,6 +545,7 @@
     renderA03(p);
     renderA04(p);
     renderA05(p, r);
+    renderA06(p);
     syncUrl(p);
   }
 
@@ -510,6 +597,7 @@
         renderA02(lastParams);
         renderA04(lastParams);
         renderA05(lastParams, lastResult);
+        renderA06(lastParams);
       });
     }
   });
