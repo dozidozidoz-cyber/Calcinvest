@@ -57,6 +57,10 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <div class="btn-row" style="margin-bottom:20px">
+    <button class="btn btn-secondary" onclick="toggleCompareMode()" id="btn-compare-toggle">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h5M2 8h5M2 12h5"/><path d="M9 4h5M9 8h5M9 12h5"/></svg>
+      <span id="btn-compare-label">Comparer</span>
+    </button>
     <button class="btn btn-secondary" onclick="exportProjects()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v9M4 7l4 4 4-4M2 14h12"/></svg>
       Exporter JSON
@@ -74,6 +78,16 @@ if ('serviceWorker' in navigator) {
     Utilise un simulateur et clique sur <strong>Sauvegarder</strong> pour retrouver tes projets ici.
   </div>
 
+  <!-- ========== COMPARISON PANEL (hidden by default) ========== -->
+  <section id="comparison-panel" style="display:none;margin-top:32px"></section>
+
+  <!-- ========== STICKY COMPARE BAR ========== -->
+  <div id="compare-bar" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:12px 22px;border-radius:99px;box-shadow:0 6px 30px rgba(0,0,0,.4);z-index:100;font-weight:700;font-size:14px;display:flex;align-items:center;gap:14px">
+    <span id="compare-bar-count">0 sélectionnés</span>
+    <button onclick="runComparison()" class="btn btn-primary" style="padding:6px 16px;font-size:13px">Comparer →</button>
+    <button onclick="clearSelection()" class="btn-ghost" style="background:rgba(0,0,0,.15);color:#000;padding:6px 12px;font-size:12px;border:none;cursor:pointer;border-radius:99px">Annuler</button>
+  </div>
+
 </main>
 
 <footer class="footer">
@@ -84,6 +98,8 @@ if ('serviceWorker' in navigator) {
 </footer>
 
 <script src="/assets/js/common.js"></script>
+<script src="/assets/js/core/engine.bundle.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
 <script src="/assets/js/views/projects.view.js"></script>
 </body>
 </html>
