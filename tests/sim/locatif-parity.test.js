@@ -85,3 +85,68 @@ test('calcLocatif: yieldNet in range for baseline', () => {
   // yieldNet = 5394.4 / 231000 = 2.335 %
   assert.ok(close(r.yieldNet, 2.335, 0.1), 'yieldNet=' + r.yieldNet);
 });
+
+// ─── computeAggregate tests ────────────────────────────────────────────────
+
+const BIEN_A = {
+  price: 200000, notary: 8, agency: 0, works: 0, furniture: 0,
+  rent: 900, vacancy: 1, propTax: 1500, copro: 50, insurance: 200, mgmtPct: 0, maintPct: 1,
+  loan: 180000, loanRate: 3.2, loanYears: 20, loanIns: 0.36,
+  regime: 'lmnp-reel', tmi: 30, holdYears: 15, appreciation: 1.5
+};
+const BIEN_B = {
+  price: 150000, notary: 8, agency: 3, works: 5000, furniture: 2000,
+  rent: 700, vacancy: 1, propTax: 1100, copro: 40, insurance: 150, mgmtPct: 0, maintPct: 1,
+  loan: 130000, loanRate: 3.5, loanYears: 25, loanIns: 0.36,
+  regime: 'lmnp-reel', tmi: 30, holdYears: 20, appreciation: 1.5
+};
+
+test('computeAggregate: returns null on empty input', () => {
+  assert.strictEqual(locatif.computeAggregate([]), null);
+  assert.strictEqual(locatif.computeAggregate(null), null);
+});
+
+test('computeAggregate: 1 bien aggregate matches single calc result', () => {
+  const r = locatif.calcLocatif(BIEN_A);
+  const agg = locatif.computeAggregate([{ params: BIEN_A, result: r }]);
+  assert.strictEqual(agg.count, 1);
+  assert.strictEqual(agg.totalAcquisition, r.totalAcquisition);
+  assert.strictEqual(agg.totalDownPayment, r.downPayment);
+  assert.strictEqual(agg.totalMonthlyPmt, r.monthlyPayment);
+  assert.strictEqual(agg.totalFinalEquity, r.finalEquity);
+});
+
+test('computeAggregate: 2 biens sum totals correctly', () => {
+  const rA = locatif.calcLocatif(BIEN_A);
+  const rB = locatif.calcLocatif(BIEN_B);
+  const agg = locatif.computeAggregate([
+    { params: BIEN_A, result: rA },
+    { params: BIEN_B, result: rB }
+  ]);
+  assert.strictEqual(agg.count, 2);
+  assert.ok(Math.abs(agg.totalAcquisition - (rA.totalAcquisition + rB.totalAcquisition)) < 1e-6);
+  assert.ok(Math.abs(agg.totalMonthlyPmt - (rA.monthlyPayment + rB.monthlyPayment)) < 1e-6);
+  assert.ok(Math.abs(agg.totalCashflowMonthly - (rA.cashflowMonthly + rB.cashflowMonthly)) < 1e-6);
+});
+
+test('computeAggregate: maxHorizon takes the longest holdYears', () => {
+  const rA = locatif.calcLocatif(BIEN_A);  // 15 ans
+  const rB = locatif.calcLocatif(BIEN_B);  // 20 ans
+  const agg = locatif.computeAggregate([
+    { params: BIEN_A, result: rA },
+    { params: BIEN_B, result: rB }
+  ]);
+  assert.strictEqual(agg.maxHorizon, 20);
+  assert.strictEqual(agg.yearly.length, 20);
+});
+
+test('computeAggregate: weighted yields are reasonable', () => {
+  const rA = locatif.calcLocatif(BIEN_A);
+  const rB = locatif.calcLocatif(BIEN_B);
+  const agg = locatif.computeAggregate([
+    { params: BIEN_A, result: rA },
+    { params: BIEN_B, result: rB }
+  ]);
+  assert.ok(agg.weightedYieldGross > 0 && agg.weightedYieldGross < 20);
+  assert.ok(agg.weightedYieldNetNet >= 0 && agg.weightedYieldNetNet < 20);
+});

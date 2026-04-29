@@ -175,6 +175,24 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Simulation de revente</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#l-patrimoine" id="link-patrimoine" style="display:none">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="4" height="8"/><rect x="6" y="3" width="4" height="11"/><rect x="10" y="8" width="4" height="6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Multi-biens</div>
+          <div class="sidebar-link-title">Patrimoine consolidé</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#l-comparaison" id="link-comparaison" style="display:none">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5M2 8h5M2 12h5"/><path d="M9 4h5M9 8h5M9 12h5"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Multi-biens</div>
+          <div class="sidebar-link-title">Comparaison entre biens</div>
+        </div>
+      </a>
     </div>
   </aside>
 
@@ -191,6 +209,13 @@ if ('serviceWorker' in navigator) {
       </div>
       <h1 class="page-title">Votre futur locatif, audité avant l'achat.</h1>
       <p class="page-lede">Rendement net-net, cashflow mensuel, fiscalité comparée des <strong style="color:var(--text)">4 régimes français</strong> (LMNP, micro-foncier, réel), simulation de revente avec abattements IR/PS — tout pour valider un projet immobilier <em style="color:var(--accent);font-style:normal;font-weight:600">avant</em> de signer.</p>
+    </div>
+
+    <!-- ============= TABS BIENS ============= -->
+    <div id="l-biens-tabs" class="biens-tabs" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 12px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:var(--r)">
+      <span style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-right:6px">Mes biens</span>
+      <div id="l-biens-list" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      <button id="btn-add-bien" type="button" style="background:var(--accent-soft);color:var(--accent);border:1px dashed var(--accent);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">+ Ajouter un bien</button>
     </div>
 
     <!-- ============= PARAMÈTRES (accordion) ============= -->
@@ -887,6 +912,105 @@ if ('serviceWorker' in navigator) {
         <strong>Exonération IR (19 %) :</strong> 6 %/an de la 6ème à la 21ème année, +4 % la 22ème → exonération totale après <strong>22 ans</strong>.&nbsp;
         <strong>Exonération PS (17,2 %) :</strong> 1,65 %/an de la 6ème à la 21ème, +9 % la 22ème, 1,60 %/an de la 23ème à la 30ème → exonération totale après <strong>30 ans</strong>.
         Ces règles s'appliquent aux résidences secondaires et investissements locatifs (hors résidence principale, totalement exonérée).
+      </div>
+    </section>
+
+    <!-- ============= MULTI-BIENS · PATRIMOINE CONSOLIDÉ ============= -->
+    <section id="l-patrimoine" style="display:none">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="4" height="8"/><rect x="6" y="3" width="4" height="11"/><rect x="10" y="8" width="4" height="6"/></svg>
+        </span>
+        Patrimoine consolidé · <span id="lp-count">0</span> biens
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Vue d'ensemble de ton patrimoine immobilier : valeur d'acquisition totale, mensualités cumulées, cashflow consolidé et équité finale.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Acquisition totale</div>
+          <div class="stat-value info" id="lp-acquisition">—</div>
+          <div class="stat-sub" id="lp-down">Apport : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Mensualités cumulées</div>
+          <div class="stat-value warn" id="lp-monthly">—</div>
+          <div class="stat-sub" id="lp-loan">Total emprunté : —</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Cashflow mensuel cumulé</div>
+          <div class="stat-value" id="lp-cashflow">—</div>
+          <div class="stat-sub" id="lp-rent">Loyers bruts : —/an</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Patrimoine final</div>
+          <div class="stat-value pos" id="lp-equity">—</div>
+          <div class="stat-sub" id="lp-value">Valeur biens : —</div>
+        </div>
+      </div>
+
+      <div class="stats-row" style="margin-top:14px">
+        <div class="stat">
+          <div class="stat-label">Rendement brut pondéré</div>
+          <div class="stat-value" id="lp-yield-gross">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Rendement net-net pondéré</div>
+          <div class="stat-value" id="lp-yield-netnet">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Horizon max</div>
+          <div class="stat-value info" id="lp-horizon">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg>
+            </div>
+            Évolution du patrimoine total
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="lp-chart"></canvas></div>
+          <div class="chart-legend" style="flex-wrap:wrap;gap:10px">
+            <div><span class="legend-dot" style="background:#34D399"></span>Patrimoine net (équité)</div>
+            <div><span class="legend-dot" style="background:#60A5FA"></span>Valeur des biens</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>Capital restant dû</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= MULTI-BIENS · COMPARAISON ============= -->
+    <section id="l-comparaison" style="display:none">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h5M2 8h5M2 12h5"/><path d="M9 4h5M9 8h5M9 12h5"/></svg>
+        </span>
+        Comparaison entre biens
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">KPIs côte à côte pour identifier le bien le plus rentable, celui qui dégage le meilleur cashflow ou le meilleur TRI.</p>
+
+      <div class="card">
+        <div class="card-body no-pad">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Bien</th>
+                <th>Prix</th>
+                <th>Loyer/mois</th>
+                <th>Rdt net</th>
+                <th>Rdt net-net</th>
+                <th>TRI</th>
+                <th>Cashflow/mois</th>
+                <th>Équité finale</th>
+              </tr>
+            </thead>
+            <tbody id="lc-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 

@@ -6,10 +6,18 @@
 (function () {
   'use strict';
 
-  const calc     = window.CalcLocatif.calcLocatif;
-  const calcComp = window.CalcLocatif.computeRegimeComparison;
-  const calcPV   = window.CalcLocatif.computePlusValue;
-  const num      = window.FIN.num;
+  const calc      = window.CalcLocatif.calcLocatif;
+  const calcComp  = window.CalcLocatif.computeRegimeComparison;
+  const calcPV    = window.CalcLocatif.computePlusValue;
+  const calcAggr  = window.CalcLocatif.computeAggregate;
+  const num       = window.FIN.num;
+
+  // Multi-biens state
+  let biens          = [];   // [{ id, name, params, result }]
+  let currentIdx     = 0;
+  let switchingBien  = false; // true when programmatically writing form (skip run)
+
+  // Aliases pour backward compat avec le reste du code
   let lastParams = null;
   let lastResult = null;
   let la7Indexation = 0;
@@ -378,10 +386,18 @@
      Actions publiques (bindées aux boutons en HTML)
      ------------------------------------------------------------ */
   function run() {
+    if (switchingBien) return; // ignore form events pendant un swap programmatique
     const p = readForm();
     const r = calc(p);
     lastParams = p;
     lastResult = r;
+
+    // Sync current bien dans le state multi
+    if (biens[currentIdx]) {
+      biens[currentIdx].params = p;
+      biens[currentIdx].result = r;
+    }
+
     renderAccordionSummaries(p);
     renderStats(r);
     renderTable(r);
@@ -391,7 +407,181 @@
     renderRevente(p, r);
     requestAnimationFrame(() => renderChart(r));
     renderInsights(p, r);
+    renderBiensTabs();
+    renderAggregate();
+    renderComparison();
     syncUrl(p);
+  }
+
+  /* ------------------------------------------------------------
+     Multi-biens — helpers + renders
+     ------------------------------------------------------------ */
+  function defaultBienName(idx) { return 'Bien ' + (idx + 1); }
+
+  function addBien() {
+    if (biens.length >= 5) {
+      CI.toast('Maximum 5 biens', 'warn');
+      return;
+    }
+    // Dupliquer les params du bien courant comme base
+    const baseParams = lastParams ? Object.assign({}, lastParams) : readForm();
+    const newBien = {
+      id:     'bien-' + Date.now(),
+      name:   defaultBienName(biens.length),
+      params: baseParams,
+      result: calc(baseParams)
+    };
+    biens.push(newBien);
+    currentIdx = biens.length - 1;
+    switchToBien(currentIdx);
+  }
+
+  function removeBien(idx) {
+    if (biens.length <= 1) return;
+    biens.splice(idx, 1);
+    if (currentIdx >= biens.length) currentIdx = biens.length - 1;
+    switchToBien(currentIdx);
+  }
+
+  function switchToBien(idx) {
+    if (idx < 0 || idx >= biens.length) return;
+    currentIdx = idx;
+    const b = biens[idx];
+    switchingBien = true;
+    writeForm(b.params);
+    switchingBien = false;
+    // Recalc au cas où la version stockée n'est pas à jour
+    b.result = calc(b.params);
+    lastParams = b.params;
+    lastResult = b.result;
+    renderAccordionSummaries(b.params);
+    renderStats(b.result);
+    renderTable(b.result);
+    renderAmortCredit(b.result);
+    renderFiscalComp(b.params);
+    renderCashflowProj(b.params);
+    renderRevente(b.params, b.result);
+    requestAnimationFrame(() => renderChart(b.result));
+    renderInsights(b.params, b.result);
+    renderBiensTabs();
+    renderAggregate();
+    renderComparison();
+    syncUrl(b.params);
+  }
+
+  function renderBiensTabs() {
+    const list = document.getElementById('l-biens-list');
+    if (!list) return;
+    list.innerHTML = biens.map((b, i) => {
+      const active   = i === currentIdx;
+      const bg       = active ? 'var(--accent)' : 'var(--bg-2)';
+      const fg       = active ? '#000'          : 'var(--text-1)';
+      const border   = active ? 'var(--accent)' : 'var(--border-soft)';
+      const closeBtn = biens.length > 1
+        ? `<span class="bien-close" data-idx="${i}" style="margin-left:6px;opacity:.6;cursor:pointer;font-weight:700">×</span>`
+        : '';
+      return `<button class="bien-tab" data-idx="${i}" type="button" style="background:${bg};color:${fg};border:1px solid ${border};border-radius:99px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center">${b.name}${closeBtn}</button>`;
+    }).join('');
+
+    // Bind clicks
+    list.querySelectorAll('.bien-tab').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        if (e.target.classList.contains('bien-close')) {
+          e.stopPropagation();
+          removeBien(parseInt(e.target.dataset.idx, 10));
+          return;
+        }
+        switchToBien(parseInt(btn.dataset.idx, 10));
+      });
+    });
+  }
+
+  function renderAggregate() {
+    const sec = document.getElementById('l-patrimoine');
+    const link = document.getElementById('link-patrimoine');
+    if (!sec || !link) return;
+
+    if (biens.length < 2) {
+      sec.style.display  = 'none';
+      link.style.display = 'none';
+      return;
+    }
+    sec.style.display  = '';
+    link.style.display = '';
+
+    const agg = calcAggr(biens);
+    if (!agg) return;
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('lp-count',           agg.count);
+    set('lp-acquisition',     CI.fmtMoney(agg.totalAcquisition, 0));
+    set('lp-down',            'Apport : ' + CI.fmtMoney(agg.totalDownPayment, 0));
+    set('lp-monthly',         CI.fmtMoney(agg.totalMonthlyPmt, 0) + '/mois');
+    set('lp-loan',            'Total emprunté : ' + CI.fmtMoney(agg.totalLoan, 0));
+    set('lp-cashflow',        (agg.totalCashflowMonthly >= 0 ? '+' : '') + CI.fmtMoney(agg.totalCashflowMonthly, 0) + '/mois');
+    set('lp-rent',            'Loyers bruts : ' + CI.fmtMoney(agg.totalGrossRent, 0) + '/an');
+    set('lp-equity',          CI.fmtMoney(agg.totalFinalEquity, 0));
+    set('lp-value',           'Valeur biens : ' + CI.fmtMoney(agg.totalFinalValue, 0));
+    set('lp-yield-gross',     agg.weightedYieldGross.toFixed(2) + ' %');
+    set('lp-yield-netnet',    agg.weightedYieldNetNet.toFixed(2) + ' %');
+    set('lp-horizon',         agg.maxHorizon + ' ans');
+
+    // Couleur cashflow
+    const cfEl = document.getElementById('lp-cashflow');
+    if (cfEl) cfEl.className = 'stat-value ' + (agg.totalCashflowMonthly >= 0 ? 'pos' : 'neg');
+
+    // Chart consolidé
+    requestAnimationFrame(() => {
+      const labels = agg.yearly.map((y) => 'An ' + y.year);
+      CI.drawChart('lp-chart', labels, [
+        { label: 'Équité',  data: agg.yearly.map((y) => y.equity),        color: '#34D399', fill: true,  width: 2.5 },
+        { label: 'Valeur',  data: agg.yearly.map((y) => y.propertyValue), color: '#60A5FA', fill: false, width: 2 },
+        { label: 'Dette',   data: agg.yearly.map((y) => y.balance),       color: '#F87171', fill: false, width: 1.5, dash: [4, 3] }
+      ], { yFormat: (v) => CI.fmtCompact(v) });
+    });
+  }
+
+  function renderComparison() {
+    const sec  = document.getElementById('l-comparaison');
+    const link = document.getElementById('link-comparaison');
+    if (!sec || !link) return;
+
+    if (biens.length < 2) {
+      sec.style.display  = 'none';
+      link.style.display = 'none';
+      return;
+    }
+    sec.style.display  = '';
+    link.style.display = '';
+
+    // Ranking pour les badges (best yield, best cashflow, best TRI)
+    const yieldsNN = biens.map((b) => b.result.yieldNetNet || 0);
+    const cfs      = biens.map((b) => b.result.cashflowMonthly || 0);
+    const tris     = biens.map((b) => (b.result.tri != null ? b.result.tri : -Infinity));
+    const bestYieldIdx = yieldsNN.indexOf(Math.max.apply(null, yieldsNN));
+    const bestCfIdx    = cfs.indexOf(Math.max.apply(null, cfs));
+    const bestTriIdx   = tris.indexOf(Math.max.apply(null, tris));
+
+    const tbody = document.getElementById('lc-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = biens.map((b, i) => {
+      const r  = b.result, p = b.params;
+      const cf = r.cashflowMonthly;
+      const triStr = r.tri != null ? r.tri.toFixed(2) + ' %' : '—';
+      const isCurr = i === currentIdx;
+      const trBg   = isCurr ? 'background:rgba(52,211,153,.06)' : '';
+      const star   = (cond) => cond ? ' ⭐' : '';
+      return `<tr style="${trBg}">
+        <td style="font-weight:600">${b.name}${isCurr ? ' <span style="font-size:10px;color:var(--accent)">(actif)</span>' : ''}</td>
+        <td>${CI.fmtMoney(p.price, 0)}</td>
+        <td>${CI.fmtMoney(p.rent, 0)}</td>
+        <td>${r.yieldNet.toFixed(2)} %</td>
+        <td>${r.yieldNetNet.toFixed(2) + ' %' + star(i === bestYieldIdx)}</td>
+        <td>${triStr + star(i === bestTriIdx)}</td>
+        <td class="${cf >= 0 ? 'pos' : 'neg'}">${(cf >= 0 ? '+' : '') + CI.fmtMoney(cf, 0)}${star(i === bestCfIdx)}</td>
+        <td>${CI.fmtMoney(r.finalEquity, 0)}</td>
+      </tr>`;
+    }).join('');
   }
 
   /* ------------------------------------------------------------
@@ -513,11 +703,23 @@
     window.resetLocatif = reset;
     window.saveLocatif = save;
 
-    // Load defaults + URL params
-    writeForm(loadFromUrl());
+    // Load defaults + URL params + create initial bien
+    const initParams = loadFromUrl();
+    writeForm(initParams);
+    biens = [{
+      id:     'bien-' + Date.now(),
+      name:   defaultBienName(0),
+      params: initParams,
+      result: calc(initParams)
+    }];
+    currentIdx = 0;
 
     // Init UI components
     CI.initAll();
+
+    // Bouton "+ Ajouter un bien"
+    const addBtn = document.getElementById('btn-add-bien');
+    if (addBtn) addBtn.addEventListener('click', addBien);
 
     // Bind recompute on input change (global params only — pas les contrôles inline des analyses)
     document.querySelectorAll('#params input, #params select').forEach((el) => {
