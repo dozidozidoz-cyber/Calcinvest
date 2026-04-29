@@ -223,6 +223,21 @@ if ('serviceWorker' in navigator) {
                   <button class="pill" data-value="500" type="button">500</button>
                 </div>
               </div>
+              <div class="field">
+                <label class="field-label">Croissance annuelle du versement</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="15">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="c-growth" value="0" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="c-growth">
+                  <button class="pill active" data-value="0" type="button">0 %</button>
+                  <button class="pill" data-value="2" type="button">2 %</button>
+                  <button class="pill" data-value="3" type="button">3 %</button>
+                  <button class="pill" data-value="5" type="button">5 %</button>
+                </div>
+              </div>
             </div>
           </div>
 

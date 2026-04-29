@@ -329,13 +329,14 @@
       mode,
       startDate,
       durationMonths,
-      monthlyAmount: num(document.getElementById('d-monthly').value),
-      initialAmount: num(document.getElementById('d-initial').value),
-      deployment: getDeployment(),
-      feesPct: num(document.getElementById('d-fees').value),
-      cashRate: num(document.getElementById('d-cash').value),
+      monthlyAmount:      num(document.getElementById('d-monthly').value),
+      contributionGrowth: num(document.getElementById('d-growth')?.value) || 0,
+      initialAmount:      num(document.getElementById('d-initial').value),
+      deployment:         getDeployment(),
+      feesPct:            num(document.getElementById('d-fees').value),
+      cashRate:           num(document.getElementById('d-cash').value),
       dividendsReinvested: document.getElementById('d-opt-dividends').classList.contains('on') && !document.getElementById('d-opt-dividends').classList.contains('disabled'),
-      inflationAdjusted: document.getElementById('d-opt-inflation').classList.contains('on') && !document.getElementById('d-opt-inflation').classList.contains('disabled')
+      inflationAdjusted:   document.getElementById('d-opt-inflation').classList.contains('on') && !document.getElementById('d-opt-inflation').classList.contains('disabled')
     };
   }
 
@@ -392,13 +393,14 @@
       seriesStart: currentData.start,
       startDate: form.startDate,
       durationMonths: form.durationMonths,
-      monthlyAmount: form.monthlyAmount,
-      initialAmount: form.initialAmount,
-      deployment: form.deployment,
-      feesPct: form.feesPct,
-      cashRate: form.cashRate,
+      monthlyAmount:      form.monthlyAmount,
+      contributionGrowth: form.contributionGrowth,
+      initialAmount:      form.initialAmount,
+      deployment:         form.deployment,
+      feesPct:            form.feesPct,
+      cashRate:           form.cashRate,
       dividendsReinvested: form.dividendsReinvested,
-      inflationAdjusted: form.inflationAdjusted
+      inflationAdjusted:   form.inflationAdjusted
     });
     if (!r || r.error) return;
 

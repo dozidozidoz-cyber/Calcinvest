@@ -16,13 +16,14 @@
   /** Normalize raw input: all rates decimal, all periods months. */
   function normalize(p) {
     return {
-      initial: Math.max(0, units.num(p.initialAmount, 0)),
-      monthly: Math.max(0, units.num(p.monthlyAmount, 0)),
-      annualRate: units.fromPct(p.annualRate || 0),
-      feesPct:    units.fromPct(p.feesPct || 0),
-      inflation:  units.fromPct(p.inflation || 0),
-      years:      Math.max(1, Math.floor(units.num(p.years, 10))),
-      goal:       Math.max(0, units.num(p.goalAmount, 0))
+      initial:            Math.max(0, units.num(p.initialAmount, 0)),
+      monthly:            Math.max(0, units.num(p.monthlyAmount, 0)),
+      annualRate:         units.fromPct(p.annualRate || 0),
+      feesPct:            units.fromPct(p.feesPct || 0),
+      inflation:          units.fromPct(p.inflation || 0),
+      years:              Math.max(1, Math.floor(units.num(p.years, 10))),
+      goal:               Math.max(0, units.num(p.goalAmount, 0)),
+      contributionGrowth: units.fromPct(p.contributionGrowth || 0)
     };
   }
 
@@ -40,16 +41,18 @@
     let invested = p.initial;
     let noFees = p.initial;
     const yearly = [];
+    let monthlyContrib = p.monthly;
 
     for (let y = 1; y <= p.years; y++) {
       for (let m = 0; m < 12; m++) {
-        value += p.monthly;
-        invested += p.monthly;
-        value *= 1 + monthlyRate;
-        noFees += p.monthly;
-        noFees *= 1 + grossMonthly;
+        value    += monthlyContrib;
+        invested += monthlyContrib;
+        value    *= 1 + monthlyRate;
+        noFees   += monthlyContrib;
+        noFees   *= 1 + grossMonthly;
       }
-      const interest = value - invested;
+      if (p.contributionGrowth > 0) monthlyContrib *= (1 + p.contributionGrowth);
+      const interest  = value - invested;
       const realValue = p.inflation > 0 ? value / Math.pow(1 + p.inflation, y) : value;
       yearly.push({ year: y, value: value, invested: invested, interest: interest, realValue: realValue });
     }

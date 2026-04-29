@@ -43,12 +43,13 @@
   function readForm() {
     const v = (id) => num(document.getElementById(id)?.value);
     return {
-      initialAmount: v('c-initial'),
-      monthlyAmount: v('c-monthly'),
-      annualRate:    v('c-rate'),
-      years:         v('c-years'),
-      inflation:     v('c-inflation'),
-      feesPct:       v('c-fees')
+      initialAmount:      v('c-initial'),
+      monthlyAmount:      v('c-monthly'),
+      contributionGrowth: v('c-growth'),
+      annualRate:         v('c-rate'),
+      years:              v('c-years'),
+      inflation:          v('c-inflation'),
+      feesPct:            v('c-fees')
     };
   }
 
@@ -56,6 +57,7 @@
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     set('c-initial',   p.initialAmount);
     set('c-monthly',   p.monthlyAmount);
+    set('c-growth',    p.contributionGrowth ?? 0);
     set('c-rate',      p.annualRate);
     set('c-years',     p.years);
     set('c-inflation', p.inflation);
@@ -65,7 +67,7 @@
   /* ------------------------------------------------------------
      URL state
      ------------------------------------------------------------ */
-  const URL_KEYS = ['initialAmount', 'monthlyAmount', 'annualRate', 'years', 'inflation', 'feesPct'];
+  const URL_KEYS = ['initialAmount', 'monthlyAmount', 'contributionGrowth', 'annualRate', 'years', 'inflation', 'feesPct'];
 
   function syncUrl(p) {
     const out = {};
@@ -75,7 +77,7 @@
 
   function loadFromUrl() {
     const defaults = {
-      initialAmount: 10000, monthlyAmount: 200,
+      initialAmount: 10000, monthlyAmount: 200, contributionGrowth: 0,
       annualRate: 7, years: 20, inflation: 2, feesPct: 0.2
     };
     URL_KEYS.forEach((k) => {
@@ -150,11 +152,14 @@
     const doublingLine = r.doublingYears != null
       ? ` Le capital double tous les <strong>${r.doublingYears.toFixed(1)} ans</strong> à ce rythme.`
       : '';
+    const growthLine = p.contributionGrowth > 0
+      ? ` Avec une hausse des versements de <strong>${p.contributionGrowth} %/an</strong>, l'effet boule de neige est amplifié — le versement final est ×${(Math.pow(1 + p.contributionGrowth / 100, p.years - 1)).toFixed(2)} celui de départ.`
+      : '';
     setInsight('ca-synthese',
       `À <strong>${p.annualRate} %/an</strong> sur <strong>${p.years} ans</strong>, ` +
       `<em>${CI.fmtMoney(r.finalInvested, 0)}</em> versés deviennent <em>${CI.fmtMoney(r.finalValue, 0)}</em> ` +
       `(×${r.multiplier.toFixed(2)}). Les intérêts représentent <span class="pos">${CI.fmtMoney(r.finalInterest, 0)}</span>, ` +
-      `soit <strong>${interestShare} %</strong> du capital final.${doublingLine}` +
+      `soit <strong>${interestShare} %</strong> du capital final.${doublingLine}${growthLine}` +
       ` <span class="muted">C'est ça la magie des intérêts composés : plus longtemps tu laisses tourner, plus la part des intérêts explose.</span>`
     );
   }
