@@ -110,3 +110,65 @@ test('monteCarloAdvanced: delegated crypto API intact', () => {
   assert.strictEqual(typeof dca.detectCycles, 'function');
   assert.strictEqual(typeof dca.calcLumpSumVsDCA, 'function');
 });
+
+// ─── computeDeFiStrategies tests ────────────────────────────────────────────
+
+const crypto = require('../../assets/js/core/calc-dca-crypto');
+
+// Build synthetic monthly_data array (minimal shape required by computeDeFiStrategies)
+function synthCryptoMonthly(nMonths) {
+  const out = [];
+  let price = 100, invested = 0;
+  for (let i = 0; i < nMonths; i++) {
+    price    *= (1 + 0.005); // +0.5%/month
+    invested += 100;
+    const coins = invested / price;
+    const value = coins * price;
+    out.push({ price, invested, coins, value, pnl: value - invested, pnlPct: (value - invested) / invested * 100 });
+  }
+  return out;
+}
+
+test('computeDeFiStrategies: returns 4 scenarios', () => {
+  const md  = synthCryptoMonthly(60);
+  const res = crypto.computeDeFiStrategies(md, 'eth');
+  assert.strictEqual(res.scenarios.length, 4);
+  const ids = res.scenarios.map((s) => s.id);
+  assert.ok(ids.includes('hodl'));
+  assert.ok(ids.includes('staking'));
+  assert.ok(ids.includes('lending'));
+  assert.ok(ids.includes('lp'));
+});
+
+test('computeDeFiStrategies: staking >= hodl at all yearly checkpoints', () => {
+  const md  = synthCryptoMonthly(120);
+  const res = crypto.computeDeFiStrategies(md, 'eth');
+  const hodl    = res.scenarios.find((s) => s.id === 'hodl');
+  const staking = res.scenarios.find((s) => s.id === 'staking');
+  staking.yearly.forEach((yr, i) => {
+    assert.ok(yr.value >= hodl.yearly[i].value, `year ${yr.year}: staking must be >= hodl`);
+  });
+});
+
+test('computeDeFiStrategies: hodlFinal matches hodl scenario finalValue', () => {
+  const md  = synthCryptoMonthly(60);
+  const res = crypto.computeDeFiStrategies(md, 'btc');
+  const hodl = res.scenarios.find((s) => s.id === 'hodl');
+  assert.strictEqual(res.hodlFinal, hodl.finalValue);
+});
+
+test('computeDeFiStrategies: asset-specific staking APY (sol > eth)', () => {
+  const md   = synthCryptoMonthly(120);
+  const eth  = crypto.computeDeFiStrategies(md, 'eth');
+  const sol  = crypto.computeDeFiStrategies(md, 'sol');
+  const ethStakingApy = eth.scenarios.find((s) => s.id === 'staking').apy;
+  const solStakingApy = sol.scenarios.find((s) => s.id === 'staking').apy;
+  assert.ok(solStakingApy > ethStakingApy, 'SOL staking APY should exceed ETH staking APY');
+});
+
+test('computeDeFiStrategies: DEFI_YIELDS exported correctly', () => {
+  assert.ok(crypto.DEFI_YIELDS, 'DEFI_YIELDS should be exported');
+  assert.ok(crypto.DEFI_YIELDS.staking.eth.apy > 0);
+  assert.ok(crypto.DEFI_YIELDS.lending.apy > 0);
+  assert.ok(crypto.DEFI_YIELDS.lp.apy > 0);
+});

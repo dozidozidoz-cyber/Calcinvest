@@ -655,6 +655,89 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* A08 — Stratégies de rendement DeFi                                   */
+  /* ------------------------------------------------------------------ */
+  function renderA08(p, r) {
+    if (!r.monthly_data || r.monthly_data.length < 12) return;
+
+    const defi  = CC.computeDeFiStrategies(r.monthly_data, p.cryptoId);
+    const scens = defi.scenarios;
+
+    // ── Cards ──────────────────────────────────────────────────────────
+    const cards = document.getElementById('cra8-cards');
+    if (cards) {
+      cards.innerHTML = scens.map((s, i) => {
+        const isBest  = i === 1; // staking — best realistic upside
+        const border  = isBest ? 'var(--accent)' : 'var(--border-soft)';
+        const badge   = isBest ? '<span style="font-size:10px;background:var(--accent);color:#000;padding:2px 7px;border-radius:99px;font-weight:700">RECOMMANDÉ</span>' : '';
+        const yieldLine = s.yieldEarned > 0
+          ? `<div style="font-size:11px;color:var(--accent);margin-top:2px">+${CI.fmtMoney(s.yieldEarned, 0)} de yield</div>`
+          : '<div style="font-size:11px;color:var(--text-3);margin-top:2px">Référence HODL</div>';
+        const apyBadge = s.apy > 0
+          ? `<span style="font-size:10px;color:var(--text-3)"> · ${s.apy} % APY</span>`
+          : '';
+        return `<div style="background:var(--bg-elev);border:2px solid ${border};border-radius:var(--r);padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="font-size:12px;font-weight:700;color:${s.color}">${s.label}${apyBadge}</div>${badge}
+          </div>
+          <div style="font-size:20px;font-weight:700">${CI.fmtCompact(s.finalValue)}</div>
+          ${yieldLine}
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px">⚠ ${s.risk}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Chart 4 courbes ───────────────────────────────────────────────
+    requestAnimationFrame(() => {
+      const labels  = scens[0].yearly.map((y) => 'An ' + y.year);
+      CI.drawChart('cra8-chart', labels,
+        scens.map((s) => ({
+          data:  s.yearly.map((y) => y.value),
+          color: s.color,
+          width: s.id === 'staking' ? 3 : s.id === 'hodl' ? 2 : 1.5,
+          dash:  s.id === 'hodl' ? [4, 3] : undefined
+        })),
+        { yFormat: (v) => CI.fmtCompact(v) }
+      );
+    });
+
+    // ── Tableau récapitulatif ─────────────────────────────────────────
+    const tbody = document.getElementById('cra8-tbody');
+    if (tbody) {
+      const hodlFinal = defi.hodlFinal;
+      tbody.innerHTML = scens.map((s) => {
+        const delta = s.finalValue - hodlFinal;
+        const pct   = hodlFinal > 0 ? (delta / hodlFinal * 100).toFixed(0) : 0;
+        return `<tr>
+          <td style="font-weight:600;color:${s.color}">${s.label}</td>
+          <td>${CI.fmtMoney(s.finalValue, 0)}</td>
+          <td>${s.yieldEarned > 0 ? CI.fmtMoney(s.yieldEarned, 0) : '—'}</td>
+          <td>${delta > 0 ? '<span class="pos">+' + CI.fmtMoney(delta, 0) + ' (' + pct + ' %)</span>' : '—'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── Insight A08 ───────────────────────────────────────────────────
+    const staking = scens.find((s) => s.id === 'staking');
+    const hodl    = scens.find((s) => s.id === 'hodl');
+    const years   = (r.months / 12).toFixed(1);
+    if (staking && hodl) {
+      const gain    = staking.finalValue - hodl.finalValue;
+      const gainPct = hodl.finalValue > 0 ? (gain / hodl.finalValue * 100).toFixed(0) : 0;
+      const lp      = scens.find((s) => s.id === 'lp');
+      const lpNote  = lp && lp.finalValue > staking.finalValue
+        ? ` Le LP génère encore plus de rendement (<span style="color:${lp.color}">${CI.fmtCompact(lp.finalValue)}</span>), mais au prix d'une perte impermanente estimée.`
+        : '';
+      setInsight('cra-defi',
+        `Sur <strong>${years} ans</strong>, le staking liquid aurait apporté ` +
+        `<span class="pos">+${CI.fmtMoney(gain, 0)} (+${gainPct} %)</span> vs HODL pur, ` +
+        `sans modifier ton exposition au prix.${lpNote} ` +
+        `<span class="muted">Ces taux sont des moyennes historiques 2022-2026 — ils varient et ces stratégies comportent des risques spécifiques (voir ci-dessous).</span>`
+      );
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
   /* run() — point d'entrée principal                                      */
   /* ------------------------------------------------------------------ */
   function run() {
@@ -695,6 +778,7 @@
         renderA05(p, data);
         renderA06(p, data);
         renderA07(p);
+        renderA08(p, r);
       })
       .catch((e) => {
         if (loadEl) loadEl.style.display = 'none';

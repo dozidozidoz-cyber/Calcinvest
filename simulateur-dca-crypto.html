@@ -174,6 +174,15 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Comparaison cryptos</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#cra-defi">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2a6 6 0 1 1 0 12A6 6 0 0 1 8 2z"/><path d="M8 5v3l2 2"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 08</div>
+          <div class="sidebar-link-title">Stratégies DeFi</div>
+        </div>
+      </a>
     </div>
   </aside>
 
@@ -787,6 +796,85 @@ if ('serviceWorker' in navigator) {
           <div class="chart-wrap"><canvas id="cra7-chart"></canvas></div>
           <div class="chart-legend" id="cra7-legend"></div>
         </div>
+      </div>
+    </section>
+
+    <!-- ============= A08 · STRATÉGIES DE RENDEMENT DEFI ============= -->
+    <section id="cra-defi" style="margin-bottom:48px">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2a6 6 0 1 1 0 12A6 6 0 0 1 8 2z"/><path d="M8 5v3l2 2"/></svg>
+        </span>
+        Analyse 08 · Stratégies de rendement DeFi
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Même DCA, 4 stratégies différentes : HODL pur, staking liquid, lending stablecoins, et liquidity providing. Comparez le rendement net sur ton horizon d'investissement.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px" id="cra8-cards"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg>
+            </div>
+            Évolution du portefeuille par stratégie
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="cra8-chart"></canvas></div>
+          <div class="chart-legend" style="flex-wrap:wrap;gap:10px">
+            <div><span class="legend-dot" style="background:#60A5FA;opacity:.7"></span>HODL pur</div>
+            <div><span class="legend-dot" style="background:#34D399"></span>Staking liquid</div>
+            <div><span class="legend-dot" style="background:#FBBF24"></span>Lending stables</div>
+            <div><span class="legend-dot" style="background:#F87171"></span>Liquidity Providing</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
+            </div>
+            Résumé comparatif
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Stratégie</th>
+                <th>Valeur finale</th>
+                <th>Yield généré</th>
+                <th>vs HODL</th>
+              </tr>
+            </thead>
+            <tbody id="cra8-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M8 2l1.4 4.2 4.6.4-3.4 3 1 4.4L8 11.6l-3.6 2.4 1-4.4-3.4-3 4.6-.4z"/></svg>
+          Risques DeFi — à comprendre avant d'investir
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px">🔒 Staking</div>
+            <div style="font-size:12px;color:var(--text-2)"><strong>Slashing</strong> : si le validateur se comporte mal, une partie du stake est confisquée.<br><strong>Smart contract</strong> : bug dans Lido/RocketPool — perte des fonds.</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--yellow);margin-bottom:4px">💵 Lending stables</div>
+            <div style="font-size:12px;color:var(--text-2)"><strong>Dépeg</strong> : un stablecoin peut perdre son ancrage (ex: SVB 2023).<br><strong>Smart contract</strong> : exploit sur Aave — perte des fonds prêtés.</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px">🔄 Liquidity Providing</div>
+            <div style="font-size:12px;color:var(--text-2)"><strong>Perte impermanente (IL)</strong> : si le prix diverge fortement, HODL aurait été plus rentable.<br><strong>Smart contract</strong> : exploit Uniswap — perte totale.</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text-3);font-style:italic">Les APY affichés sont des moyennes historiques 2022-2026. Ils varient selon l'offre/demande du protocole. Ces simulations sont purement illustratives.</div>
       </div>
     </section>
 
