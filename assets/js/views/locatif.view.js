@@ -44,7 +44,8 @@
      ------------------------------------------------------------ */
   function readForm() {
     const $ = (id) => document.getElementById(id);
-    const v = (id) => num($(id).value);
+    const v = (id) => { const el = $(id); return el ? num(el.value) : 0; };
+    const sv = (id, def) => { const el = $(id); return el ? el.value : def; };
     return {
       price: v('l-price'),
       notary: v('l-notary'),
@@ -63,8 +64,8 @@
       loanRate: v('l-loanrate'),
       loanYears: v('l-loanyears'),
       loanIns: v('l-loanins'),
-      regime: $('l-regime').value,
-      tmi: num($('l-tmi').value),
+      regime: sv('l-regime', 'reel-foncier'),
+      tmi: v('l-tmi'),
       holdYears: v('l-hold'),
       appreciation: v('l-appreciation')
     };
@@ -357,7 +358,7 @@
      ------------------------------------------------------------ */
   const URL_KEYS = [
     'price', 'notary', 'agency', 'works', 'furniture',
-    'rent', 'vacancy', 'propTax', 'copro', 'insurance', 'mgmtPct', 'maintPct',
+    'rent', 'vacancy', 'propTax', 'copro', 'insurance', 'mgmtPct', 'maintPct', 'recurringWorksRate',
     'loan', 'loanRate', 'loanYears', 'loanIns',
     'regime', 'tmi', 'holdYears', 'appreciation'
   ];
@@ -372,7 +373,7 @@
     const defaults = {
       price: 200000, notary: 15000, agency: 0, works: 10000, furniture: 0,
       rent: 900, vacancy: 5,
-      propTax: 1200, copro: 600, insurance: 300, mgmtPct: 0, maintPct: 1,
+      propTax: 1200, copro: 600, insurance: 300, mgmtPct: 0, maintPct: 1, recurringWorksRate: 0,
       loan: 180000, loanRate: 3.8, loanYears: 20, loanIns: 0.36,
       regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5
     };
