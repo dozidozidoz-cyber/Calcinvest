@@ -98,3 +98,66 @@ test('calcEarlyStart: earlier start → bigger horizon value', () => {
     assert.ok(rows[i].valueAtHorizon > rows[i - 1].valueAtHorizon);
   }
 });
+
+// ─── contributionGrowth tests ───────────────────────────────────────────────
+
+test('contributionGrowth=0 matches baseline (no growth)', () => {
+  const base = compound.calcCompound({ initialAmount: 10000, monthlyAmount: 300, annualRate: 7, years: 20 });
+  const zero = compound.calcCompound({ initialAmount: 10000, monthlyAmount: 300, annualRate: 7, years: 20, contributionGrowth: 0 });
+  assert.ok(Math.abs(base.finalValue - zero.finalValue) < 1e-6, 'contributionGrowth=0 must equal no-growth baseline');
+});
+
+test('contributionGrowth=3 produces higher finalValue than baseline', () => {
+  const base   = compound.calcCompound({ initialAmount: 10000, monthlyAmount: 300, annualRate: 7, years: 20 });
+  const growth = compound.calcCompound({ initialAmount: 10000, monthlyAmount: 300, annualRate: 7, years: 20, contributionGrowth: 3 });
+  assert.ok(growth.finalValue > base.finalValue, 'contributionGrowth=3 must increase finalValue');
+  assert.ok(growth.finalInvested > base.finalInvested, 'more invested with growing contributions');
+});
+
+test('contributionGrowth=5 > contributionGrowth=2 for same horizon', () => {
+  const g2 = compound.calcCompound({ initialAmount: 5000, monthlyAmount: 200, annualRate: 6, years: 25, contributionGrowth: 2 });
+  const g5 = compound.calcCompound({ initialAmount: 5000, monthlyAmount: 200, annualRate: 6, years: 25, contributionGrowth: 5 });
+  assert.ok(g5.finalValue > g2.finalValue, 'higher growth rate → higher final value');
+});
+
+test('contributionGrowth yearly array length unchanged', () => {
+  const r = compound.calcCompound({ monthlyAmount: 100, annualRate: 5, years: 15, contributionGrowth: 3 });
+  assert.strictEqual(r.yearly.length, 15);
+});
+
+// ─── compareEnveloppes tests ────────────────────────────────────────────────
+
+test('compareEnveloppes returns 4 envelopes sorted by netValue desc', () => {
+  const res = compound.compareEnveloppes({ initialAmount: 10000, monthlyAmount: 300, annualRate: 7, years: 20 });
+  assert.strictEqual(res.envelopes.length, 4);
+  for (let i = 1; i < res.envelopes.length; i++) {
+    assert.ok(res.envelopes[i - 1].netValue >= res.envelopes[i].netValue, 'envelopes should be sorted descending');
+  }
+});
+
+test('compareEnveloppes: PEA net > CTO net at 7%/20y (PEA exonéré IR, CTO PFU 30%)', () => {
+  const res = compound.compareEnveloppes({ initialAmount: 10000, monthlyAmount: 300, annualRate: 7, years: 20 });
+  const pea = res.envelopes.find((e) => e.id === 'pea');
+  const cto = res.envelopes.find((e) => e.id === 'cto');
+  assert.ok(pea.netValue > cto.netValue, 'PEA must beat CTO after 5+ years');
+});
+
+test('compareEnveloppes: Livret A net < PEA net at 7%/20y (taux Livret A trop bas)', () => {
+  const res = compound.compareEnveloppes({ initialAmount: 10000, monthlyAmount: 300, annualRate: 7, years: 20 });
+  const livret = res.envelopes.find((e) => e.id === 'livret');
+  const pea    = res.envelopes.find((e) => e.id === 'pea');
+  assert.ok(livret.netValue < pea.netValue, 'Livret A rate (3%) loses to PEA at 7%');
+});
+
+test('compareEnveloppes: AV taxAmount = 0 if years < 8 handled (PFU 30% applied)', () => {
+  const res = compound.compareEnveloppes({ initialAmount: 5000, monthlyAmount: 200, annualRate: 6, years: 5 });
+  const av  = res.envelopes.find((e) => e.id === 'av');
+  // Under 8 years AV uses PFU 30%, so taxAmount > 0
+  assert.ok(av.taxAmount > 0, 'AV should have tax under 8 years (PFU 30%)');
+});
+
+test('compareEnveloppes: Livret A has taxAmount=0 always', () => {
+  const res = compound.compareEnveloppes({ initialAmount: 0, monthlyAmount: 500, annualRate: 8, years: 30 });
+  const livret = res.envelopes.find((e) => e.id === 'livret');
+  assert.strictEqual(livret.taxAmount, 0, 'Livret A is always tax-free');
+});

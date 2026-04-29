@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const { calcCompound, calcCompoundMultiRate, calcGoal, calcEarlyStart } = window.CalcCompound;
+  const { calcCompound, calcCompoundMultiRate, calcGoal, calcEarlyStart, compareEnveloppes } = window.CalcCompound;
   const num = window.FIN.num;
 
   let lastParams = null;
@@ -43,12 +43,13 @@
   function readForm() {
     const v = (id) => num(document.getElementById(id)?.value);
     return {
-      initialAmount: v('c-initial'),
-      monthlyAmount: v('c-monthly'),
-      annualRate:    v('c-rate'),
-      years:         v('c-years'),
-      inflation:     v('c-inflation'),
-      feesPct:       v('c-fees')
+      initialAmount:      v('c-initial'),
+      monthlyAmount:      v('c-monthly'),
+      contributionGrowth: v('c-growth'),
+      annualRate:         v('c-rate'),
+      years:              v('c-years'),
+      inflation:          v('c-inflation'),
+      feesPct:            v('c-fees')
     };
   }
 
@@ -56,6 +57,7 @@
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     set('c-initial',   p.initialAmount);
     set('c-monthly',   p.monthlyAmount);
+    set('c-growth',    p.contributionGrowth ?? 0);
     set('c-rate',      p.annualRate);
     set('c-years',     p.years);
     set('c-inflation', p.inflation);
@@ -65,7 +67,7 @@
   /* ------------------------------------------------------------
      URL state
      ------------------------------------------------------------ */
-  const URL_KEYS = ['initialAmount', 'monthlyAmount', 'annualRate', 'years', 'inflation', 'feesPct'];
+  const URL_KEYS = ['initialAmount', 'monthlyAmount', 'contributionGrowth', 'annualRate', 'years', 'inflation', 'feesPct'];
 
   function syncUrl(p) {
     const out = {};
@@ -75,7 +77,7 @@
 
   function loadFromUrl() {
     const defaults = {
-      initialAmount: 10000, monthlyAmount: 200,
+      initialAmount: 10000, monthlyAmount: 200, contributionGrowth: 0,
       annualRate: 7, years: 20, inflation: 2, feesPct: 0.2
     };
     URL_KEYS.forEach((k) => {
@@ -150,11 +152,14 @@
     const doublingLine = r.doublingYears != null
       ? ` Le capital double tous les <strong>${r.doublingYears.toFixed(1)} ans</strong> à ce rythme.`
       : '';
+    const growthLine = p.contributionGrowth > 0
+      ? ` Avec une hausse des versements de <strong>${p.contributionGrowth} %/an</strong>, l'effet boule de neige est amplifié — le versement final est ×${(Math.pow(1 + p.contributionGrowth / 100, p.years - 1)).toFixed(2)} celui de départ.`
+      : '';
     setInsight('ca-synthese',
       `À <strong>${p.annualRate} %/an</strong> sur <strong>${p.years} ans</strong>, ` +
       `<em>${CI.fmtMoney(r.finalInvested, 0)}</em> versés deviennent <em>${CI.fmtMoney(r.finalValue, 0)}</em> ` +
       `(×${r.multiplier.toFixed(2)}). Les intérêts représentent <span class="pos">${CI.fmtMoney(r.finalInterest, 0)}</span>, ` +
-      `soit <strong>${interestShare} %</strong> du capital final.${doublingLine}` +
+      `soit <strong>${interestShare} %</strong> du capital final.${doublingLine}${growthLine}` +
       ` <span class="muted">C'est ça la magie des intérêts composés : plus longtemps tu laisses tourner, plus la part des intérêts explose.</span>`
     );
   }
@@ -441,6 +446,92 @@
   }
 
   /* ------------------------------------------------------------
+     A06 — Comparaison enveloppes fiscales
+     ------------------------------------------------------------ */
+  const ENVELOPE_COLORS = {
+    livret: '#34D399',
+    pea:    '#60A5FA',
+    av:     '#FBBF24',
+    cto:    '#F87171'
+  };
+
+  function renderA06(p) {
+    const res = compareEnveloppes(p);
+    const envelopes = res.envelopes;
+    const best = envelopes[0];
+
+    // Cards
+    const cards = document.getElementById('ca6-cards');
+    if (cards) {
+      cards.innerHTML = envelopes.map((e, i) => {
+        const isBest   = i === 0;
+        const border   = isBest ? 'var(--accent)' : 'var(--border-soft)';
+        const badge    = isBest ? '<span style="font-size:10px;background:var(--accent);color:#000;padding:2px 7px;border-radius:99px;font-weight:700">MEILLEUR</span>' : '';
+        const taxLine  = e.taxAmount > 0
+          ? '<div style="font-size:11px;color:var(--red);margin-top:2px">Impôts : −' + CI.fmtMoney(e.taxAmount, 0) + '</div>'
+          : '<div style="font-size:11px;color:var(--accent);margin-top:2px">Exonéré</div>';
+        return `<div style="background:var(--bg-elev);border:2px solid ${border};border-radius:var(--r);padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="font-size:13px;font-weight:700;color:${ENVELOPE_COLORS[e.id] || 'var(--text-1)'}">${e.label}</div>${badge}
+          </div>
+          <div style="font-size:20px;font-weight:700">${CI.fmtCompact(e.netValue)}<span style="font-size:11px;font-weight:400;color:var(--text-3);margin-left:4px">net</span></div>
+          ${taxLine}
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px">${e.note}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // Tableau comparatif
+    const tbody = document.getElementById('ca6-tbody');
+    if (tbody) {
+      tbody.innerHTML = envelopes.map((e) => {
+        const isBest = e.id === best.id;
+        const diff   = e.netValue - envelopes[envelopes.length - 1].netValue;
+        return `<tr${isBest ? ' style="background:rgba(52,211,153,.06)"' : ''}>
+          <td style="font-weight:600;color:${ENVELOPE_COLORS[e.id] || 'var(--text-1)'}">${e.label}</td>
+          <td>${CI.fmtMoney(e.grossValue, 0)}</td>
+          <td class="neg">${e.taxAmount > 0 ? '−' + CI.fmtMoney(e.taxAmount, 0) : '—'}</td>
+          <td class="pos" style="font-weight:700">${CI.fmtMoney(e.netValue, 0)}</td>
+          <td>${diff > 0 ? '<span class="pos">+' + CI.fmtMoney(diff, 0) + '</span>' : '—'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Chart barres horizontales (barres verticales ici via CI.drawChart)
+    requestAnimationFrame(() => {
+      const labels = envelopes.map((e) => e.label);
+      CI.drawChart('ca6-chart', labels, [
+        {
+          data:  envelopes.map((e) => e.netValue),
+          color: envelopes.map((e) => ENVELOPE_COLORS[e.id] || '#888')
+        }
+      ], { yFormat: (v) => CI.fmtCompact(v) });
+    });
+
+    // Insight A06
+    const worst  = envelopes[envelopes.length - 1];
+    const gain   = best.netValue - worst.netValue;
+    const gainPct = worst.netValue > 0 ? (gain / worst.netValue * 100).toFixed(0) : 0;
+    const aveLine = envelopes.find((e) => e.id === 'av');
+    const avNote  = aveLine && p.years < 8
+      ? ' <span class="warn">L\'Assurance-Vie n\'a pas encore atteint 8 ans — sa fiscalité avantageuse (7.5 %) ne s\'applique pas encore.</span>'
+      : '';
+    const peaLine = envelopes.find((e) => e.id === 'pea');
+    const peaNote = peaLine && p.years < 5
+      ? ' <span class="warn">Le PEA est taxé à 30 % car < 5 ans — attends le seuil pour bénéficier de l\'exonération IR.</span>'
+      : '';
+    setInsight('ca-enveloppes',
+      `Sur <strong>${p.years} ans</strong> à <strong>${p.annualRate} %/an</strong>, ` +
+      `<span style="color:${ENVELOPE_COLORS[best.id]}">${best.label}</span> ressort à ` +
+      `<em>${CI.fmtMoney(best.netValue, 0)}</em> net — ` +
+      `<span class="pos">+${CI.fmtMoney(gain, 0)} (+${gainPct} %)</span> vs ` +
+      `<span style="color:${ENVELOPE_COLORS[worst.id]}">${worst.label}</span>. ` +
+      `Le choix de l'enveloppe peut peser autant que plusieurs points de rendement.` +
+      avNote + peaNote
+    );
+  }
+
+  /* ------------------------------------------------------------
      run()
      ------------------------------------------------------------ */
   function run() {
@@ -454,6 +545,7 @@
     renderA03(p);
     renderA04(p);
     renderA05(p, r);
+    renderA06(p);
     syncUrl(p);
   }
 
@@ -505,6 +597,7 @@
         renderA02(lastParams);
         renderA04(lastParams);
         renderA05(lastParams, lastResult);
+        renderA06(lastParams);
       });
     }
   });

@@ -21,6 +21,7 @@
     const deployment = p.deployment || 'lump';
     const feesPct = p.feesPct || 0;
     const feesMonthly = feesPct / 100 / 12;
+    const contributionGrowth = (p.contributionGrowth || 0) / 100;
     const cashRate = p.cashRate || 0;
     const cashMonthly = cashRate / 100 / 12;
     const reinvestDivs = p.dividendsReinvested !== false && dividends && dividends.length === prices.length;
@@ -39,6 +40,11 @@
 
     const initialPerMonth = deployment === 'spread' ? initialAmount / 12 : 0;
     const initialLump = deployment === 'spread' ? 0 : initialAmount;
+    // Helper : versement mensuel effectif au mois i (croissance annuelle)
+    function monthlyAt(i) {
+      if (!contributionGrowth) return monthlyAmount;
+      return monthlyAmount * Math.pow(1 + contributionGrowth, Math.floor(i / 12));
+    }
     const cpiStart = inflationAdj ? cpi[startIdx] : 1;
 
     if (initialLump > 0) {
@@ -52,7 +58,7 @@
     for (let i = 0; i < duration; i++) {
       const idx = startIdx + i;
       const price = prices[idx];
-      let monthInv = monthlyAmount;
+      let monthInv = monthlyAt(i);
       if (deployment === 'spread' && i < 12) monthInv += initialPerMonth;
 
       if (monthInv > 0) {
@@ -103,7 +109,7 @@
 
     const cashflows = [-initialLump];
     for (let i = 0; i < duration; i++) {
-      let cf = -monthlyAmount;
+      let cf = -monthlyAt(i);
       if (deployment === 'spread' && i < 12) cf -= initialPerMonth;
       cashflows.push(cf);
     }
