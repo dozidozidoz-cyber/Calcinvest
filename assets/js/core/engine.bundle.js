@@ -1935,10 +1935,98 @@
     };
   }
 
+  /**
+   * Agrège plusieurs résultats calcLocatif en un patrimoine consolidé.
+   *
+   * @param {Array<{params, result}>} biens — chaque bien avec ses params et son résultat calcLocatif
+   * @returns {Object} totaux, moyennes pondérées, série yearly agrégée
+   */
+  function computeAggregate(biens) {
+    if (!biens || biens.length === 0) {
+      return null;
+    }
+
+    var totalAcquisition  = 0;
+    var totalDownPayment  = 0;
+    var totalLoan         = 0;
+    var totalMonthlyPmt   = 0;
+    var totalGrossRent    = 0;     // €/an cumulés
+    var totalCashflowMo   = 0;     // €/mois cumulé
+    var totalEnrichmentMo = 0;
+    var totalFinalEquity  = 0;
+    var totalFinalValue   = 0;
+    var totalNetRentAfter = 0;     // €/an pondération yieldNetNet
+    var maxHorizon        = 0;
+
+    biens.forEach(function (b) {
+      if (!b || !b.params || !b.result) return;
+      var p = b.params, r = b.result;
+      totalAcquisition  += r.totalAcquisition || 0;
+      totalDownPayment  += r.downPayment || 0;
+      totalLoan         += p.loan || 0;
+      totalMonthlyPmt   += r.monthlyPayment || 0;
+      totalGrossRent    += r.grossRent || 0;
+      totalCashflowMo   += r.cashflowMonthly || 0;
+      totalEnrichmentMo += r.enrichmentMonthly || 0;
+      totalFinalEquity  += r.finalEquity || 0;
+      totalFinalValue   += r.finalPropertyValue || 0;
+      totalNetRentAfter += r.netRentAfterTax || 0;
+      if (p.holdYears && p.holdYears > maxHorizon) maxHorizon = p.holdYears;
+    });
+
+    // Rendements pondérés par valeur d'acquisition
+    var weightedYieldGross = totalAcquisition > 0 ? (totalGrossRent / totalAcquisition) * 100 : 0;
+    var weightedYieldNetNet = totalAcquisition > 0 ? (totalNetRentAfter / totalAcquisition) * 100 : 0;
+
+    // Yearly agrégé : pour chaque année 1..maxHorizon, somme par champ
+    var yearly = [];
+    for (var y = 1; y <= maxHorizon; y++) {
+      var row = {
+        year: y,
+        rent: 0, charges: 0, loanPayments: 0, loanInterest: 0, loanPrincipal: 0,
+        tax: 0, cashflow: 0, propertyValue: 0, balance: 0, equity: 0
+      };
+      biens.forEach(function (b) {
+        if (!b || !b.result || !b.result.yearly) return;
+        var yr = b.result.yearly[y - 1];
+        if (!yr) return;
+        row.rent          += yr.rent || 0;
+        row.charges       += yr.charges || 0;
+        row.loanPayments  += yr.loanPayments || 0;
+        row.loanInterest  += yr.loanInterest || 0;
+        row.loanPrincipal += yr.loanPrincipal || 0;
+        row.tax           += yr.tax || 0;
+        row.cashflow      += yr.cashflow || 0;
+        row.propertyValue += yr.propertyValue || 0;
+        row.balance       += yr.balance || 0;
+        row.equity        += yr.equity || 0;
+      });
+      yearly.push(row);
+    }
+
+    return {
+      count: biens.length,
+      totalAcquisition: totalAcquisition,
+      totalDownPayment: totalDownPayment,
+      totalLoan: totalLoan,
+      totalMonthlyPmt: totalMonthlyPmt,
+      totalGrossRent: totalGrossRent,
+      totalCashflowMonthly: totalCashflowMo,
+      totalEnrichmentMonthly: totalEnrichmentMo,
+      totalFinalEquity: totalFinalEquity,
+      totalFinalValue: totalFinalValue,
+      weightedYieldGross: weightedYieldGross,
+      weightedYieldNetNet: weightedYieldNetNet,
+      maxHorizon: maxHorizon,
+      yearly: yearly
+    };
+  }
+
   const mod = {
     calcLocatif: calcLocatif,
     computeRegimeComparison: computeRegimeComparison,
-    computePlusValue: computePlusValue
+    computePlusValue: computePlusValue,
+    computeAggregate: computeAggregate
   };
 
   if (isNode) {
