@@ -150,3 +150,57 @@ test('computeAggregate: weighted yields are reasonable', () => {
   assert.ok(agg.weightedYieldGross > 0 && agg.weightedYieldGross < 20);
   assert.ok(agg.weightedYieldNetNet >= 0 && agg.weightedYieldNetNet < 20);
 });
+
+// ─── compareWithStocks tests ───────────────────────────────────────────────
+
+test('compareWithStocks: returns valid shape with default opts', () => {
+  const r = locatif.calcLocatif(BIEN_A);
+  const cmp = locatif.compareWithStocks(BIEN_A, r);
+  assert.ok(cmp, 'should return non-null');
+  assert.ok(cmp.stocksNet > 0, 'stocksNet should be positive');
+  assert.ok(cmp.stocksGross > cmp.stocksNet, 'gross should exceed net (tax applied)');
+  assert.ok(cmp.realEstateNet != null);
+  assert.strictEqual(cmp.yearsCompared, BIEN_A.holdYears);
+  assert.strictEqual(cmp.stockRate, 7);
+});
+
+test('compareWithStocks: higher stockRate produces higher stocksNet', () => {
+  const r = locatif.calcLocatif(BIEN_A);
+  const at4  = locatif.compareWithStocks(BIEN_A, r, { stockRate: 4 });
+  const at10 = locatif.compareWithStocks(BIEN_A, r, { stockRate: 10 });
+  assert.ok(at10.stocksNet > at4.stocksNet, 'higher rate → higher final stocks value');
+});
+
+test('compareWithStocks: PFU 30% reduces gains by 30%', () => {
+  const r = locatif.calcLocatif(BIEN_A);
+  const cmp = locatif.compareWithStocks(BIEN_A, r, { stockRate: 7, taxRate: 30 });
+  const expectedTax = cmp.stocksGains * 0.30;
+  assert.ok(Math.abs(cmp.stocksTax - expectedTax) < 1e-6, 'tax should be 30% of gains');
+});
+
+test('compareWithStocks: 0% rate → no gains, no tax', () => {
+  const r = locatif.calcLocatif(BIEN_A);
+  const cmp = locatif.compareWithStocks(BIEN_A, r, { stockRate: 0, feesPct: 0 });
+  assert.ok(Math.abs(cmp.stocksGross - cmp.apport) < 1, 'no growth at 0%');
+  assert.ok(cmp.stocksTax < 1e-6, 'no tax with no gains');
+});
+
+// ─── recurringWorksRate tests ──────────────────────────────────────────────
+
+test('recurringWorksRate=0 matches baseline (no recurring works)', () => {
+  const base = locatif.calcLocatif(BIEN_A);
+  const zero = locatif.calcLocatif(Object.assign({}, BIEN_A, { recurringWorksRate: 0 }));
+  assert.ok(Math.abs(base.cashflowMonthly - zero.cashflowMonthly) < 1e-6);
+  assert.ok(Math.abs(base.yieldNet - zero.yieldNet) < 1e-6);
+});
+
+test('recurringWorksRate=1 reduces cashflow by ~1% of price/year', () => {
+  const base = locatif.calcLocatif(BIEN_A);
+  const withWorks = locatif.calcLocatif(Object.assign({}, BIEN_A, { recurringWorksRate: 1 }));
+  // Should reduce annual cashflow by ~ price * 1% (minus tax savings in regimes that deduct)
+  const annualReduction = (base.cashflowMonthly - withWorks.cashflowMonthly) * 12;
+  // For lmnp-reel regime, charges are deductible so savings ~ price * 1% * (1 - effective tax rate)
+  // Just check it's reduced and reasonable
+  assert.ok(withWorks.cashflowMonthly < base.cashflowMonthly, 'cashflow should drop with recurring works');
+  assert.ok(annualReduction > 500 && annualReduction < BIEN_A.price * 0.011, 'reduction in expected range');
+});
