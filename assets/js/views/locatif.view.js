@@ -11,6 +11,7 @@
   const calcPV     = window.CalcLocatif.computePlusValue;
   const calcAggr   = window.CalcLocatif.computeAggregate;
   const calcStocks = window.CalcLocatif.compareWithStocks;
+  const calcMC     = window.CalcLocatif.computeVacancyMC;
   const num        = window.FIN.num;
 
   // Multi-biens state
@@ -64,6 +65,8 @@
       loanRate: v('l-loanrate'),
       loanYears: v('l-loanyears'),
       loanIns: v('l-loanins'),
+      refinanceYear: v('l-refi-year'),
+      refinanceRate: v('l-refi-rate'),
       regime: sv('l-regime', 'reel-foncier'),
       tmi: v('l-tmi'),
       holdYears: v('l-hold'),
@@ -93,6 +96,8 @@
     set('l-loanrate', p.loanRate);
     set('l-loanyears', p.loanYears);
     set('l-loanins', p.loanIns);
+    set('l-refi-year', p.refinanceYear ?? 0);
+    set('l-refi-rate', p.refinanceRate ?? 0);
     set('l-regime', p.regime);
     set('l-tmi', p.tmi);
     set('l-hold', p.holdYears);
@@ -359,7 +364,7 @@
   const URL_KEYS = [
     'price', 'notary', 'agency', 'works', 'furniture',
     'rent', 'vacancy', 'propTax', 'copro', 'insurance', 'mgmtPct', 'maintPct', 'recurringWorksRate',
-    'loan', 'loanRate', 'loanYears', 'loanIns',
+    'loan', 'loanRate', 'loanYears', 'loanIns', 'refinanceYear', 'refinanceRate',
     'regime', 'tmi', 'holdYears', 'appreciation'
   ];
 
@@ -374,7 +379,7 @@
       price: 200000, notary: 15000, agency: 0, works: 10000, furniture: 0,
       rent: 900, vacancy: 5,
       propTax: 1200, copro: 600, insurance: 300, mgmtPct: 0, maintPct: 1, recurringWorksRate: 0,
-      loan: 180000, loanRate: 3.8, loanYears: 20, loanIns: 0.36,
+      loan: 180000, loanRate: 3.8, loanYears: 20, loanIns: 0.36, refinanceYear: 0, refinanceRate: 0,
       regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5
     };
     URL_KEYS.forEach((k) => {
@@ -442,6 +447,58 @@
       `Ton bien immobilier rapporte <em>${CI.fmtMoney(cmp.realEstateNet, 0)}</em> nets — ` +
       `<span class="${cmp.delta >= 0 ? 'pos' : 'neg'}">${verb} ${CI.fmtMoney(Math.abs(cmp.delta), 0)} de plus</span> ` +
       `(ratio ×${ratio}). <span class="muted">L'immobilier gagne quand le levier crédit + plus-value compensent l'illiquidité et les frais.</span>${peaNote}`
+    );
+  }
+
+  /* ------------------------------------------------------------
+     A10 — Monte Carlo vacance locative (lazy, on-demand)
+     ------------------------------------------------------------ */
+  let la10Result = null;
+
+  function renderA10Refresh(p) {
+    if (!calcMC) return;
+    const btnEl = document.getElementById('la10-run');
+    if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Calcul…'; }
+
+    // Run async (non bloquant UI) via setTimeout
+    setTimeout(() => {
+      const seed = parseInt((document.getElementById('la10-seed')||{}).value, 10) || 42;
+      const sims = parseInt((document.getElementById('la10-sims')||{}).value, 10) || 1000;
+      la10Result = calcMC(p, { simulations: sims, seed: seed });
+      renderA10Display();
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Lancer la simulation'; }
+    }, 30);
+  }
+
+  function renderA10Display() {
+    const r = la10Result;
+    if (!r) return;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+    set('la10-baseline',  CI.fmtMoney(r.baseline, 0));
+    set('la10-mean',      CI.fmtMoney(r.mean, 0));
+    set('la10-median',    CI.fmtMoney(r.median, 0));
+    set('la10-p5',        CI.fmtMoney(r.p5, 0));
+    set('la10-p95',       CI.fmtMoney(r.p95, 0));
+    set('la10-stddev',    CI.fmtMoney(r.stdDev, 0));
+    set('la10-sims-info', r.simulations + ' simulations · ' + r.months + ' mois · vacance ' + r.vacancyRate + ' %/an');
+
+    // Histogramme : line chart fill (CI.drawChart ne supporte pas bar natif)
+    requestAnimationFrame(() => {
+      const labels = r.histogram.bins.map((b) => CI.fmtCompact(b));
+      CI.drawChart('la10-chart', labels, [
+        { label: 'Fréquence', data: r.histogram.counts, color: '#34D399', fill: true, width: 2 }
+      ], { yFormat: (v) => v + ' sims' });
+    });
+
+    // Insight
+    const interval = r.p95 - r.p5;
+    const baselineVsMedian = r.median - r.baseline;
+    setInsight('l-mc-vacance',
+      `Sur <strong>${r.simulations} simulations</strong> de ${(r.months / 12).toFixed(0)} ans avec vacance ${r.vacancyRate} %/an : ` +
+      `cashflow médian <em>${CI.fmtMoney(r.median, 0)}</em>, écart 90 % entre <span class="warn">${CI.fmtMoney(r.p5, 0)}</span> et <span class="pos">${CI.fmtMoney(r.p95, 0)}</span> ` +
+      `(intervalle de <strong>${CI.fmtMoney(interval, 0)}</strong>). ` +
+      `<span class="muted">La vacance variable Bernoulli reproduit la réalité d'un bien parfois loué, parfois vacant — utile pour évaluer la robustesse de ton plan.</span>`
     );
   }
 
@@ -673,12 +730,23 @@
     // A05 Amortissement crédit
     if (p.loan > 0) {
       const interestPct = (r.totalInterest / p.loan * 100).toFixed(0);
+      let refiLine = '';
+      if (r.refinance) {
+        const ri = r.refinance;
+        const annualSaving = ri.monthlySaving * 12;
+        const interestEcon = ri.oldRemainingInterest - ri.newTotalInterest;
+        const cls = ri.monthlySaving >= 0 ? 'pos' : 'neg';
+        const verb = ri.monthlySaving >= 0 ? 'économies' : 'surcoût';
+        refiLine = ` <strong>Refinancement an ${ri.year}</strong> à ${ri.rate} % : mensualité ${CI.fmtMoney(ri.oldMonthlyPmt, 0)} → ${CI.fmtMoney(ri.newMonthlyPmt, 0)} ` +
+          `(<span class="${cls}">${ri.monthlySaving >= 0 ? '+' : ''}${CI.fmtMoney(annualSaving, 0)}/an</span> de ${verb}, ` +
+          `intérêts restants <span class="${cls}">${CI.fmtMoney(interestEcon, 0)} d'écart</span>).`;
+      }
       setInsight('l-amort-credit',
         `Sur <strong>${p.loanYears} ans</strong> à ${p.loanRate.toFixed(2)} %, l'emprunt de ` +
         `<strong>${CI.fmtMoney(p.loan, 0)}</strong> coûte <span class="neg">${CI.fmtMoney(r.totalInterest, 0)}</span> ` +
         `d'intérêts (<em>${interestPct} %</em> du capital emprunté). Mensualité : ` +
-        `<strong>${CI.fmtMoney(r.monthlyPayment, 0)}/mois</strong>. ` +
-        `<span class="muted">Le poids des intérêts diminue avec la durée — un crédit court coûte moins, mais réduit l'effet de levier.</span>`
+        `<strong>${CI.fmtMoney(r.monthlyPayment, 0)}/mois</strong>.${refiLine}` +
+        `<span class="muted"> Le poids des intérêts diminue avec la durée — un crédit court coûte moins, mais réduit l'effet de levier.</span>`
       );
     }
 
@@ -801,6 +869,12 @@
       el.addEventListener('input', run);
       el.addEventListener('change', run);
     });
+
+    // A10 — bouton MC vacance
+    const a10Btn = document.getElementById('la10-run');
+    if (a10Btn) {
+      a10Btn.addEventListener('click', () => { if (lastParams) renderA10Refresh(lastParams); });
+    }
 
     // A09 — taux bourse pills
     document.querySelectorAll('#la9-rate-btns button').forEach(b => {

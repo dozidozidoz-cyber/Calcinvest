@@ -1772,10 +1772,43 @@
     const totalAcquisition = p.price + p.notary + p.agency + p.works + p.furniture;
     const downPayment = Math.max(0, totalAcquisition - p.loan);
 
-    // -- Crédit --
-    const amort = p.loan > 0
+    // -- Crédit (avec refinancement éventuel) --
+    const refiYear = Math.floor(p.refinanceYear || 0);
+    const refiRate = p.refinanceRate;  // %
+    const useRefi  = p.loan > 0 && refiYear > 0 && refiYear < p.loanYears && refiRate != null && refiRate > 0;
+
+    let amort = p.loan > 0
       ? amortization.build(p.loanRate / 100, p.loanYears, p.loan, { insuranceRate: p.loanIns / 100 })
       : { pmt: 0, insurance: 0, total: 0, yearly: [], totalInterest: 0, totalInsurance: 0 };
+
+    let refiAmort = null;     // amortissement post-refi
+    let refiTotalCost = 0;    // coût supplémentaire/économie comparé au scénario sans refi
+    if (useRefi) {
+      // Solde restant à la fin de l'année refiYear
+      const balanceAtRefi = amort.yearly[refiYear - 1]
+        ? amort.yearly[refiYear - 1].balance
+        : 0;
+      const remainingYears = p.loanYears - refiYear;
+      if (balanceAtRefi > 0 && remainingYears > 0) {
+        refiAmort = amortization.build(
+          refiRate / 100, remainingYears, balanceAtRefi,
+          { insuranceRate: p.loanIns / 100 }
+        );
+      }
+    }
+
+    // Helper : récupère le yearLoan effectif pour l'année y (1-indexed), tenant compte du refi
+    function getYearLoan(y) {
+      if (useRefi && refiAmort && y > refiYear) {
+        const idx = y - refiYear - 1;
+        return refiAmort.yearly[idx] || { principal: 0, interest: 0, insurance: 0, balance: 0 };
+      }
+      return amort.yearly[y - 1] || { principal: 0, interest: 0, insurance: 0, balance: 0 };
+    }
+    function getMonthlyPayment(y) {
+      if (useRefi && refiAmort && y > refiYear) return refiAmort.total;
+      return amort.total;
+    }
 
     // -- Loyers / charges année 1 --
     const grossRent = p.rent * 12;
@@ -1827,13 +1860,13 @@
     const years = Math.max(1, p.holdYears);
 
     for (let y = 1; y <= years; y++) {
-      const yearLoan = amort.yearly[y - 1] || { principal: 0, interest: 0, insurance: 0, balance: 0 };
+      const yearLoan = getYearLoan(y);
       const rentFactor = Math.pow(1 + (p.rentIndexation || 0) / 100, y - 1);
       const grossRentYear = grossRent * rentFactor;
       const rentYear = grossRentYear * (1 - p.vacancy / 100);
       const mgmtYear = rentYear * (p.mgmtPct / 100);
       const chargesYear = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100) + p.price * ((p.recurringWorksRate || 0) / 100);
-      const loanYear = (y <= p.loanYears && p.loan > 0) ? amort.total * 12 : 0;
+      const loanYear = (y <= p.loanYears && p.loan > 0) ? getMonthlyPayment(y) * 12 : 0;
       const tax = computeTax(grossRentYear, yearLoan);
       const cashflowYear = rentYear - chargesYear - loanYear - tax;
 
@@ -1881,7 +1914,17 @@
       tri: tri == null ? null : tri * 100,
       finalEquity: finalEquity,
       finalPropertyValue: yearly[yearly.length - 1].propertyValue,
-      yearly: yearly
+      yearly: yearly,
+      refinance: useRefi && refiAmort ? {
+        year: refiYear,
+        rate: refiRate,
+        balanceAtRefi: amort.yearly[refiYear - 1].balance,
+        oldMonthlyPmt: amort.total,
+        newMonthlyPmt: refiAmort.total,
+        monthlySaving: amort.total - refiAmort.total,
+        oldRemainingInterest: amort.yearly.slice(refiYear).reduce(function (s, r) { return s + r.interest; }, 0),
+        newTotalInterest: refiAmort.totalInterest
+      } : null
     };
   }
 
@@ -2082,12 +2125,125 @@
     };
   }
 
+  /**
+   * Monte Carlo de la vacance locative : Bernoulli mensuelle.
+   *
+   * Pour chaque simulation : pour chaque mois sur l'horizon, tire un Bernoulli
+   * de proba `vacancyRate / 12` (mensuel équivalent au taux annuel). Le mois
+   * vacant ne génère pas de loyer.
+   *
+   * @param {Object} p — params calcLocatif (utilise vacancy comme moyenne)
+   * @param {Object} [opts] — { simulations=1000, seed=42 }
+   * @returns {Object|null} { p5, p25, p50, p75, p95, mean, stdDev, distribution }
+   */
+  function computeVacancyMC(p, opts) {
+    opts = opts || {};
+    const N = opts.simulations || 1000;
+    const seed = opts.seed != null ? opts.seed : 42;
+
+    const ENGINE_RNG = ENGINE.rng || (typeof require !== 'undefined' ? require('../engine/rng') : null);
+    if (!ENGINE_RNG || !ENGINE_RNG.mulberry32) return null;
+
+    const rand = ENGINE_RNG.mulberry32(seed);
+    const monthlyVacancyP = (p.vacancy || 0) / 100; // proba mensuelle d'être vacant
+    const months = (p.holdYears || 1) * 12;
+
+    // Charges fixes annuelles, indépendantes du loyer
+    const charges = p.propTax + p.copro + p.insurance + p.price * (p.maintPct / 100) + p.price * ((p.recurringWorksRate || 0) / 100);
+    const grossRentMonthly = (p.rent || 0);
+    const mgmtPct = (p.mgmtPct || 0) / 100;
+
+    // Mensualité crédit (utilise calcLocatif pour avoir l'amort + refi correct)
+    const baseResult = calcLocatif(p);
+    if (!baseResult) return null;
+
+    // Approximation : on suppose tax annuelle = baseResult.year1Tax (constant)
+    const annualTax = baseResult.year1Tax || 0;
+
+    // Pré-calcul des mensualités crédit par mois
+    const monthlyLoanPmts = new Array(months).fill(0);
+    if (p.loan > 0) {
+      for (let m = 0; m < months; m++) {
+        const y = Math.floor(m / 12) + 1;
+        if (y > p.loanYears) break;
+        // Si refi : check via baseResult.refinance
+        if (baseResult.refinance && y > baseResult.refinance.year) {
+          monthlyLoanPmts[m] = baseResult.refinance.newMonthlyPmt;
+        } else {
+          monthlyLoanPmts[m] = baseResult.monthlyPayment;
+        }
+      }
+    }
+
+    const totalCashflows = new Array(N);
+    for (let s = 0; s < N; s++) {
+      let totalCF = 0;
+      for (let m = 0; m < months; m++) {
+        // Bernoulli : 1 si vacant, 0 sinon
+        const vacant = rand() < monthlyVacancyP;
+        const rentThisMonth = vacant ? 0 : grossRentMonthly;
+        const rentIndexFactor = Math.pow(1 + (p.rentIndexation || 0) / 100, Math.floor(m / 12));
+        const effectiveRent = rentThisMonth * rentIndexFactor;
+        const mgmtCost = effectiveRent * mgmtPct;
+        const monthlyCharges = charges / 12;
+        const monthlyTax = annualTax / 12;
+        totalCF += effectiveRent - mgmtCost - monthlyCharges - monthlyLoanPmts[m] - monthlyTax;
+      }
+      totalCashflows[s] = totalCF;
+    }
+
+    // Stats
+    totalCashflows.sort(function (a, b) { return a - b; });
+    function pct(arr, q) { const idx = Math.min(arr.length - 1, Math.floor(q * arr.length)); return arr[idx]; }
+    const mean = totalCashflows.reduce(function (s, v) { return s + v; }, 0) / N;
+    const variance = totalCashflows.reduce(function (s, v) { return s + (v - mean) * (v - mean); }, 0) / N;
+    const stdDev = Math.sqrt(variance);
+
+    // Baseline déterministe : cashflow total sur l'horizon avec vacance moyenne
+    const baselineTotal = baseResult.yearly.reduce(function (s, yr) { return s + yr.cashflow; }, 0);
+
+    return {
+      simulations: N,
+      seed: seed,
+      months: months,
+      vacancyRate: p.vacancy,
+      mean: mean,
+      median: pct(totalCashflows, 0.50),
+      p5:    pct(totalCashflows, 0.05),
+      p25:   pct(totalCashflows, 0.25),
+      p75:   pct(totalCashflows, 0.75),
+      p95:   pct(totalCashflows, 0.95),
+      stdDev: stdDev,
+      baseline: baselineTotal,
+      // Histogramme : 20 bins pour visualisation
+      histogram: buildHistogram(totalCashflows, 20)
+    };
+  }
+
+  function buildHistogram(sorted, nBins) {
+    if (!sorted.length) return { bins: [], counts: [] };
+    const min = sorted[0], max = sorted[sorted.length - 1];
+    const range = max - min;
+    if (range === 0) return { bins: [min], counts: [sorted.length] };
+    const w = range / nBins;
+    const counts = new Array(nBins).fill(0);
+    const bins = [];
+    for (let i = 0; i < nBins; i++) bins.push(min + i * w);
+    for (let i = 0; i < sorted.length; i++) {
+      let idx = Math.floor((sorted[i] - min) / w);
+      if (idx >= nBins) idx = nBins - 1;
+      counts[idx]++;
+    }
+    return { bins: bins, counts: counts, binWidth: w };
+  }
+
   const mod = {
     calcLocatif: calcLocatif,
     computeRegimeComparison: computeRegimeComparison,
     computePlusValue: computePlusValue,
     computeAggregate: computeAggregate,
-    compareWithStocks: compareWithStocks
+    compareWithStocks: compareWithStocks,
+    computeVacancyMC: computeVacancyMC
   };
 
   if (isNode) {

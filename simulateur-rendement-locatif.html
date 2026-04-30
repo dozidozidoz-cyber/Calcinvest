@@ -184,6 +184,15 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Achat vs bourse</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#l-mc-vacance">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 14h12"/><path d="M3 12V8M6 12V5M9 12V9M12 12V6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 10</div>
+          <div class="sidebar-link-title">Monte Carlo vacance</div>
+        </div>
+      </a>
       <a class="sidebar-link" href="#l-patrimoine" id="link-patrimoine" style="display:none">
         <div class="sidebar-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="4" height="8"/><rect x="6" y="3" width="4" height="11"/><rect x="10" y="8" width="4" height="6"/></svg>
@@ -364,6 +373,27 @@ if ('serviceWorker' in navigator) {
                 <div class="stepper" data-step="0.01" data-min="0" data-max="2">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="l-loanins" value="0.36" step="0.01" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field-label">Refinancement à l'année</label>
+                <div class="stepper" data-step="1" data-min="0" data-max="29">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="l-refi-year" value="0" />
+                  <span class="stepper-unit">an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px">0 = pas de refinancement</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label">Nouveau taux de refi</label>
+                <div class="stepper" data-step="0.1" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="l-refi-rate" value="0" step="0.1" />
                   <span class="stepper-unit">%/an</span>
                   <button class="stepper-btn" data-dir="1" type="button">+</button>
                 </div>
@@ -1012,6 +1042,79 @@ if ('serviceWorker' in navigator) {
         <strong>Fiscalité bourse :</strong> Flat tax PFU 30 % (12.8 % IR + 17.2 % PS) sur les plus-values. En PEA après 5 ans, ce serait 17.2 %.<br>
         <strong>Fiscalité immobilier :</strong> abattements PV (IR exonéré à 22 ans, PS à 30 ans) + frais de revente 4 %.<br>
         <em>Comparaison conceptuelle : le DCA bourse n'inclut pas le levier crédit dont bénéficie l'immobilier.</em>
+      </div>
+    </section>
+
+    <!-- ============= A10 · MONTE CARLO VACANCE LOCATIVE ============= -->
+    <section id="l-mc-vacance">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14h12"/><path d="M3 12V8M6 12V5M9 12V9M12 12V6"/></svg>
+        </span>
+        Analyse 10 · Monte Carlo vacance locative
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Et si la vacance locative variait au gré des aléas réels (changements de locataires, travaux, mauvaises années) ? Cette simulation Bernoulli mensuelle estime la robustesse de ton plan en générant 1 000 trajectoires.</p>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+        <span style="font-size:12px;color:var(--text-3)">Simulations :</span>
+        <div class="stepper" data-step="500" data-min="100" data-max="5000" style="width:auto">
+          <button class="stepper-btn" data-dir="-1" type="button">−</button>
+          <input class="stepper-input" type="number" id="la10-sims" value="1000" />
+          <span class="stepper-unit">runs</span>
+          <button class="stepper-btn" data-dir="1" type="button">+</button>
+        </div>
+        <span style="font-size:12px;color:var(--text-3);margin-left:14px">Seed :</span>
+        <div class="stepper" data-step="1" data-min="1" data-max="9999" style="width:auto">
+          <button class="stepper-btn" data-dir="-1" type="button">−</button>
+          <input class="stepper-input" type="number" id="la10-seed" value="42" />
+          <button class="stepper-btn" data-dir="1" type="button">+</button>
+        </div>
+        <button class="btn btn-primary" id="la10-run" style="margin-left:auto">Lancer la simulation</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Cashflow médian (P50)</div>
+          <div class="stat-value info" id="la10-median">—</div>
+          <div class="stat-sub" id="la10-sims-info">Lance la simulation</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Pessimiste (P5)</div>
+          <div class="stat-value warn" id="la10-p5">—</div>
+          <div class="stat-sub">5 % de chance d'être pire</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Optimiste (P95)</div>
+          <div class="stat-value pos" id="la10-p95">—</div>
+          <div class="stat-sub">5 % de chance d'être mieux</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Baseline (vacance moyenne)</div>
+          <div class="stat-value" id="la10-baseline">—</div>
+          <div class="stat-sub" id="la10-stddev">Écart-type : —</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14h12"/><path d="M3 12V8M6 12V5M9 12V9M12 12V6"/></svg>
+            </div>
+            Distribution des cashflows totaux
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="la10-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Méthodologie
+        </div>
+        Pour chaque mois sur l'horizon, un tirage Bernoulli détermine si le bien est loué ou vacant (probabilité = vacance annuelle / 12). Les charges fixes (taxe foncière, copro, assurance, travaux récurrents) et la mensualité crédit s'appliquent dans tous les cas. Le seed permet de reproduire les mêmes simulations.
       </div>
     </section>
 
