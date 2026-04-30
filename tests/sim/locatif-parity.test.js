@@ -204,3 +204,62 @@ test('recurringWorksRate=1 reduces cashflow by ~1% of price/year', () => {
   assert.ok(withWorks.cashflowMonthly < base.cashflowMonthly, 'cashflow should drop with recurring works');
   assert.ok(annualReduction > 500 && annualReduction < BIEN_A.price * 0.011, 'reduction in expected range');
 });
+
+// ─── Refinancement tests ──────────────────────────────────────────────────
+
+test('refinanceYear=0 → pas de refi (refinance=null)', () => {
+  const r = locatif.calcLocatif(BIEN_A);
+  assert.strictEqual(r.refinance, null);
+});
+
+test('refinancement an 7 à 2.5 % réduit la mensualité (taux original 3.2%)', () => {
+  const r = locatif.calcLocatif(Object.assign({}, BIEN_A, { refinanceYear: 7, refinanceRate: 2.5 }));
+  assert.ok(r.refinance != null, 'refinance should be set');
+  assert.strictEqual(r.refinance.year, 7);
+  assert.strictEqual(r.refinance.rate, 2.5);
+  assert.ok(r.refinance.newMonthlyPmt < r.refinance.oldMonthlyPmt, 'lower rate → lower mensualité');
+  assert.ok(r.refinance.monthlySaving > 0);
+});
+
+test('refinancement à taux supérieur → coût supplémentaire', () => {
+  const r = locatif.calcLocatif(Object.assign({}, BIEN_A, { refinanceYear: 5, refinanceRate: 5.0 }));
+  assert.ok(r.refinance != null);
+  assert.ok(r.refinance.monthlySaving < 0, 'higher rate → negative saving');
+});
+
+test('refinanceYear hors limites (>= loanYears) → pas de refi appliqué', () => {
+  const r = locatif.calcLocatif(Object.assign({}, BIEN_A, { refinanceYear: 30, refinanceRate: 2.0 }));
+  assert.strictEqual(r.refinance, null);
+});
+
+// ─── computeVacancyMC tests ────────────────────────────────────────────────
+
+test('computeVacancyMC: returns valid stats with reproducible seed', () => {
+  const mc1 = locatif.computeVacancyMC(BIEN_A, { simulations: 200, seed: 42 });
+  const mc2 = locatif.computeVacancyMC(BIEN_A, { simulations: 200, seed: 42 });
+  assert.ok(mc1, 'should return non-null');
+  assert.strictEqual(mc1.simulations, 200);
+  assert.strictEqual(mc1.mean, mc2.mean, 'same seed → same result');
+});
+
+test('computeVacancyMC: percentiles ordered p5 < p50 < p95', () => {
+  const mc = locatif.computeVacancyMC(BIEN_A, { simulations: 500, seed: 1 });
+  assert.ok(mc.p5  <= mc.p25);
+  assert.ok(mc.p25 <= mc.median);
+  assert.ok(mc.median <= mc.p75);
+  assert.ok(mc.p75 <= mc.p95);
+});
+
+test('computeVacancyMC: higher vacancy → lower mean cashflow', () => {
+  const low  = locatif.computeVacancyMC(Object.assign({}, BIEN_A, { vacancy: 2 }), { simulations: 300, seed: 7 });
+  const high = locatif.computeVacancyMC(Object.assign({}, BIEN_A, { vacancy: 15 }), { simulations: 300, seed: 7 });
+  assert.ok(high.mean < low.mean, 'more vacancy → less cashflow');
+});
+
+test('computeVacancyMC: histogram has 20 bins', () => {
+  const mc = locatif.computeVacancyMC(BIEN_A, { simulations: 200, seed: 99 });
+  assert.strictEqual(mc.histogram.bins.length, 20);
+  assert.strictEqual(mc.histogram.counts.length, 20);
+  const totalCount = mc.histogram.counts.reduce(function (s, c) { return s + c; }, 0);
+  assert.strictEqual(totalCount, 200);
+});
