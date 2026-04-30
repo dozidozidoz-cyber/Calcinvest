@@ -1437,3 +1437,24 @@ table { border-collapse: collapse; width: 100%; }
   .accordion-body { max-height: none !important; }
   .stat-value { color: black; }
 }
+
+/* ---------- Glossary terms (tooltips) ---------- */
+.term {
+  border-bottom: 1px dashed var(--accent);
+  cursor: help;
+  font-style: normal;
+}
+.term:hover {
+  background: rgba(52, 211, 153, 0.08);
+  border-bottom-style: solid;
+}
+
+/* ---------- Comparison bar (mes-projets) ---------- */
+#compare-bar {
+  font-family: var(--font);
+}
+
+@media print {
+  .term { border-bottom: none; }
+  .ci-tooltip { display: none !important; }
+}

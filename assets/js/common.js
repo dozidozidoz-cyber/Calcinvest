@@ -346,6 +346,22 @@
           stp.querySelector('[data-dir="-1"]').click();
         }
       });
+
+      // Inline math expressions: "1500*12" → 18000 au blur
+      input.addEventListener('blur', () => {
+        const raw = input.value;
+        if (!raw || /^-?\d+(\.\d+)?$/.test(raw.trim())) return;
+        const result = CI.evalExpression && CI.evalExpression(raw);
+        if (result == null) return;
+        let next = result;
+        if (min !== null && next < min) next = min;
+        if (max !== null && next > max) next = max;
+        const decimals = (String(step).split('.')[1] || '').length;
+        next = parseFloat(next.toFixed(decimals));
+        input.value = next;
+        input.dispatchEvent(new Event('input',  { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      });
     });
   };
 
@@ -426,6 +442,11 @@
     CI.initSteppers(root);
     CI.initPills(root);
     CI.initAccordions(root);
+    if (!CI._tooltipsInited) {
+      CI.initTooltips();
+      CI.initGlossaryObserver();
+      CI._tooltipsInited = true;
+    }
   };
 
   /* ===========================================================
@@ -687,6 +708,225 @@
       ctx.putImageData(snapshot, 0, 0);
       tip.style.display = 'none';
     };
+  };
+
+  /* ===========================================================
+     GLOSSAIRE — termes financiers + tooltips éducatifs
+     ===========================================================
+     Wrap automatique des termes connus dans les insights et info-boxes
+     via MutationObserver. Hover montre un tooltip avec définition.
+     =========================================================== */
+  CI.GLOSSARY = {
+    'TMI':       { full: 'Tranche Marginale d\'Imposition',          desc: 'Taux d\'IR appliqué à votre dernière tranche (0/11/30/41/45 % en France 2025).' },
+    'TRI':       { full: 'Taux de Rentabilité Interne',              desc: 'Rendement annualisé qui prend en compte tous les flux de trésorerie. Permet de comparer des projets aux profils différents.' },
+    'CAGR':      { full: 'Compound Annual Growth Rate',              desc: 'Taux de croissance annuel composé : la performance moyenne par an d\'un investissement sur une période donnée.' },
+    'CAPE':      { full: 'Cyclically Adjusted P/E (Shiller)',        desc: 'Price/Earnings sur 10 ans ajusté à l\'inflation. Indicateur historique de cherté du marché actions.' },
+    'PER':       { full: 'Plan d\'Épargne Retraite',                 desc: 'Enveloppe française : versements déductibles de l\'IR (jusqu\'au plafond), capital bloqué jusqu\'à la retraite.' },
+    'PEA':       { full: 'Plan d\'Épargne en Actions',               desc: 'Enveloppe française : exonéré IR sur les gains après 5 ans, plafond 150 000 €. Limité aux actions UE et certains ETF.' },
+    'PFU':       { full: 'Prélèvement Forfaitaire Unique (Flat tax)', desc: 'Imposition forfaitaire de 30 % sur les revenus du capital (12.8 % IR + 17.2 % PS). Alternative au barème IR.' },
+    'PS':        { full: 'Prélèvements Sociaux',                     desc: 'CSG/CRDS et autres : 17.2 % sur les revenus du capital en France.' },
+    'IR':        { full: 'Impôt sur le Revenu',                      desc: 'Imposition progressive par tranches (TMI) sur les revenus annuels.' },
+    'LMNP':      { full: 'Loueur Meublé Non Professionnel',          desc: 'Régime fiscal pour la location meublée. En réel : amortissement du bien et du mobilier déductible.' },
+    'ETF':       { full: 'Exchange-Traded Fund',                     desc: 'Fonds indiciel coté en bourse, frais de gestion bas (TER 0.05–0.5 %/an).' },
+    'TER':       { full: 'Total Expense Ratio',                      desc: 'Frais annuels totaux d\'un fonds, exprimés en % de l\'encours. ETF UCITS : typiquement 0.1–0.3 %.' },
+    'DCA':       { full: 'Dollar Cost Averaging',                    desc: 'Investissement régulier d\'un montant fixe : lisse le prix d\'entrée et réduit le risque de timing.' },
+    'IRR':       { full: 'Internal Rate of Return',                  desc: 'Équivalent anglais du TRI. Taux qui annule la valeur actualisée nette des flux.' },
+    'NPV':       { full: 'Net Present Value',                        desc: 'Valeur actualisée nette : somme des flux futurs ramenés à aujourd\'hui à un taux d\'actualisation donné.' },
+    'FIRE':      { full: 'Financial Independence, Retire Early',     desc: 'Mouvement consistant à atteindre l\'indépendance financière en visant 25× ses dépenses annuelles (règle des 4 %).' },
+    'HODL':      { full: 'Hold On for Dear Life',                    desc: 'Stratégie crypto consistant à conserver son investissement sans trader, peu importe la volatilité.' },
+    'APY':       { full: 'Annual Percentage Yield',                  desc: 'Rendement annuel effectif d\'un placement (en tenant compte de la composition).' },
+    'APR':       { full: 'Annual Percentage Rate',                   desc: 'Taux annuel nominal, sans prise en compte de la composition.' },
+    'LP':        { full: 'Liquidity Provider',                       desc: 'Fournisseur de liquidité sur un DEX (ex Uniswap) : dépose 2 actifs et touche des frais de trading.' },
+    'IL':        { full: 'Impermanent Loss',                         desc: 'Perte impermanente : écart entre HODL et fournir de la liquidité, dû au rééquilibrage du pool.' },
+    'USDC':      { full: 'USD Coin',                                 desc: 'Stablecoin émis par Circle, indexé 1:1 sur le dollar US. Utilisé en lending et LP.' },
+    'BTC':       { full: 'Bitcoin',                                  desc: 'Première cryptomonnaie, créée en 2009. Plafond de 21 millions d\'unités, halving tous les 4 ans.' },
+    'ETH':       { full: 'Ethereum',                                 desc: 'Plateforme blockchain pour smart contracts. Passé en preuve d\'enjeu en 2022 (staking ~3-4 % APY).' },
+    'SOL':       { full: 'Solana',                                   desc: 'Blockchain haute performance, staking ~6-7 % APY, célèbre pour ses pannes occasionnelles.' },
+    'BNB':       { full: 'Binance Coin',                             desc: 'Token natif de la blockchain BNB Chain, utilisé pour réduire les frais sur Binance.' },
+    'XRP':       { full: 'XRP (Ripple)',                             desc: 'Token de la société Ripple, focalisé sur les paiements transfrontaliers.' },
+    'CTO':       { full: 'Compte-Titres Ordinaire',                  desc: 'Enveloppe d\'investissement la plus libre (tous actifs mondiaux). Fiscalité : PFU 30 % par défaut.' },
+    'AV':        { full: 'Assurance-Vie',                            desc: 'Enveloppe française : fiscalité avantageuse après 8 ans (taux 7.5 % + PS, abattement 4 600 € célibataire).' },
+    'DEX':       { full: 'Decentralized Exchange',                   desc: 'Bourse décentralisée (ex Uniswap, SushiSwap) : trading peer-to-peer via smart contracts.' }
+  };
+
+  function _escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  // Build a single regex matching any glossary key as a whole word (case-sensitive)
+  let _glossaryRegex = null;
+  function _buildGlossaryRegex() {
+    if (_glossaryRegex) return _glossaryRegex;
+    const keys = Object.keys(CI.GLOSSARY).sort((a, b) => b.length - a.length); // longest first
+    const pattern = '\\b(' + keys.map(_escapeRegex).join('|') + ')\\b';
+    _glossaryRegex = new RegExp(pattern, 'g');
+    return _glossaryRegex;
+  }
+
+  /* Walk text nodes inside `root`, wrap glossary terms with <span class="term"> */
+  CI.wrapGlossaryTerms = function (root) {
+    if (!root) return;
+    const re = _buildGlossaryRegex();
+    // Skip if already wrapped under this root (idempotent)
+    const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'CODE', 'PRE', 'TEXTAREA', 'INPUT', 'BUTTON', 'A']);
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => {
+        // Skip text nodes inside excluded ancestors or already-wrapped term spans
+        let p = node.parentElement;
+        while (p && p !== root) {
+          if (SKIP_TAGS.has(p.tagName)) return NodeFilter.FILTER_REJECT;
+          if (p.classList && p.classList.contains('term')) return NodeFilter.FILTER_REJECT;
+          p = p.parentElement;
+        }
+        return re.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+
+    const targets = [];
+    let n;
+    while ((n = walker.nextNode())) targets.push(n);
+
+    targets.forEach((textNode) => {
+      const text = textNode.nodeValue;
+      re.lastIndex = 0;
+      let lastIdx = 0, m;
+      const frag = document.createDocumentFragment();
+      while ((m = re.exec(text)) !== null) {
+        if (m.index > lastIdx) frag.appendChild(document.createTextNode(text.slice(lastIdx, m.index)));
+        const key = m[1];
+        const entry = CI.GLOSSARY[key];
+        const span = document.createElement('span');
+        span.className = 'term';
+        span.dataset.term = key;
+        span.setAttribute('aria-label', entry.full + ' — ' + entry.desc);
+        span.textContent = key;
+        frag.appendChild(span);
+        lastIdx = m.index + m[0].length;
+      }
+      if (lastIdx < text.length) frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+      textNode.parentNode.replaceChild(frag, textNode);
+    });
+  };
+
+  /* Singleton tooltip element + hover handlers (delegated) */
+  let _tooltipEl = null;
+  function _ensureTooltip() {
+    if (_tooltipEl) return _tooltipEl;
+    _tooltipEl = document.createElement('div');
+    _tooltipEl.className = 'ci-tooltip';
+    _tooltipEl.style.cssText = 'position:fixed;z-index:9999;display:none;max-width:280px;padding:10px 14px;background:var(--bg-2,#1A2025);color:var(--text,#E8ECEF);border:1px solid var(--border-soft,#2A3039);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:12px;line-height:1.5;pointer-events:none;backdrop-filter:blur(6px)';
+    document.body.appendChild(_tooltipEl);
+    return _tooltipEl;
+  }
+
+  function _showTooltip(termEl) {
+    const key = termEl.dataset.term;
+    const entry = CI.GLOSSARY[key];
+    if (!entry) return;
+    const tip = _ensureTooltip();
+    tip.innerHTML = '<div style="font-weight:700;margin-bottom:4px;color:var(--accent,#34D399)">' + entry.full + '</div><div>' + entry.desc + '</div>';
+    tip.style.display = 'block';
+    // Position above the term, centered
+    const r = termEl.getBoundingClientRect();
+    const tipR = tip.getBoundingClientRect();
+    let left = r.left + r.width / 2 - tipR.width / 2;
+    let top  = r.top - tipR.height - 8;
+    // Keep within viewport
+    const margin = 8;
+    if (left < margin) left = margin;
+    if (left + tipR.width > window.innerWidth - margin) left = window.innerWidth - tipR.width - margin;
+    if (top < margin) top = r.bottom + 8; // flip below if no space above
+    tip.style.left = left + 'px';
+    tip.style.top  = top + 'px';
+  }
+  function _hideTooltip() {
+    if (_tooltipEl) _tooltipEl.style.display = 'none';
+  }
+
+  CI.initTooltips = function () {
+    document.body.addEventListener('mouseover', (e) => {
+      const t = e.target.closest('.term');
+      if (t) _showTooltip(t);
+    });
+    document.body.addEventListener('mouseout', (e) => {
+      const t = e.target.closest('.term');
+      if (t) _hideTooltip();
+    });
+    // Touch : tap to show, tap elsewhere to hide
+    document.body.addEventListener('click', (e) => {
+      const t = e.target.closest('.term');
+      if (t) {
+        e.stopPropagation();
+        _showTooltip(t);
+      } else {
+        _hideTooltip();
+      }
+    });
+    // Scroll → hide
+    window.addEventListener('scroll', _hideTooltip, { passive: true });
+  };
+
+  /* Auto-wrap on dynamic content via MutationObserver */
+  CI.initGlossaryObserver = function () {
+    // Initial pass on static content (insights, info-boxes already in DOM)
+    document.querySelectorAll('.insight-text, .info-box, .stat-label, .text-muted, .page-lede').forEach((el) => CI.wrapGlossaryTerms(el));
+
+    // Observe future mutations
+    const watchedSelectors = '.insight-text, .info-box, .stat-label';
+    let pending = false;
+    const debounced = () => {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        pending = false;
+        document.querySelectorAll(watchedSelectors).forEach((el) => CI.wrapGlossaryTerms(el));
+      });
+    };
+
+    const observer = new MutationObserver((mutations) => {
+      let needsWrap = false;
+      for (const m of mutations) {
+        if (m.type !== 'childList' && m.type !== 'characterData') continue;
+        // Check if mutation target or addedNodes are within watched selectors
+        const target = m.target.nodeType === 3 ? m.target.parentElement : m.target;
+        if (!target) continue;
+        if (target.closest && target.closest(watchedSelectors)) {
+          needsWrap = true;
+          break;
+        }
+        for (const n of (m.addedNodes || [])) {
+          if (n.nodeType === 1 && n.querySelector && n.querySelector(watchedSelectors)) {
+            needsWrap = true;
+            break;
+          }
+        }
+        if (needsWrap) break;
+      }
+      if (needsWrap) debounced();
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  };
+
+  /* ===========================================================
+     INLINE MATH EXPRESSIONS dans les steppers
+     ===========================================================
+     "1500*12" dans un input → évalue à 18000 au blur.
+     Whitelist stricte : chiffres, opérateurs, parenthèses, point.
+     =========================================================== */
+  CI.evalExpression = function (str) {
+    if (typeof str !== 'string') return null;
+    const s = str.trim();
+    if (s === '') return null;
+    // Si c'est juste un nombre simple, retourne tel quel
+    if (/^-?\d+(\.\d+)?$/.test(s)) return parseFloat(s);
+    // Whitelist stricte
+    if (!/^[0-9+\-*/().,\s]+$/.test(s)) return null;
+    // Normalise les virgules françaises en points
+    const norm = s.replace(/,/g, '.').replace(/\s+/g, '');
+    try {
+      // Function constructor with no closure access (sandbox-ish)
+      const result = (new Function('return (' + norm + ')'))();
+      if (typeof result === 'number' && isFinite(result)) return result;
+    } catch (e) { /* ignore */ }
+    return null;
   };
 
   /* ===========================================================
