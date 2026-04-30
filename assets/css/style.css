@@ -1458,3 +1458,70 @@ table { border-collapse: collapse; width: 100%; }
   .term { border-bottom: none; }
   .ci-tooltip { display: none !important; }
 }
+
+/* ============================================================
+   DARK THEME (toggle via [data-theme="dark"] sur <html>)
+   ============================================================
+   Palette dark cohérente avec l'identité Stone Warm :
+   tonalités gris-bleu profondes, accent emerald-400 plus clair
+   pour conserver le contraste WCAG AA sur fond sombre.
+   ============================================================ */
+[data-theme="dark"] {
+  --bg:          #0F1419;
+  --bg-2:        #161C23;
+  --bg-3:        #1F2731;
+  --bg-card:     #161C23;
+  --bg-elev:     #1F2731;
+  --bg-hover:    #242E3A;
+
+  --border:        #2A3441;
+  --border-soft:   #1F2731;
+  --border-strong: #3A4554;
+
+  --text:        #ECEEF1;
+  --text-2:      #BAC2CC;
+  --text-3:      #8893A2;
+  --text-4:      #5C6878;
+
+  --accent:      #34D399;
+  --accent-2:    #10B981;
+  --accent-soft: rgba(52, 211, 153, 0.10);
+  --accent-mid:  rgba(52, 211, 153, 0.20);
+  --accent-glow: rgba(52, 211, 153, 0.25);
+
+  --red:         #F87171;
+  --red-soft:    rgba(248, 113, 113, 0.12);
+  --yellow:      #FBBF24;
+  --yellow-soft: rgba(251, 191, 36, 0.12);
+  --purple:      #A78BFA;
+  --purple-soft: rgba(167, 139, 250, 0.12);
+}
+
+/* Theme toggle button (injecté dans .topbar-right par JS) */
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-elev);
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  margin-right: 6px;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.theme-toggle svg { width: 16px; height: 16px; }
+
+/* Smooth transition au switch (sauf prefers-reduced-motion) */
+@media (prefers-reduced-motion: no-preference) {
+  body, .card, .accordion, .stat, .stepper, .pill, .btn, .insight, .info-box, .ci-tooltip {
+    transition: background-color .25s ease, border-color .25s ease, color .25s ease;
+  }
+}
