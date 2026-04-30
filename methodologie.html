@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Méthodologie & Glossaire — CalcInvest</title>
+<meta name="description" content="Comment fonctionnent les calculateurs CalcInvest : formules, sources des données, hypothèses fiscales et glossaire complet des termes financiers." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+  .methodo-toc {
+    position: sticky;
+    top: 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r);
+    padding: 16px;
+    font-size: 13px;
+  }
+  .methodo-toc a {
+    display: block;
+    color: var(--text-2);
+    text-decoration: none;
+    padding: 4px 0;
+    transition: color .15s;
+  }
+  .methodo-toc a:hover { color: var(--accent); }
+  .methodo-toc-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-3);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .methodo-section { margin-bottom: 56px; }
+  .methodo-section h2 {
+    font-size: 22px;
+    margin-bottom: 4px;
+    color: var(--text-1);
+  }
+  .methodo-section h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-3);
+    margin-top: 24px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .formula {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--bg-2);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    margin: 8px 0;
+    overflow-x: auto;
+  }
+  .params-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .params-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .params-list li:last-child { border-bottom: none; }
+  .params-list code {
+    background: var(--bg-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .glossary-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r);
+    padding: 14px;
+  }
+  .glossary-key {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .glossary-full {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+  .glossary-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  @media (max-width: 1100px) {
+    .methodo-shell { grid-template-columns: 1fr !important; }
+    .methodo-toc { position: static; margin-bottom: 24px; }
+  }
+</style>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">CalcInvest</div>
+        <div class="logo-text-sub">Méthodologie</div>
+      </div>
+    </a>
+  </div>
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Mes projets</span>
+    </a>
+    <a href="/" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l-4 5 4 5M2 8h12"/></svg>
+      <span>Retour</span>
+    </a>
+  </div>
+</header>
+
+<main class="main fade-in">
+  <div class="page-header">
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+      </span>
+      Documentation
+    </div>
+    <h1 class="page-title">Méthodologie &amp; Glossaire</h1>
+    <p class="page-lede">Toutes les formules, hypothèses et sources utilisées par les calculateurs CalcInvest. Aucune boîte noire : tu peux vérifier chaque chiffre.</p>
+  </div>
+
+  <div class="methodo-shell" style="display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:flex-start">
+
+    <!-- TABLE OF CONTENTS -->
+    <aside class="methodo-toc">
+      <div class="methodo-toc-title">Sommaire</div>
+      <a href="#principes">Principes généraux</a>
+      <a href="#locatif">Rendement locatif</a>
+      <a href="#composes">Intérêts composés</a>
+      <a href="#dca-bourse">DCA Bourse</a>
+      <a href="#dca-crypto">DCA Crypto</a>
+      <a href="#fire">FIRE</a>
+      <a href="#per">PER</a>
+      <a href="#sources">Sources des données</a>
+      <a href="#glossaire">Glossaire complet</a>
+      <a href="#disclaimer">Avertissement</a>
+    </aside>
+
+    <!-- CONTENT -->
+    <div>
+
+      <!-- ============= PRINCIPES ============= -->
+      <section class="methodo-section" id="principes">
+        <h2>Principes généraux</h2>
+        <p class="text-muted" style="font-size:14px;line-height:1.7">
+          Tous les calculateurs CalcInvest tournent <strong>localement dans ton navigateur</strong>. Aucune donnée n'est envoyée sur un serveur. Les simulations sont déterministes : les mêmes paramètres produisent toujours le même résultat.
+        </p>
+
+        <h3>Ce que les calculateurs font</h3>
+        <ul class="params-list">
+          <li>Projections sur des horizons fixes avec hypothèses constantes (taux, inflation, etc.)</li>
+          <li>Backtest sur données historiques réelles (S&amp;P 500, BTC, etc.) pour les DCA</li>
+          <li>Application des règles fiscales françaises 2025 (PFU, PEA, AV, LMNP, IR par tranches)</li>
+          <li>Affichage des KPIs financiers standards : <span class="term" data-term="TRI">TRI</span>, <span class="term" data-term="CAGR">CAGR</span>, drawdown, multiplicateurs</li>
+        </ul>
+
+        <h3>Ce que les calculateurs ne font pas</h3>
+        <ul class="params-list">
+          <li>Pas de prédiction : les rendements historiques ne préjugent pas du futur</li>
+          <li>Pas de prise en compte de ta situation personnelle complète (autres revenus, charges, niche fiscale)</li>
+          <li>Pas de tenue de compte ni de gestion de portefeuille</li>
+          <li>Pas de conseil en investissement personnalisé (cf. avertissement en bas)</li>
+        </ul>
+      </section>
+
+      <!-- ============= LOCATIF ============= -->
+      <section class="methodo-section" id="locatif">
+        <h2>Rendement locatif</h2>
+        <p class="text-muted" style="font-size:13px">Calcul du rendement et du cashflow d'un investissement locatif sur un horizon donné, avec amortissement du crédit, fiscalité et plus-value à la revente.</p>
+
+        <h3>Formules clés</h3>
+        <div class="formula">Rendement brut = Loyer annuel / Prix d'achat × 100</div>
+        <div class="formula">Rendement net = (Loyer effectif − Charges) / Acquisition totale × 100</div>
+        <div class="formula">Rendement net-net = (Loyer net − Impôts) / Acquisition totale × 100</div>
+        <div class="formula">Cashflow mensuel = (Loyer effectif − Charges − Mensualité crédit − Impôts) / 12</div>
+        <div class="formula">Mensualité crédit = formule annuité-due classique sur (capital, taux, durée)</div>
+
+        <h3>Charges incluses</h3>
+        <ul class="params-list">
+          <li><code>propTax</code> : taxe foncière annuelle</li>
+          <li><code>copro</code> : charges de copropriété non récupérables</li>
+          <li><code>insurance</code> : assurance PNO + GLI</li>
+          <li><code>mgmtPct</code> : frais de gestion locative en % du loyer effectif</li>
+          <li><code>maintPct</code> : entretien courant en % du prix du bien</li>
+          <li><code>recurringWorksRate</code> : provision travaux lourds en % du prix (toiture, façade)</li>
+          <li>Vacance locative : appliquée comme % de réduction sur le loyer brut</li>
+        </ul>
+
+        <h3>Régimes fiscaux modélisés</h3>
+        <ul class="params-list">
+          <li><strong>Micro-foncier</strong> : abattement 30 % sur loyers, puis <span class="term" data-term="TMI">TMI</span> + <span class="term" data-term="PS">PS</span> 17.2 %</li>
+          <li><strong>Réel foncier</strong> : loyers − charges déductibles − intérêts crédit, puis TMI + PS</li>
+          <li><strong>LMNP micro</strong> : abattement 50 %, puis TMI + PS</li>
+          <li><strong>LMNP réel</strong> : loyers − charges − intérêts − amortissements (bâti 25 ans à 85 % du prix, mobilier 7 ans), puis TMI + PS</li>
+        </ul>
+
+        <h3>Plus-value à la revente</h3>
+        <p class="text-muted" style="font-size:13px">Abattements pour durée de détention (résidence secondaire / locatif, hors RP) :</p>
+        <ul class="params-list">
+          <li><strong>IR (19 %)</strong> : 6 %/an de la 6e à la 21e année, +4 % la 22e → exonéré à 22 ans</li>
+          <li><strong>PS (17.2 %)</strong> : 1.65 %/an de la 6e à la 21e, +9 % la 22e, 1.60 %/an de la 23e à la 30e → exonéré à 30 ans</li>
+        </ul>
+      </section>
+
+      <!-- ============= COMPOSÉS ============= -->
+      <section class="methodo-section" id="composes">
+        <h2>Intérêts composés</h2>
+        <p class="text-muted" style="font-size:13px">Capitalisation d'un capital initial + versements mensuels à un taux annuel constant.</p>
+
+        <h3>Formules clés</h3>
+        <div class="formula">Taux mensuel = (1 + taux annuel net)^(1/12) − 1</div>
+        <div class="formula">Valeur mois M+1 = (Valeur M + Versement) × (1 + taux mensuel)</div>
+        <div class="formula">Doublement (ans) = ln(2) / ln(1 + taux annuel net)</div>
+        <div class="formula">Valeur réelle = Valeur nominale / (1 + inflation)^années</div>
+
+        <h3>Versements croissants</h3>
+        <p class="text-muted" style="font-size:13px">Si <code>contributionGrowth</code> &gt; 0, le versement mensuel augmente de X % chaque année (reflet de l'évolution salariale).</p>
+
+        <h3>Comparaison enveloppes fiscales (Analyse 06)</h3>
+        <ul class="params-list">
+          <li><strong>Livret A</strong> : taux réglementé 3 % fixe, totalement exonéré</li>
+          <li><strong><span class="term" data-term="PEA">PEA</span></strong> : taux user, exonéré IR après 5 ans (PS 17.2 % sur gains)</li>
+          <li><strong><span class="term" data-term="AV">AV</span></strong> : frais 0.8 %/an, après 8 ans : 7.5 % + PS, abattement 4 600 € (célibataire)</li>
+          <li><strong><span class="term" data-term="CTO">CTO</span></strong> : <span class="term" data-term="PFU">PFU</span> 30 % sur plus-values</li>
+        </ul>
+      </section>
+
+      <!-- ============= DCA BOURSE ============= -->
+      <section class="methodo-section" id="dca-bourse">
+        <h2>DCA Bourse</h2>
+        <p class="text-muted" style="font-size:13px">Backtest d'une stratégie d'investissement régulier sur des indices ou ETF, avec données mensuelles historiques réelles.</p>
+
+        <h3>Mécanique</h3>
+        <ul class="params-list">
+          <li>Achat de parts à chaque période avec le versement mensuel</li>
+          <li>Réinvestissement automatique des dividendes (S&amp;P 500 uniquement, données Shiller)</li>
+          <li>Frais ETF (TER) appliqués mensuellement sur les unités</li>
+          <li>Taux IRR calculé sur les flux mensuels (sortie = valeur finale)</li>
+        </ul>
+
+        <h3>Analyses disponibles</h3>
+        <ul class="params-list">
+          <li>Vue d'ensemble (4 séries : portefeuille, versé, cash, sans frais)</li>
+          <li>Rendements annuels (histogramme + best/worst)</li>
+          <li>Drawdown historique (underwater chart + recovery time)</li>
+          <li>Lump sum vs DCA étalé (comparaison sur fenêtres glissantes)</li>
+          <li>Volatilité glissante 12 mois + ratio CAPE</li>
+          <li>Monte Carlo bootstrap (2000 trajectoires)</li>
+          <li>Décumulation : rente fixe vs rente indexée vs swr</li>
+        </ul>
+
+        <h3>Données disponibles</h3>
+        <p class="text-muted" style="font-size:13px">S&amp;P 500 (1871→), Nasdaq, MSCI World, Euro Stoxx 50, CAC 40, Nikkei, Or, Argent, Brent, WTI. Voir section Sources.</p>
+      </section>
+
+      <!-- ============= DCA CRYPTO ============= -->
+      <section class="methodo-section" id="dca-crypto">
+        <h2>DCA Crypto</h2>
+        <p class="text-muted" style="font-size:13px">DCA sur les 5 majors crypto (BTC, ETH, XRP, BNB, SOL) avec analyse spécifique aux marchés volatils.</p>
+
+        <h3>Spécificités vs Bourse</h3>
+        <ul class="params-list">
+          <li>Pas de dividendes (modèle pur prix)</li>
+          <li>Détection de cycles bull/bear (+50 % / −30 % depuis dernier extremum)</li>
+          <li>Fiscalité française : flat tax 30 % à la cession (pas d'imposition crypto-crypto depuis 2019)</li>
+          <li>Monte Carlo avec fat-tail kicker (Student-t à 20 % des draws) pour mieux refléter le profil de risque crypto</li>
+        </ul>
+
+        <h3>Analyse 08 — Stratégies DeFi</h3>
+        <p class="text-muted" style="font-size:13px">Compare HODL pur, staking liquide, lending stablecoins et liquidity providing avec des taux historiques moyens 2022-2026 :</p>
+        <ul class="params-list">
+          <li><strong>Staking ETH (Lido)</strong> : 3.5 % <span class="term" data-term="APY">APY</span></li>
+          <li><strong>Staking SOL</strong> : 6.5 % APY (liquid)</li>
+          <li><strong>Lending stables</strong> : 5 % APY (Aave/Compound), suppose 30 % du portfolio en USDC</li>
+          <li><strong>LP volatil/stable</strong> : 8 % APY brut − ~3 %/an d'<span class="term" data-term="IL">IL</span> estimée</li>
+        </ul>
+        <p class="text-muted" style="font-size:13px"><em>Ces taux varient fortement selon les conditions de marché. Risques : smart contract, slashing, depeg, IL.</em></p>
+      </section>
+
+      <!-- ============= FIRE ============= -->
+      <section class="methodo-section" id="fire">
+        <h2>FIRE — Indépendance financière</h2>
+        <p class="text-muted" style="font-size:13px">Calcul de l'objectif d'épargne et de la trajectoire pour atteindre l'indépendance financière (concept FIRE).</p>
+
+        <h3>Formules clés</h3>
+        <div class="formula">FIRE Number = Dépenses annuelles / Taux de retrait</div>
+        <div class="formula">Règle des 4 % : taux de retrait sûr standard (Trinity Study, ajustable)</div>
+        <div class="formula">Années jusqu'au FIRE : itération sur trajectoire compound jusqu'à atteindre FIRE Number</div>
+
+        <h3>Variantes calculées</h3>
+        <ul class="params-list">
+          <li><strong>Lean FIRE</strong> : dépenses minimalistes (×25 réduites)</li>
+          <li><strong>Coast FIRE</strong> : seuil pour qu'aucun versement futur ne soit nécessaire (capital seul suffit en compound)</li>
+          <li><strong>Fat FIRE</strong> : dépenses confortables (×33+)</li>
+          <li><strong>Barista FIRE</strong> : couvre seulement 50 % des dépenses</li>
+        </ul>
+
+        <h3>Analyse 06 — Monte Carlo</h3>
+        <p class="text-muted" style="font-size:13px">2000 trajectoires bootstrap des rendements S&amp;P 500 réels pour estimer la probabilité d'atteindre l'objectif et le risque de ruine en phase de retrait.</p>
+      </section>
+
+      <!-- ============= PER ============= -->
+      <section class="methodo-section" id="per">
+        <h2>PER — Plan d'Épargne Retraite</h2>
+        <p class="text-muted" style="font-size:13px">Simulateur PER avec économie d'impôt sur les versements et fiscalité de sortie en capital ou rente.</p>
+
+        <h3>Mécanique</h3>
+        <ul class="params-list">
+          <li>Versement mensuel capitalisé au taux annuel net selon le profil (prudent 4 % / équilibré 6 % / dynamique 8 %)</li>
+          <li>Économie IR immédiate = versement × TMI (jusqu'au plafond de déduction)</li>
+          <li>Plafond annuel : 10 % des revenus pro de N-1, plafonné à 8 PASS (≈ 35 194 € en 2025)</li>
+          <li>Reportabilité : 3 ans non utilisés cumulables</li>
+        </ul>
+
+        <h3>Sortie</h3>
+        <ul class="params-list">
+          <li><strong>Capital</strong> : Capital reversé, taxé soit au barème IR sur la part versée + PFU 30 % sur les gains, soit flat tax sur tout (au choix optimal)</li>
+          <li><strong>Rente</strong> : Rente viagère, imposée comme rente (abattement par âge : 50 % &lt; 60 ans, 60 % 60-69, 70 % &gt;69 ans)</li>
+          <li><strong>Mix</strong> : X % capital + (100−X) % rente, avec calcul d'optimisation</li>
+        </ul>
+
+        <h3>Comparaison vs CTO</h3>
+        <p class="text-muted" style="font-size:13px">L'analyse compare le PER (économie IR immédiate + capitalisation + sortie taxée) à un CTO équivalent (versements nets + capitalisation + PFU 30 %). Le PER gagne d'autant plus que la TMI à la sortie est inférieure à celle des versements.</p>
+      </section>
+
+      <!-- ============= SOURCES ============= -->
+      <section class="methodo-section" id="sources">
+        <h2>Sources des données</h2>
+
+        <h3>Bourse — historiques mensuels</h3>
+        <ul class="params-list">
+          <li><strong>S&amp;P 500</strong> (1871→2026) : <a href="https://shillerdata.com/" target="_blank" rel="noopener" style="color:var(--accent)">Shiller Online Data</a> — prix, dividendes mensuels, CPI US, ratio CAPE (PE10)</li>
+          <li><strong>Nasdaq, Nikkei, CAC 40, MSCI World, Euro Stoxx 50</strong> : <a href="https://pypi.org/project/yfinance/" target="_blank" rel="noopener" style="color:var(--accent)">yfinance</a> (Yahoo Finance, données mensuelles)</li>
+          <li><strong>Or, Argent, Brent, WTI</strong> : datasets publics consolidés (Macrotrends, Quandl historiques)</li>
+        </ul>
+
+        <h3>Crypto — historiques mensuels</h3>
+        <ul class="params-list">
+          <li>BTC, ETH, XRP, BNB, SOL : <a href="https://www.coingecko.com/" target="_blank" rel="noopener" style="color:var(--accent)">CoinGecko API</a> (prix close mensuel depuis le 1er listing dispo)</li>
+        </ul>
+
+        <h3>Fiscalité</h3>
+        <ul class="params-list">
+          <li>Tranches IR 2025, plafonds PER, abattements PV : <a href="https://www.impots.gouv.fr/" target="_blank" rel="noopener" style="color:var(--accent)">impots.gouv.fr</a></li>
+          <li>Règles PEA / Assurance-Vie : <a href="https://www.service-public.fr/" target="_blank" rel="noopener" style="color:var(--accent)">service-public.fr</a></li>
+          <li>Code Général des Impôts (CGI), articles 150-0 D ter et suivants pour la PV immobilière</li>
+        </ul>
+
+        <h3>DeFi (taux indicatifs)</h3>
+        <p class="text-muted" style="font-size:13px">Moyennes 2022-2026 observées sur Lido (staking ETH), Marinade (SOL), Aave et Compound (lending), Uniswap V3 (LP). Ces taux varient au jour le jour selon la demande et l'utilisation des protocoles.</p>
+
+        <h3>Mise à jour</h3>
+        <p class="text-muted" style="font-size:13px">Les datasets sont rafraîchis manuellement environ tous les trimestres. Les taux fiscaux sont mis à jour à chaque loi de finances.</p>
+      </section>
+
+      <!-- ============= GLOSSAIRE ============= -->
+      <section class="methodo-section" id="glossaire">
+        <h2>Glossaire complet</h2>
+        <p class="text-muted" style="font-size:13px">Les termes financiers utilisés dans CalcInvest. Tu peux aussi survoler n'importe quel terme dans les analyses pour voir sa définition.</p>
+        <div class="glossary-grid" id="glossary-grid"></div>
+      </section>
+
+      <!-- ============= AVERTISSEMENT ============= -->
+      <section class="methodo-section" id="disclaimer">
+        <h2>Avertissement</h2>
+        <div class="info-box" style="background:rgba(248, 113, 113, 0.06);border-color:rgba(248, 113, 113, 0.3)">
+          <div class="info-box-title" style="color:var(--red, #F87171)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M8 1l7 13H1z"/><path d="M8 6v4M8 12h.01"/></svg>
+            Pas de conseil en investissement
+          </div>
+          <p>CalcInvest est un <strong>outil de simulation à but informatif et pédagogique uniquement</strong>. Les résultats produits ne constituent en aucun cas un conseil en investissement, une recommandation d'achat ou de vente, ni une garantie de performance future.</p>
+          <p style="margin-top:10px">Les performances passées ne préjugent pas des performances futures. L'investissement comporte des risques, notamment de perte en capital. Avant toute décision, consulte un conseiller en investissement financier (CIF) certifié AMF et un fiscaliste pour ton cas personnel.</p>
+          <p style="margin-top:10px">Les hypothèses fiscales modélisées correspondent à la législation française en vigueur en 2025. Toute évolution réglementaire ultérieure n'est pas reflétée tant que le simulateur n'a pas été mis à jour.</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div>© 2026 CalcInvest — Simulation à titre informatif</div>
+  <div>
+    <a href="/">Accueil</a> ·
+    <a href="/mes-projets">Mes projets</a> ·
+    <a href="/methodologie">Méthodologie</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script>
+  // Auto-render glossary from CI.GLOSSARY
+  (function () {
+    const grid = document.getElementById('glossary-grid');
+    if (!grid || !window.CI || !CI.GLOSSARY) return;
+    const sorted = Object.keys(CI.GLOSSARY).sort();
+    grid.innerHTML = sorted.map((key) => {
+      const e = CI.GLOSSARY[key];
+      return `<div class="glossary-card" id="g-${key}">
+        <div class="glossary-key">${key}</div>
+        <div class="glossary-full">${e.full}</div>
+        <div class="glossary-desc">${e.desc}</div>
+      </div>`;
+    }).join('');
+  })();
+
+  // Smooth-scroll TOC anchors
+  document.querySelectorAll('.methodo-toc a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
