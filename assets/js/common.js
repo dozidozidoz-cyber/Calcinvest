@@ -1123,10 +1123,69 @@
   };
 
   /* ===========================================================
+     THEME TOGGLE (light ⇄ dark)
+     ===========================================================
+     Stocke le choix dans localStorage. Au load, applique le theme
+     stocké (ou system preference). Injecte un bouton dans topbar.
+     =========================================================== */
+  const THEME_KEY = 'calcinvest-theme';
+
+  CI.getTheme = function () {
+    try { return localStorage.getItem(THEME_KEY) || null; } catch (e) { return null; }
+  };
+  CI.setTheme = function (theme) {
+    if (theme === 'dark' || theme === 'light') {
+      try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+      document.documentElement.dataset.theme = theme;
+    } else {
+      try { localStorage.removeItem(THEME_KEY); } catch (e) {}
+      delete document.documentElement.dataset.theme;
+    }
+    _updateThemeButton();
+  };
+  CI.toggleTheme = function () {
+    const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+    CI.setTheme(current === 'dark' ? 'light' : 'dark');
+  };
+
+  function _updateThemeButton() {
+    const btn = document.querySelector('.theme-toggle');
+    if (!btn) return;
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    btn.setAttribute('aria-label', isDark ? 'Passer en mode clair' : 'Passer en mode sombre');
+    btn.title = isDark ? 'Mode clair' : 'Mode sombre';
+    btn.innerHTML = isDark
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke-linecap="round"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-linejoin="round"/></svg>';
+  }
+
+  CI.initTheme = function () {
+    // Apply stored theme (or system pref) au plus tôt
+    const stored = CI.getTheme();
+    if (stored === 'dark' || stored === 'light') {
+      document.documentElement.dataset.theme = stored;
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+
+    // Inject toggle button into .topbar-right (idempotent)
+    const topbarRight = document.querySelector('.topbar-right');
+    if (topbarRight && !topbarRight.querySelector('.theme-toggle')) {
+      const btn = document.createElement('button');
+      btn.className = 'theme-toggle';
+      btn.type = 'button';
+      btn.addEventListener('click', CI.toggleTheme);
+      topbarRight.insertBefore(btn, topbarRight.firstChild);
+      _updateThemeButton();
+    }
+  };
+
+  /* ===========================================================
      DOM READY + PWA REGISTRATION
      =========================================================== */
   document.addEventListener('DOMContentLoaded', () => {
     CI.initAll();
+    CI.initTheme();
   });
 
   if ('serviceWorker' in navigator) {
