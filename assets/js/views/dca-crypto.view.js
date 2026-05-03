@@ -757,6 +757,9 @@
     // ── 7B : Comparateurs plateformes ─────────────────────────────────
     renderStakingPlatformsTable(p);
     renderStablecoinYieldsTable();
+
+    // ── 7C : Risques systémiques (clear + bind seulement, run on-demand)
+    renderA08SystemicRiskInit();
   }
 
   /* ------------------------------------------------------------------ */
@@ -930,6 +933,138 @@
       ((best.apyNet - worst.apyNet) / worst.apyNet * 100).toFixed(0) + ' %</span>. ' +
       '<span class="muted">Compromis classique : décentralisation max (solo) demande 32 ETH et un nœud, les plateformes centralisées (Coinbase, Kraken) prélèvent 15-25 % de frais. Lido reste l\'équilibre dominant pour ETH.</span>'
     );
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 7C : Risques systémiques — Depeg MC + Hack diversification           */
+  /* ------------------------------------------------------------------ */
+  let _depegBound = false;
+  let _hackBound  = false;
+
+  function renderA08SystemicRiskInit() {
+    // Bind buttons (idempotent)
+    if (!_depegBound) {
+      const btnD = document.getElementById('cra8-depeg-run');
+      if (btnD) {
+        btnD.addEventListener('click', renderA08DepegMC);
+        _depegBound = true;
+      }
+    }
+    if (!_hackBound) {
+      const btnH = document.getElementById('cra8-hack-run');
+      if (btnH) {
+        btnH.addEventListener('click', renderA08HackMC);
+        _hackBound = true;
+      }
+    }
+  }
+
+  function renderA08DepegMC() {
+    const btnEl = document.getElementById('cra8-depeg-run');
+    if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Calcul…'; }
+
+    setTimeout(() => {
+      const get = (id, def) => { const el = document.getElementById(id); return el ? parseFloat(el.value) || def : def; };
+      const stableCapital = get('cra8-depeg-cap', 10000);
+      const monthlyAdd    = get('cra8-depeg-monthly', 100);
+      const years         = get('cra8-depeg-years', 10);
+      const apy           = get('cra8-depeg-apy', 5);
+      const proba         = get('cra8-depeg-proba', 8) / 100;
+      const impact        = -Math.abs(get('cra8-depeg-impact', 7)) / 100;
+      const permEl = document.getElementById('cra8-depeg-perm');
+      const permanent = permEl ? permEl.checked : false;
+
+      const r = CC.computeDepegMC({
+        stableCapital, monthlyAdd, years, apy,
+        depegProba: proba, depegImpact: impact, permanent,
+        simulations: 1000, seed: 42
+      });
+
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set('cra8-depeg-baseline', CI.fmtMoney(r.baseline, 0));
+      set('cra8-depeg-mean',     CI.fmtMoney(r.mean, 0));
+      set('cra8-depeg-p5',       CI.fmtMoney(r.p5, 0));
+      set('cra8-depeg-p95',      CI.fmtMoney(r.p95, 0));
+      set('cra8-depeg-prob',     (r.probLoss * 100).toFixed(0) + ' %');
+      set('cra8-depeg-info',     r.simulations + ' sims · ' + (permanent ? 'depeg permanent' : 'récup. ' + 1 + ' mois') + ' · proba ' + (proba * 100) + ' %/an');
+
+      requestAnimationFrame(() => {
+        const labels = r.histogram.bins.map((b) => CI.fmtCompact(b));
+        CI.drawChart('cra8-depeg-chart', labels, [
+          { label: 'Fréquence', data: r.histogram.counts, color: permanent ? '#F87171' : '#FBBF24', fill: true, width: 2 }
+        ], { yFormat: (v) => v + ' sims' });
+      });
+
+      const lossInterval = r.baseline - r.p5;
+      const lossPct = ((lossInterval / r.baseline) * 100).toFixed(1);
+      setInsight('cra-depeg',
+        'Sur ' + r.simulations + ' simulations de ' + r.years + ' ans (proba depeg ' + (proba * 100).toFixed(0) + ' %/an, impact ' + (impact * 100).toFixed(0) + ' %, ' +
+        (permanent ? '<span class="warn">perte permanente — modèle synthétique type USDe</span>' : '<span class="pos">récupération rapide — modèle fiat-backed type USDC</span>') + ') : ' +
+        '<strong>' + (r.probLoss * 100).toFixed(0) + ' %</strong> de chance de finir en dessous de la baseline déterministe. ' +
+        'Pire cas (P5) : <span class="neg">' + CI.fmtMoney(r.p5, 0) + '</span> vs baseline ' + CI.fmtMoney(r.baseline, 0) + ' ' +
+        '(perte max ~' + lossPct + ' %). ' +
+        '<span class="muted">' + (permanent
+          ? 'Les stables synthétiques (Ethena, autres delta-hedge) peuvent perdre durablement leur peg si le funding rate devient négatif. Yield haut = risque de perte sèche.'
+          : 'Les fiat-backed (USDC, USDT) ont historiquement récupéré leur peg en quelques jours. Le yield reste positif au global mais avec stress temporaire.') + '</span>'
+      );
+
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Lancer la simulation'; }
+    }, 30);
+  }
+
+  function renderA08HackMC() {
+    const btnEl = document.getElementById('cra8-hack-run');
+    if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Calcul…'; }
+
+    setTimeout(() => {
+      const get = (id, def) => { const el = document.getElementById(id); return el ? parseFloat(el.value) || def : def; };
+      const capital   = get('cra8-hack-cap', 100000);
+      const apy       = get('cra8-hack-apy', 5);
+      const years     = get('cra8-hack-years', 10);
+      const proba     = get('cra8-hack-proba', 5) / 100;
+      const impact    = get('cra8-hack-impact', 70) / 100;
+
+      const results = CC.compareProtocolDiversification({
+        capital, apy, years,
+        hackProba: proba, hackImpact: impact,
+        simulations: 1000, seed: 42
+      });
+
+      const tbody = document.getElementById('cra8-hack-tbody');
+      if (tbody) {
+        // Best p5 row (least bad worst case)
+        const bestP5 = Math.max.apply(null, results.map((r) => r.p5));
+        tbody.innerHTML = results.map((r) => {
+          const isBest = Math.abs(r.p5 - bestP5) < 1;
+          const star   = isBest ? ' ⭐' : '';
+          const lossP5 = r.baseline - r.p5;
+          return '<tr>' +
+            '<td style="padding:8px 12px;font-weight:600">' + r.label + star + '</td>' +
+            '<td style="padding:8px 12px">' + (r.probAnyHack * 100).toFixed(0) + ' %</td>' +
+            '<td style="padding:8px 12px;font-family:var(--font-mono)">' + CI.fmtMoney(r.median, 0) + '</td>' +
+            '<td style="padding:8px 12px;color:' + (isBest ? 'var(--accent)' : 'var(--text-2)') + '"><strong>' + CI.fmtMoney(r.p5, 0) + '</strong></td>' +
+            '<td style="padding:8px 12px;color:var(--red)">−' + CI.fmtMoney(lossP5, 0) + '</td>' +
+            '<td style="padding:8px 12px;font-size:12px;color:var(--text-3)">' + CI.fmtMoney(r.baseline, 0) + '</td>' +
+            '</tr>';
+        }).join('');
+      }
+
+      const r1  = results.find((r) => r.nProtocols === 1);
+      const r5  = results.find((r) => r.nProtocols === 5);
+      const r10 = results.find((r) => r.nProtocols === 10);
+      const reduction = r1 && r5 ? ((r5.p5 - r1.p5) / Math.abs(r1.baseline) * 100).toFixed(1) : 0;
+      setInsight('cra-hack',
+        'Avec ' + (proba * 100).toFixed(0) + ' %/an de proba de hack par protocole sur ' + years + ' ans : ' +
+        'concentré sur <strong>1 protocole</strong>, la proba qu\'au moins un hack arrive est de ' + (r1.probAnyHack * 100).toFixed(0) + ' %, ' +
+        'avec un pire cas (P5) de <span class="neg">' + CI.fmtMoney(r1.p5, 0) + '</span>. ' +
+        'En diversifiant sur <strong>5 protocoles</strong>, la proba qu\'au moins un soit hacké monte à ' + (r5.probAnyHack * 100).toFixed(0) + ' % — ' +
+        'mais le pire cas remonte à <span class="pos">' + CI.fmtMoney(r5.p5, 0) + '</span> ' +
+        '(amélioration de <strong>+' + reduction + ' pts</strong> du capital initial). ' +
+        '<span class="muted">Plus tu diversifies, plus la probabilité de toucher un hack monte, mais l\'impact d\'un seul hack est dilué — c\'est le sens de la diversification.</span>'
+      );
+
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Lancer la simulation'; }
+    }, 30);
   }
 
   /* ------------------------------------------------------------------ */
