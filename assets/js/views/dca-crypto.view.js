@@ -753,6 +753,10 @@
 
     // ── 7A : Gas fees calculator ──────────────────────────────────────
     renderA08GasCalc(p);
+
+    // ── 7B : Comparateurs plateformes ─────────────────────────────────
+    renderStakingPlatformsTable(p);
+    renderStablecoinYieldsTable();
   }
 
   /* ------------------------------------------------------------------ */
@@ -864,6 +868,100 @@
     if (netApyEl) {
       netApyEl.className = 'stat-value ' + (result.netApy >= stakingApy * 0.7 ? 'pos' : result.netApy >= 0 ? 'warn' : 'neg');
     }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 7B : Comparateur plateformes de staking                              */
+  /* ------------------------------------------------------------------ */
+  function renderStakingPlatformsTable(p) {
+    const wrapper = document.getElementById('cra8-platforms-wrapper');
+    const tbody   = document.getElementById('cra8-platforms-tbody');
+    const titleEl = document.getElementById('cra8-platforms-title');
+    if (!wrapper || !tbody) return;
+
+    const platforms = (CC.STAKING_PLATFORMS || {})[p.cryptoId];
+    if (!platforms || platforms.length === 0) {
+      wrapper.style.display = 'none';
+      return;
+    }
+    wrapper.style.display = '';
+
+    const meta   = CRYPTOS_META[p.cryptoId] || {};
+    const symbol = meta.symbol || p.cryptoId.toUpperCase();
+    if (titleEl) titleEl.textContent = 'Plateformes de staking ' + symbol;
+
+    // Calcul APY net = APY × (1 - fees/100)
+    const enriched = platforms.map((pl) => Object.assign({}, pl, {
+      apyNet: pl.apy * (1 - pl.fees / 100)
+    }));
+
+    // Best APY net pour le ⭐
+    const bestNet = Math.max.apply(null, enriched.map((e) => e.apyNet));
+
+    const decentColors = { low: '#F87171', medium: '#FBBF24', high: '#34D399', max: '#A78BFA' };
+    const decentLabels = { low: 'Faible', medium: 'Moyenne', high: 'Élevée', max: 'Maximum (solo)' };
+
+    tbody.innerHTML = enriched.map((pl) => {
+      const isBest    = Math.abs(pl.apyNet - bestNet) < 0.01;
+      const star      = isBest ? ' ⭐' : '';
+      const liquidBadge = pl.liquid
+        ? '<span style="font-size:10px;background:rgba(52,211,153,.2);color:#34D399;padding:2px 6px;border-radius:99px;font-weight:600">Liquide</span>'
+        : '<span style="font-size:10px;background:rgba(248,113,113,.18);color:#F87171;padding:2px 6px;border-radius:99px;font-weight:600">Locké</span>';
+      const minCapStr = pl.minCap === 0 ? '0' : pl.minCap + ' ' + symbol;
+      const decentBg  = decentColors[pl.decentralization] || '#9AA3AE';
+      return '<tr>' +
+        '<td style="padding:8px 12px;font-weight:600">' + pl.label + star + '</td>' +
+        '<td style="padding:8px 12px">' + pl.apy.toFixed(1) + ' %</td>' +
+        '<td style="padding:8px 12px;color:var(--text-3)">' + (pl.fees > 0 ? pl.fees + ' %' : '0 %') + '</td>' +
+        '<td style="padding:8px 12px"><strong style="color:' + (isBest ? 'var(--accent)' : 'var(--text)') + '">' + pl.apyNet.toFixed(2) + ' %</strong></td>' +
+        '<td style="padding:8px 12px;font-family:var(--font-mono);font-size:12px">' + minCapStr + '</td>' +
+        '<td style="padding:8px 12px"><span style="font-size:11px;color:' + decentBg + ';font-weight:600">' + (decentLabels[pl.decentralization] || '—') + '</span></td>' +
+        '<td style="padding:8px 12px">' + liquidBadge + '</td>' +
+        '</tr>';
+    }).join('');
+
+    // Insight
+    const best = enriched.find((e) => Math.abs(e.apyNet - bestNet) < 0.01);
+    const worst = enriched.reduce((acc, cur) => cur.apyNet < acc.apyNet ? cur : acc, enriched[0]);
+    setInsight('cra-platforms',
+      'Le meilleur APY net pour le staking ' + symbol + ' est <strong>' + best.label + '</strong> à <span class="pos">' +
+      best.apyNet.toFixed(2) + ' %</span> (brut ' + best.apy + ' %, frais ' + best.fees + ' %). ' +
+      'Vs <strong>' + worst.label + '</strong> à seulement ' + worst.apyNet.toFixed(2) + ' % — un écart de <span class="warn">' +
+      ((best.apyNet - worst.apyNet) / worst.apyNet * 100).toFixed(0) + ' %</span>. ' +
+      '<span class="muted">Compromis classique : décentralisation max (solo) demande 32 ETH et un nœud, les plateformes centralisées (Coinbase, Kraken) prélèvent 15-25 % de frais. Lido reste l\'équilibre dominant pour ETH.</span>'
+    );
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 7B : Comparateur stablecoins                                         */
+  /* ------------------------------------------------------------------ */
+  function renderStablecoinYieldsTable() {
+    const tbody = document.getElementById('cra8-stables-tbody');
+    if (!tbody) return;
+    const stables = CC.STABLECOIN_YIELDS || [];
+    if (stables.length === 0) return;
+
+    const sorted = stables.slice().sort((a, b) => b.apy - a.apy);
+
+    const riskColors = { low: '#34D399', medium: '#FBBF24', high: '#F87171' };
+    const riskLabels = { low: 'Faible', medium: 'Moyen', high: 'Élevé' };
+
+    tbody.innerHTML = sorted.map((s) => {
+      const riskCol = riskColors[s.risk] || '#9AA3AE';
+      return '<tr>' +
+        '<td style="padding:10px 12px;font-weight:600">' + s.label + '</td>' +
+        '<td style="padding:10px 12px"><strong style="color:' + (s.apy >= 8 ? 'var(--red)' : s.apy >= 5 ? 'var(--accent)' : 'var(--text)') + '">' + s.apy.toFixed(1) + ' %</strong></td>' +
+        '<td style="padding:10px 12px"><span style="color:' + riskCol + ';font-weight:600;font-size:12px">' + riskLabels[s.risk] + '</span></td>' +
+        '<td style="padding:10px 12px;font-size:12px;color:var(--text-3)">' + s.backing + '</td>' +
+        '<td style="padding:10px 12px;font-size:12px;color:var(--text-2);max-width:300px">' + s.note + '</td>' +
+        '</tr>';
+    }).join('');
+
+    setInsight('cra-stables',
+      'Les yields stablecoins varient du simple au quadruple : <strong>USDC sur Compound</strong> à 3.5 % (faible risque) jusqu\'à <strong>USDe Ethena</strong> à 12 % (risque élevé, mécanique synthétique de delta-hedging). ' +
+      'Pour un débutant : <span class="pos">USDC ou DAI sur Aave</span> reste le standard. Les yields à deux chiffres exigent de comprendre le modèle économique du stable. ' +
+      '<span class="muted">Règle : si tu ne sais pas pourquoi un yield est élevé, tu es la contrepartie du risque.</span>'
+    );
   }
 
   /* ------------------------------------------------------------------ */

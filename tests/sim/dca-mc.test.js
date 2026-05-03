@@ -255,3 +255,52 @@ test('computeGasBreakeven: breakeven monotonically scales with gas cost', () => 
   const exp   = ccrypto.computeGasBreakeven({ monthlyAmount: 100, apy: 4, gasUsdPerClaim: 30, claimsPerYear: 12 });
   assert.ok(exp.breakevenMonthly > cheap.breakevenMonthly, 'higher gas → higher breakeven');
 });
+
+// ─── 7B : Comparateurs plateformes & stablecoins ──────────────────────────
+
+test('STAKING_PLATFORMS exposes data for ETH, SOL, BTC', () => {
+  assert.ok(ccrypto.STAKING_PLATFORMS.eth);
+  assert.ok(ccrypto.STAKING_PLATFORMS.eth.length >= 3);
+  assert.ok(ccrypto.STAKING_PLATFORMS.sol);
+  assert.ok(ccrypto.STAKING_PLATFORMS.btc);
+});
+
+test('STAKING_PLATFORMS.eth has Lido + Rocket + Coinbase + Solo', () => {
+  const ids = ccrypto.STAKING_PLATFORMS.eth.map((p) => p.id);
+  assert.ok(ids.includes('lido'));
+  assert.ok(ids.includes('rocket'));
+  assert.ok(ids.includes('coinbase'));
+  assert.ok(ids.includes('solo'));
+});
+
+test('STAKING_PLATFORMS: each entry has required fields', () => {
+  Object.keys(ccrypto.STAKING_PLATFORMS).forEach((asset) => {
+    ccrypto.STAKING_PLATFORMS[asset].forEach((p) => {
+      assert.ok(typeof p.id === 'string',           asset + ' missing id');
+      assert.ok(typeof p.label === 'string',        p.id + ' missing label');
+      assert.ok(typeof p.apy === 'number',          p.id + ' missing apy');
+      assert.ok(typeof p.fees === 'number',         p.id + ' missing fees');
+      assert.ok(typeof p.minCap === 'number',       p.id + ' missing minCap');
+      assert.ok(['low','medium','high','max'].includes(p.decentralization), p.id + ' bad decentralization');
+      assert.ok(typeof p.liquid === 'boolean',      p.id + ' missing liquid');
+    });
+  });
+});
+
+test('STABLECOIN_YIELDS: 5+ entries sorted by required fields', () => {
+  assert.ok(ccrypto.STABLECOIN_YIELDS.length >= 5);
+  ccrypto.STABLECOIN_YIELDS.forEach((s) => {
+    assert.ok(typeof s.id === 'string');
+    assert.ok(typeof s.label === 'string');
+    assert.ok(typeof s.apy === 'number');
+    assert.ok(['low','medium','high'].includes(s.risk));
+    assert.ok(typeof s.backing === 'string');
+    assert.ok(typeof s.note === 'string');
+  });
+});
+
+test('STABLECOIN_YIELDS: highest APY = USDe Ethena (high risk)', () => {
+  const sorted = ccrypto.STABLECOIN_YIELDS.slice().sort((a, b) => b.apy - a.apy);
+  assert.strictEqual(sorted[0].id, 'usde-ethena');
+  assert.strictEqual(sorted[0].risk, 'high');
+});
