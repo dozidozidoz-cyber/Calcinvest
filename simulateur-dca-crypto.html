@@ -963,6 +963,66 @@ if ('serviceWorker' in navigator) {
           </div>
         </div>
       </div>
+
+      <!-- ========== Sub : Comparateur plateformes staking ========== -->
+      <div id="cra8-platforms-wrapper" style="margin-top:24px">
+        <div id="cra-platforms">
+          <div class="page-eyebrow" style="margin-bottom:10px">
+            <span class="page-eyebrow-icon" style="background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.3);color:#34D399">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="4" height="8"/><rect x="6" y="3" width="4" height="11"/><rect x="10" y="8" width="4" height="6"/></svg>
+            </span>
+            <span id="cra8-platforms-title">Plateformes de staking</span>
+          </div>
+          <p class="text-muted" style="font-size:13px;margin-bottom:14px">Toutes les plateformes ne se valent pas : APY brut similaire, mais frais qui varient de 0 % (solo) à 25 % (plateformes centralisées). Compromis classique : centralisation, frais, capital min.</p>
+          <div class="card">
+            <div class="card-body no-pad" style="overflow-x:auto">
+              <table class="data-table" style="width:100%;border-collapse:collapse;min-width:680px">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Plateforme</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">APY brut</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Frais</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">APY net</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Capital min</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Décentralisation</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Liquidité</th>
+                  </tr>
+                </thead>
+                <tbody id="cra8-platforms-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== Sub : Comparateur stablecoins ========== -->
+      <div style="margin-top:24px">
+        <div id="cra-stables">
+          <div class="page-eyebrow" style="margin-bottom:10px">
+            <span class="page-eyebrow-icon" style="background:rgba(251,191,36,.15);border-color:rgba(251,191,36,.3);color:#FBBF24">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 4v8M5 6h6M5 10h6"/></svg>
+            </span>
+            Comparateur stablecoins
+          </div>
+          <p class="text-muted" style="font-size:13px;margin-bottom:14px">Les yields stables vont de 3 % (low risk USDC fiat-backed) à 12 % (USDe synthétique). Le yield rémunère le risque : plus c'est haut, plus le mécanisme est fragile ou complexe.</p>
+          <div class="card">
+            <div class="card-body no-pad" style="overflow-x:auto">
+              <table class="data-table" style="width:100%;border-collapse:collapse;min-width:720px">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Token / Plateforme</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">APY</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Risque</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Backing</th>
+                    <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Note</th>
+                  </tr>
+                </thead>
+                <tbody id="cra8-stables-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>

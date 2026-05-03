@@ -468,6 +468,56 @@
   };
 
   /**
+   * Plateformes de staking par actif — données indicatives 2024-2026.
+   * APY = brut, fees = % prélevés par la plateforme sur les rewards.
+   * decentralization : 'low' / 'medium' / 'high' / 'max' (solo)
+   * liquid : true si liquid staking (token dérivé tradable), false si lock
+   */
+  var STAKING_PLATFORMS = {
+    eth: [
+      { id: 'lido',     label: 'Lido',           apy: 3.5, fees: 10, minCap: 0.01, decentralization: 'medium', liquid: true,  url: 'https://lido.fi' },
+      { id: 'rocket',   label: 'Rocket Pool',    apy: 3.2, fees: 14, minCap: 0.01, decentralization: 'high',   liquid: true,  url: 'https://rocketpool.net' },
+      { id: 'coinbase', label: 'Coinbase',       apy: 2.6, fees: 25, minCap: 0,    decentralization: 'low',    liquid: true,  url: 'https://www.coinbase.com' },
+      { id: 'kraken',   label: 'Kraken',         apy: 2.5, fees: 15, minCap: 0,    decentralization: 'low',    liquid: false, url: 'https://www.kraken.com' },
+      { id: 'solo',     label: 'Solo staking',   apy: 4.0, fees: 0,  minCap: 32,   decentralization: 'max',    liquid: false, url: 'https://ethereum.org/staking/solo' }
+    ],
+    sol: [
+      { id: 'marinade', label: 'Marinade',       apy: 6.5, fees: 6,  minCap: 0.01, decentralization: 'high',   liquid: true,  url: 'https://marinade.finance' },
+      { id: 'jito',     label: 'Jito',           apy: 7.5, fees: 4,  minCap: 0.01, decentralization: 'high',   liquid: true,  url: 'https://www.jito.network' },
+      { id: 'coinbase', label: 'Coinbase',       apy: 5.5, fees: 25, minCap: 0,    decentralization: 'low',    liquid: false, url: 'https://www.coinbase.com' },
+      { id: 'native',   label: 'Native (wallet)',apy: 7.0, fees: 0,  minCap: 0.01, decentralization: 'max',    liquid: false, url: '#' }
+    ],
+    bnb: [
+      { id: 'binance',  label: 'Binance staking',apy: 4.0, fees: 0,  minCap: 0.01, decentralization: 'low',    liquid: false, url: 'https://www.binance.com' },
+      { id: 'pancake',  label: 'PancakeSwap (vBNB)', apy: 3.5, fees: 5, minCap: 0.01, decentralization: 'medium', liquid: true, url: 'https://pancakeswap.finance' }
+    ],
+    btc: [
+      { id: 'aave-wbtc', label: 'Aave (wBTC)',   apy: 1.5, fees: 0,  minCap: 0.001, decentralization: 'high',  liquid: true,  url: 'https://aave.com' },
+      { id: 'coinbase',  label: 'Coinbase Earn', apy: 1.0, fees: 25, minCap: 0,     decentralization: 'low',   liquid: false, url: 'https://www.coinbase.com' },
+      { id: 'nexo',      label: 'Nexo',          apy: 2.0, fees: 0,  minCap: 0,     decentralization: 'low',   liquid: false, url: 'https://nexo.com' }
+    ],
+    xrp: [
+      { id: 'nexo',     label: 'Nexo',           apy: 2.0, fees: 0,  minCap: 0, decentralization: 'low', liquid: false, url: 'https://nexo.com' },
+      { id: 'aave-xrp', label: 'Aave (xRPL)',    apy: 1.8, fees: 0,  minCap: 0, decentralization: 'medium', liquid: true, url: '#' }
+    ]
+  };
+
+  /**
+   * Comparateur stablecoins — yields indicatifs 2024-2026.
+   * backing : 'fiat-backed' / 'crypto-collat' / 'synthetic' / 'algorithmic'
+   * risk : 'low' / 'medium' / 'high'
+   */
+  var STABLECOIN_YIELDS = [
+    { id: 'usdc-aave',     label: 'USDC sur Aave v3',           apy: 4.0,  risk: 'low',    backing: 'fiat-backed (Circle)',     note: 'Le plus utilisé. Audité, depeg court mars 2023 (~0.93 $).' },
+    { id: 'dai-dsr',       label: 'DAI Maker DSR',              apy: 5.0,  risk: 'low',    backing: 'crypto-collat (Maker)',    note: 'Taux fixé par gouvernance MakerDAO. Très stable historiquement.' },
+    { id: 'usdc-compound', label: 'USDC sur Compound v3',       apy: 3.5,  risk: 'low',    backing: 'fiat-backed (Circle)',     note: 'Concurrent direct d\'Aave, fees parfois plus bas.' },
+    { id: 'usdt-aave',     label: 'USDT sur Aave v3',           apy: 4.5,  risk: 'medium', backing: 'fiat-backed (Tether)',     note: 'Plus liquide qu\'USDC mais réserves moins transparentes.' },
+    { id: 'usde-ethena',   label: 'USDe Ethena (sUSDe)',        apy: 12.0, risk: 'high',   backing: 'synthetic (delta-hedge)',  note: 'Yield généré par funding rate des perps. Risque dépeg si funding négatif prolongé.' },
+    { id: 'gho-aave',      label: 'GHO Aave',                   apy: 4.5,  risk: 'medium', backing: 'crypto-collat (Aave)',     note: 'Stable natif d\'Aave, jeune (2023). Minting via collat ETH/stETH.' },
+    { id: 'pyusd-curve',   label: 'PYUSD (PayPal) sur Curve LP',apy: 6.5,  risk: 'medium', backing: 'fiat-backed (Paxos)',      note: 'Émis par PayPal, yield amplifié par incitations Curve.' }
+  ];
+
+  /**
    * Périodes de bear market historiques majeures (top → bottom).
    * Sources : pics et planchers réels, arrondis au mois.
    */
@@ -756,7 +806,9 @@
     computeDeFiStressTest,
     computeGasBreakeven,
     DEFI_YIELDS,
-    BEAR_PERIODS
+    BEAR_PERIODS,
+    STAKING_PLATFORMS,
+    STABLECOIN_YIELDS
   };
 
   if (typeof module !== 'undefined' && module.exports) {
