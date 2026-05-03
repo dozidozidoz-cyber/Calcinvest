@@ -665,6 +665,7 @@
 
     // ── Cards ──────────────────────────────────────────────────────────
     const cards = document.getElementById('cra8-cards');
+    const symbol = (CRYPTOS_META[p.cryptoId] && CRYPTOS_META[p.cryptoId].symbol) || p.cryptoId.toUpperCase();
     if (cards) {
       cards.innerHTML = scens.map((s, i) => {
         const isBest  = i === 1; // staking — best realistic upside
@@ -673,6 +674,16 @@
         const yieldLine = s.yieldEarned > 0
           ? `<div style="font-size:11px;color:var(--accent);margin-top:2px">+${CI.fmtMoney(s.yieldEarned, 0)} de yield</div>`
           : '<div style="font-size:11px;color:var(--text-3);margin-top:2px">Référence HODL</div>';
+        // Real yield decoupling : yield natif (tokens) vs USD aujourd'hui
+        let tokenLine = '';
+        if (s.yieldTokens > 0) {
+          const tokensStr = s.yieldTokens >= 1
+            ? s.yieldTokens.toFixed(2)
+            : s.yieldTokens.toFixed(4);
+          tokenLine = `<div style="font-size:11px;color:var(--text-3);margin-top:2px;font-family:var(--font-mono)">+${tokensStr} ${symbol} (${CI.fmtCompact(s.yieldUsdNow)} aujourd'hui)</div>`;
+        } else if (s.id === 'lending' && s.yieldEarned > 0) {
+          tokenLine = `<div style="font-size:11px;color:var(--text-3);margin-top:2px;font-family:var(--font-mono)">USD pur (stables, pas de token natif)</div>`;
+        }
         const apyBadge = s.apy > 0
           ? `<span style="font-size:10px;color:var(--text-3)"> · ${s.apy} % APY</span>`
           : '';
@@ -682,6 +693,7 @@
           </div>
           <div style="font-size:20px;font-weight:700">${CI.fmtCompact(s.finalValue)}</div>
           ${yieldLine}
+          ${tokenLine}
           <div style="font-size:11px;color:var(--text-3);margin-top:4px">⚠ ${s.risk}</div>
         </div>`;
       }).join('');
@@ -734,6 +746,123 @@
         `sans modifier ton exposition au prix.${lpNote} ` +
         `<span class="muted">Ces taux sont des moyennes historiques 2022-2026 — ils varient et ces stratégies comportent des risques spécifiques (voir ci-dessous).</span>`
       );
+    }
+
+    // ── 7A : Stress test bear 2022 ────────────────────────────────────
+    renderA08StressTest(p);
+
+    // ── 7A : Gas fees calculator ──────────────────────────────────────
+    renderA08GasCalc(p);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* A08 sub : Stress test bear 2022                                       */
+  /* ------------------------------------------------------------------ */
+  function renderA08StressTest(p) {
+    if (!CC.computeDeFiStressTest) return;
+    const data = DATA_CACHE[p.cryptoId];
+    if (!data) return;
+
+    const st = CC.computeDeFiStressTest(data.prices, data.start, p.cryptoId, { initialAmount: 10000, monthlyAmount: 0 });
+    const cardEl = document.getElementById('cra8-stress');
+    if (!cardEl) return;
+    if (!st) {
+      cardEl.innerHTML = '<div style="color:var(--text-3);font-size:13px;padding:14px">Pas de période bear documentée pour ' + (p.cryptoId || '').toUpperCase() + '.</div>';
+      return;
+    }
+
+    const period = st.period;
+    const meta   = (CRYPTOS_META[p.cryptoId] || {});
+    const symbol = meta.symbol || p.cryptoId.toUpperCase();
+    const headerLine = '<strong>' + symbol + '</strong> · ' + period.label + ' · ' + period.start + ' → ' + period.end + ' · drawdown spot ' + period.drawdown + ' %';
+
+    const hodl = st.drawdownByStrat.find(function (d) { return d.id === 'hodl'; });
+    const rows = st.drawdownByStrat.map(function (d) {
+      const ddCls = d.drawdown <= -50 ? 'neg' : d.drawdown <= -20 ? 'warn' : 'pos';
+      const deltaCls = d.deltaVsHodlPct >= 5 ? 'pos' : d.deltaVsHodlPct <= -5 ? 'neg' : '';
+      const deltaStr = d.id === 'hodl' ? '—' : '<span class="' + deltaCls + '">' + (d.deltaVsHodlPct >= 0 ? '+' : '') + d.deltaVsHodlPct.toFixed(1) + ' %</span>';
+      return '<tr>' +
+        '<td style="font-weight:600;color:' + d.color + '">' + d.label + '</td>' +
+        '<td>' + CI.fmtMoney(d.startValue, 0) + '</td>' +
+        '<td>' + CI.fmtMoney(d.endValue, 0) + '</td>' +
+        '<td class="' + ddCls + '">' + d.drawdown.toFixed(1) + ' %</td>' +
+        '<td>' + deltaStr + '</td>' +
+        '</tr>';
+    }).join('');
+
+    cardEl.innerHTML =
+      '<div style="font-size:13px;color:var(--text-2);margin-bottom:10px">' + headerLine + '</div>' +
+      '<table class="data-table" style="width:100%;border-collapse:collapse">' +
+        '<thead><tr>' +
+          '<th style="text-align:left;font-size:12px;color:var(--text-3);padding:8px 10px">Stratégie</th>' +
+          '<th style="text-align:left;font-size:12px;color:var(--text-3);padding:8px 10px">Capital début</th>' +
+          '<th style="text-align:left;font-size:12px;color:var(--text-3);padding:8px 10px">Capital fin</th>' +
+          '<th style="text-align:left;font-size:12px;color:var(--text-3);padding:8px 10px">Drawdown</th>' +
+          '<th style="text-align:left;font-size:12px;color:var(--text-3);padding:8px 10px">vs HODL</th>' +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>';
+
+    // Insight
+    if (hodl) {
+      const staking = st.drawdownByStrat.find(function (d) { return d.id === 'staking'; });
+      const lending = st.drawdownByStrat.find(function (d) { return d.id === 'lending'; });
+      const stakingDelta = staking ? staking.deltaVsHodlPct : 0;
+      setInsight('cra-stress',
+        'Pendant le ' + period.label.toLowerCase() + ', un placement initial de 10 000 € sur ' + symbol +
+        ' a chuté de <span class="neg">' + hodl.drawdown.toFixed(1) + ' %</span>. ' +
+        'Le staking a limité la perte de seulement <strong>' + stakingDelta.toFixed(1) + ' %</strong> vs HODL pur — ' +
+        'la fraction de yield (~' + ((staking ? staking.yieldEarned : 0) / 10000 * 100).toFixed(1) + ' % du capital) est négligeable face à la baisse de prix. ' +
+        (lending ? 'Seul le <span style="color:#FBBF24">lending stable</span> a tenu (<strong>' + lending.drawdown.toFixed(1) + ' %</strong>), mais avec 30 % seulement en stables. ' : '') +
+        '<span class="muted">Conclusion : en bear, le yield n\'est pas un parachute. La couverture vient de la diversification stables / cash, pas du staking.</span>'
+      );
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* A08 sub : Gas fees calculator (interactif)                            */
+  /* ------------------------------------------------------------------ */
+  function renderA08GasCalc(p) {
+    if (!CC.computeGasBreakeven) return;
+    const monthlyEl = document.getElementById('cra8-gas-monthly');
+    const chainEl   = document.getElementById('cra8-gas-chain');
+    const freqEl    = document.getElementById('cra8-gas-freq');
+    if (!monthlyEl || !chainEl || !freqEl) return;
+
+    const monthlyAmount = parseFloat(monthlyEl.value) || 0;
+    const chainCost     = chainEl.value === 'mainnet' ? 30 : (chainEl.value === 'l2' ? 1 : 0);
+    const claimsPerYear = parseInt(freqEl.value, 10);
+
+    // APY de référence : staking de l'asset sélectionné
+    const stakingApy = (CC.DEFI_YIELDS && CC.DEFI_YIELDS.staking[p.cryptoId])
+      ? CC.DEFI_YIELDS.staking[p.cryptoId].apy
+      : 4;
+
+    const result = CC.computeGasBreakeven({
+      monthlyAmount: monthlyAmount,
+      apy: stakingApy,
+      gasUsdPerClaim: chainCost,
+      claimsPerYear: claimsPerYear
+    });
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('cra8-gas-net-apy', result.netApy.toFixed(2) + ' %');
+    set('cra8-gas-yearly',  CI.fmtMoney(result.gasYearly, 0));
+    set('cra8-gas-yield',   CI.fmtMoney(result.yieldYearly, 0));
+    set('cra8-gas-breakeven', result.breakevenMonthly != null ? CI.fmtMoney(result.breakevenMonthly, 0) + '/mois' : '—');
+
+    const recoEl = document.getElementById('cra8-gas-reco');
+    if (recoEl) {
+      const cls = result.isWorthIt ? 'pos' : 'neg';
+      const icon = result.isWorthIt ? '✅' : '⚠️';
+      recoEl.className = 'insight';
+      recoEl.innerHTML = '<div class="insight-icon">' + icon + '</div><div class="insight-text"><strong class="' + cls + '">' + result.recommendation + '</strong></div>';
+    }
+
+    // Couleur de la net APY
+    const netApyEl = document.getElementById('cra8-gas-net-apy');
+    if (netApyEl) {
+      netApyEl.className = 'stat-value ' + (result.netApy >= stakingApy * 0.7 ? 'pos' : result.netApy >= 0 ? 'warn' : 'neg');
     }
   }
 
@@ -824,6 +953,15 @@
     }
 
     run();
+
+    // Bind gas calculator inputs (live update)
+    ['cra8-gas-monthly', 'cra8-gas-chain', 'cra8-gas-freq'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input',  () => renderA08GasCalc(readForm()));
+        el.addEventListener('change', () => renderA08GasCalc(readForm()));
+      }
+    });
 
     // Public actions (window-scoped)
     window.resetCrypto = () => { window.location.search = ''; };
