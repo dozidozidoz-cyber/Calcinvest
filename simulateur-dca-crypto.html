@@ -880,6 +880,89 @@ if ('serviceWorker' in navigator) {
         </div>
         <div style="margin-top:10px;font-size:11px;color:var(--text-3);font-style:italic">Les APY affichés sont des moyennes historiques 2022-2026. Ils varient selon l'offre/demande du protocole. Ces simulations sont purement illustratives.</div>
       </div>
+
+      <!-- ========== Sub : Stress test bear 2022 ========== -->
+      <div id="cra-stress" style="margin-top:24px">
+        <div class="page-eyebrow" style="margin-bottom:10px">
+          <span class="page-eyebrow-icon" style="background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.3);color:#F87171">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1l7 13H1z" stroke-linejoin="round"/><path d="M8 6v4M8 12h.01"/></svg>
+          </span>
+          Stress test · le yield ne sauve pas en bear
+        </div>
+        <p class="text-muted" style="font-size:13px;margin-bottom:14px">Simulation : 10 000 € investis au top du dernier bull run (Nov 2021), tenus jusqu'au bottom (Déc 2022). Comment chaque stratégie aurait-elle traversé cette période ?</p>
+        <div class="card">
+          <div class="card-body" id="cra8-stress" style="padding:16px"></div>
+        </div>
+      </div>
+
+      <!-- ========== Sub : Gas fees calculator ========== -->
+      <div style="margin-top:24px">
+        <div class="page-eyebrow" style="margin-bottom:10px">
+          <span class="page-eyebrow-icon" style="background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3);color:#A78BFA">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13l3-4 3 2 3-5 3 2"/><circle cx="8" cy="8" r="1"/></svg>
+          </span>
+          À partir de quel DCA le yield bat-il les gas fees ?
+        </div>
+        <p class="text-muted" style="font-size:13px;margin-bottom:14px">Sur Ethereum mainnet, claim des rewards coûte 10-50 $ en gas. Pour un petit DCA mensuel, le gas peut absorber tout ton yield. Configure tes paramètres pour voir le seuil.</p>
+
+        <div class="card">
+          <div class="card-body" style="padding:16px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px">
+              <div class="field">
+                <label class="field-label">Versement mensuel (DCA)</label>
+                <div class="stepper" data-step="50" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="cra8-gas-monthly" value="100" />
+                  <span class="stepper-unit">€/mois</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Chaîne</label>
+                <select id="cra8-gas-chain" class="form-select" style="width:100%;padding:8px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px;color:var(--text);font-size:13px">
+                  <option value="mainnet">Ethereum mainnet (~30 $/claim)</option>
+                  <option value="l2">L2 Arbitrum/Optimism (~1 $/claim)</option>
+                  <option value="auto">Auto-compound (Yearn/Beefy, 0 $)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">Fréquence de claim</label>
+                <select id="cra8-gas-freq" class="form-select" style="width:100%;padding:8px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px;color:var(--text);font-size:13px">
+                  <option value="12">Mensuelle</option>
+                  <option value="4" selected>Trimestrielle</option>
+                  <option value="1">Annuelle</option>
+                  <option value="0">Auto-compound (0 claim manuel)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="stats-row" style="margin-top:14px">
+              <div class="stat">
+                <div class="stat-label">APY net après gas</div>
+                <div class="stat-value pos" id="cra8-gas-net-apy">—</div>
+                <div class="stat-sub">Sur l'asset sélectionné</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Gas annuel</div>
+                <div class="stat-value warn" id="cra8-gas-yearly">—</div>
+                <div class="stat-sub">Coûts de claim cumulés</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Yield brut annuel</div>
+                <div class="stat-value info" id="cra8-gas-yield">—</div>
+                <div class="stat-sub">Avant déduction gas</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Seuil de rentabilité</div>
+                <div class="stat-value" id="cra8-gas-breakeven">—</div>
+                <div class="stat-sub">DCA min pour battre le gas</div>
+              </div>
+            </div>
+
+            <div id="cra8-gas-reco" style="margin-top:14px"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>

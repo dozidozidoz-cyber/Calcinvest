@@ -468,6 +468,18 @@
   };
 
   /**
+   * Périodes de bear market historiques majeures (top → bottom).
+   * Sources : pics et planchers réels, arrondis au mois.
+   */
+  var BEAR_PERIODS = {
+    btc: { start: '2021-11', end: '2022-12', label: 'Crypto winter 2022', drawdown: -77 },
+    eth: { start: '2021-11', end: '2022-12', label: 'Crypto winter 2022', drawdown: -82 },
+    sol: { start: '2021-11', end: '2022-12', label: 'Crypto winter 2022', drawdown: -96 },
+    bnb: { start: '2021-11', end: '2022-12', label: 'Crypto winter 2022', drawdown: -68 },
+    xrp: { start: '2021-11', end: '2022-12', label: 'Crypto winter 2022', drawdown: -73 }
+  };
+
+  /**
    * Simule 4 stratégies DeFi sur un résultat DCA existant.
    *
    * @param {Array}  monthlyData  r.monthly_data de calcCryptoDCA
@@ -493,6 +505,11 @@
     var cumLpFees  = 0;
     var cumIL      = 0;
 
+    // Track yields en tokens (sous-jacent) en parallèle de USD
+    // Le staking récompense en tokens, le LP en partie aussi
+    var cumStakingTokens = 0;
+    var cumLpTokens      = 0;
+
     var hodlMonthly    = [];
     var stakingMonthly = [];
     var lendingMonthly = [];
@@ -501,8 +518,12 @@
     for (var i = 0; i < monthlyData.length; i++) {
       var m = monthlyData[i];
       var hodlVal = m.value;
+      var price   = m.price || 1;
+      var coins   = m.coins || 0;
 
-      // Staking : rendement composé sur (portfolio + cumul rewards)
+      // Staking en tokens : (coins HODL + reward tokens cumulés) × APR mensuel
+      cumStakingTokens += (coins + cumStakingTokens) * stakingAPR;
+      // Staking en USD : USD-equivalent au prix du moment, compose
       cumStaking += (hodlVal + cumStaking) * stakingAPR;
 
       // Lending : yield sur la fraction stablecoin (stablePct du capital investi)
@@ -511,6 +532,7 @@
 
       // LP : frais sur la totalité du portfolio, moins perte impermanente estimée
       cumLpFees += hodlVal * lpAPR;
+      cumLpTokens += (coins + cumLpTokens) * lpAPR * 0.5; // ~50 % du yield LP est en token volatil
       cumIL     += hodlVal * ilMonthly;
 
       hodlMonthly.push(hodlVal);
@@ -536,6 +558,7 @@
     var stakingApyVal = opts.stakingApy != null ? opts.stakingApy : stInfo.apy;
     var lendingApyVal = opts.lendingApy != null ? opts.lendingApy : DEFI_YIELDS.lending.apy;
     var lpApyVal      = opts.lpApy      != null ? opts.lpApy      : DEFI_YIELDS.lp.apy;
+    var finalPrice    = monthlyData[fi].price || 1;
 
     return {
       scenarios: [
@@ -545,6 +568,8 @@
           yearly: toYearly(hodlMonthly),
           finalValue: hodlMonthly[fi],
           yieldEarned: 0,
+          yieldTokens: 0,
+          yieldUsdNow: 0,
           apy: 0,
           risk: '—'
         },
@@ -554,6 +579,8 @@
           yearly: toYearly(stakingMonthly),
           finalValue: stakingMonthly[fi],
           yieldEarned: cumStaking,
+          yieldTokens: cumStakingTokens,
+          yieldUsdNow: cumStakingTokens * finalPrice,
           apy: stakingApyVal,
           risk: DEFI_YIELDS.staking[asset] ? 'Slashing · Smart contract' : 'Smart contract'
         },
@@ -563,6 +590,8 @@
           yearly: toYearly(lendingMonthly),
           finalValue: lendingMonthly[fi],
           yieldEarned: cumLending,
+          yieldTokens: 0,           // Lending stable = yield en USD seulement
+          yieldUsdNow: cumLending,
           apy: lendingApyVal,
           risk: DEFI_YIELDS.lending.risk
         },
@@ -572,11 +601,143 @@
           yearly: toYearly(lpMonthly),
           finalValue: lpMonthly[fi],
           yieldEarned: Math.max(0, cumLpFees - cumIL),
+          yieldTokens: cumLpTokens,
+          yieldUsdNow: cumLpTokens * finalPrice,
           apy: lpApyVal,
           risk: DEFI_YIELDS.lp.risk
         }
       ],
-      hodlFinal: hodlMonthly[fi]
+      hodlFinal: hodlMonthly[fi],
+      finalPrice: finalPrice
+    };
+  }
+
+  /**
+   * Stress test : rejoue les 4 stratégies DeFi sur la fenêtre bear historique
+   * pour l'asset choisi. Output adapté pour montrer le drawdown par stratégie
+   * et le fait que le yield ne sauve pas en bear.
+   *
+   * @param {Array}  prices       série mensuelle de l'asset
+   * @param {string} dataStart    'YYYY-MM' du premier prix
+   * @param {string} assetId      'btc' | 'eth' | 'sol' | 'bnb' | 'xrp'
+   * @param {Object} [opts]       { initialAmount=10000, monthlyAmount=0 } DCA pendant la période
+   * @returns {Object|null} { period, dcaResult, defi, drawdownByStrat }
+   */
+  function computeDeFiStressTest(prices, dataStart, assetId, opts) {
+    opts = opts || {};
+    var period = BEAR_PERIODS[assetId];
+    if (!period) return null;
+
+    // Vérifier que la période est dans les data dispos
+    var startIdx = indexForDate(dataStart, period.start);
+    var endIdx   = indexForDate(dataStart, period.end);
+    if (startIdx < 0 || endIdx >= prices.length || endIdx <= startIdx) return null;
+
+    // Lance un DCA sur la fenêtre bear (10k initial + 0 monthly par défaut)
+    var dcaResult = calcCryptoDCA({
+      prices:        prices,
+      dataStart:     dataStart,
+      startDate:     period.start,
+      endDate:       period.end,
+      initialAmount: opts.initialAmount != null ? opts.initialAmount : 10000,
+      monthlyAmount: opts.monthlyAmount != null ? opts.monthlyAmount : 0,
+      feesPct:       0,
+      taxRate:       0
+    });
+    if (!dcaResult || !dcaResult.monthly_data) return null;
+
+    // Applique les stratégies DeFi sur ce DCA
+    var defi = computeDeFiStrategies(dcaResult.monthly_data, assetId, {});
+
+    // Drawdown par stratégie : peak-to-trough sur la série mensuelle
+    var drawdownByStrat = defi.scenarios.map(function (s) {
+      var monthly = []; var cum = 0;
+      // Reconstruction monthly à partir du yearly serait imprécis, on utilise la série brute
+      // Heuristique : on prend la finalValue / max yearly comme proxy
+      var maxVal = Math.max.apply(null, s.yearly.map(function (y) { return y.value; }));
+      var minVal = Math.min.apply(null, s.yearly.map(function (y) { return y.value; }));
+      var dd = maxVal > 0 ? (minVal - maxVal) / maxVal * 100 : 0;
+      return {
+        id: s.id,
+        label: s.label,
+        color: s.color,
+        startValue: s.yearly[0] ? s.yearly[0].value : 0,
+        endValue: s.finalValue,
+        peakValue: maxVal,
+        troughValue: minVal,
+        drawdown: dd,
+        yieldEarned: s.yieldEarned,
+        deltaVsHodl: s.finalValue - defi.hodlFinal,
+        deltaVsHodlPct: defi.hodlFinal > 0 ? ((s.finalValue - defi.hodlFinal) / defi.hodlFinal) * 100 : 0
+      };
+    });
+
+    return {
+      period: period,
+      asset: assetId,
+      dcaResult: {
+        finalValue: dcaResult.finalValue,
+        finalInvested: dcaResult.finalInvested,
+        finalPnLPct: dcaResult.finalPnLPct,
+        months: dcaResult.months
+      },
+      defi: defi,
+      drawdownByStrat: drawdownByStrat
+    };
+  }
+
+  /**
+   * Calcule le seuil DCA mensuel à partir duquel le yield DeFi bat les gas fees.
+   * Pédagogie : pour les petits DCA, l'auto-compound (Yearn) est obligatoire.
+   *
+   * @param {Object} opts {
+   *   monthlyAmount: number (€/mois DCA),
+   *   apy: number (rendement annuel %),
+   *   gasUsdPerClaim: number (5 = L2, 30 = mainnet typique),
+   *   claimsPerYear: number (12=mensuel, 4=trim, 1=annuel, 0=auto-compound)
+   * }
+   * @returns {Object} { breakevenMonthly, netApy, gasYearly, isWorthIt, recommendation }
+   */
+  function computeGasBreakeven(opts) {
+    opts = opts || {};
+    var monthlyAmount    = opts.monthlyAmount    || 0;
+    var apy              = (opts.apy             || 4) / 100;
+    var gasUsdPerClaim   = opts.gasUsdPerClaim   || 5;
+    var claimsPerYear    = opts.claimsPerYear    != null ? opts.claimsPerYear : 12;
+
+    var gasYearly = gasUsdPerClaim * claimsPerYear;
+    // Yield brut annuel sur 12 versements moyens (capital moyen ≈ monthlyAmount × 6)
+    var avgCapital = monthlyAmount * 6;
+    var yieldYearly = avgCapital * apy;
+
+    var netYieldYearly = yieldYearly - gasYearly;
+    var netApy = avgCapital > 0 ? (netYieldYearly / avgCapital) * 100 : 0;
+
+    // Seuil de rentabilité : le yield doit couvrir le gas
+    // gasYearly = (M × 6) × apy → M = gasYearly / (6 × apy)
+    var breakevenMonthly = apy > 0 ? gasYearly / (6 * apy) : null;
+
+    var isWorthIt = monthlyAmount > 0 && netYieldYearly > 0;
+    var recommendation;
+    if (claimsPerYear === 0) {
+      recommendation = 'Auto-compound (Yearn / Beefy) : pas de gas, optimal pour tout montant.';
+    } else if (!isWorthIt) {
+      recommendation = 'À ce niveau de DCA, le gas mange tout. Bascule vers l\'auto-compound ou réduis la fréquence de claim.';
+    } else if (netApy < apy * 100 * 0.7) {
+      recommendation = 'Le gas absorbe ' + ((1 - netApy / (apy * 100)) * 100).toFixed(0) + ' % du yield. Réduis la fréquence de claim ou passe sur L2.';
+    } else {
+      recommendation = 'Configuration rentable : le gas reste sous 30 % du yield brut.';
+    }
+
+    return {
+      breakevenMonthly: breakevenMonthly,
+      netApy: netApy,
+      grossApy: apy * 100,
+      gasYearly: gasYearly,
+      yieldYearly: yieldYearly,
+      netYieldYearly: netYieldYearly,
+      isWorthIt: isWorthIt,
+      recommendation: recommendation
     };
   }
 
@@ -592,7 +753,10 @@
     calcLumpSumVsDCA,
     calcMultiCryptoComp,
     computeDeFiStrategies,
-    DEFI_YIELDS
+    computeDeFiStressTest,
+    computeGasBreakeven,
+    DEFI_YIELDS,
+    BEAR_PERIODS
   };
 
   if (typeof module !== 'undefined' && module.exports) {

@@ -172,3 +172,86 @@ test('computeDeFiStrategies: DEFI_YIELDS exported correctly', () => {
   assert.ok(crypto.DEFI_YIELDS.lending.apy > 0);
   assert.ok(crypto.DEFI_YIELDS.lp.apy > 0);
 });
+
+// ─── DeFi enrichments (PR 7A) ──────────────────────────────────────────────
+
+const ccrypto = require('../../assets/js/core/calc-dca-crypto');
+
+test('computeDeFiStrategies: yieldTokens populated for staking ETH', () => {
+  const prices = synthPrices(60, 11);
+  const r = ccrypto.calcCryptoDCA({
+    prices: prices, dataStart: '2018-01',
+    startDate: '2018-01', endDate: null,
+    initialAmount: 10000, monthlyAmount: 100, feesPct: 0, taxRate: 0
+  });
+  const defi = ccrypto.computeDeFiStrategies(r.monthly_data, 'eth');
+  const staking = defi.scenarios.find((s) => s.id === 'staking');
+  assert.ok(staking.yieldTokens > 0, 'staking yieldTokens should be > 0');
+  assert.ok(staking.yieldUsdNow > 0, 'staking yieldUsdNow should be > 0');
+  const lending = defi.scenarios.find((s) => s.id === 'lending');
+  assert.strictEqual(lending.yieldTokens, 0, 'lending = pure USD, 0 tokens');
+});
+
+test('computeDeFiStrategies: hodl scenario has 0 yield (control)', () => {
+  const prices = synthPrices(60, 12);
+  const r = ccrypto.calcCryptoDCA({
+    prices: prices, dataStart: '2018-01',
+    startDate: '2018-01', endDate: null,
+    initialAmount: 10000, monthlyAmount: 0, feesPct: 0, taxRate: 0
+  });
+  const defi = ccrypto.computeDeFiStrategies(r.monthly_data, 'eth');
+  const hodl = defi.scenarios.find((s) => s.id === 'hodl');
+  assert.strictEqual(hodl.yieldEarned, 0);
+  assert.strictEqual(hodl.yieldTokens, 0);
+});
+
+test('BEAR_PERIODS exposes ETH window 2021-11 → 2022-12', () => {
+  assert.ok(ccrypto.BEAR_PERIODS.eth);
+  assert.strictEqual(ccrypto.BEAR_PERIODS.eth.start, '2021-11');
+  assert.strictEqual(ccrypto.BEAR_PERIODS.eth.end, '2022-12');
+  assert.ok(ccrypto.BEAR_PERIODS.eth.drawdown < 0);
+});
+
+test('computeDeFiStressTest: returns null if asset has no bear period', () => {
+  const prices = synthPrices(60, 13);
+  const out = ccrypto.computeDeFiStressTest(prices, '2018-01', 'unknown', {});
+  assert.strictEqual(out, null);
+});
+
+test('computeDeFiStressTest: returns 4 strategies with drawdown info on covered window', () => {
+  // Reusing real ETH data from disk would require fs; simulate with synthPrices that covers period
+  const prices = synthPrices(102, 14);
+  const out = ccrypto.computeDeFiStressTest(prices, '2017-11', 'eth', { initialAmount: 10000 });
+  assert.ok(out, 'should return result');
+  assert.strictEqual(out.drawdownByStrat.length, 4);
+  out.drawdownByStrat.forEach((d) => {
+    assert.ok(typeof d.drawdown === 'number');
+    assert.ok(typeof d.deltaVsHodlPct === 'number');
+    assert.ok(['hodl','staking','lending','lp'].indexOf(d.id) >= 0);
+  });
+});
+
+test('computeGasBreakeven: small DCA mainnet → not worth it', () => {
+  const r = ccrypto.computeGasBreakeven({ monthlyAmount: 50, apy: 4, gasUsdPerClaim: 30, claimsPerYear: 12 });
+  assert.strictEqual(r.isWorthIt, false);
+  assert.ok(r.netApy < 0);
+  assert.ok(r.recommendation.length > 0);
+});
+
+test('computeGasBreakeven: large DCA L2 → worth it, net APY close to gross', () => {
+  const r = ccrypto.computeGasBreakeven({ monthlyAmount: 2000, apy: 4, gasUsdPerClaim: 1, claimsPerYear: 4 });
+  assert.strictEqual(r.isWorthIt, true);
+  assert.ok(r.netApy > 3.5, 'net APY should be close to 4% gross');
+});
+
+test('computeGasBreakeven: auto-compound (0 claims) recommended for any size', () => {
+  const r = ccrypto.computeGasBreakeven({ monthlyAmount: 100, apy: 4, gasUsdPerClaim: 0, claimsPerYear: 0 });
+  assert.strictEqual(r.gasYearly, 0);
+  assert.ok(r.recommendation.includes('Auto-compound'));
+});
+
+test('computeGasBreakeven: breakeven monotonically scales with gas cost', () => {
+  const cheap = ccrypto.computeGasBreakeven({ monthlyAmount: 100, apy: 4, gasUsdPerClaim: 5,  claimsPerYear: 12 });
+  const exp   = ccrypto.computeGasBreakeven({ monthlyAmount: 100, apy: 4, gasUsdPerClaim: 30, claimsPerYear: 12 });
+  assert.ok(exp.breakevenMonthly > cheap.breakevenMonthly, 'higher gas → higher breakeven');
+});
