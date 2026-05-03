@@ -1023,6 +1023,147 @@ if ('serviceWorker' in navigator) {
           </div>
         </div>
       </div>
+
+      <!-- ========== Sub : Stress tests systémiques ========== -->
+      <div style="margin-top:24px">
+        <div class="page-eyebrow" style="margin-bottom:10px">
+          <span class="page-eyebrow-icon" style="background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.3);color:#F87171">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1l7 13H1z"/><path d="M8 6v4M8 12h.01"/></svg>
+          </span>
+          Stress tests systémiques (Monte Carlo)
+        </div>
+        <p class="text-muted" style="font-size:13px;margin-bottom:14px">Quantifie deux risques DeFi rarement modélisés : le depeg d'un stablecoin et le hack d'un protocole. 1 000 simulations Bernoulli pour visualiser la distribution des pertes possibles.</p>
+
+        <!-- DEPEG MC -->
+        <div id="cra-depeg" style="margin-bottom:24px">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M5 7.5l3 3 3-5"/></svg>
+                </div>
+                Risque de depeg stablecoin
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px">
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Capital stable</label>
+                  <input class="stepper-input" type="number" id="cra8-depeg-cap" value="10000" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Versement/mois</label>
+                  <input class="stepper-input" type="number" id="cra8-depeg-monthly" value="100" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Horizon (ans)</label>
+                  <input class="stepper-input" type="number" id="cra8-depeg-years" value="10" min="1" max="30" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">APY (%/an)</label>
+                  <input class="stepper-input" type="number" id="cra8-depeg-apy" value="5" step="0.5" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Proba depeg/an (%)</label>
+                  <input class="stepper-input" type="number" id="cra8-depeg-proba" value="8" min="0" max="100" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Impact depeg (%)</label>
+                  <input class="stepper-input" type="number" id="cra8-depeg-impact" value="7" min="0" max="50" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:13px;cursor:pointer">
+                <input type="checkbox" id="cra8-depeg-perm" />
+                <span>Perte permanente (modèle synthétique type Ethena)</span>
+              </label>
+              <button class="btn btn-primary" id="cra8-depeg-run" style="margin-bottom:18px">Lancer la simulation</button>
+
+              <div class="stats-row">
+                <div class="stat">
+                  <div class="stat-label">Baseline (sans depeg)</div>
+                  <div class="stat-value info" id="cra8-depeg-baseline">—</div>
+                  <div class="stat-sub" id="cra8-depeg-info">Lance la simulation</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Moyenne MC</div>
+                  <div class="stat-value" id="cra8-depeg-mean">—</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Pire cas (P5)</div>
+                  <div class="stat-value warn" id="cra8-depeg-p5">—</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Optimiste (P95)</div>
+                  <div class="stat-value pos" id="cra8-depeg-p95">—</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Proba sous baseline</div>
+                  <div class="stat-value warn" id="cra8-depeg-prob">—</div>
+                </div>
+              </div>
+
+              <div class="chart-wrap" style="margin-top:14px"><canvas id="cra8-depeg-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HACK MC -->
+        <div id="cra-hack">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1l7 13H1z"/><path d="M8 6v4M8 12h.01"/></svg>
+                </div>
+                Risque de hack protocole · effet de la diversification
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="text-muted" style="font-size:12px;margin-bottom:14px">Sur la dernière décennie, ~5 % des protocoles top-50 DeFi ont eu un exploit majeur. Compare 1 vs 3, 5, 10 protocoles pour voir l'effet diversification.</p>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px">
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Capital total</label>
+                  <input class="stepper-input" type="number" id="cra8-hack-cap" value="100000" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">APY (%/an)</label>
+                  <input class="stepper-input" type="number" id="cra8-hack-apy" value="5" step="0.5" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Horizon (ans)</label>
+                  <input class="stepper-input" type="number" id="cra8-hack-years" value="10" min="1" max="30" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Proba hack/an/proto (%)</label>
+                  <input class="stepper-input" type="number" id="cra8-hack-proba" value="5" min="0" max="50" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:11px">Impact si hack (%)</label>
+                  <input class="stepper-input" type="number" id="cra8-hack-impact" value="70" min="0" max="100" style="width:100%;padding:6px 10px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:6px" />
+                </div>
+              </div>
+              <button class="btn btn-primary" id="cra8-hack-run" style="margin-bottom:18px">Lancer la simulation</button>
+
+              <div style="overflow-x:auto">
+                <table class="data-table" style="width:100%;border-collapse:collapse;min-width:680px">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Configuration</th>
+                      <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Proba ≥1 hack</th>
+                      <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Médian</th>
+                      <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Pire cas (P5)</th>
+                      <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Perte max P5</th>
+                      <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Baseline</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cra8-hack-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>

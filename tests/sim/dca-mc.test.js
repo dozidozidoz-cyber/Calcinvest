@@ -304,3 +304,55 @@ test('STABLECOIN_YIELDS: highest APY = USDe Ethena (high risk)', () => {
   assert.strictEqual(sorted[0].id, 'usde-ethena');
   assert.strictEqual(sorted[0].risk, 'high');
 });
+
+// ─── 7C : MC depeg + hack protocol ────────────────────────────────────────
+
+test('computeDepegMC: returns valid stats with reproducible seed', () => {
+  const r1 = ccrypto.computeDepegMC({ stableCapital: 10000, monthlyAdd: 100, years: 10, apy: 5, simulations: 200, seed: 42 });
+  const r2 = ccrypto.computeDepegMC({ stableCapital: 10000, monthlyAdd: 100, years: 10, apy: 5, simulations: 200, seed: 42 });
+  assert.ok(r1, 'should return non-null');
+  assert.strictEqual(r1.simulations, 200);
+  assert.strictEqual(r1.mean, r2.mean, 'same seed → same result');
+});
+
+test('computeDepegMC: percentiles ordered p5 <= p50 <= p95', () => {
+  const r = ccrypto.computeDepegMC({ stableCapital: 10000, years: 5, apy: 5, simulations: 500, seed: 7 });
+  assert.ok(r.p5  <= r.p25);
+  assert.ok(r.p25 <= r.median);
+  assert.ok(r.median <= r.p75);
+  assert.ok(r.p75 <= r.p95);
+});
+
+test('computeDepegMC: depeg permanent → mean below baseline', () => {
+  const fiat = ccrypto.computeDepegMC({ stableCapital: 10000, years: 10, apy: 5, depegProba: 0.10, depegImpact: -0.05, permanent: false, simulations: 500, seed: 1 });
+  const synth = ccrypto.computeDepegMC({ stableCapital: 10000, years: 10, apy: 5, depegProba: 0.10, depegImpact: -0.05, permanent: true,  simulations: 500, seed: 1 });
+  // Permanent loss leaves a bigger gap to baseline
+  assert.ok((synth.baseline - synth.mean) > (fiat.baseline - fiat.mean));
+});
+
+test('computeDepegMC: zero depegProba → mean ≈ baseline', () => {
+  const r = ccrypto.computeDepegMC({ stableCapital: 10000, monthlyAdd: 0, years: 5, apy: 5, depegProba: 0, simulations: 100, seed: 3 });
+  assert.ok(Math.abs(r.mean - r.baseline) < 1, 'no depeg events → mean = baseline');
+  assert.strictEqual(r.probLoss, 0);
+});
+
+test('computeProtocolRiskMC: more protocols → less worst-case loss', () => {
+  const one  = ccrypto.computeProtocolRiskMC({ capital: 100000, apy: 5, years: 10, nProtocols: 1,  simulations: 500, seed: 11 });
+  const ten  = ccrypto.computeProtocolRiskMC({ capital: 100000, apy: 5, years: 10, nProtocols: 10, simulations: 500, seed: 11 });
+  // 10 protocols should have higher P5 (less catastrophic worst case)
+  assert.ok(ten.p5 > one.p5, '10 protos P5=' + ten.p5 + ' should beat 1 proto P5=' + one.p5);
+});
+
+test('computeProtocolRiskMC: zero hackProba → mean = baseline', () => {
+  const r = ccrypto.computeProtocolRiskMC({ capital: 100000, apy: 5, years: 10, nProtocols: 5, hackProba: 0, simulations: 200, seed: 5 });
+  assert.ok(Math.abs(r.mean - r.baseline) < 1, 'no hacks → mean = baseline');
+  assert.strictEqual(r.probAnyHack, 0);
+});
+
+test('compareProtocolDiversification: returns 4 configs (1, 3, 5, 10)', () => {
+  const arr = ccrypto.compareProtocolDiversification({ capital: 100000, apy: 5, years: 10, simulations: 100, seed: 9 });
+  assert.strictEqual(arr.length, 4);
+  assert.strictEqual(arr[0].nProtocols, 1);
+  assert.strictEqual(arr[3].nProtocols, 10);
+  arr.forEach((r) => assert.ok(typeof r.label === 'string'));
+});

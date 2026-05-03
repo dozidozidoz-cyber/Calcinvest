@@ -792,6 +792,261 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* PRNG local (mulberry32) pour les MC sans dépendance bundle           */
+  /* ------------------------------------------------------------------ */
+  function _mulberry32(seed) {
+    var s = seed >>> 0;
+    return function () {
+      s = (s + 0x6D2B79F5) >>> 0;
+      var t = s;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function _percentile(sortedArr, q) {
+    if (sortedArr.length === 0) return null;
+    var idx = Math.min(sortedArr.length - 1, Math.floor(q * sortedArr.length));
+    return sortedArr[idx];
+  }
+
+  function _histogram(sorted, nBins) {
+    if (!sorted.length) return { bins: [], counts: [] };
+    var min = sorted[0], max = sorted[sorted.length - 1];
+    var range = max - min;
+    if (range === 0) return { bins: [min], counts: [sorted.length], binWidth: 0 };
+    var w = range / nBins;
+    var counts = new Array(nBins).fill(0);
+    var bins = [];
+    for (var i = 0; i < nBins; i++) bins.push(min + i * w);
+    for (var j = 0; j < sorted.length; j++) {
+      var idx = Math.floor((sorted[j] - min) / w);
+      if (idx >= nBins) idx = nBins - 1;
+      counts[idx]++;
+    }
+    return { bins: bins, counts: counts, binWidth: w };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* MC Depeg stablecoin (Bernoulli annuelle)                              */
+  /* ------------------------------------------------------------------ */
+  /**
+   * Simule un portfolio lending stablecoins sur N années avec risque de
+   * depeg occasionnel (Bernoulli annuelle).
+   *
+   * @param {Object} opts
+   *   stableCapital   — capital initial dans le stable ($)
+   *   monthlyAdd      — ajout mensuel ($)
+   *   years           — horizon
+   *   apy             — yield lending (%/an)
+   *   depegProba      — proba annuelle d'un depeg ≥ 5 % (default 0.08)
+   *   depegImpact     — perte moyenne lors d'un depeg (default −0.07)
+   *   recoveryMonths  — durée de récupération (default 1)
+   *   permanent       — true si la perte est permanente (synthetic) (default false)
+   *   simulations     — nombre de simulations (default 1000)
+   *   seed            — graine RNG (default 42)
+   *
+   * @returns Stats de la valeur finale (p5/p25/p50/p75/p95, mean, baseline,
+   *          probLoss, expectedLoss, histogram).
+   */
+  function computeDepegMC(opts) {
+    opts = opts || {};
+    var initialStable  = opts.stableCapital  != null ? opts.stableCapital  : 10000;
+    var monthlyAdd     = opts.monthlyAdd     != null ? opts.monthlyAdd     : 0;
+    var years          = opts.years          != null ? opts.years          : 10;
+    var apy            = opts.apy            != null ? opts.apy            : 5;
+    var depegProba     = opts.depegProba     != null ? opts.depegProba     : 0.08;
+    var depegImpact    = opts.depegImpact    != null ? opts.depegImpact    : -0.07;
+    var recoveryMonths = opts.recoveryMonths != null ? opts.recoveryMonths : 1;
+    var permanent      = opts.permanent === true;
+    var N              = opts.simulations    != null ? opts.simulations    : 1000;
+    var seed           = opts.seed           != null ? opts.seed           : 42;
+
+    var monthlyApr = apy / 100 / 12;
+    var months     = years * 12;
+
+    var rand = _mulberry32(seed);
+    var finals = new Array(N);
+
+    // Baseline déterministe (sans depeg)
+    var baseline = initialStable;
+    for (var bm = 0; bm < months; bm++) {
+      baseline += monthlyAdd;
+      baseline *= (1 + monthlyApr);
+    }
+
+    // Simulations
+    for (var s = 0; s < N; s++) {
+      var balance = initialStable;
+      // Track depeg active state (months remaining of impact)
+      var depegRemaining = 0;
+      var permanentLoss = 0;
+      for (var m = 0; m < months; m++) {
+        balance += monthlyAdd;
+        balance *= (1 + monthlyApr);
+
+        // Depeg event check at the start of each year
+        if (m % 12 === 0 && rand() < depegProba) {
+          if (permanent) {
+            // Synthétique : perte sèche du capital
+            permanentLoss += -depegImpact * balance;
+            balance *= (1 + depegImpact);
+          } else {
+            // Fiat-backed : perte temporaire pendant recoveryMonths
+            balance *= (1 + depegImpact);
+            depegRemaining = recoveryMonths;
+          }
+        } else if (depegRemaining > 0) {
+          // Recovery progressif : on regagne −depegImpact / recoveryMonths chaque mois
+          balance *= (1 + (-depegImpact / recoveryMonths));
+          depegRemaining--;
+        }
+      }
+      finals[s] = balance;
+    }
+
+    finals.sort(function (a, b) { return a - b; });
+
+    var sum = 0;
+    var nLoss = 0;
+    var sumLoss = 0;
+    for (var i = 0; i < N; i++) {
+      sum += finals[i];
+      if (finals[i] < baseline) {
+        nLoss++;
+        sumLoss += baseline - finals[i];
+      }
+    }
+    var mean = sum / N;
+    var probLoss = nLoss / N;
+    var expectedLoss = nLoss > 0 ? sumLoss / nLoss : 0;
+
+    return {
+      simulations:   N,
+      seed:          seed,
+      years:         years,
+      apy:           apy,
+      depegProba:    depegProba,
+      depegImpact:   depegImpact,
+      permanent:     permanent,
+      baseline:      baseline,
+      mean:          mean,
+      median:        _percentile(finals, 0.50),
+      p5:            _percentile(finals, 0.05),
+      p25:           _percentile(finals, 0.25),
+      p75:           _percentile(finals, 0.75),
+      p95:           _percentile(finals, 0.95),
+      probLoss:      probLoss,
+      expectedLoss:  expectedLoss,
+      histogram:     _histogram(finals, 20)
+    };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* MC Hack protocole (Bernoulli annuelle, comparaison split N)           */
+  /* ------------------------------------------------------------------ */
+  /**
+   * Simule un portfolio DeFi sur N années avec risque de hack par protocole.
+   * Compare la concentration sur 1 protocole vs split sur N protocoles.
+   *
+   * @param {Object} opts
+   *   capital        — capital total ($)
+   *   apy            — yield annuel (%)
+   *   years          — horizon
+   *   nProtocols     — nombre de protocoles utilisés (1, 3, 5, 10)
+   *   hackProba      — proba annuelle de hack par protocole (default 0.05)
+   *   hackImpact     — fraction perdue si hack (default 0.7 = 70 %)
+   *   simulations    — sims (default 1000)
+   *   seed           — graine
+   *
+   * @returns Stats par configuration de split.
+   */
+  function computeProtocolRiskMC(opts) {
+    opts = opts || {};
+    var capital      = opts.capital      != null ? opts.capital      : 100000;
+    var apy          = opts.apy          != null ? opts.apy          : 5;
+    var years        = opts.years        != null ? opts.years        : 10;
+    var nProtocols   = opts.nProtocols   != null ? opts.nProtocols   : 1;
+    var hackProba    = opts.hackProba    != null ? opts.hackProba    : 0.05;
+    var hackImpact   = opts.hackImpact   != null ? opts.hackImpact   : 0.7;
+    var N            = opts.simulations  != null ? opts.simulations  : 1000;
+    var seed         = opts.seed         != null ? opts.seed         : 42;
+
+    var rand = _mulberry32(seed);
+    var growthFactor = Math.pow(1 + apy / 100, years);
+    var capitalPerProto = capital / nProtocols;
+
+    var finals = new Array(N);
+    var nHacked = 0;
+
+    for (var s = 0; s < N; s++) {
+      var totalFinal = 0;
+      var anyHack = false;
+      for (var k = 0; k < nProtocols; k++) {
+        // Pour ce protocole, simule année par année
+        var protoBalance = capitalPerProto * growthFactor;
+        var protoLoss = 0;
+        // Tirage hack pour chaque année (au début)
+        // On suppose qu'un seul hack max par protocole sur l'horizon
+        for (var y = 0; y < years; y++) {
+          if (rand() < hackProba) {
+            // Le hack arrive à l'année y → on capitalise jusqu'à y, on perd hackImpact, on continue
+            // Approximation : hack à mi-chemin de la croissance
+            var atHack = capitalPerProto * Math.pow(1 + apy / 100, y);
+            var afterHack = atHack * (1 - hackImpact);
+            // Croissance des années restantes
+            protoBalance = afterHack * Math.pow(1 + apy / 100, years - y);
+            protoLoss = atHack * hackImpact * Math.pow(1 + apy / 100, years - y);
+            anyHack = true;
+            break;
+          }
+        }
+        totalFinal += protoBalance;
+      }
+      if (anyHack) nHacked++;
+      finals[s] = totalFinal;
+    }
+
+    finals.sort(function (a, b) { return a - b; });
+
+    var baseline = capital * growthFactor;  // sans hack
+    var sum = 0;
+    for (var i = 0; i < N; i++) sum += finals[i];
+
+    return {
+      simulations:    N,
+      seed:           seed,
+      capital:        capital,
+      apy:            apy,
+      years:          years,
+      nProtocols:     nProtocols,
+      hackProba:      hackProba,
+      hackImpact:     hackImpact,
+      probAnyHack:    nHacked / N,
+      baseline:       baseline,
+      mean:           sum / N,
+      median:         _percentile(finals, 0.50),
+      p5:             _percentile(finals, 0.05),
+      p25:            _percentile(finals, 0.25),
+      p75:            _percentile(finals, 0.75),
+      p95:            _percentile(finals, 0.95),
+      worst:          finals[0],
+      histogram:      _histogram(finals, 20)
+    };
+  }
+
+  /* Comparateur prêt-à-l'emploi : run computeProtocolRiskMC pour 1, 3, 5 protocoles */
+  function compareProtocolDiversification(opts) {
+    var configs = [1, 3, 5, 10];
+    return configs.map(function (n) {
+      var r = computeProtocolRiskMC(Object.assign({}, opts, { nProtocols: n }));
+      r.label = (n === 1 ? '1 protocole' : n + ' protocoles');
+      return r;
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Exports                                                               */
   /* ------------------------------------------------------------------ */
   const mod = {
@@ -805,6 +1060,9 @@
     computeDeFiStrategies,
     computeDeFiStressTest,
     computeGasBreakeven,
+    computeDepegMC,
+    computeProtocolRiskMC,
+    compareProtocolDiversification,
     DEFI_YIELDS,
     BEAR_PERIODS,
     STAKING_PLATFORMS,
