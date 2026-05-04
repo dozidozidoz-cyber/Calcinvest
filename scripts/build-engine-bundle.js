@@ -37,7 +37,8 @@ const FILES = [
   'assets/js/core/calculators/locatif.js',
   'assets/js/core/calculators/dca.js',
   'assets/js/core/calculators/fire.js',
-  'assets/js/core/calculators/per.js'
+  'assets/js/core/calculators/per.js',
+  'assets/js/core/calculators/retraite.js'
 ];
 
 const banner =

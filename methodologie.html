@@ -175,6 +175,7 @@ if ('serviceWorker' in navigator) {
       <a href="#dca-crypto">DCA Crypto</a>
       <a href="#fire">FIRE</a>
       <a href="#per">PER</a>
+      <a href="#retraite">Retraite (CNAV + Agirc-Arrco)</a>
       <a href="#sources">Sources des données</a>
       <a href="#glossaire">Glossaire complet</a>
       <a href="#disclaimer">Avertissement</a>
@@ -365,6 +366,46 @@ if ('serviceWorker' in navigator) {
 
         <h3>Comparaison vs CTO</h3>
         <p class="text-muted" style="font-size:13px">L'analyse compare le PER (économie IR immédiate + capitalisation + sortie taxée) à un CTO équivalent (versements nets + capitalisation + PFU 30 %). Le PER gagne d'autant plus que la TMI à la sortie est inférieure à celle des versements.</p>
+      </section>
+
+      <!-- ============= RETRAITE ============= -->
+      <section class="methodo-section" id="retraite">
+        <h2>Retraite — Régime général + Agirc-Arrco</h2>
+        <p class="text-muted" style="font-size:13px">Estimation de la pension future basée sur les règles CNAV 2025 (réforme retraite 2023) et le système à points Agirc-Arrco. Public ciblé : salariés du privé en France.</p>
+
+        <h3>Formule régime général</h3>
+        <div class="formula">Pension annuelle = SAM × Taux × (Trimestres validés / Durée de référence)</div>
+        <ul class="params-list">
+          <li><strong>SAM</strong> : Salaire Annuel Moyen des 25 meilleures années, plafonné au PASS (47 100 € en 2025). Anciens salaires revalorisés par coefficient INSEE (~2 %/an).</li>
+          <li><strong>Taux plein</strong> : 50 %, atteint si durée requise validée OU âge taux plein automatique (67 ans).</li>
+          <li><strong>Décote</strong> : 1.25 %/trim manquant, plafonnée à 25 %.</li>
+          <li><strong>Surcote</strong> : 1.25 %/trim au-delà de la durée requise (et après l'âge légal).</li>
+          <li><strong>Durée requise</strong> : 172 trim. génération 1973+ (43 ans), montée progressive depuis 166 (génération 1957).</li>
+          <li><strong>Âge légal de départ</strong> : 64 ans pour génération 1968+ (réforme 2023, montée progressive depuis 62 ans).</li>
+        </ul>
+
+        <h3>Formule Agirc-Arrco (système à points)</h3>
+        <div class="formula">Pension complémentaire = Points cumulés × Valeur de service du point × Coefficient minoration</div>
+        <ul class="params-list">
+          <li><strong>Acquisition</strong> : cotisation contractuelle 6.20 % T1 + 17.00 % T2, divisée par la valeur d'achat du point (20.1877 € en 2025).</li>
+          <li><strong>Liquidation</strong> : valeur de service du point = 1.4159 € en 2025 (revalorisée annuellement).</li>
+          <li><strong>Coefficient de minoration</strong> : −1 %/trim manquant si départ avant 67 ans sans avoir validé la durée requise (limite 22 % de minoration).</li>
+        </ul>
+
+        <h3>Carrière longue (réforme 2023)</h3>
+        <ul class="params-list">
+          <li><strong>Début avant 16 ans</strong> + 5 trim. avant 16 ans → départ possible à 58 ans.</li>
+          <li><strong>Début avant 18 ans</strong> + 5 trim. avant 20 ans → 60 ans.</li>
+          <li><strong>Début avant 20 ans</strong> + 5 trim. avant 20 ans → 62 ans.</li>
+          <li><strong>Début avant 21 ans</strong> + 5 trim. avant 20 ans → 63 ans.</li>
+          <li>Tous les cas requièrent d'avoir validé la durée totale (172 trim. pour 1973+).</li>
+        </ul>
+
+        <h3>Pension nette</h3>
+        <p class="text-muted" style="font-size:13px"><strong>Pension nette = Brute × (1 − CSG/CRDS 8.3 % − CASA 0.3 %)</strong>. L'IR n'est pas modélisé ici car il dépend du foyer fiscal complet. Le taux de remplacement net affiché est calculé vs un dernier salaire net estimé à 78 % du brut.</p>
+
+        <h3>Limites du modèle</h3>
+        <p class="text-muted" style="font-size:13px">Cette simulation est une estimation. Pour une projection officielle qui prend en compte tous tes régimes (général + complémentaire + autres pensions), consulte <strong>info-retraite.fr</strong> qui agrège tous tes droits acquis. Notre calcul couvre les salariés du privé : indépendants, fonctionnaires et régimes spéciaux ne sont pas modélisés.</p>
       </section>
 
       <!-- ============= SOURCES ============= -->
