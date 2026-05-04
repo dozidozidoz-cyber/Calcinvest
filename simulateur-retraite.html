@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#059669" />
+<title>Simulateur Retraite — Régime général + Agirc-Arrco — CalcInvest</title>
+<meta name="description" content="Simulateur retraite gratuit : pension régime général + Agirc-Arrco, rachat de trimestres, carrière longue, prolongation, sensibilité salaire. Règles 2025 réforme retraite." />
+<meta name="keywords" content="simulateur retraite, calcul pension, régime général, Agirc-Arrco, rachat trimestres, carrière longue, taux plein, surcote, décote" />
+<meta property="og:title" content="Simulateur Retraite — CalcInvest" />
+<meta property="og:description" content="Calculez votre future pension : régime général + Agirc-Arrco, rachat trimestres, départs anticipés." />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
+</head>
+<body>
+
+<!-- ==================== TOPBAR ==================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">Retraite</div>
+        <div class="logo-text-sub">Simulateur</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="topbar-center">
+    <nav class="segmented" role="tablist" aria-label="Calculateurs">
+      <a class="segmented-btn" href="/simulateur-dca">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Bourse
+      </a>
+      <a class="segmented-btn" href="/simulateur-dca-crypto">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2L2 5l6 3 6-3-6-3zM2 11l6 3 6-3M2 8l6 3 6-3"/></svg>
+        Crypto
+      </a>
+      <a class="segmented-btn" href="/simulateur-interets-composes">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+        Composés
+      </a>
+      <a class="segmented-btn" href="/simulateur-rendement-locatif">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>
+        Immobilier
+      </a>
+      <a class="segmented-btn" href="/calculateur-fire">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4h5l-2 5h-3z"/><path d="M9 9v5M7 9v5"/></svg>
+        FIRE
+      </a>
+      <a class="segmented-btn" href="/simulateur-per">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="10" height="8" rx="1"/><path d="M5 6V4a3 3 0 0 1 6 0v2"/></svg>
+        PER
+      </a>
+      <a class="segmented-btn active" aria-current="page" href="/simulateur-retraite">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Retraite
+      </a>
+    </nav>
+  </div>
+
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+  </div>
+</header>
+
+<!-- ==================== SHELL ==================== -->
+<div class="shell" id="page-retraite">
+
+  <!-- ======== SIDEBAR ======== -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#r-params">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h10M3 8h10M3 11h6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Exploration</div>
+          <div class="sidebar-link-title">Paramètres</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+      <a class="sidebar-link" href="#ra-synthese">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 01</div>
+          <div class="sidebar-link-title">Synthèse pension</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ra-prolongation">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-7"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 02</div>
+          <div class="sidebar-link-title">Comparaison âges (62-68)</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ra-rachat">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h10v6H3zM7 8h2"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 03</div>
+          <div class="sidebar-link-title">Rachat de trimestres</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ra-carriere-longue">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8l4-4 4 8 4-4"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 04</div>
+          <div class="sidebar-link-title">Carrière longue</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#ra-sensibilite">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l3-4 2 2 4-7 3 4"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 05</div>
+          <div class="sidebar-link-title">Sensibilité salaire</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======== MAIN ======== -->
+  <main class="main fade-in">
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        </span>
+        Simulateur · Retraite régime général + Agirc-Arrco
+      </div>
+      <h1 class="page-title">Combien tu toucheras à la retraite.</h1>
+      <p class="page-lede">Estime ta pension future basée sur les <strong style="color:var(--text)">règles CNAV 2025</strong> (réforme retraite, durée 172 trim. génération 1973+) et le système à points <em style="color:var(--accent);font-style:normal;font-weight:600">Agirc-Arrco</em>. Compare départs 62-68 ans, rachat de trimestres, carrière longue.</p>
+    </div>
+
+    <!-- ============= PARAMÈTRES ============= -->
+    <section class="accordion open" id="r-params">
+      <div class="accordion-header">
+        <div class="accordion-icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Paramètres</div>
+          <div class="accordion-summary" id="r-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg></div>
+      </div>
+      <div class="accordion-body">
+        <div class="form-grid">
+
+          <!-- Profil -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="6" r="3"/><path d="M3 14a5 5 0 0 1 10 0"/></svg></div>
+              <div class="subsection-title">Profil</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Année de naissance</label>
+                <div class="stepper" data-step="1" data-min="1940" data-max="2010">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-naissance" value="1985" />
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Année début de carrière</label>
+                <div class="stepper" data-step="1" data-min="1955" data-max="2030">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-debut-carriere" value="2010" />
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Âge de départ envisagé</label>
+                <div class="stepper" data-step="1" data-min="58" data-max="70">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-age-depart" value="64" />
+                  <span class="stepper-unit">ans</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="r-age-depart">
+                  <button class="pill" data-value="62" type="button">62</button>
+                  <button class="pill active" data-value="64" type="button">64 (légal)</button>
+                  <button class="pill" data-value="67" type="button">67 (taux plein)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Salaire -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v8M5 6h6M5 10h6"/></svg></div>
+              <div class="subsection-title">Carrière &amp; salaire</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Salaire brut annuel actuel</label>
+                <div class="stepper" data-step="1000" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-salaire" value="35000" />
+                  <span class="stepper-unit">€</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="r-salaire">
+                  <button class="pill" data-value="25000" type="button">25 k</button>
+                  <button class="pill active" data-value="35000" type="button">35 k</button>
+                  <button class="pill" data-value="50000" type="button">50 k</button>
+                  <button class="pill" data-value="80000" type="button">80 k</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Croissance salariale moy.</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-croissance" value="1.5" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- État actuel -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M3 4h10M3 12h6"/></svg></div>
+              <div class="subsection-title">État actuel (relevé CNAV)</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Trimestres déjà validés</label>
+                <div class="stepper" data-step="4" data-min="0" data-max="200">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-trim-deja" value="60" />
+                  <span class="stepper-unit">trim</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px">Disponible sur info-retraite.fr</div>
+              </div>
+              <div class="field">
+                <label class="field-label">Points Agirc-Arrco</label>
+                <div class="stepper" data-step="100" data-min="0">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-points" value="2000" />
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px">Solde points sur ton relevé Agirc-Arrco</div>
+              </div>
+              <div class="field">
+                <label class="field-label">Trim. validés avant 20 ans</label>
+                <div class="stepper" data-step="1" data-min="0" data-max="20">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-trim-avant-20" value="0" />
+                  <span class="stepper-unit">trim</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px">Pour éligibilité carrière longue</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="btn-row" style="margin-top:22px">
+            <button class="btn btn-primary" onclick="saveRetraite()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h8l2 2v8H3z"/><path d="M5 3v4h6V3M5 13v-3h6v3"/></svg>
+              Sauvegarder
+            </button>
+            <button class="btn btn-secondary" onclick="shareRetraite()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="12" r="1.5"/><path d="M5.3 7.2l5.4-2.4M5.3 8.8l5.4 2.4"/></svg>
+              Partager
+            </button>
+            <button class="btn btn-secondary" onclick="exportRetraitePDF()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 2h6l3 3v9H4z"/><path d="M10 2v3h3M6 9h4M6 11h4"/></svg>
+              Exporter PDF
+            </button>
+            <button class="btn btn-secondary" onclick="resetRetraite()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8a5 5 0 1 1 1.5 3.5L3 13"/><path d="M3 13v-3h3"/></svg>
+              Réinitialiser
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A01 SYNTHÈSE ============= -->
+    <section id="ra-synthese">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></span>
+        Analyse 01 · Synthèse de ta pension
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Ta pension totale = régime général (CNAV) + complémentaire Agirc-Arrco. Le calcul s'appuie sur le SAM (25 meilleures années plafonnées au PASS) et le système à points pour la complémentaire.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Pension TOTALE brute</div>
+          <div class="stat-value pos" id="rs-pension-brute">—</div>
+          <div class="stat-sub" id="rs-pension-annuelle">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Pension TOTALE nette</div>
+          <div class="stat-value pos" id="rs-pension-nette">—</div>
+          <div class="stat-sub">Après CSG/CRDS/CASA (~9 %)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Taux remplacement net</div>
+          <div class="stat-value info" id="rs-taux-rempl">—</div>
+          <div class="stat-sub">Vs ton dernier salaire net</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Année de départ</div>
+          <div class="stat-value warn" id="rs-annee-depart">—</div>
+          <div class="stat-sub">Âge légal : <span id="rs-age-legal">—</span></div>
+        </div>
+      </div>
+
+      <div class="stats-row" style="margin-top:14px">
+        <div class="stat">
+          <div class="stat-label">Régime général</div>
+          <div class="stat-value" id="rs-pension-rg">—</div>
+          <div class="stat-sub">CNAV · /mois brut</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Agirc-Arrco</div>
+          <div class="stat-value" id="rs-pension-agirc">—</div>
+          <div class="stat-sub">Complémentaire · /mois brut</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Taux régime général</div>
+          <div class="stat-value" id="rs-taux-rg">—</div>
+          <div class="stat-sub">50 % = taux plein</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Trimestres validés</div>
+          <div class="stat-value" id="rs-trim">—</div>
+          <div class="stat-sub">SAM : <span id="rs-sam">—</span> · <span id="rs-points">—</span> pts Agirc</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A02 PROLONGATION ============= -->
+    <section id="ra-prolongation">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12l4-4 3 3 5-7"/></svg></span>
+        Analyse 02 · Comparaison départ 62 → 68 ans
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Chaque année reportée renforce la pension par deux mécaniques : suppression de la décote, puis surcote (+1.25 %/trim au-delà). À 67 ans, le taux plein est automatique sans condition de durée.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0" id="ra2-cards"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg></div>
+            Pension brute selon l'âge de départ
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ra2-chart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= A03 RACHAT TRIMESTRES ============= -->
+    <section id="ra-rachat">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h10v6H3zM7 8h2"/></svg></span>
+        Analyse 03 · Rachat de trimestres (versement pour la retraite — VPLR)
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Tu peux racheter jusqu'à 12 trimestres (années d'études supérieures + années incomplètes). Le coût varie selon ton âge et ton revenu, et l'option choisie (taux seul ou taux + durée).</p>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+        <span style="font-size:12px;color:var(--text-3)">Trimestres à racheter :</span>
+        <div class="stepper" data-step="1" data-min="1" data-max="12" style="width:auto">
+          <button class="stepper-btn" data-dir="-1" type="button">−</button>
+          <input class="stepper-input" type="number" id="ra3-nb-trim" value="8" />
+          <span class="stepper-unit">trim</span>
+          <button class="stepper-btn" data-dir="1" type="button">+</button>
+        </div>
+        <span style="font-size:12px;color:var(--text-3);margin-left:14px">Coût/trim :</span>
+        <div class="stepper" data-step="100" data-min="2000" data-max="9000" style="width:auto">
+          <button class="stepper-btn" data-dir="-1" type="button">−</button>
+          <input class="stepper-input" type="number" id="ra3-cout" value="5200" />
+          <span class="stepper-unit">€</span>
+          <button class="stepper-btn" data-dir="1" type="button">+</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Coût total</div>
+          <div class="stat-value warn" id="ra3-cout-total">—</div>
+          <div class="stat-sub">À sortir avant départ</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Gain pension/mois</div>
+          <div class="stat-value pos" id="ra3-gain-mens">—</div>
+          <div class="stat-sub">Net après CSG</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Gain total (~85 ans)</div>
+          <div class="stat-value info" id="ra3-gain-total">—</div>
+          <div class="stat-sub">Espérance vie moyenne</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Rentabilité atteinte en</div>
+          <div class="stat-value" id="ra3-rentab">—</div>
+          <div class="stat-sub"><span id="ra3-pension-avant">—</span> → <span id="ra3-pension-apres">—</span>/mois</div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Quand racheter ?
+        </div>
+        Le rachat est <strong>maximalement rentable</strong> quand il fait basculer ton calcul de "décote" à "taux plein" (172 trim. ou 67 ans), supprimant à la fois la décote ET le coefficient de durée.
+        Il est <strong>peu rentable</strong> si tu es déjà au taux plein ou que tu pars à 67 ans (taux plein automatique).
+        Tarifs réels CNAV 2025 : ~1 700 € (taux seul, jeune) à ~9 000 € (taux + durée, senior à TMI 30 %).
+      </div>
+    </section>
+
+    <!-- ============= A04 CARRIÈRE LONGUE ============= -->
+    <section id="ra-carriere-longue">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8l4-4 4 8 4-4"/></svg></span>
+        Analyse 04 · Dispositif "Carrière longue"
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Si tu as commencé à travailler tôt (avant 21 ans) et validé au moins 5 trimestres avant 20 ans, tu peux partir <strong>jusqu'à 6 ans avant l'âge légal</strong>. Vérifie ton éligibilité ci-dessous.</p>
+      <div id="ra4-content"></div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Règles 2023+
+        </div>
+        <strong>Début avant 16 ans + 5 trim. avant 16 ans</strong> → départ possible à 58 ans<br>
+        <strong>Début avant 18 ans + 5 trim. avant 20 ans</strong> → départ possible à 60 ans<br>
+        <strong>Début avant 20 ans + 5 trim. avant 20 ans</strong> → départ possible à 62 ans<br>
+        <strong>Début avant 21 ans + 5 trim. avant 20 ans</strong> → départ possible à 63 ans<br>
+        <em>Le nombre total de trim. requis (172 pour 1973+) doit aussi être atteint.</em>
+      </div>
+    </section>
+
+    <!-- ============= A05 SENSIBILITÉ SALAIRE ============= -->
+    <section id="ra-sensibilite">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 2 2 4-7 3 4"/></svg></span>
+        Analyse 05 · Sensibilité à la croissance salariale
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Le SAM (Salaire Annuel Moyen) sur les 25 meilleures années est très sensible à ta progression de carrière. Voici l'impact d'une croissance de 0 à 4 %/an sur ta pension finale.</p>
+
+      <div class="card">
+        <div class="card-body no-pad" style="overflow-x:auto">
+          <table class="data-table" style="width:100%;border-collapse:collapse">
+            <thead>
+              <tr>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Croissance/an</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">SAM</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Pension brute/mois</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Pension nette/mois</th>
+              </tr>
+            </thead>
+            <tbody id="ra5-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 2 2 4-7 3 4"/></svg></div>
+            Pension selon la croissance salariale
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ra5-chart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div>© 2026 CalcInvest — Simulation à titre informatif</div>
+  <div>
+    <a href="/">Accueil</a> ·
+    <a href="/mes-projets">Mes projets</a> ·
+    <a href="/methodologie">Méthodologie</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/core/engine.bundle.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/views/retraite.view.js"></script>
+<script>
+  // Smooth scroll sidebar
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
