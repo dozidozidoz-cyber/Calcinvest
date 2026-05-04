@@ -615,7 +615,106 @@
     };
   }
 
-  const mod = { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, monthDiff, addMonths, ymLabel };
+  /* ============================================================
+     COMPARATEUR BROKERS (frais 2025 indicatifs FR/EU)
+     ============================================================
+     Modèle simplifié : pour chaque ordre, frais = max(feeMin,
+     min(feeMax, feeFixed + feePct * orderAmount)).
+     Plus frais annuels (frais de garde, abonnement, FX, etc.)
+     ============================================================ */
+  const BROKERS_2025 = [
+    {
+      id: 'trade-republic', label: 'Trade Republic',
+      feeFixed: 1, feePct: 0, feeMin: 1, feeMax: 1,
+      annualFee: 0,
+      pea: false, etfFreeList: 'Plan d\'épargne ETF (~2500 ETF)',
+      note: 'Plans d\'épargne mensuels gratuits sur ~2500 ETF. Hors plan : 1 €/ordre fixe. Pas de PEA.'
+    },
+    {
+      id: 'boursorama', label: 'Boursorama',
+      feeFixed: 0, feePct: 0.50, feeMin: 1.99, feeMax: 30,
+      annualFee: 0,
+      pea: true, etfFreeList: null,
+      note: 'Banque française, PEA + CTO + AV. Frais variables avec plafond 30 €. Bon pour gros DCA.'
+    },
+    {
+      id: 'fortuneo', label: 'Fortuneo',
+      feeFixed: 0, feePct: 0.20, feeMin: 1.95, feeMax: 25,
+      annualFee: 0,
+      pea: true, etfFreeList: null,
+      note: 'Banque française, PEA + CTO + AV. Frais 0.20-1.95 % selon ordre, plafond 25 €.'
+    },
+    {
+      id: 'degiro-core', label: 'DEGIRO (ETF Core sélectionnés)',
+      feeFixed: 0, feePct: 0, feeMin: 0, feeMax: 0,
+      annualFee: 0,
+      pea: false, etfFreeList: '~200 ETF Core (1 ordre gratuit/mois/ETF)',
+      note: '1 ordre gratuit/mois/ETF de la sélection Core. Frais de connexion 2.50 €/marché/an. Pas de PEA.'
+    },
+    {
+      id: 'degiro-std', label: 'DEGIRO (autres ETF)',
+      feeFixed: 1, feePct: 0, feeMin: 1, feeMax: 1,
+      annualFee: 5,  // ~connectivity fee si 2 marchés
+      pea: false, etfFreeList: null,
+      note: 'Hors sélection Core : 1 € + spreads. Bourse hors EUR : frais FX 0.25 %.'
+    },
+    {
+      id: 'saxo', label: 'Saxo Banque',
+      feeFixed: 2, feePct: 0.08, feeMin: 2, feeMax: 100,
+      annualFee: 0,
+      pea: true, etfFreeList: null,
+      note: 'PEA + CTO. Tarifs Classic : 2 € + 0.08 %. Inactivité 100 €/an si < 1 ordre/6 mois.'
+    },
+    {
+      id: 'ibkr', label: 'Interactive Brokers',
+      feeFixed: 0, feePct: 0.05, feeMin: 1.70, feeMax: 29,
+      annualFee: 0,
+      pea: false, etfFreeList: null,
+      note: 'Tiered : 0.05 % min 1.70 €. Le moins cher en gros volumes. Plateforme pro, courbe d\'apprentissage.'
+    }
+  ];
+
+  /**
+   * Calcule le coût d'un ordre selon le broker.
+   * @param {Object} broker — entry de BROKERS_2025
+   * @param {number} orderAmount — montant de l'ordre (€)
+   */
+  function computeOrderFee(broker, orderAmount) {
+    const variable = (orderAmount * broker.feePct) / 100;
+    const raw = broker.feeFixed + variable;
+    return Math.max(broker.feeMin || 0, Math.min(broker.feeMax || raw, raw));
+  }
+
+  /**
+   * Compare le coût total d'un DCA mensuel sur tous les brokers.
+   * @param {Object} opts — { monthlyAmount, years, growthRate (optionnel pour valeur finale) }
+   * @returns Array de { ...broker, costPerOrder, costTotal, costPctInvested }
+   */
+  function computeBrokerComparison(opts) {
+    const monthlyAmount = opts.monthlyAmount || 0;
+    const years         = opts.years         || 20;
+    const months = years * 12;
+    const totalInvested = monthlyAmount * months;
+
+    return BROKERS_2025.map((b) => {
+      const costPerOrder = computeOrderFee(b, monthlyAmount);
+      const annualFeesTotal = (b.annualFee || 0) * years;
+      const costTotalOrders = costPerOrder * months;
+      const costTotal = costTotalOrders + annualFeesTotal;
+      const costPctInvested = totalInvested > 0 ? (costTotal / totalInvested) * 100 : 0;
+      return Object.assign({}, b, {
+        costPerOrder:    costPerOrder,
+        costTotalOrders: costTotalOrders,
+        annualFeesTotal: annualFeesTotal,
+        costTotal:       costTotal,
+        costPctInvested: costPctInvested,
+        totalInvested:   totalInvested,
+        months:          months
+      });
+    }).sort((a, b) => a.costTotal - b.costTotal);
+  }
+
+  const mod = { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, computeBrokerComparison, computeOrderFee, BROKERS_2025, monthDiff, addMonths, ymLabel };
   if (typeof module !== 'undefined' && module.exports) module.exports = mod;
   else global.CalcDCA = mod;
 })(typeof window !== 'undefined' ? window : this);

@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, monthDiff, addMonths, ymLabel } = window.CalcDCA;
+  const { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, computeBrokerComparison, monthDiff, addMonths, ymLabel } = window.CalcDCA;
   const num = window.FIN.num;
 
   // ---------- State ----------
@@ -408,7 +408,7 @@
     lastResult = r;
 
     renderSummary(form, r);
-    const renders = [renderAnalyse01, renderAnalyse02, renderAnalyse03, renderAnalyse04, renderAnalyse05, renderAnalyse06, renderAnalyse07, renderAnalyse08, renderAnalyse09, renderAnalyse10];
+    const renders = [renderAnalyse01, renderAnalyse02, renderAnalyse03, renderAnalyse04, renderAnalyse05, renderAnalyse06, renderAnalyse07, renderAnalyse08, renderAnalyse09, renderAnalyse10, renderAnalyse11];
     renders.forEach((fn) => { try { fn(form, r); } catch (e) { console.error('[CalcInvest]', fn.name, e); } });
     updateDateHint();
     syncUrl(form);
@@ -1364,6 +1364,66 @@
     );
   }
 
+  /* ============================================================
+     A11 : Comparateur brokers
+     ============================================================ */
+  function renderAnalyse11(form, r) {
+    if (!r) return;
+    const monthly = form.monthlyAmount || 0;
+    const years   = Math.max(1, Math.round(r.durationMonths / 12));
+    const cmp     = computeBrokerComparison({ monthlyAmount: monthly, years: years });
+
+    const tbody = document.getElementById('a11-tbody');
+    if (tbody) {
+      const bestCost = cmp[0].costTotal;
+      const worstCost = cmp[cmp.length - 1].costTotal;
+      tbody.innerHTML = cmp.map((b, i) => {
+        const isBest  = i === 0;
+        const star    = isBest ? ' ⭐' : '';
+        const peaBadge = b.pea
+          ? '<span style="font-size:10px;background:rgba(52,211,153,.2);color:#34D399;padding:2px 6px;border-radius:99px;font-weight:600">PEA</span>'
+          : '<span style="font-size:10px;background:rgba(168,168,168,.18);color:var(--text-3);padding:2px 6px;border-radius:99px;font-weight:600">CTO</span>';
+        const costColor = b.costTotal === 0
+          ? 'var(--accent)'
+          : b.costTotal < bestCost * 2
+            ? 'var(--text)'
+            : 'var(--red)';
+        return '<tr>' +
+          '<td style="padding:10px 12px;font-weight:600">' + b.label + star + '</td>' +
+          '<td style="padding:10px 12px;font-family:var(--font-mono);font-size:12px">' + (b.costPerOrder === 0 ? 'gratuit' : CI.fmtMoney(b.costPerOrder, 2)) + '</td>' +
+          '<td style="padding:10px 12px;font-weight:700;color:' + costColor + '">' + (b.costTotal === 0 ? '0 €' : CI.fmtMoney(b.costTotal, 0)) + '</td>' +
+          '<td style="padding:10px 12px;color:var(--text-3)">' + b.costPctInvested.toFixed(2) + ' %</td>' +
+          '<td style="padding:10px 12px">' + peaBadge + '</td>' +
+          '<td style="padding:10px 12px;font-size:12px;color:var(--text-2);max-width:380px">' + b.note + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    // Stats principales
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const best = cmp[0];
+    const worst = cmp[cmp.length - 1];
+    const ecart = worst.costTotal - best.costTotal;
+    set('a11-best-name',    best.label);
+    set('a11-best-cost',    best.costTotal === 0 ? 'Gratuit' : CI.fmtMoney(best.costTotal, 0));
+    set('a11-worst-name',   worst.label);
+    set('a11-worst-cost',   CI.fmtMoney(worst.costTotal, 0));
+    set('a11-ecart',        '+' + CI.fmtMoney(ecart, 0));
+    set('a11-meta',         CI.fmtNum(monthly, 0) + ' €/mois × ' + years + ' ans = ' + CI.fmtMoney(monthly * years * 12, 0) + ' investis');
+
+    // Insight
+    const ratioWorstBest = best.costTotal > 0 ? (worst.costTotal / best.costTotal).toFixed(1) : '∞';
+    const peaWarning = !best.pea
+      ? ' <span class="muted">Note : la formule la moins chère (' + best.label + ') ne propose pas le PEA. Pour profiter de l\'exonération IR après 5 ans, il faut accepter Boursorama, Fortuneo ou Saxo.</span>'
+      : '';
+    setInsight('a11',
+      'Sur <strong>' + years + ' ans</strong> de DCA à <strong>' + CI.fmtNum(monthly, 0) + ' €/mois</strong>, ' +
+      'le moins cher est <em>' + best.label + '</em> (' + (best.costTotal === 0 ? 'gratuit' : CI.fmtMoney(best.costTotal, 0)) + '), ' +
+      'le plus cher <em>' + worst.label + '</em> à <span class="neg">' + CI.fmtMoney(worst.costTotal, 0) + '</span>. ' +
+      'Différence : <strong>' + CI.fmtMoney(ecart, 0) + '</strong> (×' + ratioWorstBest + ').' + peaWarning
+    );
+  }
+
   function drawDecaissementChart(dc, curr) {
     const COLORS = ['#059669', '#2563EB', '#D97706', '#DC2626'];
     const horizon = dc.horizonYears || da10Horizon;
@@ -1424,7 +1484,7 @@
     CI.exportPDF({
       title:    'CalcInvest — DCA Bourse',
       summary:  summary,
-      sectionIds: ['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10'],
+      sectionIds: ['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10','a11'],
       fileName: 'calcinvest-dca-bourse'
     });
   };

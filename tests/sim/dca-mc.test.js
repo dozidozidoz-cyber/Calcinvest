@@ -356,3 +356,61 @@ test('compareProtocolDiversification: returns 4 configs (1, 3, 5, 10)', () => {
   assert.strictEqual(arr[3].nProtocols, 10);
   arr.forEach((r) => assert.ok(typeof r.label === 'string'));
 });
+
+// ─── Comparateur brokers ──────────────────────────────────────────────────
+
+const dcaCore = require('../../assets/js/core/calc-dca');
+
+test('BROKERS_2025: 7 brokers exposés avec champs requis', () => {
+  assert.ok(dcaCore.BROKERS_2025.length >= 7);
+  dcaCore.BROKERS_2025.forEach((b) => {
+    assert.ok(typeof b.id === 'string');
+    assert.ok(typeof b.label === 'string');
+    assert.ok(typeof b.feeFixed === 'number');
+    assert.ok(typeof b.feePct === 'number');
+    assert.ok(typeof b.feeMin === 'number');
+    assert.ok(typeof b.note === 'string');
+  });
+});
+
+test('computeOrderFee: respecte feeMin et feeMax', () => {
+  const broker = { feeFixed: 0, feePct: 0.50, feeMin: 1.99, feeMax: 30 };
+  // Petit ordre 100€ → 0.50€ < min 1.99€ → 1.99
+  assert.strictEqual(dcaCore.computeOrderFee(broker, 100), 1.99);
+  // Gros ordre 10000€ → 50€ > max 30€ → 30
+  assert.strictEqual(dcaCore.computeOrderFee(broker, 10000), 30);
+  // Ordre normal 500€ → 2.50€ entre min et max
+  assert.strictEqual(dcaCore.computeOrderFee(broker, 500), 2.50);
+});
+
+test('computeBrokerComparison: tri ascendant par coût total', () => {
+  const r = dcaCore.computeBrokerComparison({ monthlyAmount: 500, years: 20 });
+  for (let i = 1; i < r.length; i++) {
+    assert.ok(r[i].costTotal >= r[i - 1].costTotal,
+      `costs not sorted: ${r[i - 1].costTotal} → ${r[i].costTotal}`);
+  }
+});
+
+test('computeBrokerComparison: DEGIRO Core toujours moins cher (gratuit)', () => {
+  const r500 = dcaCore.computeBrokerComparison({ monthlyAmount: 500, years: 20 });
+  const r3000 = dcaCore.computeBrokerComparison({ monthlyAmount: 3000, years: 20 });
+  assert.strictEqual(r500[0].id, 'degiro-core');
+  assert.strictEqual(r3000[0].id, 'degiro-core');
+});
+
+test('computeBrokerComparison: Boursorama coûte plus cher en gros ordres', () => {
+  const r500 = dcaCore.computeBrokerComparison({ monthlyAmount: 500, years: 10 });
+  const r3000 = dcaCore.computeBrokerComparison({ monthlyAmount: 3000, years: 10 });
+  const bs500 = r500.find((b) => b.id === 'boursorama');
+  const bs3000 = r3000.find((b) => b.id === 'boursorama');
+  // Plafond Boursorama 30€ : ordre 3000€×0.5% = 15€, ordre 500€ = max(1.99, 2.50) = 2.50€
+  assert.ok(bs3000.costPerOrder > bs500.costPerOrder);
+});
+
+test('computeBrokerComparison: % du capital investi cohérent', () => {
+  const r = dcaCore.computeBrokerComparison({ monthlyAmount: 500, years: 20 });
+  r.forEach((b) => {
+    assert.ok(b.costPctInvested >= 0 && b.costPctInvested < 5,
+      `costPct=${b.costPctInvested}% pour ${b.label}`);
+  });
+});
