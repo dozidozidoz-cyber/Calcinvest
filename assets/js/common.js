@@ -243,6 +243,147 @@
     return backdrop;
   };
 
+  /* ===========================================================
+     WIZARD multi-étapes (mode débutant guidé)
+     ===========================================================
+     Usage:
+       CI.wizard({
+         title: 'Mode débutant — Intérêts composés',
+         steps: [
+           { id: 'capital', question: 'Combien tu veux placer au départ ?',
+             helpText: 'Capital initial. Ex : 5 000 €',
+             inputType: 'number', suffix: '€', defaultValue: 1000, min: 0 },
+           // ...
+         ],
+         onComplete: (answers) => { ... applique answers aux IDs du form ... }
+       });
+     =========================================================== */
+  CI.wizard = function (config) {
+    config = config || {};
+    const steps = config.steps || [];
+    if (steps.length === 0) return;
+    let currentIdx = 0;
+    const answers = {};
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop';
+    backdrop.innerHTML = `
+      <div class="modal" role="dialog" aria-labelledby="wizard-title" style="max-width:500px">
+        <div class="modal-header">
+          <div id="wizard-title" class="modal-title">${config.title || 'Mode débutant'}</div>
+          <button class="modal-close" aria-label="Fermer">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M4 4l12 12M16 4L4 16" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div style="padding:0 24px;margin-top:-4px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <div id="wizard-progress" style="flex:1;height:4px;background:var(--border-soft);border-radius:99px;overflow:hidden">
+              <div id="wizard-progress-fill" style="height:100%;width:0%;background:var(--accent);transition:width .25s"></div>
+            </div>
+            <span id="wizard-step-counter" style="font-size:12px;color:var(--text-3);font-family:var(--font-mono);min-width:40px;text-align:right">1/${steps.length}</span>
+          </div>
+        </div>
+        <div class="modal-body" id="wizard-body" style="min-height:160px"></div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-action="prev" style="visibility:hidden">← Précédent</button>
+          <button class="btn btn-primary" data-action="next">Suivant →</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(backdrop);
+
+    const body = backdrop.querySelector('#wizard-body');
+    const fill = backdrop.querySelector('#wizard-progress-fill');
+    const counter = backdrop.querySelector('#wizard-step-counter');
+    const btnPrev = backdrop.querySelector('[data-action="prev"]');
+    const btnNext = backdrop.querySelector('[data-action="next"]');
+    const close = () => {
+      backdrop.style.animation = 'fadeIn 150ms reverse';
+      setTimeout(() => backdrop.remove(), 140);
+    };
+    backdrop.querySelector('.modal-close').addEventListener('click', close);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
+
+    function renderStep() {
+      const s = steps[currentIdx];
+      const val = answers[s.id] != null ? answers[s.id] : (s.defaultValue != null ? s.defaultValue : '');
+      let inputHtml = '';
+      if (s.inputType === 'select') {
+        const opts = (s.options || []).map((o) => `<option value="${o.value}"${String(val) === String(o.value) ? ' selected' : ''}>${o.label}</option>`).join('');
+        inputHtml = `<select id="wizard-input" style="width:100%;padding:10px 12px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:8px;font-size:14px;color:var(--text)">${opts}</select>`;
+      } else {
+        const suffix = s.suffix ? `<span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;pointer-events:none">${s.suffix}</span>` : '';
+        const minAttr = s.min != null ? `min="${s.min}"` : '';
+        const maxAttr = s.max != null ? `max="${s.max}"` : '';
+        const stepAttr = s.step != null ? `step="${s.step}"` : '';
+        inputHtml = `<div style="position:relative">
+          <input type="${s.inputType || 'number'}" id="wizard-input" value="${val}" ${minAttr} ${maxAttr} ${stepAttr}
+            style="width:100%;padding:12px 50px 12px 14px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:8px;font-size:18px;font-weight:600;color:var(--text);font-family:var(--font-mono)" />
+          ${suffix}
+        </div>`;
+      }
+      const presetsHtml = (s.presets || []).length > 0
+        ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">` +
+          s.presets.map((p) => `<button type="button" class="pill wizard-preset" data-val="${p.value}">${p.label}</button>`).join('') +
+          `</div>`
+        : '';
+      body.innerHTML = `
+        <div style="margin-bottom:8px">
+          <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px">${s.question}</div>
+          ${s.helpText ? `<div style="font-size:13px;color:var(--text-3);line-height:1.5">${s.helpText}</div>` : ''}
+        </div>
+        <div style="margin-top:18px">${inputHtml}${presetsHtml}</div>
+      `;
+      counter.textContent = (currentIdx + 1) + '/' + steps.length;
+      fill.style.width = ((currentIdx + 1) / steps.length * 100) + '%';
+      btnPrev.style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
+      btnNext.textContent = (currentIdx === steps.length - 1) ? 'Terminer ✓' : 'Suivant →';
+
+      const inp = body.querySelector('#wizard-input');
+      if (inp) {
+        setTimeout(() => inp.focus(), 50);
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') btnNext.click();
+        });
+      }
+      body.querySelectorAll('.wizard-preset').forEach((b) => {
+        b.addEventListener('click', () => {
+          const v = b.dataset.val;
+          if (inp) inp.value = v;
+        });
+      });
+    }
+
+    function captureAnswer() {
+      const s = steps[currentIdx];
+      const inp = body.querySelector('#wizard-input');
+      if (!inp) return;
+      let v = inp.value;
+      if (s.inputType === 'number' || !s.inputType) v = parseFloat(v);
+      answers[s.id] = v;
+    }
+
+    btnNext.addEventListener('click', () => {
+      captureAnswer();
+      if (currentIdx === steps.length - 1) {
+        close();
+        if (typeof config.onComplete === 'function') config.onComplete(answers);
+      } else {
+        currentIdx++;
+        renderStep();
+      }
+    });
+    btnPrev.addEventListener('click', () => {
+      captureAnswer();
+      if (currentIdx > 0) { currentIdx--; renderStep(); }
+    });
+
+    renderStep();
+    return backdrop;
+  };
+
   CI.promptSave = function (type, data, defaultName, callback) {
     CI.modal({
       title: 'Sauvegarder le projet',
