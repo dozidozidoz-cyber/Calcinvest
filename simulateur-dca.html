@@ -255,6 +255,13 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Phase décaissement</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#a11">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M5 10h6"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 11</div>
+          <div class="sidebar-link-title">Comparateur brokers</div>
+        </div>
+      </a>
     </div>
   </aside>
 
@@ -1090,6 +1097,68 @@ if ('serviceWorker' in navigator) {
       </div>
     </section>
 
+
+    <!-- ============= A11 · COMPARATEUR BROKERS ============= -->
+    <section id="a11">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M5 10h6"/></svg></span>
+        Analyse 11 · Comparateur brokers (frais 2025)
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Sur 20 ans de DCA mensuel, l'écart de frais entre brokers peut représenter <strong>plusieurs milliers d'euros</strong>. Cette comparaison est basée sur ton montant DCA actuel et la durée simulée.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Le moins cher</div>
+          <div class="stat-value pos" id="a11-best-cost">—</div>
+          <div class="stat-sub" id="a11-best-name">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Le plus cher</div>
+          <div class="stat-value warn" id="a11-worst-cost">—</div>
+          <div class="stat-sub" id="a11-worst-name">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Écart total</div>
+          <div class="stat-value neg" id="a11-ecart">—</div>
+          <div class="stat-sub">Frais cumulés DCA</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Hypothèse de calcul</div>
+          <div class="stat-value info" style="font-size:14px" id="a11-meta">—</div>
+          <div class="stat-sub">DCA mensuel × durée</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-body no-pad" style="overflow-x:auto">
+          <table class="data-table" style="width:100%;border-collapse:collapse;min-width:780px">
+            <thead>
+              <tr>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Broker</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Frais/ordre</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Total cumulé</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">% investi</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Enveloppe</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Note</th>
+              </tr>
+            </thead>
+            <tbody id="a11-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Comment choisir
+        </div>
+        <strong>DEGIRO ETF Core</strong> est imbattable si tes ETF cibles sont dans la sélection (~200 ETF, 1 ordre gratuit/mois/ETF). Limite : pas de PEA.<br>
+        <strong>Trade Republic</strong> : 1 €/ordre fixe, plans d'épargne mensuels gratuits, simple. Pas de PEA.<br>
+        <strong>Boursorama / Fortuneo</strong> : seules options pour PEA + qualité service. Frais variables avec plafond, peu rentable en gros DCA.<br>
+        <strong>Interactive Brokers</strong> : la moins chère en gros volumes, mais plateforme pro avec courbe d'apprentissage.<br>
+        <em>Tarifs indicatifs 2025, vérifie toujours la grille en vigueur sur le site du broker avant ouverture.</em>
+      </div>
+    </section>
 
     <div class="info-box warn" style="margin-top:32px">
       <div class="info-box-title">
