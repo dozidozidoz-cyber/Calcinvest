@@ -433,6 +433,56 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* A07 — Geographic Arbitrage                                            */
+  /* ------------------------------------------------------------------ */
+  function renderA07(p, r) {
+    if (!CF.computeGeoArbitrage) return;
+    const data = CF.computeGeoArbitrage(p);
+    const tbody = document.getElementById('fia7-tbody');
+    if (!tbody) return;
+
+    const fr = data.find((c) => c.id === 'fr');
+    const baselineYears = fr ? fr.yearsToFire : 0;
+
+    tbody.innerHTML = data.map((c, i) => {
+      const isBest    = i === 0;
+      const isFrance  = c.id === 'fr';
+      const star      = isBest ? ' ⭐' : '';
+      const trBg      = isFrance ? 'background:rgba(96,165,250,0.06)' : '';
+      const yearsSaved = baselineYears - c.yearsToFire;
+      const savedDisplay = isFrance ? '—' : (yearsSaved > 0 ? '<span class="pos">−' + yearsSaved.toFixed(1) + ' ans</span>' : '<span class="warn">+' + Math.abs(yearsSaved).toFixed(1) + ' ans</span>');
+      return '<tr style="' + trBg + '">' +
+        '<td style="padding:10px 12px;font-weight:600">' + c.flag + ' ' + c.name + star + (isFrance ? ' <span style="font-size:10px;color:var(--text-3);font-weight:400">(référence)</span>' : '') + '</td>' +
+        '<td style="padding:10px 12px;font-family:var(--font-mono);font-size:12px">' + c.col + ' %</td>' +
+        '<td style="padding:10px 12px">' + CI.fmtMoney(c.adjustedExpenses, 0) + '/an</td>' +
+        '<td style="padding:10px 12px;font-weight:600">' + CI.fmtMoney(c.fireNumber, 0) + '</td>' +
+        '<td style="padding:10px 12px"><strong>' + c.yearsToFire.toFixed(1) + ' ans</strong></td>' +
+        '<td style="padding:10px 12px">' + savedDisplay + '</td>' +
+        '<td style="padding:10px 12px;font-size:11px;color:var(--text-3);max-width:280px">' + c.taxNote + '</td>' +
+        '</tr>';
+    }).join('');
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const best = data[0];
+    set('fia7-best-name',   best.flag + ' ' + best.name);
+    set('fia7-best-years',  best.yearsToFire.toFixed(1) + ' ans');
+    set('fia7-best-saved',  fr ? '−' + (baselineYears - best.yearsToFire).toFixed(1) + ' ans vs France' : '—');
+    set('fia7-best-fire',   CI.fmtMoney(best.fireNumber, 0));
+    set('fia7-fr-fire',     fr ? CI.fmtMoney(fr.fireNumber, 0) : '—');
+    set('fia7-fr-years',    fr ? fr.yearsToFire.toFixed(1) + ' ans' : '—');
+
+    const yearsSaved = fr ? (baselineYears - best.yearsToFire) : 0;
+    setInsight('fia7-geo-arb',
+      'En délocalisant en <strong>' + best.flag + ' ' + best.name + '</strong> (coût de la vie ' + best.col + ' % de la France), ' +
+      'tu atteins le FIRE en <em>' + best.yearsToFire.toFixed(1) + ' ans</em> au lieu de ' + (fr ? fr.yearsToFire.toFixed(1) + ' ans' : '—') + ' — ' +
+      '<span class="pos">' + yearsSaved.toFixed(1) + ' ans gagnés</span>. ' +
+      'Ton capital cible passe de <strong>' + (fr ? CI.fmtMoney(fr.fireNumber, 0) : '—') + '</strong> à ' +
+      '<strong>' + CI.fmtMoney(best.fireNumber, 0) + '</strong>. ' +
+      '<span class="muted">L\'arbitrage géographique est un levier sous-estimé : il ne dépend pas du marché, juste de ton choix de vie. Vérifier la résidence fiscale et l\'accès aux soins avant de décider.</span>'
+    );
+  }
+
+  /* ------------------------------------------------------------------ */
   /* run — point d'entrée principal                                        */
   /* ------------------------------------------------------------------ */
   function run() {
@@ -446,6 +496,7 @@
     renderA04(p, r);
     renderA05(p, r);
     renderA06(p, r);
+    renderA07(p, r);
   }
 
   /* ------------------------------------------------------------------ */
@@ -466,7 +517,7 @@
     CI.exportPDF({
       title:    'CalcInvest — FIRE',
       summary:  summary,
-      sectionIds: ['fia1-overview','fia2-trajectory','fia3-variants','fia4-withdrawal','fia5-sensitivity','fia6-montecarlo'],
+      sectionIds: ['fia1-overview','fia2-trajectory','fia3-variants','fia4-withdrawal','fia5-sensitivity','fia6-montecarlo','fia7-geo-arb'],
       fileName: 'calcinvest-fire'
     });
   };

@@ -87,3 +87,66 @@ test('calcMonteCarloFIRE: fatTail option alters path', () => {
   assert.ok(Math.abs(b.percentiles[10].p10 - a.percentiles[10].p10) > 0
         || Math.abs(b.percentiles[10].p90 - a.percentiles[10].p90) > 0);
 });
+
+// ─── Geographic arbitrage ─────────────────────────────────────────────────
+
+test('COL_COUNTRIES: ≥10 pays avec champs requis', () => {
+  assert.ok(fire.COL_COUNTRIES.length >= 10);
+  fire.COL_COUNTRIES.forEach((c) => {
+    assert.ok(typeof c.id === 'string');
+    assert.ok(typeof c.name === 'string');
+    assert.ok(typeof c.flag === 'string');
+    assert.ok(typeof c.col === 'number' && c.col > 0 && c.col <= 200);
+    assert.ok(typeof c.taxNote === 'string');
+  });
+});
+
+test('COL_COUNTRIES: France = base 100', () => {
+  const fr = fire.COL_COUNTRIES.find((c) => c.id === 'fr');
+  assert.ok(fr);
+  assert.strictEqual(fr.col, 100);
+});
+
+test('computeGeoArbitrage: tri par yearsToFire ascendant', () => {
+  const r = fire.computeGeoArbitrage({
+    age: 30, annualExpenses: 30000, currentSavings: 20000,
+    monthlySavings: 1000, annualReturn: 7, withdrawalRate: 4
+  });
+  for (let i = 1; i < r.length; i++) {
+    assert.ok(r[i].yearsToFire >= r[i - 1].yearsToFire,
+      `years not sorted: ${r[i - 1].yearsToFire} → ${r[i].yearsToFire}`);
+  }
+});
+
+test('computeGeoArbitrage: pays bas COL → moins d\'années (FIRE plus tôt)', () => {
+  const r = fire.computeGeoArbitrage({
+    age: 30, annualExpenses: 30000, currentSavings: 20000,
+    monthlySavings: 1000, annualReturn: 7, withdrawalRate: 4
+  });
+  const fr = r.find((c) => c.id === 'fr');
+  const th = r.find((c) => c.id === 'th');
+  assert.ok(th.yearsToFire < fr.yearsToFire,
+    `Thailand FIRE (${th.yearsToFire}y) should beat France (${fr.yearsToFire}y)`);
+});
+
+test('computeGeoArbitrage: dépenses ajustées = base × COL/100', () => {
+  const r = fire.computeGeoArbitrage({
+    age: 30, annualExpenses: 30000, currentSavings: 20000,
+    monthlySavings: 1000, annualReturn: 7, withdrawalRate: 4
+  });
+  const th = r.find((c) => c.id === 'th');
+  const expected = 30000 * (38 / 100);
+  assert.ok(Math.abs(th.adjustedExpenses - expected) < 0.01);
+});
+
+test('computeGeoArbitrage: FIRE Number = dépenses ajustées / withdrawalRate', () => {
+  const r = fire.computeGeoArbitrage({
+    age: 30, annualExpenses: 30000, currentSavings: 20000,
+    monthlySavings: 1000, annualReturn: 7, withdrawalRate: 4
+  });
+  r.forEach((c) => {
+    const expected = c.adjustedExpenses / 0.04;
+    assert.ok(Math.abs(c.fireNumber - expected) < 1,
+      `${c.name}: fire=${c.fireNumber} vs expected=${expected}`);
+  });
+});

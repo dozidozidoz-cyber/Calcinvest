@@ -255,11 +255,68 @@
     };
   }
 
+  /* ============================================================
+     GEOGRAPHIC ARBITRAGE — Cost of Living par pays
+     ============================================================
+     Indices indicatifs basés sur Numbeo (base 100 = France).
+     Inclut le coût hors loyer × 0.5 + loyer × 0.5 (pondération
+     classique Numbeo Cost of Living + Rent Index).
+     Mise à jour : Q1 2025.
+     ============================================================ */
+  const COL_COUNTRIES = [
+    { id: 'fr',  flag: '🇫🇷', name: 'France',     col: 100, taxNote: 'Référence (résidence fiscale FR)',                          tip: 'Dépenses moyennes urbaines, hors Paris/régions chères.' },
+    { id: 'pt',  flag: '🇵🇹', name: 'Portugal',   col: 65,  taxNote: 'NHR aboli en 2024, mais résidence fiscale plus douce qu\'en FR', tip: 'Lisbonne plus cher que Porto. Climat doux, expat hub.' },
+    { id: 'es',  flag: '🇪🇸', name: 'Espagne',    col: 70,  taxNote: 'Régime Beckham 24 % flat sur revenus de source ES (6 ans)',  tip: 'Madrid/BCN = 80 %. Sud (Valencia, Malaga) = 60 %.' },
+    { id: 'it',  flag: '🇮🇹', name: 'Italie',     col: 75,  taxNote: 'Forfait 100 k €/an pour résidents fortunés (9 ans)',         tip: 'Sud (Sicile, Pouilles) très abordable, Milan élevé.' },
+    { id: 'mx',  flag: '🇲🇽', name: 'Mexique',    col: 50,  taxNote: 'Visa temporaire 1 an renouvelable, fiscalité territoriale',  tip: 'Mexico, Mérida, Playa del Carmen — communautés expat.' },
+    { id: 'th',  flag: '🇹🇭', name: 'Thaïlande',  col: 38,  taxNote: 'Long-Term Resident visa 10 ans pour rentiers (~80 k$/an)',   tip: 'Chiang Mai très bon marché, Bangkok un peu plus cher.' },
+    { id: 'vn',  flag: '🇻🇳', name: 'Vietnam',    col: 35,  taxNote: 'Visa touriste long séjour, aucun statut résident permanent',  tip: 'Ho Chi Minh / Da Nang — coût ultra bas mais inflation rapide.' },
+    { id: 'id',  flag: '🇮🇩', name: 'Indonésie (Bali)', col: 42, taxNote: '2nd home visa 5/10 ans avec dépôt bancaire 130 k$',     tip: 'Canggu / Ubud — communauté expat, internet fibre.' },
+    { id: 'my',  flag: '🇲🇾', name: 'Malaisie',   col: 45,  taxNote: 'MM2H — récemment durci, 35 k$/mois revenus requis',          tip: 'Penang, Kuala Lumpur — anglophone, qualité de vie.' },
+    { id: 'ge',  flag: '🇬🇪', name: 'Géorgie',    col: 40,  taxNote: '0 % impôt revenus étrangers, résidence fiscale à 6 mois',     tip: 'Tbilissi — hub remote workers, climat continental.' },
+    { id: 'tn',  flag: '🇹🇳', name: 'Tunisie',    col: 35,  taxNote: 'Visa long séjour pour rentiers, résidence permanente possible', tip: 'Tunis, Hammamet — proche FR, francophone.' },
+    { id: 'ma',  flag: '🇲🇦', name: 'Maroc',      col: 45,  taxNote: 'Statut résident retraité avec abattement 80 % sur pension étrangère', tip: 'Marrakech, Casablanca, Tanger — francophone, climat doux.' }
+  ];
+
+  /**
+   * Compare le FIRE Number et le temps requis dans plusieurs pays.
+   * @param {Object} p — params calcFIRE (annualExpenses, currentSavings,
+   *                     monthlySavings, annualReturn, withdrawalRate)
+   * @param {Array<string>} countryIds — liste d'IDs (default tous)
+   */
+  function computeGeoArbitrage(p, countryIds) {
+    const wantList = countryIds && countryIds.length > 0
+      ? COL_COUNTRIES.filter(function (c) { return countryIds.indexOf(c.id) >= 0; })
+      : COL_COUNTRIES;
+    const baseExpenses = p.annualExpenses || 30000;
+
+    return wantList.map(function (c) {
+      const adjustedExpenses = baseExpenses * (c.col / 100);
+      const adjustedParams = Object.assign({}, p, { annualExpenses: adjustedExpenses });
+      const result = calcFIRE(adjustedParams);
+      return {
+        id:               c.id,
+        flag:             c.flag,
+        name:             c.name,
+        col:              c.col,
+        taxNote:          c.taxNote,
+        tip:              c.tip,
+        adjustedExpenses: adjustedExpenses,
+        fireNumber:       result.fireTarget,
+        yearsToFire:      result.yearsToFire,
+        fireAge:          result.fireAge,
+        achieved:         result.achieved
+      };
+    }).sort(function (a, b) { return a.yearsToFire - b.yearsToFire; });
+  }
+
   const mod = {
     calcFIRE: calcFIRE,
     simulateWithdrawal: simulateWithdrawal,
     calcFireSensitivity: calcFireSensitivity,
-    calcMonteCarloFIRE: calcMonteCarloFIRE
+    calcMonteCarloFIRE: calcMonteCarloFIRE,
+    computeGeoArbitrage: computeGeoArbitrage,
+    COL_COUNTRIES: COL_COUNTRIES
   };
 
   if (isNode) {

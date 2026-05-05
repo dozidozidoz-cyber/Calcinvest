@@ -163,6 +163,16 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Monte Carlo</div>
         </div>
       </a>
+
+      <a class="sidebar-link" href="#fia7-geo-arb">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 07</div>
+          <div class="sidebar-link-title">Geographic arbitrage</div>
+        </div>
+      </a>
     </div>
   </aside>
 
@@ -721,6 +731,65 @@ if ('serviceWorker' in navigator) {
           Limites du modèle
         </div>
         Cette simulation utilise une distribution log-normale synthétique, pas des données historiques réelles. Les marchés réels présentent des séquences de rendement qui peuvent être bien moins favorables (sequence of returns risk). Pour plus de robustesse, privilégiez un taux de retrait ≤ 3.5 % ou une marge de sécurité de 25 %+.
+      </div>
+    </section>
+
+    <!-- ========== Analyse 07 — Geographic arbitrage ========== -->
+    <section id="fia7-geo-arb">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon" style="background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.3);color:#60A5FA">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12"/></svg>
+        </span>
+        Analyse 07 · Geographic arbitrage
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">L'arbitrage géographique est le levier le plus sous-estimé du FIRE : tes mêmes <strong>30 000 €/an</strong> de dépenses en France représentent <strong>~12 000 €/an</strong> en Thaïlande. Conséquence : tu peux atteindre l'indépendance financière 5 à 10 ans plus tôt en délocalisant.</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Plus rapide</div>
+          <div class="stat-value pos" id="fia7-best-name">—</div>
+          <div class="stat-sub" id="fia7-best-saved">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Années à FIRE (best)</div>
+          <div class="stat-value info" id="fia7-best-years">—</div>
+          <div class="stat-sub">Capital cible : <span id="fia7-best-fire">—</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">FIRE en France</div>
+          <div class="stat-value warn" id="fia7-fr-years">—</div>
+          <div class="stat-sub">Capital cible : <span id="fia7-fr-fire">—</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-body no-pad" style="overflow-x:auto">
+          <table class="data-table" style="width:100%;border-collapse:collapse;min-width:760px">
+            <thead>
+              <tr>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Pays</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Coût de la vie</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Dépenses ajustées</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">FIRE Number</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Années à FIRE</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Vs France</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Note fiscale</th>
+              </tr>
+            </thead>
+            <tbody id="fia7-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Méthodologie & limites
+        </div>
+        <strong>Indices Cost of Living</strong> : basés sur Numbeo (Q1 2025), pondérés Cost of Living Index + Rent Index. Base 100 = France moyenne. Un index de 38 % signifie que les mêmes dépenses coûtent 38 % du prix français.<br>
+        <strong>Hypothèses</strong> : ton style de vie reste identique. Tu gardes ton portefeuille FR (PEA, AV) ou tu conserves ta résidence fiscale FR.<br>
+        <strong>Limites</strong> : système de santé, école des enfants, transports, climat, langue, coût des billets retour, inflation locale (rapide en Asie SE). Vérifier le statut de résident fiscal et l'accès aux soins avant toute décision. La double imposition est gérée par les conventions bilatérales.<br>
+        <em>Cette analyse est un outil de réflexion, pas un conseil de relocalisation.</em>
       </div>
     </section>
 
