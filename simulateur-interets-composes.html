@@ -161,6 +161,15 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Enveloppes fiscales</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#ca-quand">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 07</div>
+          <div class="sidebar-link-title">Quand commencer ?</div>
+        </div>
+      </a>
     </div>
   </aside>
 
@@ -716,6 +725,82 @@ if ('serviceWorker' in navigator) {
         <strong>Assurance-Vie</strong> : ton taux de rendement, frais de gestion 0.8 %/an. Après 8 ans : taux 7.5 % + PS, abattement 4 600 € sur les gains.<br>
         <strong>CTO</strong> : ton taux de rendement, flat tax 30 % (PFU) sur les plus-values.<br>
         <em>Simulation en nominal (hors inflation). Les règles fiscales peuvent évoluer.</em>
+      </div>
+    </section>
+
+    <!-- ============= A07 · QUAND COMMENCER ? ============= -->
+    <section id="ca-quand">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+        </span>
+        Analyse 07 · Quand commencer ?
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">À versement mensuel et taux fixés, à quel âge maximum peux-tu démarrer pour atteindre un capital cible à un âge donné ? Et combien faut-il verser à chaque âge ? Le levier le plus puissant des intérêts composés, c'est le temps.</p>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text-3)">Capital cible :</span>
+          <div class="stepper" data-step="50000" data-min="10000" style="width:auto">
+            <button class="stepper-btn" data-dir="-1" type="button">−</button>
+            <input class="stepper-input" type="number" id="ca7-target" value="500000" />
+            <span class="stepper-unit">€</span>
+            <button class="stepper-btn" data-dir="1" type="button">+</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text-3)">Âge cible :</span>
+          <div class="stepper" data-step="1" data-min="40" data-max="80" style="width:auto">
+            <button class="stepper-btn" data-dir="-1" type="button">−</button>
+            <input class="stepper-input" type="number" id="ca7-target-age" value="65" />
+            <span class="stepper-unit">ans</span>
+            <button class="stepper-btn" data-dir="1" type="button">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body no-pad" style="overflow-x:auto">
+          <table class="data-table" style="width:100%;border-collapse:collapse;min-width:780px">
+            <thead>
+              <tr>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Âge de départ</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Horizon</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Capital final (versement actuel)</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Total versé</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Intérêts générés</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Versement requis pour cible</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Statut</th>
+              </tr>
+            </thead>
+            <tbody id="ca7-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 4 3-7 3 6"/></svg>
+            </div>
+            Versement mensuel requis selon l'âge de départ
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="ca7-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Comment lire ce tableau
+        </div>
+        <strong>Capital final</strong> : ce que ton versement mensuel actuel produit en démarrant à cet âge.<br>
+        <strong>Versement requis</strong> : ce qu'il faudrait verser pour atteindre la cible à cet âge.<br>
+        <strong>⭐</strong> marque l'âge maximum auquel tu peux démarrer en gardant ton versement actuel.<br>
+        <em>Le ratio versement requis 50 ans / 25 ans est typiquement ×8 à ×12 — c'est tout l'enjeu de commencer tôt.</em>
       </div>
     </section>
 

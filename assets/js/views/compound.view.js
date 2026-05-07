@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const { calcCompound, calcCompoundMultiRate, calcGoal, calcEarlyStart, compareEnveloppes } = window.CalcCompound;
+  const { calcCompound, calcCompoundMultiRate, calcGoal, calcEarlyStart, compareEnveloppes, computeStartingAge } = window.CalcCompound;
   const num = window.FIN.num;
 
   let lastParams = null;
@@ -534,6 +534,77 @@
   /* ------------------------------------------------------------
      run()
      ------------------------------------------------------------ */
+  /* ------------------------------------------------------------
+     A07 — Mode "Quand commencer ?"
+     ------------------------------------------------------------ */
+  let la7TargetCapital = 500000;
+  let la7TargetAge = 65;
+
+  function renderA07(p) {
+    if (!computeStartingAge) return;
+    const monthly = p.monthlyAmount || 200;
+    const rate    = p.annualRate    || 7;
+    const fees    = p.feesPct       || 0.2;
+
+    const tcEl = document.getElementById('ca7-target');
+    const taEl = document.getElementById('ca7-target-age');
+    if (tcEl && tcEl.value) la7TargetCapital = parseFloat(tcEl.value) || 500000;
+    if (taEl && taEl.value) la7TargetAge     = parseInt(taEl.value, 10) || 65;
+
+    const data = computeStartingAge({
+      targetCapital: la7TargetCapital,
+      targetAge:     la7TargetAge,
+      monthlyAmount: monthly,
+      annualRate:    rate,
+      feesPct:       fees,
+      ages:          [22, 25, 30, 35, 40, 45, 50, 55]
+    });
+
+    const tbody = document.getElementById('ca7-tbody');
+    if (tbody) {
+      tbody.innerHTML = data.scenarios.map((s) => {
+        const reaches = s.reachesTarget;
+        const cls = reaches ? 'pos' : 'neg';
+        const star = (data.minStartAge != null && s.startAge === data.minStartAge) ? ' ⭐ <span style="font-size:11px;color:var(--text-3);font-weight:400">(âge max possible)</span>' : '';
+        return '<tr>' +
+          '<td style="padding:10px 12px;font-weight:600">' + s.startAge + ' ans' + star + '</td>' +
+          '<td style="padding:10px 12px">' + s.horizonYears + ' ans</td>' +
+          '<td style="padding:10px 12px;font-weight:700;color:var(--' + (reaches ? 'accent' : 'red') + ')">' + CI.fmtMoney(s.finalValue, 0) + '</td>' +
+          '<td style="padding:10px 12px;color:var(--text-3)">' + CI.fmtMoney(s.totalInvested, 0) + '</td>' +
+          '<td style="padding:10px 12px;color:var(--text-3)">' + (s.finalInterest ? CI.fmtMoney(s.finalInterest, 0) : '—') + '</td>' +
+          '<td style="padding:10px 12px;font-weight:700">' + (s.monthlyToReach != null && s.monthlyToReach > 0 ? CI.fmtMoney(Math.ceil(s.monthlyToReach), 0) + '/mois' : '—') + '</td>' +
+          '<td style="padding:10px 12px"><span class="' + cls + '">' + (reaches ? '✓ Atteint' : '✗ ' + CI.fmtMoney(s.shortfall, 0) + ' manquants') + '</span></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    // Chart : courbe versement requis selon âge de départ
+    requestAnimationFrame(() => {
+      const labels = data.scenarios.map((s) => s.startAge + ' ans');
+      const reqMonthly = data.scenarios.map((s) => s.monthlyToReach || 0);
+      CI.drawChart('ca7-chart', labels, [
+        { label: 'Versement requis', data: reqMonthly, color: '#34D399', fill: true, width: 2.5 }
+      ], { yFormat: (v) => CI.fmtCompact(v) + '/mois' });
+    });
+
+    // Insight
+    const youngest = data.scenarios[0];
+    const oldest = data.scenarios[data.scenarios.length - 1];
+    const ratio = (oldest.monthlyToReach && youngest.monthlyToReach)
+      ? (oldest.monthlyToReach / youngest.monthlyToReach).toFixed(1)
+      : '—';
+    const minAgeNote = data.minStartAge != null
+      ? ' Avec ' + CI.fmtMoney(monthly, 0) + '/mois et ' + rate + ' %/an, tu peux démarrer jusqu\'à <strong>' + data.minStartAge + ' ans</strong> et encore atteindre la cible.'
+      : ' <span class="warn">À ' + CI.fmtMoney(monthly, 0) + '/mois, la cible est inatteignable même en démarrant à 22 ans — augmente le versement ou révise la cible.</span>';
+    setInsight('ca-quand',
+      'Pour atteindre <strong>' + CI.fmtMoney(la7TargetCapital, 0) + '</strong> à <strong>' + la7TargetAge + ' ans</strong> à ' + rate + ' %/an : ' +
+      'démarrer à <em>' + youngest.startAge + ' ans</em> requiert seulement ' + CI.fmtMoney(Math.ceil(youngest.monthlyToReach || 0), 0) + '/mois. ' +
+      'Attendre <em>' + oldest.startAge + ' ans</em> demande ' + CI.fmtMoney(Math.ceil(oldest.monthlyToReach || 0), 0) + '/mois — ' +
+      '<span class="warn">×' + ratio + ' fois plus</span>.' + minAgeNote +
+      ' <span class="muted">Le temps est le levier le plus puissant des intérêts composés. Chaque année perdue se rattrape par un effort proportionnellement de plus en plus grand.</span>'
+    );
+  }
+
   function run() {
     const p = readForm();
     const r = calcCompound(p);
@@ -546,6 +617,7 @@
     renderA04(p);
     renderA05(p, r);
     renderA06(p);
+    renderA07(p);
     syncUrl(p);
   }
 
@@ -567,7 +639,7 @@
     CI.exportPDF({
       title:    'CalcInvest — Intérêts composés',
       summary:  summary,
-      sectionIds: ['ca-synthese','ca-taux','ca-objectif','ca-early','ca-inflation','ca-enveloppes'],
+      sectionIds: ['ca-synthese','ca-taux','ca-objectif','ca-early','ca-inflation','ca-enveloppes','ca-quand'],
       fileName: 'calcinvest-composes'
     });
   }
@@ -599,6 +671,12 @@
     });
     const modeEl = document.getElementById('ca3-mode');
     if (modeEl) modeEl.addEventListener('change', () => { if (lastParams) renderA03(lastParams); });
+
+    // A07 — Quand commencer
+    ['ca7-target', 'ca7-target-age'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => { if (lastParams) renderA07(lastParams); });
+    });
 
     setTimeout(run, 30);
   });
