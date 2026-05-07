@@ -161,3 +161,52 @@ test('compareEnveloppes: Livret A has taxAmount=0 always', () => {
   const livret = res.envelopes.find((e) => e.id === 'livret');
   assert.strictEqual(livret.taxAmount, 0, 'Livret A is always tax-free');
 });
+
+// ─── computeStartingAge tests ─────────────────────────────────────────────
+
+test('computeStartingAge: retourne scenarios par âge', () => {
+  const r = compound.computeStartingAge({
+    targetCapital: 500000, targetAge: 65, monthlyAmount: 300, annualRate: 7
+  });
+  assert.ok(r.scenarios.length >= 5);
+  r.scenarios.forEach((s) => {
+    assert.ok(typeof s.startAge === 'number');
+    assert.ok(typeof s.finalValue === 'number');
+    assert.ok(typeof s.reachesTarget === 'boolean');
+  });
+});
+
+test('computeStartingAge: démarrer plus tôt → finalValue plus élevée', () => {
+  const r = compound.computeStartingAge({
+    targetCapital: 500000, targetAge: 65, monthlyAmount: 300, annualRate: 7,
+    ages: [25, 35, 45]
+  });
+  assert.ok(r.scenarios[0].finalValue > r.scenarios[1].finalValue);
+  assert.ok(r.scenarios[1].finalValue > r.scenarios[2].finalValue);
+});
+
+test('computeStartingAge: démarrer plus tard → versement requis plus gros', () => {
+  const r = compound.computeStartingAge({
+    targetCapital: 500000, targetAge: 65, monthlyAmount: 300, annualRate: 7,
+    ages: [25, 40, 55]
+  });
+  assert.ok(r.scenarios[0].monthlyToReach < r.scenarios[1].monthlyToReach);
+  assert.ok(r.scenarios[1].monthlyToReach < r.scenarios[2].monthlyToReach);
+});
+
+test('computeStartingAge: minStartAge cohérent', () => {
+  const r = compound.computeStartingAge({
+    targetCapital: 500000, targetAge: 65, monthlyAmount: 300, annualRate: 7
+  });
+  // À 300 €/mois et 7 %, l'âge max est typiquement 25-30
+  assert.ok(r.minStartAge !== null);
+  assert.ok(r.minStartAge >= 20 && r.minStartAge <= 35);
+});
+
+test('computeStartingAge: cible inatteignable → minStartAge null', () => {
+  const r = compound.computeStartingAge({
+    targetCapital: 50000000, targetAge: 65, monthlyAmount: 100, annualRate: 5,
+    ages: [50, 55, 60]
+  });
+  assert.strictEqual(r.minStartAge, null);
+});

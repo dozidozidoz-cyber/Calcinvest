@@ -1733,12 +1733,104 @@
     };
   }
 
+  /**
+   * Mode "Quand commencer ?" — calcule l'âge maximum auquel on peut
+   * démarrer pour atteindre un capital cible à un âge donné, en versant
+   * un montant mensuel fixe à un taux fixe.
+   *
+   * @param {Object} opts
+   *   targetCapital  : capital cible à atteindre (€)
+   *   targetAge      : âge cible où on veut atteindre le capital (default 65)
+   *   monthlyAmount  : versement mensuel (€)
+   *   annualRate     : rendement annuel net (%)
+   *   feesPct        : frais (%)
+   *   currentAge     : âge actuel (default 30, juste pour l'insight)
+   *   ages           : liste d'âges de départ à comparer (default [22, 25, 30, 35, 40, 45, 50])
+   *
+   * @returns {Object} {
+   *   minStartAge    : âge max possible pour atteindre la cible
+   *   scenarios      : array de scenarios par âge de départ
+   *   recommendation : insight sur le coût de retarder
+   * }
+   */
+  function computeStartingAge(opts) {
+    opts = opts || {};
+    var target       = opts.targetCapital  || 500000;
+    var targetAge    = opts.targetAge      || 65;
+    var monthly      = opts.monthlyAmount  || 200;
+    var annualRate   = opts.annualRate     || 7;
+    var feesPct      = opts.feesPct        || 0.2;
+    var currentAge   = opts.currentAge     || 30;
+    var ages         = opts.ages           || [22, 25, 30, 35, 40, 45, 50, 55];
+
+    var scenarios = ages.map(function (age) {
+      var horizon = targetAge - age;
+      if (horizon <= 0) {
+        return {
+          startAge:    age,
+          horizonYears: 0,
+          finalValue:   0,
+          totalInvested: 0,
+          reachesTarget: false,
+          shortfall:    target,
+          monthlyToReach: null
+        };
+      }
+      var r = calcCompound({
+        initialAmount: 0,
+        monthlyAmount: monthly,
+        annualRate:    annualRate,
+        feesPct:       feesPct,
+        years:         horizon
+      });
+      var reaches = r.finalValue >= target;
+      // Calcul du versement mensuel requis pour atteindre la cible à cet âge
+      var goalRes = calcGoal({
+        initialAmount: 0,
+        goalAmount:    target,
+        annualRate:    annualRate,
+        feesPct:       feesPct,
+        years:         horizon
+      });
+      return {
+        startAge:       age,
+        horizonYears:   horizon,
+        finalValue:     r.finalValue,
+        totalInvested:  r.finalInvested,
+        finalInterest:  r.finalInterest,
+        reachesTarget:  reaches,
+        shortfall:      reaches ? 0 : (target - r.finalValue),
+        monthlyToReach: goalRes && goalRes.requiredMonthly ? goalRes.requiredMonthly : null
+      };
+    });
+
+    // Trouver le dernier âge auquel on atteint la cible avec le versement actuel
+    var minStartAge = null;
+    for (var i = scenarios.length - 1; i >= 0; i--) {
+      if (scenarios[i].reachesTarget) {
+        minStartAge = scenarios[i].startAge;
+        break;
+      }
+    }
+
+    return {
+      target:        target,
+      targetAge:     targetAge,
+      monthlyAmount: monthly,
+      annualRate:    annualRate,
+      currentAge:    currentAge,
+      minStartAge:   minStartAge,
+      scenarios:     scenarios
+    };
+  }
+
   const mod = {
     calcCompound: calcCompound,
     calcCompoundMultiRate: calcCompoundMultiRate,
     calcGoal: calcGoal,
     calcEarlyStart: calcEarlyStart,
-    compareEnveloppes: compareEnveloppes
+    compareEnveloppes: compareEnveloppes,
+    computeStartingAge: computeStartingAge
   };
 
   if (isNode) {
