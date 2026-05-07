@@ -2237,13 +2237,104 @@
     return { bins: bins, counts: counts, binWidth: w };
   }
 
+  /**
+   * Comparaison location nue vs meublée.
+   * Applique les ajustements typiques sur params + simule chaque scénario.
+   *
+   * Hypothèses :
+   * - Meublé : loyer +12 %, vacance +3 pts (turnover plus rapide),
+   *   charges +200 €/an (renouvellement mobilier), 5 000 € de mobilier
+   * - Nu : params utilisateur tels quels
+   *
+   * Pour chaque variante, calcule les 2 régimes possibles (micro + réel).
+   *
+   * @param {Object} p — params calcLocatif
+   * @returns {Array} 4 entries : nue micro / nue réel / meublée micro / meublée réel
+   */
+  function compareNueMeublee(p) {
+    const baseRent = p.rent || 0;
+    const meubleRent = baseRent * 1.12;     // +12 % en moyenne
+    const meubleVacancy = (p.vacancy || 0) + 3;
+    const meubleFurniture = (p.furniture || 0) + 5000;
+    const meubleInsurance = (p.insurance || 0) + 200;
+
+    const variants = [
+      { id: 'nu-micro',    label: 'Location nue · Micro-foncier',  type: 'nu',     regime: 'micro-foncier', rent: baseRent,   vacancy: p.vacancy, furniture: p.furniture || 0, insurance: p.insurance },
+      { id: 'nu-reel',     label: 'Location nue · Réel foncier',   type: 'nu',     regime: 'reel-foncier',  rent: baseRent,   vacancy: p.vacancy, furniture: p.furniture || 0, insurance: p.insurance },
+      { id: 'meuble-micro',label: 'Meublé · LMNP Micro-BIC',       type: 'meuble', regime: 'lmnp-micro',    rent: meubleRent, vacancy: meubleVacancy, furniture: meubleFurniture, insurance: meubleInsurance },
+      { id: 'meuble-reel', label: 'Meublé · LMNP Réel',            type: 'meuble', regime: 'lmnp-reel',     rent: meubleRent, vacancy: meubleVacancy, furniture: meubleFurniture, insurance: meubleInsurance }
+    ];
+
+    const results = variants.map(function (v) {
+      const adjusted = Object.assign({}, p, {
+        rent: v.rent, vacancy: v.vacancy, furniture: v.furniture,
+        insurance: v.insurance, regime: v.regime
+      });
+      const r = calcLocatif(adjusted);
+      return {
+        id: v.id, label: v.label, type: v.type, regime: v.regime,
+        adjustedRent: v.rent,
+        adjustedVacancy: v.vacancy,
+        adjustedFurniture: v.furniture,
+        yieldGross: r.yieldGross,
+        yieldNet: r.yieldNet,
+        yieldNetNet: r.yieldNetNet,
+        cashflowMonthly: r.cashflowMonthly,
+        year1Tax: r.year1Tax,
+        finalEquity: r.finalEquity,
+        tri: r.tri
+      };
+    });
+
+    // Tri par yieldNetNet descendant (le meilleur en premier)
+    results.sort(function (a, b) { return (b.yieldNetNet || 0) - (a.yieldNetNet || 0); });
+    return results;
+  }
+
+  /**
+   * Stress test du taux d'emprunt : recompute calcLocatif avec différents
+   * taux pour visualiser l'impact sur cashflow et TRI.
+   *
+   * @param {Object} p — params calcLocatif
+   * @param {Array<number>} [rates] — liste de taux à tester (default [base-1, base, base+1, base+2, base+3])
+   * @returns {Array}
+   */
+  function computeRateStressTest(p, rates) {
+    const baseRate = p.loanRate || 3.5;
+    const list = rates && rates.length > 0
+      ? rates
+      : [
+          Math.max(0.5, baseRate - 1),
+          baseRate,
+          baseRate + 1,
+          baseRate + 2,
+          baseRate + 3
+        ];
+
+    return list.map(function (rate) {
+      const r = calcLocatif(Object.assign({}, p, { loanRate: rate }));
+      return {
+        rate: rate,
+        isBase: Math.abs(rate - baseRate) < 0.01,
+        monthlyPayment: r.monthlyPayment,
+        cashflowMonthly: r.cashflowMonthly,
+        totalInterest: r.totalInterest,
+        yieldNetNet: r.yieldNetNet,
+        finalEquity: r.finalEquity,
+        tri: r.tri
+      };
+    }).sort(function (a, b) { return a.rate - b.rate; });
+  }
+
   const mod = {
     calcLocatif: calcLocatif,
     computeRegimeComparison: computeRegimeComparison,
     computePlusValue: computePlusValue,
     computeAggregate: computeAggregate,
     compareWithStocks: compareWithStocks,
-    computeVacancyMC: computeVacancyMC
+    computeVacancyMC: computeVacancyMC,
+    compareNueMeublee: compareNueMeublee,
+    computeRateStressTest: computeRateStressTest
   };
 
   if (isNode) {

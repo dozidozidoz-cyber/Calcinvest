@@ -197,6 +197,24 @@ if ('serviceWorker' in navigator) {
           <div class="sidebar-link-title">Monte Carlo vacance</div>
         </div>
       </a>
+      <a class="sidebar-link" href="#l-nue-meuble">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/><path d="M2 8h5M9 8h5"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 11</div>
+          <div class="sidebar-link-title">Nue vs Meublée</div>
+        </div>
+      </a>
+      <a class="sidebar-link" href="#l-stress-taux">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13l3-5 3 3 3-7 3 4"/><path d="M11 4h2v2"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 12</div>
+          <div class="sidebar-link-title">Stress test taux</div>
+        </div>
+      </a>
       <a class="sidebar-link" href="#l-patrimoine" id="link-patrimoine" style="display:none">
         <div class="sidebar-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="4" height="8"/><rect x="6" y="3" width="4" height="11"/><rect x="10" y="8" width="4" height="6"/></svg>
@@ -1119,6 +1137,92 @@ if ('serviceWorker' in navigator) {
           Méthodologie
         </div>
         Pour chaque mois sur l'horizon, un tirage Bernoulli détermine si le bien est loué ou vacant (probabilité = vacance annuelle / 12). Les charges fixes (taxe foncière, copro, assurance, travaux récurrents) et la mensualité crédit s'appliquent dans tous les cas. Le seed permet de reproduire les mêmes simulations.
+      </div>
+    </section>
+
+    <!-- ============= A11 · LOCATION NUE vs MEUBLÉE ============= -->
+    <section id="l-nue-meuble">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/><path d="M2 8h5M9 8h5"/></svg>
+        </span>
+        Analyse 11 · Location nue vs meublée
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Sur le même bien, la location meublée permet typiquement +12 % de loyer mais avec plus de turnover. Cette analyse compare les 4 combinaisons (nue/meublée × micro/réel) à partir de tes paramètres.</p>
+
+      <div class="card">
+        <div class="card-body no-pad" style="overflow-x:auto">
+          <table class="data-table" style="width:100%;border-collapse:collapse;min-width:840px">
+            <thead>
+              <tr>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Type · Régime</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Loyer ajusté</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Vacance</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Rdt net-net</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Cashflow</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Impôt an 1</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">TRI</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Équité finale</th>
+              </tr>
+            </thead>
+            <tbody id="la11-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:14px">
+        <div class="info-box-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Hypothèses de comparaison
+        </div>
+        <strong>Loyer meublé</strong> : +12 % vs nu (médiane marché Paris/grandes villes) ·
+        <strong>Vacance meublée</strong> : +3 pts (turnover 1 an au lieu de 3 ans) ·
+        <strong>Mobilier</strong> : +5 000 € au coût d'acquisition ·
+        <strong>Charges</strong> : +200 €/an (renouvellement mobilier, assurances spécifiques).<br>
+        En meublé, seuls les régimes <strong>LMNP Micro-BIC</strong> (abattement 50 %) et <strong>LMNP Réel</strong> (amortissements) sont accessibles. En nu, c'est <strong>Micro-foncier</strong> (abattement 30 %) ou <strong>Réel foncier</strong>.
+      </div>
+    </section>
+
+    <!-- ============= A12 · STRESS TEST TAUX ============= -->
+    <section id="l-stress-taux">
+      <div class="page-eyebrow" style="margin-top:32px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 3 3-7 3 4"/><path d="M11 4h2v2"/></svg>
+        </span>
+        Analyse 12 · Stress test taux d'emprunt
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-bottom:14px">Et si les taux remontaient ? Cette analyse simule l'impact sur ton cashflow et ton TRI si ton crédit était à un autre taux. Utile pour évaluer la marge de sécurité de ton dossier ou comparer plusieurs offres bancaires.</p>
+
+      <div class="card">
+        <div class="card-body no-pad" style="overflow-x:auto">
+          <table class="data-table" style="width:100%;border-collapse:collapse;min-width:680px">
+            <thead>
+              <tr>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Taux</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Mensualité</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Cashflow</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Total intérêts</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">TRI</th>
+                <th style="text-align:left;font-size:12px;color:var(--text-3);padding:10px 12px;background:var(--bg-elev);border-bottom:1px solid var(--border-soft)">Équité finale</th>
+              </tr>
+            </thead>
+            <tbody id="la12-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 3 3-5 3 4"/></svg>
+            </div>
+            TRI selon le taux d'emprunt
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div class="chart-wrap"><canvas id="la12-chart"></canvas></div>
+        </div>
       </div>
     </section>
 
