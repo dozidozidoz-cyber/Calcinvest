@@ -12,6 +12,8 @@
   const calcAggr   = window.CalcLocatif.computeAggregate;
   const calcStocks = window.CalcLocatif.compareWithStocks;
   const calcMC     = window.CalcLocatif.computeVacancyMC;
+  const calcNueM   = window.CalcLocatif.compareNueMeublee;
+  const calcRateST = window.CalcLocatif.computeRateStressTest;
   const num        = window.FIN.num;
 
   // Multi-biens state
@@ -502,6 +504,91 @@
     );
   }
 
+  /* ------------------------------------------------------------
+     A11 — Comparaison location nue vs meublée
+     ------------------------------------------------------------ */
+  function renderA11(p) {
+    if (!calcNueM) return;
+    const data = calcNueM(p);
+    const tbody = document.getElementById('la11-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = data.map((d, i) => {
+      const isBest = i === 0;
+      const star   = isBest ? ' ⭐' : '';
+      const typeColor = d.type === 'meuble' ? '#A78BFA' : '#60A5FA';
+      const cf = d.cashflowMonthly;
+      const triStr = d.tri != null ? d.tri.toFixed(2) + ' %' : '—';
+      return '<tr>' +
+        '<td style="padding:10px 12px;font-weight:600;color:' + typeColor + '">' + d.label + star + '</td>' +
+        '<td style="padding:10px 12px;font-family:var(--font-mono);font-size:12px">' + CI.fmtMoney(d.adjustedRent, 0) + '/mois</td>' +
+        '<td style="padding:10px 12px">' + (d.adjustedVacancy || 0).toFixed(0) + ' %</td>' +
+        '<td style="padding:10px 12px;font-weight:700">' + d.yieldNetNet.toFixed(2) + ' %</td>' +
+        '<td style="padding:10px 12px;color:' + (cf >= 0 ? 'var(--accent)' : 'var(--red)') + '">' + (cf >= 0 ? '+' : '') + CI.fmtMoney(cf, 0) + '/mois</td>' +
+        '<td style="padding:10px 12px">' + CI.fmtMoney(d.year1Tax, 0) + '</td>' +
+        '<td style="padding:10px 12px">' + triStr + '</td>' +
+        '<td style="padding:10px 12px">' + CI.fmtMoney(d.finalEquity, 0) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    const best = data[0];
+    const worst = data[data.length - 1];
+    const ecart = (best.yieldNetNet - worst.yieldNetNet).toFixed(2);
+    setInsight('l-nue-meuble',
+      'Sur ce bien, le meilleur scénario est <em>' + best.label + '</em> avec ' +
+      '<span class="pos">' + best.yieldNetNet.toFixed(2) + ' %</span> de rendement net-net, ' +
+      'vs <em>' + worst.label + '</em> à seulement ' + worst.yieldNetNet.toFixed(2) + ' % ' +
+      '(écart <strong>' + ecart + ' pts</strong>). ' +
+      '<span class="muted">Le meublé permet généralement +12 % de loyer mais demande plus de gestion (turnover, mobilier, vacance plus élevée). LMNP réel reste le régime fiscal de référence en location meublée.</span>'
+    );
+  }
+
+  /* ------------------------------------------------------------
+     A12 — Stress test taux d'emprunt
+     ------------------------------------------------------------ */
+  function renderA12(p) {
+    if (!calcRateST) return;
+    const data = calcRateST(p);
+    const tbody = document.getElementById('la12-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = data.map((d) => {
+      const trBg = d.isBase ? 'background:rgba(96,165,250,0.06)' : '';
+      const cf = d.cashflowMonthly;
+      const triStr = d.tri != null ? d.tri.toFixed(2) + ' %' : '—';
+      const triCol = d.tri != null && d.tri >= 0 ? 'var(--accent)' : 'var(--red)';
+      return '<tr style="' + trBg + '">' +
+        '<td style="padding:10px 12px;font-weight:600">' + d.rate.toFixed(1) + ' %' + (d.isBase ? ' <span style="font-size:10px;color:var(--text-3);font-weight:400">(base)</span>' : '') + '</td>' +
+        '<td style="padding:10px 12px;font-family:var(--font-mono);font-size:12px">' + CI.fmtMoney(d.monthlyPayment, 0) + '/mois</td>' +
+        '<td style="padding:10px 12px;color:' + (cf >= 0 ? 'var(--accent)' : 'var(--red)') + '">' + (cf >= 0 ? '+' : '') + CI.fmtMoney(cf, 0) + '</td>' +
+        '<td style="padding:10px 12px">' + CI.fmtMoney(d.totalInterest, 0) + '</td>' +
+        '<td style="padding:10px 12px;font-weight:700;color:' + triCol + '">' + triStr + '</td>' +
+        '<td style="padding:10px 12px">' + CI.fmtMoney(d.finalEquity, 0) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    // Chart : TRI par taux
+    requestAnimationFrame(() => {
+      const labels = data.map((d) => d.rate.toFixed(1) + ' %');
+      const triData = data.map((d) => d.tri != null ? d.tri : 0);
+      CI.drawChart('la12-chart', labels, [
+        { label: 'TRI', data: triData, color: '#34D399', fill: true, width: 2.5 }
+      ], { yFormat: (v) => v.toFixed(1) + ' %' });
+    });
+
+    const base = data.find((d) => d.isBase) || data[0];
+    const worst = data[data.length - 1];
+    const triDelta = (base.tri && worst.tri) ? (base.tri - worst.tri).toFixed(2) : '—';
+    setInsight('l-stress-taux',
+      'Si ton taux passait de <strong>' + base.rate.toFixed(1) + ' %</strong> à <strong>' + worst.rate.toFixed(1) + ' %</strong>, ' +
+      'ton TRI tomberait de <em>' + (base.tri != null ? base.tri.toFixed(2) + ' %' : '—') + '</em> à ' +
+      '<span class="warn">' + (worst.tri != null ? worst.tri.toFixed(2) + ' %' : '—') + '</span> ' +
+      '(perte de <strong>' + triDelta + ' pts</strong>) et tu paierais <span class="neg">' + CI.fmtMoney(worst.totalInterest - base.totalInterest, 0) + '</span> ' +
+      'd\'intérêts en plus. ' +
+      '<span class="muted">Les taux variables sans plafond (taux révisable pur) sont rares en France. La majorité des prêts variables sont capés à +1 ou +2 pts. Mais ce stress test reste utile pour apprécier la marge de sécurité de ton dossier.</span>'
+    );
+  }
+
   function run() {
     if (switchingBien) return; // ignore form events pendant un swap programmatique
     const p = readForm();
@@ -525,6 +612,8 @@
     requestAnimationFrame(() => renderChart(r));
     renderInsights(p, r);
     renderA09(p, r);
+    renderA11(p);
+    renderA12(p);
     renderBiensTabs();
     renderAggregate();
     renderComparison();
@@ -582,6 +671,8 @@
     requestAnimationFrame(() => renderChart(b.result));
     renderInsights(b.params, b.result);
     renderA09(b.params, b.result);
+    renderA11(b.params);
+    renderA12(b.params);
     renderBiensTabs();
     renderAggregate();
     renderComparison();
@@ -829,7 +920,7 @@
     CI.exportPDF({
       title:    'CalcInvest — Rendement Locatif',
       summary:  summary,
-      sectionIds: ['synthese','cashflow','amort','fisca','l-amort-credit','l-fiscal-comp','l-cashflow-proj','l-revente','l-vs-bourse','l-patrimoine','l-comparaison'],
+      sectionIds: ['synthese','cashflow','amort','fisca','l-amort-credit','l-fiscal-comp','l-cashflow-proj','l-revente','l-vs-bourse','l-mc-vacance','l-nue-meuble','l-stress-taux','l-patrimoine','l-comparaison'],
       fileName: 'calcinvest-locatif'
     });
   }

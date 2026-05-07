@@ -263,3 +263,79 @@ test('computeVacancyMC: histogram has 20 bins', () => {
   const totalCount = mc.histogram.counts.reduce(function (s, c) { return s + c; }, 0);
   assert.strictEqual(totalCount, 200);
 });
+
+// ─── Comparaison nue vs meublée ──────────────────────────────────────────
+
+test('compareNueMeublee: retourne 4 variantes', () => {
+  const p = { price: 200000, notary: 15000, agency: 0, works: 0, furniture: 0,
+    rent: 900, vacancy: 5, propTax: 1200, copro: 600, insurance: 300,
+    mgmtPct: 0, maintPct: 1, loan: 180000, loanRate: 3.5, loanYears: 20,
+    loanIns: 0.36, regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5 };
+  const r = locatif.compareNueMeublee(p);
+  assert.strictEqual(r.length, 4);
+  const ids = r.map((x) => x.id);
+  assert.ok(ids.includes('nu-micro'));
+  assert.ok(ids.includes('nu-reel'));
+  assert.ok(ids.includes('meuble-micro'));
+  assert.ok(ids.includes('meuble-reel'));
+});
+
+test('compareNueMeublee: meublé loyer +12 % vs nue', () => {
+  const p = { price: 200000, notary: 15000, agency: 0, works: 0, furniture: 0,
+    rent: 1000, vacancy: 5, propTax: 1200, copro: 600, insurance: 300,
+    mgmtPct: 0, maintPct: 1, loan: 180000, loanRate: 3.5, loanYears: 20,
+    loanIns: 0.36, regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5 };
+  const r = locatif.compareNueMeublee(p);
+  const nu = r.find((x) => x.id === 'nu-reel');
+  const meuble = r.find((x) => x.id === 'meuble-reel');
+  assert.strictEqual(nu.adjustedRent, 1000);
+  assert.ok(Math.abs(meuble.adjustedRent - 1120) < 0.01);
+});
+
+test('compareNueMeublee: tri par yieldNetNet desc', () => {
+  const p = { price: 200000, notary: 15000, agency: 0, works: 0, furniture: 0,
+    rent: 1000, vacancy: 5, propTax: 1200, copro: 600, insurance: 300,
+    mgmtPct: 0, maintPct: 1, loan: 180000, loanRate: 3.5, loanYears: 20,
+    loanIns: 0.36, regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5 };
+  const r = locatif.compareNueMeublee(p);
+  for (let i = 1; i < r.length; i++) {
+    assert.ok((r[i - 1].yieldNetNet || -Infinity) >= (r[i].yieldNetNet || -Infinity));
+  }
+});
+
+// ─── Stress test taux ──────────────────────────────────────────────────────
+
+test('computeRateStressTest: 5 taux par défaut, base inclus', () => {
+  const p = { price: 200000, notary: 15000, agency: 0, works: 0, furniture: 0,
+    rent: 900, vacancy: 5, propTax: 1200, copro: 600, insurance: 300,
+    mgmtPct: 0, maintPct: 1, loan: 180000, loanRate: 3.5, loanYears: 20,
+    loanIns: 0.36, regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5 };
+  const r = locatif.computeRateStressTest(p);
+  assert.strictEqual(r.length, 5);
+  const base = r.find((x) => x.isBase);
+  assert.ok(base, 'base rate must be marked');
+  assert.strictEqual(base.rate, 3.5);
+});
+
+test('computeRateStressTest: taux plus élevé → mensualité plus élevée + cashflow plus bas', () => {
+  const p = { price: 200000, notary: 15000, agency: 0, works: 0, furniture: 0,
+    rent: 900, vacancy: 5, propTax: 1200, copro: 600, insurance: 300,
+    mgmtPct: 0, maintPct: 1, loan: 180000, loanRate: 3.5, loanYears: 20,
+    loanIns: 0.36, regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5 };
+  const r = locatif.computeRateStressTest(p);
+  for (let i = 1; i < r.length; i++) {
+    assert.ok(r[i].monthlyPayment > r[i - 1].monthlyPayment);
+    assert.ok(r[i].cashflowMonthly < r[i - 1].cashflowMonthly);
+  }
+});
+
+test('computeRateStressTest: taux custom respecté', () => {
+  const p = { price: 200000, notary: 15000, agency: 0, works: 0, furniture: 0,
+    rent: 900, vacancy: 5, propTax: 1200, copro: 600, insurance: 300,
+    mgmtPct: 0, maintPct: 1, loan: 180000, loanRate: 3.5, loanYears: 20,
+    loanIns: 0.36, regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5 };
+  const r = locatif.computeRateStressTest(p, [2, 4, 8]);
+  assert.strictEqual(r.length, 3);
+  assert.strictEqual(r[0].rate, 2);
+  assert.strictEqual(r[2].rate, 8);
+});
