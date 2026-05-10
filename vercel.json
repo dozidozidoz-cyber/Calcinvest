@@ -1,7 +1,18 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/stripe/webhook.js": {
+      "maxDuration": 10
+    }
+  },
   "headers": [
+    {
+      "source": "/api/stripe/webhook",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" }
+      ]
+    },
     {
       "source": "/sw.js",
       "headers": [

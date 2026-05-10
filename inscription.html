@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Créer un compte — CalcInvest</title>
+<meta name="description" content="Créez votre compte gratuit CalcInvest pour sauvegarder vos simulations et accéder aux analyses avancées." />
+<meta name="robots" content="noindex" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      CalcInvest
+    </div>
+
+    <!-- État : formulaire -->
+    <div id="state-form">
+      <h1 class="auth-title">Créer un compte</h1>
+      <p class="auth-sub">Gratuit — aucune carte bancaire requise</p>
+
+      <!-- Avantages rapides -->
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">
+        <div style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="2" width="13" height="13"><path d="M2 8l4 4L14 4"/></svg>
+          Simulations sauvegardées
+        </div>
+        <div style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="2" width="13" height="13"><path d="M2 8l4 4L14 4"/></svg>
+          Analyses avancées
+        </div>
+        <div style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="2" width="13" height="13"><path d="M2 8l4 4L14 4"/></svg>
+          Aucune pub intrusive
+        </div>
+      </div>
+
+      <!-- Erreur -->
+      <div id="auth-error" class="auth-error"></div>
+
+      <!-- Formulaire -->
+      <form id="signup-form" novalidate>
+
+        <div class="auth-field">
+          <label class="auth-label" for="email">Adresse e-mail</label>
+          <input type="email" id="email" class="auth-input" placeholder="vous@exemple.fr" autocomplete="email" required />
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="password">Mot de passe</label>
+          <input type="password" id="password" class="auth-input" placeholder="8 caractères minimum" autocomplete="new-password" required />
+          <div id="pw-strength" style="margin-top:6px;height:3px;border-radius:2px;background:var(--border);overflow:hidden">
+            <div id="pw-bar" style="height:100%;width:0%;border-radius:2px;transition:width .2s,background .2s"></div>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="password2">Confirmer le mot de passe</label>
+          <input type="password" id="password2" class="auth-input" placeholder="••••••••" autocomplete="new-password" required />
+        </div>
+
+        <button type="submit" class="auth-btn" id="submit-btn">
+          Créer mon compte gratuit
+        </button>
+
+      </form>
+
+      <p class="auth-link">Déjà un compte ? <a href="/connexion">Se connecter</a></p>
+
+      <p class="auth-terms">
+        En créant un compte, vous acceptez nos
+        <a href="/mentions-legales">CGU</a> et notre
+        <a href="/mentions-legales">politique de confidentialité</a>.
+      </p>
+    </div>
+
+    <!-- État : email envoyé -->
+    <div id="state-confirm" style="display:none;text-align:center">
+      <div style="font-size:48px;margin-bottom:16px">✉️</div>
+      <h1 class="auth-title">Vérifiez votre boîte mail</h1>
+      <p class="auth-sub" style="margin-bottom:0">
+        Un e-mail de confirmation a été envoyé à <strong id="confirm-email"></strong>.<br>
+        Cliquez sur le lien pour activer votre compte.
+      </p>
+      <div style="margin-top:24px;padding:14px;background:var(--accent-soft);border:1px solid var(--accent-mid);border-radius:var(--r);font-size:13px;color:var(--text-2)">
+        Pas reçu ? Vérifiez vos spams ou
+        <a href="#" id="resend-link" style="color:var(--accent)">renvoyer l'e-mail</a>.
+      </div>
+      <p class="auth-link" style="margin-top:20px">
+        <a href="/connexion">← Retour à la connexion</a>
+      </p>
+    </div>
+
+  </div>
+
+  <div style="margin-top:24px;font-size:12px;color:var(--text-4);text-align:center">
+    <a href="/" style="color:var(--text-4)">← Retour à l'accueil</a>
+  </div>
+
+</div>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // Redirect si déjà connecté
+  if (CI.isLoggedIn && CI.isLoggedIn()) {
+    window.location.href = '/';
+    return;
+  }
+
+  const form      = document.getElementById('signup-form');
+  const emailEl   = document.getElementById('email');
+  const passEl    = document.getElementById('password');
+  const pass2El   = document.getElementById('password2');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorEl   = document.getElementById('auth-error');
+  const pwBar     = document.getElementById('pw-bar');
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.classList.add('visible');
+  }
+  function clearError() {
+    errorEl.classList.remove('visible');
+    [emailEl, passEl, pass2El].forEach(el => el.classList.remove('error'));
+  }
+
+  // Jauge force mot de passe
+  passEl.addEventListener('input', () => {
+    const pw  = passEl.value;
+    let score = 0;
+    if (pw.length >= 8)                         score++;
+    if (pw.length >= 12)                        score++;
+    if (/[A-Z]/.test(pw))                       score++;
+    if (/[0-9]/.test(pw))                       score++;
+    if (/[^a-zA-Z0-9]/.test(pw))               score++;
+    const colors = ['#DC2626','#DC2626','#D97706','#059669','#059669'];
+    const widths  = ['20%','40%','60%','80%','100%'];
+    pwBar.style.width      = widths[Math.min(score, 4)] || '0%';
+    pwBar.style.background = colors[Math.min(score, 4)] || 'transparent';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    const email  = emailEl.value.trim();
+    const pass   = passEl.value;
+    const pass2  = pass2El.value;
+
+    if (!email || !email.includes('@')) {
+      emailEl.classList.add('error');
+      return showError('Adresse e-mail invalide.');
+    }
+    if (!pass || pass.length < 8) {
+      passEl.classList.add('error');
+      return showError('Le mot de passe doit faire au moins 8 caractères.');
+    }
+    if (pass !== pass2) {
+      pass2El.classList.add('error');
+      return showError('Les mots de passe ne correspondent pas.');
+    }
+
+    submitBtn.disabled   = true;
+    submitBtn.textContent = 'Création du compte…';
+
+    try {
+      await CI.auth.signUp(email, pass, { plan: 'free' });
+      // Afficher écran confirmation
+      document.getElementById('state-form').style.display    = 'none';
+      document.getElementById('state-confirm').style.display = 'block';
+      document.getElementById('confirm-email').textContent    = email;
+    } catch (err) {
+      submitBtn.disabled   = false;
+      submitBtn.textContent = 'Créer mon compte gratuit';
+      const msg = err.message || '';
+      if (msg.includes('already registered') || msg.includes('already exists')) {
+        showError('Cet e-mail est déjà utilisé. Connectez-vous ou réinitialisez votre mot de passe.');
+      } else {
+        showError('Erreur : ' + msg);
+      }
+    }
+  });
+
+  // Renvoi email confirmation
+  document.getElementById('resend-link').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = emailEl.value.trim();
+    if (!email) return;
+    try {
+      await CI.auth.signUp(email, 'RESEND_ONLY_NO_PASS').catch(() => {});
+      CI.toast && CI.toast('E-mail renvoyé', 'success');
+    } catch { /* ignore */ }
+  });
+
+})();
+</script>
+
+</body>
+</html>

@@ -73,7 +73,7 @@ if ('serviceWorker' in navigator) {
     </nav>
   </div>
 
-  <div class="topbar-right">
+  <div class="topbar-right" id="ci-user-zone">
     <a href="/mes-projets" class="btn-ghost">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
       <span>Projets</span>
@@ -493,7 +493,7 @@ if ('serviceWorker' in navigator) {
 
 
     <!-- ============= A02 · PERFORMANCE ANNUELLE ============= -->
-    <section id="cra-yearly">
+    <section id="cra-yearly" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13v-4M6 13V6M9 13V9M12 13V3"/></svg>
@@ -541,7 +541,7 @@ if ('serviceWorker' in navigator) {
 
 
     <!-- ============= A03 · DRAWDOWN ============= -->
-    <section id="cra-drawdown">
+    <section id="cra-drawdown" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 5l3 4 3-3 6 6"/><path d="M10 14h4v-4"/></svg>
@@ -592,7 +592,7 @@ if ('serviceWorker' in navigator) {
 
 
     <!-- ============= A04 · STRATÉGIES DE DÉPLOIEMENT ============= -->
-    <section id="cra-lumpvsdca">
+    <section id="cra-lumpvsdca" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 3 2 3-5 3 2"/></svg>
@@ -655,7 +655,7 @@ if ('serviceWorker' in navigator) {
 
 
     <!-- ============= A05 · VOLATILITÉ & RISQUE ============= -->
-    <section id="cra-volatility">
+    <section id="cra-volatility" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 8h2l2-5 3 10 2-7 2 3h3"/></svg>
@@ -705,7 +705,7 @@ if ('serviceWorker' in navigator) {
 
 
     <!-- ============= A06 · CYCLES DE MARCHÉ ============= -->
-    <section id="cra-cycles">
+    <section id="cra-cycles" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8a6 6 0 1 0 6-6"/><path d="M2 8V5l2 3-2 3V8"/></svg>
@@ -779,7 +779,7 @@ if ('serviceWorker' in navigator) {
 
 
     <!-- ============= A07 · COMPARAISON MULTI-CRYPTOS ============= -->
-    <section id="cra-multi" style="margin-bottom:48px">
+    <section id="cra-multi" style="margin-bottom:48px" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="3"/><circle cx="11" cy="11" r="3"/><path d="M9 3h4v4M3 9h4v4"/></svg>
@@ -808,7 +808,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A08 · STRATÉGIES DE RENDEMENT DEFI ============= -->
-    <section id="cra-defi" style="margin-bottom:48px">
+    <section id="cra-defi" style="margin-bottom:48px" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2a6 6 0 1 1 0 12A6 6 0 0 1 8 2z"/><path d="M8 5v3l2 2"/></svg>
@@ -1211,5 +1211,7 @@ document.getElementById('btn-save')?.addEventListener('click', function() {
     <a href="/methodologie">Méthodologie</a>
   </div>
 </footer>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
 </body>
 </html>

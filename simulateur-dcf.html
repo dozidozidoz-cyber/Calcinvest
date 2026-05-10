@@ -256,7 +256,7 @@ if ('serviceWorker' in navigator) {
     </nav>
   </div>
 
-  <div class="topbar-right">
+  <div class="topbar-right" id="ci-user-zone">
     <a href="/mes-projets" class="btn-ghost">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
       <span>Projets</span>
@@ -545,7 +545,7 @@ if ('serviceWorker' in navigator) {
         <span style="color:#6EE7B7">■</span> +20% upside ·
         <span style="color:var(--red)">■</span> -25% downside
       </p>
-      <div style="overflow-x:auto" id="dcf-sensitivity"></div>
+      <div style="overflow-x:auto" id="dcf-sensitivity" data-tier="premium"></div>
     </div>
 
     <!-- Info box -->
@@ -579,5 +579,7 @@ function setVal(id, val) {
 }
 </script>
 
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
 </body>
 </html>

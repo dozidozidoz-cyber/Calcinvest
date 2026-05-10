@@ -218,15 +218,12 @@ if ('serviceWorker' in navigator) {
       </a>
     </nav>
   </div>
-  <div class="topbar-right">
+  <div class="topbar-right" id="ci-user-zone">
     <a href="/mes-projets" class="btn-ghost">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
       <span>Projets</span>
     </a>
-    <button class="btn-ghost">
-      <span class="dot"></span>
-      <span>Données au Avr 2026</span>
-    </button>
+    <!-- rempli par auth.js -->
   </div>
 </header>
 
@@ -594,7 +591,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 02 : Rendements glissants -->
-    <section id="a2">
+    <section id="a2" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-3 2 2 3-5 4 4"/></svg></span>
         Analyse 02 · Rendements glissants
@@ -651,7 +648,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 03 : Stratégies de déploiement (Lump vs DCA + DCA vs VA) -->
-    <section id="a3">
+    <section id="a3" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13h3v-8h3v6h3v-10h3v12"/></svg></span>
         Analyse 03 · Stratégies de déploiement
@@ -711,7 +708,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 04 : Rendements annuels -->
-    <section id="a4">
+    <section id="a4" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="8" width="2" height="6"/><rect x="5" y="5" width="2" height="9"/><rect x="8" y="10" width="2" height="4"/><rect x="11" y="3" width="2" height="11"/></svg></span>
         Analyse 04 · Histogramme des rendements annuels
@@ -753,7 +750,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 05 : Drawdown -->
-    <section id="a5">
+    <section id="a5" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4l3 3-3 3M13 4l-3 3 3 3M2 12h12"/></svg></span>
         Analyse 05 · Drawdown historique
@@ -784,7 +781,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 06 : Volatilité & CAPE -->
-    <section id="a6">
+    <section id="a6" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8l2-3 2 6 2-9 2 12 2-6 2 2"/></svg></span>
         Analyse 06 · Volatilité &amp; CAPE
@@ -846,7 +843,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 07 : Monte Carlo -->
-    <section id="a7">
+    <section id="a7" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="5" r="1.5"/><circle cx="11" cy="6" r="1.5"/><circle cx="8" cy="11" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="11" r="1.5"/></svg></span>
         Analyse 07 · Prévisions Monte Carlo
@@ -905,7 +902,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 08 : Comparaison multi-actifs -->
-    <section id="a8">
+    <section id="a8" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l4-3 3 2 5-8"/><circle cx="13" cy="3" r="1.5" fill="currentColor" stroke="none"/></svg></span>
         Analyse 08 · Comparaison multi-actifs
@@ -1008,7 +1005,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 09 : Impact fiscal -->
-    <section id="a9">
+    <section id="a9" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></span>
         Analyse 09 · Impact fiscal — PEA / CTO / Assurance-vie
@@ -1074,7 +1071,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ANALYSE 10 : Plan de décaissement -->
-    <section id="a10">
+    <section id="a10" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14V2m0 12h12"/><path d="M2 10l4-4 3 3 5-6"/></svg></span>
         Analyse 10 · Plan de décaissement
@@ -1159,7 +1156,7 @@ if ('serviceWorker' in navigator) {
 
 
     <!-- ============= A11 · COMPARATEUR BROKERS ============= -->
-    <section id="a11">
+    <section id="a11" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M5 10h6"/></svg></span>
         Analyse 11 · Comparateur brokers (frais 2025)
@@ -1241,5 +1238,6 @@ if ('serviceWorker' in navigator) {
 <script src="/assets/js/core/finance-utils.js"></script>
 <script src="/assets/js/core/calc-dca.js"></script>
 <script src="/assets/js/views/dca.view.js"></script>
+<script src="/assets/js/paywall.js"></script>
 </body>
 </html>

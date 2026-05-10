@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Abonnement Premium — CalcInvest</title>
+<meta name="description" content="Passez Premium pour accéder à toutes les analyses avancées de CalcInvest — Monte Carlo, heatmaps, comparateur multi-actifs, export PDF. 4,90 €/mois, sans engagement." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">CalcInvest</div>
+        <div class="logo-text-sub">Abonnement</div>
+      </div>
+    </a>
+  </div>
+  <div class="topbar-right" id="ci-user-zone">
+    <!-- rempli par auth.js -->
+  </div>
+</header>
+
+<main style="max-width:900px;margin:0 auto;padding:0 16px">
+
+  <!-- Bannière succès/annulation -->
+  <div id="banner-success" style="display:none;margin:24px 0;padding:16px 20px;background:var(--accent-soft);border:1px solid var(--accent-mid);border-radius:var(--r-lg);text-align:center;font-size:14px;color:var(--accent);font-weight:500">
+    🎉 Bienvenue dans CalcInvest Premium ! Toutes les analyses sont maintenant disponibles.
+  </div>
+  <div id="banner-cancel" style="display:none;margin:24px 0;padding:14px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);text-align:center;font-size:13px;color:var(--text-3)">
+    Paiement annulé. Vous restez sur le plan gratuit.
+  </div>
+
+  <!-- Hero -->
+  <div class="pricing-hero">
+    <h1>Des analyses qui font <span style="color:var(--accent)">la différence</span></h1>
+    <p>Backtests complets, Monte Carlo, heatmaps de rendement — les outils des investisseurs sérieux, accessibles à tous.</p>
+  </div>
+
+  <!-- Cards pricing -->
+  <div class="pricing-grid">
+
+    <!-- Gratuit -->
+    <div class="pricing-card">
+      <div class="pricing-plan-name">Gratuit</div>
+      <div class="pricing-price">0 €<span></span></div>
+      <div class="pricing-price-sub">Pour toujours</div>
+
+      <ul class="pricing-features">
+        <li>Tous les simulateurs (DCA, locatif, retraite, FIRE, PER, DCF…)</li>
+        <li>Résultats principaux & KPIs</li>
+        <li>3 projets sauvegardés</li>
+        <li>Accès mobile (PWA)</li>
+        <li class="off">Analyses détaillées (graphiques, heatmaps)</li>
+        <li class="off">Monte Carlo & stress tests</li>
+        <li class="off">Export PDF</li>
+        <li class="off">Sans publicité</li>
+      </ul>
+
+      <a href="/" class="pricing-btn pricing-btn-outline">Continuer gratuitement</a>
+    </div>
+
+    <!-- Premium -->
+    <div class="pricing-card featured">
+      <div class="pricing-badge">Le plus populaire</div>
+      <div class="pricing-plan-name">Premium</div>
+      <div class="pricing-price">4,90 €<span>/mois</span></div>
+      <div class="pricing-price-sub">Sans engagement — résiliable à tout moment</div>
+
+      <ul class="pricing-features">
+        <li>Tous les simulateurs</li>
+        <li>Résultats principaux & KPIs</li>
+        <li>Projets sauvegardés illimités</li>
+        <li>Accès mobile (PWA)</li>
+        <li>Toutes les analyses détaillées</li>
+        <li>Monte Carlo & stress tests</li>
+        <li>Export PDF des résultats</li>
+        <li>Sans publicité</li>
+        <li>Comparateur multi-actifs</li>
+        <li>Support prioritaire</li>
+      </ul>
+
+      <button class="pricing-btn pricing-btn-accent" id="checkout-btn" onclick="startCheckout()">
+        Commencer — 4,90 €/mois
+      </button>
+
+      <p style="font-size:11.5px;color:var(--text-4);text-align:center;margin-top:12px">
+        Paiement sécurisé par Stripe · CB, Apple Pay, Google Pay
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Feature comparison -->
+  <div style="max-width:700px;margin:0 auto 60px;padding:0 16px">
+    <h2 style="font-size:22px;text-align:center;margin-bottom:24px">Ce que vous débloquez</h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+      <div class="card" style="padding:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--blue)" stroke-width="1.8" width="16" height="16"><path d="M2 12l4-4 3 3 5-6"/></svg>
+          Simulateur DCA Bourse
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;font-size:12.5px;color:var(--text-3);display:flex;flex-direction:column;gap:7px">
+          <li>✓ Rendements glissants (heatmap)</li>
+          <li>✓ Lump sum vs DCA comparé</li>
+          <li>✓ Drawdown historique</li>
+          <li>✓ Volatilité + CAPE Shiller</li>
+          <li>✓ Monte Carlo 2 000 trajectoires</li>
+          <li>✓ Scénarios de crise</li>
+        </ul>
+      </div>
+
+      <div class="card" style="padding:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--orange)" stroke-width="1.8" width="16" height="16"><path d="M8 2L2 5l6 3 6-3-6-3zM2 11l6 3 6-3M2 8l6 3 6-3"/></svg>
+          DCA Crypto
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;font-size:12.5px;color:var(--text-3);display:flex;flex-direction:column;gap:7px">
+          <li>✓ Cycles bull/bear analysés</li>
+          <li>✓ Stress tests bear market</li>
+          <li>✓ Corrélation inter-actifs</li>
+          <li>✓ Calcul flat tax optimisé</li>
+        </ul>
+      </div>
+
+      <div class="card" style="padding:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          Retraite & PER
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;font-size:12.5px;color:var(--text-3);display:flex;flex-direction:column;gap:7px">
+          <li>✓ Prolongation 62→67 ans comparée</li>
+          <li>✓ Analyse rachat trimestres</li>
+          <li>✓ Carrière longue + sensibilité</li>
+          <li>✓ Optimisation fiscale PER</li>
+        </ul>
+      </div>
+
+      <div class="card" style="padding:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--purple)" stroke-width="1.8" width="16" height="16"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+          FIRE & Immobilier
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;font-size:12.5px;color:var(--text-3);display:flex;flex-direction:column;gap:7px">
+          <li>✓ Monte Carlo survie capital</li>
+          <li>✓ Coast-FIRE & Lean/Fat FIRE</li>
+          <li>✓ TRI immobilier sur 20 ans</li>
+          <li>✓ Régimes fiscaux LMNP/nu</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="pricing-faq">
+    <h2>Questions fréquentes</h2>
+
+    <details class="accordion">
+      <summary class="accordion-header">
+        <span>Comment fonctionne l'abonnement ?</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6l4 4 4-4"/></svg>
+      </summary>
+      <div class="accordion-body">
+        L'abonnement est mensuel, sans engagement. Vous pouvez résilier à tout moment depuis votre espace client Stripe — l'accès Premium reste actif jusqu'à la fin de la période déjà payée.
+      </div>
+    </details>
+
+    <details class="accordion">
+      <summary class="accordion-header">
+        <span>Quels moyens de paiement sont acceptés ?</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6l4 4 4-4"/></svg>
+      </summary>
+      <div class="accordion-body">
+        Le paiement est géré par Stripe, l'une des solutions les plus sécurisées du marché. CB Visa/Mastercard, Apple Pay, Google Pay et virements SEPA sont acceptés.
+      </div>
+    </details>
+
+    <details class="accordion">
+      <summary class="accordion-header">
+        <span>Puis-je essayer avant de payer ?</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6l4 4 4-4"/></svg>
+      </summary>
+      <div class="accordion-body">
+        Le plan gratuit vous donne accès à tous les simulateurs et aux résultats principaux — sans limite de temps. Vous voyez exactement ce que vous obtenez avant de décider.
+      </div>
+    </details>
+
+    <details class="accordion">
+      <summary class="accordion-header">
+        <span>Mes données sont-elles en sécurité ?</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6l4 4 4-4"/></svg>
+      </summary>
+      <div class="accordion-body">
+        CalcInvest ne stocke aucune donnée financière personnelle. Vos projets sauvegardés ne contiennent que les paramètres de vos simulations. L'authentification est gérée par Supabase (ISO 27001) et les paiements par Stripe (PCI-DSS niveau 1).
+      </div>
+    </details>
+
+    <details class="accordion">
+      <summary class="accordion-header">
+        <span>Y a-t-il une facture ?</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6l4 4 4-4"/></svg>
+      </summary>
+      <div class="accordion-body">
+        Oui — Stripe envoie une facture PDF par e-mail à chaque prélèvement. Les factures sont également disponibles dans votre portail client Stripe.
+      </div>
+    </details>
+
+  </div>
+
+  <!-- CTA final -->
+  <div style="text-align:center;padding:40px 16px 80px">
+    <p style="font-size:14px;color:var(--text-3);margin-bottom:20px">Rejoignez les investisseurs qui prennent leurs décisions avec des données.</p>
+    <button class="pricing-btn pricing-btn-accent" style="max-width:320px;margin:0 auto;display:block;font-size:15px;padding:15px" onclick="startCheckout()">
+      Commencer — 4,90 €/mois
+    </button>
+    <p style="font-size:12px;color:var(--text-4);margin-top:12px">Sans engagement · Résiliation en 1 clic</p>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div>© 2026 CalcInvest — Simulation à titre informatif</div>
+  <div>
+    <a href="/">Accueil</a> ·
+    <a href="/mes-projets">Mes projets</a> ·
+    <a href="/mentions-legales">Mentions légales</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // Banners
+  const params = new URLSearchParams(location.search);
+  if (params.get('success') === '1') {
+    document.getElementById('banner-success').style.display = 'block';
+    // Refresh session pour refléter le nouveau plan (webhook peut mettre ~2s)
+    setTimeout(() => CI.auth.refreshSession && CI.auth.refreshSession(), 2000);
+  }
+  if (params.get('cancel') === '1') {
+    document.getElementById('banner-cancel').style.display = 'block';
+  }
+
+  // Si déjà premium → adapter le bouton
+  if (CI.isPremium && CI.isPremium()) {
+    document.querySelectorAll('#checkout-btn').forEach(btn => {
+      btn.textContent = '✓ Vous êtes Premium';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+    });
+  }
+
+  window.CI.initAll && window.CI.initAll();
+
+})();
+
+/* Checkout Stripe — appelé par les boutons */
+async function startCheckout() {
+  const btn = document.getElementById('checkout-btn');
+
+  // Vérif connexion
+  if (!CI.isLoggedIn || !CI.isLoggedIn()) {
+    window.location.href = '/inscription?next=/abonnement';
+    return;
+  }
+
+  // Déjà premium
+  if (CI.isPremium && CI.isPremium()) {
+    CI.toast && CI.toast('Vous êtes déjà Premium ✓', 'success');
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Redirection…'; }
+
+  try {
+    const user = CI.auth.getUser();
+    const res  = await fetch(`/api/stripe/create-checkout?user_id=${encodeURIComponent(user.id)}&email=${encodeURIComponent(user.email)}`);
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'Erreur inconnue');
+    }
+  } catch (err) {
+    CI.toast && CI.toast('Erreur paiement : ' + err.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Commencer — 4,90 €/mois'; }
+  }
+}
+</script>
+
+</body>
+</html>

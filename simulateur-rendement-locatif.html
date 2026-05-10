@@ -75,7 +75,7 @@ if ('serviceWorker' in navigator) {
     </nav>
   </div>
 
-  <div class="topbar-right">
+  <div class="topbar-right" id="ci-user-zone">
     <a href="/mes-projets" class="btn-ghost">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
       <span>Projets</span>
@@ -666,7 +666,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= CASHFLOW / CHART ============= -->
-    <section id="cashflow">
+    <section id="cashflow" data-tier="premium">
       <div class="card">
         <div class="card-header">
           <div class="card-title">
@@ -689,7 +689,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= AMORT / FLUX ============= -->
-    <section id="amort">
+    <section id="amort" data-tier="premium">
       <div class="card">
         <div class="card-header">
           <div class="card-title">
@@ -720,7 +720,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= FISCALITÉ (info) ============= -->
-    <section id="fisca">
+    <section id="fisca" data-tier="premium">
       <div class="info-box">
         <div class="info-box-title">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
@@ -743,7 +743,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A05 · AMORTISSEMENT CRÉDIT ============= -->
-    <section id="l-amort-credit">
+    <section id="l-amort-credit" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="12" height="8" rx="1"/><path d="M2 8h12M5 2v3M11 2v3"/></svg></span>
         Analyse 05 · Amortissement du crédit
@@ -809,7 +809,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A06 · COMPARAISON FISCALE ============= -->
-    <section id="l-fiscal-comp">
+    <section id="l-fiscal-comp" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></span>
         Analyse 06 · Comparaison fiscale des régimes
@@ -842,7 +842,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A07 · CASHFLOWS PROJETÉS ============= -->
-    <section id="l-cashflow-proj">
+    <section id="l-cashflow-proj" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12l3-4 2 2 3-5 4 3"/><path d="M2 14h12" stroke-dasharray="2 1"/></svg></span>
         Analyse 07 · Cashflows projetés
@@ -898,7 +898,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A08 · SIMULATION DE REVENTE ============= -->
-    <section id="l-revente">
+    <section id="l-revente" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 14V7l5-4 5 4v7"/><path d="M11 8l2 2-2 2M13 10H9"/></svg></span>
         Analyse 08 · Simulation de revente &amp; plus-value
@@ -997,7 +997,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A09 · ACHAT IMMOBILIER vs DCA BOURSE ============= -->
-    <section id="l-vs-bourse">
+    <section id="l-vs-bourse" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14V8l3 2 3-5 3 4 3-3"/><path d="M2 14h12"/></svg>
@@ -1068,7 +1068,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A10 · MONTE CARLO VACANCE LOCATIVE ============= -->
-    <section id="l-mc-vacance">
+    <section id="l-mc-vacance" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14h12"/><path d="M3 12V8M6 12V5M9 12V9M12 12V6"/></svg>
@@ -1141,7 +1141,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A11 · LOCATION NUE vs MEUBLÉE ============= -->
-    <section id="l-nue-meuble">
+    <section id="l-nue-meuble" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/><path d="M2 8h5M9 8h5"/></svg>
@@ -1184,7 +1184,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A12 · STRESS TEST TAUX ============= -->
-    <section id="l-stress-taux">
+    <section id="l-stress-taux" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 3 3-7 3 4"/><path d="M11 4h2v2"/></svg>
@@ -1227,7 +1227,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= MULTI-BIENS · PATRIMOINE CONSOLIDÉ ============= -->
-    <section id="l-patrimoine" style="display:none">
+    <section id="l-patrimoine" style="display:none" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="4" height="8"/><rect x="6" y="3" width="4" height="11"/><rect x="10" y="8" width="4" height="6"/></svg>
@@ -1295,7 +1295,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= MULTI-BIENS · COMPARAISON ============= -->
-    <section id="l-comparaison" style="display:none">
+    <section id="l-comparaison" style="display:none" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h5M2 8h5M2 12h5"/><path d="M9 4h5M9 8h5M9 12h5"/></svg>
@@ -1366,5 +1366,7 @@ if ('serviceWorker' in navigator) {
   });
 </script>
 <script src="/assets/js/scenarios.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
 </body>
 </html>

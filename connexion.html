@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Connexion — CalcInvest</title>
+<meta name="description" content="Connectez-vous à votre compte CalcInvest pour accéder à vos simulations sauvegardées et aux analyses avancées." />
+<meta name="robots" content="noindex" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      CalcInvest
+    </div>
+
+    <h1 class="auth-title">Bon retour</h1>
+    <p class="auth-sub">Connectez-vous à votre compte</p>
+
+    <!-- Alerte reset password -->
+    <div id="reset-success" class="auth-success" style="display:none">
+      Email de réinitialisation envoyé — vérifiez votre boîte mail.
+    </div>
+
+    <!-- Erreur -->
+    <div id="auth-error" class="auth-error"></div>
+
+    <!-- Formulaire -->
+    <form id="login-form" novalidate>
+
+      <div class="auth-field">
+        <label class="auth-label" for="email">Adresse e-mail</label>
+        <input type="email" id="email" class="auth-input" placeholder="vous@exemple.fr" autocomplete="email" required />
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label" for="password" style="display:flex;justify-content:space-between;align-items:center">
+          Mot de passe
+          <a href="#" id="forgot-link" style="font-size:11.5px;color:var(--accent);text-transform:none;letter-spacing:0;font-weight:500">Mot de passe oublié ?</a>
+        </label>
+        <input type="password" id="password" class="auth-input" placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+
+      <button type="submit" class="auth-btn" id="submit-btn">
+        Se connecter
+      </button>
+
+    </form>
+
+    <p class="auth-link">
+      Pas encore de compte ? <a href="/inscription">Créer un compte gratuit</a>
+    </p>
+
+  </div>
+
+  <div style="margin-top:24px;font-size:12px;color:var(--text-4);text-align:center">
+    <a href="/" style="color:var(--text-4)">← Retour à l'accueil</a>
+  </div>
+
+</div>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // Redirect si déjà connecté
+  if (CI.isLoggedIn && CI.isLoggedIn()) {
+    window.location.href = '/';
+    return;
+  }
+
+  // Afficher message reset si vient de la page reset
+  if (new URLSearchParams(location.search).get('reset') === '1') {
+    const el = document.getElementById('reset-success');
+    if (el) { el.style.display = 'block'; el.classList.add('visible'); }
+  }
+
+  const form      = document.getElementById('login-form');
+  const emailEl   = document.getElementById('email');
+  const passEl    = document.getElementById('password');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorEl   = document.getElementById('auth-error');
+  const forgotEl  = document.getElementById('forgot-link');
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.classList.add('visible');
+  }
+  function clearError() {
+    errorEl.classList.remove('visible');
+    emailEl.classList.remove('error');
+    passEl.classList.remove('error');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    const email    = emailEl.value.trim();
+    const password = passEl.value;
+
+    if (!email || !email.includes('@')) {
+      emailEl.classList.add('error');
+      return showError('Adresse e-mail invalide.');
+    }
+    if (!password || password.length < 6) {
+      passEl.classList.add('error');
+      return showError('Mot de passe trop court (6 caractères minimum).');
+    }
+
+    submitBtn.disabled   = true;
+    submitBtn.textContent = 'Connexion…';
+
+    try {
+      await CI.auth.signIn(email, password);
+      // Redirect vers la page d'origine ou accueil
+      const next = new URLSearchParams(location.search).get('next') || '/';
+      window.location.href = next;
+    } catch (err) {
+      submitBtn.disabled   = false;
+      submitBtn.textContent = 'Se connecter';
+      const msg = err.message || '';
+      if (msg.includes('Invalid login') || msg.includes('credentials')) {
+        showError('Email ou mot de passe incorrect.');
+      } else if (msg.includes('Email not confirmed')) {
+        showError('Confirmez votre e-mail avant de vous connecter (vérifiez vos spams).');
+      } else {
+        showError('Erreur de connexion : ' + msg);
+      }
+    }
+  });
+
+  forgotEl.addEventListener('click', async (e) => {
+    e.preventDefault();
+    clearError();
+    const email = emailEl.value.trim();
+    if (!email || !email.includes('@')) {
+      emailEl.classList.add('error');
+      return showError('Entrez votre e-mail pour réinitialiser votre mot de passe.');
+    }
+    forgotEl.textContent = 'Envoi…';
+    try {
+      await CI.auth.resetPassword(email);
+      document.getElementById('reset-success').style.display = 'block';
+      document.getElementById('reset-success').classList.add('visible');
+    } catch (err) {
+      showError('Impossible d\'envoyer l\'e-mail : ' + (err.message || ''));
+    } finally {
+      forgotEl.textContent = 'Mot de passe oublié ?';
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

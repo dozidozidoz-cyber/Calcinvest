@@ -83,7 +83,7 @@ if ('serviceWorker' in navigator) {
     </nav>
   </div>
 
-  <div class="topbar-right">
+  <div class="topbar-right" id="ci-user-zone">
     <a href="/mes-projets" class="btn-ghost">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
       <span>Projets</span>
@@ -482,7 +482,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A02 · TRAJECTOIRE ============= -->
-    <section id="pa-trajectoire">
+    <section id="pa-trajectoire" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 2 3-6 3 4"/></svg></span>
         Analyse 02 · Trajectoire
@@ -510,7 +510,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A03 · SORTIE ============= -->
-    <section id="pa-sortie">
+    <section id="pa-sortie" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8h8M7 5l3 3-3 3"/><circle cx="13" cy="8" r="1"/></svg></span>
         Analyse 03 · Sortie
@@ -553,7 +553,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A04 · PER vs CTO ============= -->
-    <section id="pa-vscto">
+    <section id="pa-vscto" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="6" width="5" height="7"/></svg></span>
         Analyse 04 · PER vs CTO
@@ -580,7 +580,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A05 · SENSIBILITÉ ============= -->
-    <section id="pa-sensitivity">
+    <section id="pa-sensitivity" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="3" height="3"/><rect x="6" y="2" width="3" height="3"/><rect x="10" y="2" width="3" height="3"/><rect x="2" y="6" width="3" height="3"/></svg></span>
         Analyse 05 · Sensibilité TMI
@@ -601,7 +601,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A06 · PLAFOND & OPTIMISATION ============= -->
-    <section id="pa-plafond" style="margin-bottom:48px">
+    <section id="pa-plafond" style="margin-bottom:48px" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 5h12M4 5V3h8v2M4 14V9h8v5H4z"/></svg></span>
         Analyse 06 · Plafond &amp; optimisation
@@ -666,5 +666,7 @@ if ('serviceWorker' in navigator) {
 <script src="/assets/js/views/per.view.js"></script>
 
 <script src="/assets/js/scenarios.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
 </body>
 </html>

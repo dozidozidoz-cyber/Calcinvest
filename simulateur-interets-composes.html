@@ -75,7 +75,7 @@ if ('serviceWorker' in navigator) {
     </nav>
   </div>
 
-  <div class="topbar-right">
+  <div class="topbar-right" id="ci-user-zone">
     <a href="/mes-projets" class="btn-ghost">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
       <span>Projets</span>
@@ -460,7 +460,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A02 · COMPARAISON TAUX ============= -->
-    <section id="ca-taux">
+    <section id="ca-taux" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-5 3 2 3-4 3 2"/></svg>
@@ -496,7 +496,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A03 · CALCULATEUR D'OBJECTIF ============= -->
-    <section id="ca-objectif">
+    <section id="ca-objectif" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/></svg>
@@ -552,7 +552,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A04 · COMMENCER TÔT ============= -->
-    <section id="ca-early">
+    <section id="ca-early" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v4l3 3M2 8a6 6 0 1 0 6-6"/></svg>
@@ -600,7 +600,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A05 · IMPACT INFLATION ============= -->
-    <section id="ca-inflation">
+    <section id="ca-inflation" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14l4-5 3 2 4-7"/><path d="M12 4h2v2" stroke-linecap="round"/></svg>
@@ -665,7 +665,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A06 — ENVELOPPES FISCALES ============= -->
-    <section id="ca-enveloppes">
+    <section id="ca-enveloppes" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 7h6M5 10h4"/></svg>
@@ -729,7 +729,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A07 · QUAND COMMENCER ? ============= -->
-    <section id="ca-quand">
+    <section id="ca-quand" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
@@ -845,5 +845,7 @@ if ('serviceWorker' in navigator) {
   });
 </script>
 <script src="/assets/js/scenarios.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
 </body>
 </html>

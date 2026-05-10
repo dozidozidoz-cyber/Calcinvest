@@ -72,7 +72,7 @@ if ('serviceWorker' in navigator) {
     </nav>
   </div>
 
-  <div class="topbar-right">
+  <div class="topbar-right" id="ci-user-zone">
     <a href="/mes-projets" class="btn-ghost">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
       <span>Projets</span>
@@ -358,7 +358,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A02 PROLONGATION ============= -->
-    <section id="ra-prolongation">
+    <section id="ra-prolongation" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12l4-4 3 3 5-7"/></svg></span>
         Analyse 02 · Comparaison départ 62 → 68 ans
@@ -381,7 +381,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A03 RACHAT TRIMESTRES ============= -->
-    <section id="ra-rachat">
+    <section id="ra-rachat" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h10v6H3zM7 8h2"/></svg></span>
         Analyse 03 · Rachat de trimestres (versement pour la retraite — VPLR)
@@ -440,7 +440,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A04 CARRIÈRE LONGUE ============= -->
-    <section id="ra-carriere-longue">
+    <section id="ra-carriere-longue" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8l4-4 4 8 4-4"/></svg></span>
         Analyse 04 · Dispositif "Carrière longue"
@@ -462,7 +462,7 @@ if ('serviceWorker' in navigator) {
     </section>
 
     <!-- ============= A05 SENSIBILITÉ SALAIRE ============= -->
-    <section id="ra-sensibilite">
+    <section id="ra-sensibilite" data-tier="premium">
       <div class="page-eyebrow" style="margin-top:32px">
         <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 13l3-4 2 2 4-7 3 4"/></svg></span>
         Analyse 05 · Sensibilité à la croissance salariale
@@ -527,5 +527,7 @@ if ('serviceWorker' in navigator) {
   });
 </script>
 <script src="/assets/js/scenarios.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
 </body>
 </html>
