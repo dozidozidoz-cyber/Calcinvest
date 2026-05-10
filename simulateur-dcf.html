@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Simulateur DCF — Valorisation d'actions | CalcInvest</title>
+<meta name="description" content="Calculez la valeur intrinsèque d'une action avec le DCF (Discounted Cash Flow). Croissance à 2 phases, valeur terminale, matrice de sensibilité WACC × croissance." />
+<meta name="keywords" content="simulateur DCF, valorisation action, valeur intrinsèque, discounted cash flow, analyse fondamentale, WACC, PEG" />
+<meta property="og:title" content="Simulateur DCF — Valorisation d'actions | CalcInvest" />
+<meta property="og:description" content="Calculez la valeur intrinsèque de n'importe quelle action en 2 minutes." />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
+<style>
+/* ========== DCF-specific styles ========== */
+.dcf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 640px) { .dcf-grid { grid-template-columns: 1fr; } }
+
+.dcf-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 640px) { .dcf-grid-3 { grid-template-columns: 1fr 1fr; } }
+
+.dcf-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+.dcf-label span {
+  font-weight: 400;
+  color: var(--text-4);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+}
+
+.dcf-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 9px 12px;
+  transition: var(--t-fast);
+  box-sizing: border-box;
+}
+.dcf-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+
+.dcf-input-wrap {
+  position: relative;
+}
+.dcf-input-wrap .dcf-unit {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--text-4);
+  font-family: var(--font-mono);
+  pointer-events: none;
+}
+.dcf-input-wrap .dcf-input { padding-right: 36px; }
+
+.dcf-number {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 9px 38px 9px 12px;
+  transition: var(--t-fast);
+  box-sizing: border-box;
+  -moz-appearance: textfield;
+}
+.dcf-number::-webkit-inner-spin-button,
+.dcf-number::-webkit-outer-spin-button { -webkit-appearance: none; }
+.dcf-number:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+
+.dcf-phase-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.dcf-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+@media (max-width: 600px) { .dcf-profile-grid { grid-template-columns: 1fr 1fr; } }
+
+.dcf-profile-btn {
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--t-fast);
+}
+.dcf-profile-btn:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.dcf-profile-btn.active { border-color: var(--accent); background: var(--accent-soft); }
+.dcf-profile-btn .pf-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.dcf-profile-btn .pf-desc { font-size: 11px; color: var(--text-4); margin-top: 2px; }
+
+/* Verdict */
+.dcf-verdict {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: var(--r);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.dcf-verdict-badge {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 6px 14px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+.dcf-verdict-badge.pos  { background: rgba(52,211,153,0.15); color: var(--accent); border: 1px solid rgba(52,211,153,0.3); }
+.dcf-verdict-badge.warn { background: rgba(251,191,36,0.12);  color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+.dcf-verdict-badge.neg  { background: rgba(248,113,113,0.12); color: var(--red);    border: 1px solid rgba(248,113,113,0.3); }
+.dcf-verdict-detail { font-size: 13px; color: var(--text-3); font-family: var(--font-mono); }
+
+/* Sensitivity table */
+.dcf-sensitivity-table td,
+.dcf-sensitivity-table th { text-align: center; font-family: var(--font-mono); font-size: 12px; }
+.dcf-sensitivity-table th { background: var(--bg-card); }
+.dcf-cell-strong-buy  { background: rgba(52,211,153,0.20); color: #6EE7B7; font-weight: 600; }
+.dcf-cell-buy         { background: rgba(52,211,153,0.10); color: var(--accent); }
+.dcf-cell-hold        { background: rgba(251,191,36,0.10);  color: var(--yellow); }
+.dcf-cell-sell        { background: rgba(248,113,113,0.10); color: var(--red); }
+.dcf-cell-strong-sell { background: rgba(248,113,113,0.20); color: #FCA5A5; font-weight: 600; }
+
+/* Error box */
+.dcf-error {
+  display: none;
+  padding: 12px 16px;
+  background: rgba(248,113,113,0.10);
+  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: var(--r);
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.pills-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pill {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: var(--t-fast);
+}
+.pill:hover, .pill.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+.dcf-note {
+  font-size: 11px;
+  color: var(--text-4);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== TOPBAR ==================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">Valorisation DCF</div>
+        <div class="logo-text-sub">Simulateur</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="topbar-center">
+    <nav class="segmented" role="tablist" aria-label="Calculateurs">
+      <a class="segmented-btn" href="/simulateur-dca">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Bourse
+      </a>
+      <a class="segmented-btn active" aria-current="page" href="/simulateur-dcf">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2"/><path d="M8 2v2M8 12v2M2 8h2M12 8h2"/></svg>
+        DCF
+      </a>
+      <a class="segmented-btn" href="/simulateur-interets-composes">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+        Composés
+      </a>
+      <a class="segmented-btn" href="/simulateur-rendement-locatif">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>
+        Immobilier
+      </a>
+      <a class="segmented-btn" href="/calculateur-fire">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4c0 4-4 5-4 8a4 4 0 0 0 8 0c0-3-4-4-4-8z"/></svg>
+        FIRE
+      </a>
+    </nav>
+  </div>
+
+  <div class="topbar-right">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+  </div>
+</header>
+
+<!-- ==================== MAIN ==================== -->
+<main class="main fade-in" style="max-width:900px">
+
+  <!-- Hero -->
+  <div style="margin-bottom:28px">
+    <div class="section-eyebrow"><span>●</span> Analyse fondamentale</div>
+    <h1 class="section-heading" style="margin-top:8px">Valorisation DCF</h1>
+    <p class="section-sub">Estimez la valeur intrinsèque d'une action via les flux de trésorerie actualisés. Projection sur 10 ans en 2 phases + valeur terminale Gordon Growth. Matrice de sensibilité WACC × croissance incluse.</p>
+  </div>
+
+  <!-- ==================== FORM ==================== -->
+  <form id="dcf-form" onsubmit="return false">
+  <div class="card" style="margin-bottom:16px">
+
+    <!-- Profils prédéfinis -->
+    <div style="margin-bottom:20px">
+      <label class="dcf-label">Profils illustratifs <span>— remplissage automatique des paramètres</span></label>
+      <div class="dcf-profile-grid">
+        <button type="button" class="dcf-profile-btn" data-profile="growth">
+          <div class="pf-name">🚀 Tech Growth</div>
+          <div class="pf-desc">+25% an 1-5, FCF 18%</div>
+        </button>
+        <button type="button" class="dcf-profile-btn" data-profile="garp">
+          <div class="pf-name">📈 GARP / Qualité</div>
+          <div class="pf-desc">+15% an 1-5, FCF 25%</div>
+        </button>
+        <button type="button" class="dcf-profile-btn" data-profile="quality">
+          <div class="pf-name">🏛 Blue chip</div>
+          <div class="pf-desc">+8% an 1-5, FCF 22%</div>
+        </button>
+        <button type="button" class="dcf-profile-btn" data-profile="cyclical">
+          <div class="pf-name">⚙ Cyclique</div>
+          <div class="pf-desc">+6% an 1-5, FCF 12%</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Identité -->
+    <div class="dcf-grid" style="margin-bottom:16px">
+      <div>
+        <label class="dcf-label" for="dcf-company">Entreprise <span>— optionnel</span></label>
+        <input type="text" id="dcf-company" class="dcf-input" placeholder="ex: AXON Enterprise" autocomplete="off" />
+      </div>
+      <div>
+        <label class="dcf-label" for="dcf-ticker">Ticker <span>— optionnel</span></label>
+        <input type="text" id="dcf-ticker" class="dcf-input" placeholder="ex: AXON" autocomplete="off" style="text-transform:uppercase" />
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Revenus -->
+    <div style="margin-bottom:6px">
+      <div class="dcf-phase-tag">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 9l4-4 2 2 4-5"/></svg>
+        Revenus & Croissance
+      </div>
+    </div>
+
+    <div class="dcf-grid-3" style="margin-bottom:16px">
+      <div>
+        <label class="dcf-label" for="dcf-revenue">Revenus TTM <span>— M€/$</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-revenue" class="dcf-number" value="1000" min="1" step="50" />
+          <span class="dcf-unit">M</span>
+        </div>
+        <p class="dcf-note">Chiffre d'affaires des 12 derniers mois</p>
+      </div>
+      <div>
+        <label class="dcf-label" for="dcf-g1">Croissance an 1-5 <span>— %/an</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-g1" class="dcf-number" value="15" min="-20" max="100" step="1" />
+          <span class="dcf-unit">%</span>
+        </div>
+        <div class="pills-row">
+          <button type="button" class="pill" onclick="setVal('dcf-g1',5)">5</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g1',10)">10</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g1',15)">15</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g1',20)">20</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g1',30)">30</button>
+        </div>
+      </div>
+      <div>
+        <label class="dcf-label" for="dcf-g2">Croissance an 6-10 <span>— %/an</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-g2" class="dcf-number" value="8" min="-10" max="60" step="1" />
+          <span class="dcf-unit">%</span>
+        </div>
+        <div class="pills-row">
+          <button type="button" class="pill" onclick="setVal('dcf-g2',3)">3</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g2',5)">5</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g2',8)">8</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g2',12)">12</button>
+          <button type="button" class="pill" onclick="setVal('dcf-g2',15)">15</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Rentabilité & Taux -->
+    <div style="margin-bottom:6px">
+      <div class="dcf-phase-tag" style="background:rgba(167,139,250,0.12);color:var(--purple)">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="5"/><path d="M6 4v2l1.5 1.5"/></svg>
+        Rentabilité & Taux
+      </div>
+    </div>
+
+    <div class="dcf-grid-3" style="margin-bottom:16px">
+      <div>
+        <label class="dcf-label" for="dcf-fcf-margin">Marge FCF <span>— %</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-fcf-margin" class="dcf-number" value="20" min="0" max="80" step="1" />
+          <span class="dcf-unit">%</span>
+        </div>
+        <div class="pills-row">
+          <button type="button" class="pill" onclick="setVal('dcf-fcf-margin',10)">10</button>
+          <button type="button" class="pill" onclick="setVal('dcf-fcf-margin',15)">15</button>
+          <button type="button" class="pill" onclick="setVal('dcf-fcf-margin',20)">20</button>
+          <button type="button" class="pill" onclick="setVal('dcf-fcf-margin',25)">25</button>
+          <button type="button" class="pill" onclick="setVal('dcf-fcf-margin',30)">30</button>
+        </div>
+        <p class="dcf-note">FCF / Chiffre d'affaires</p>
+      </div>
+      <div>
+        <label class="dcf-label" for="dcf-wacc">WACC <span>— taux d'actualisation</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-wacc" class="dcf-number" value="9" min="3" max="25" step="0.5" />
+          <span class="dcf-unit">%</span>
+        </div>
+        <div class="pills-row">
+          <button type="button" class="pill" onclick="setVal('dcf-wacc',7)">7</button>
+          <button type="button" class="pill" onclick="setVal('dcf-wacc',8)">8</button>
+          <button type="button" class="pill" onclick="setVal('dcf-wacc',9)">9</button>
+          <button type="button" class="pill" onclick="setVal('dcf-wacc',10)">10</button>
+          <button type="button" class="pill" onclick="setVal('dcf-wacc',12)">12</button>
+        </div>
+        <p class="dcf-note">7-9% = standard, >10% = risque élevé</p>
+      </div>
+      <div>
+        <label class="dcf-label" for="dcf-tg">Croissance terminale <span>— perpetuity</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-tg" class="dcf-number" value="2.5" min="0" max="5" step="0.5" />
+          <span class="dcf-unit">%</span>
+        </div>
+        <div class="pills-row">
+          <button type="button" class="pill" onclick="setVal('dcf-tg',1)">1</button>
+          <button type="button" class="pill" onclick="setVal('dcf-tg',1.5)">1.5</button>
+          <button type="button" class="pill" onclick="setVal('dcf-tg',2)">2</button>
+          <button type="button" class="pill" onclick="setVal('dcf-tg',2.5)">2.5</button>
+          <button type="button" class="pill" onclick="setVal('dcf-tg',3)">3</button>
+        </div>
+        <p class="dcf-note">Doit être < WACC. Typiquement ≈ inflation (2-3%)</p>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Structure financière -->
+    <div style="margin-bottom:6px">
+      <div class="dcf-phase-tag" style="background:rgba(96,165,250,0.10);color:var(--blue)">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="10" height="8" rx="1"/><path d="M4 3V2h4v1"/></svg>
+        Structure financière & Prix
+      </div>
+    </div>
+
+    <div class="dcf-grid" style="margin-bottom:16px">
+      <div>
+        <label class="dcf-label" for="dcf-net-debt">Dette nette <span>— M€/$ (négatif = trésorerie)</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-net-debt" class="dcf-number" value="0" step="100" />
+          <span class="dcf-unit">M</span>
+        </div>
+        <p class="dcf-note">Dette totale − Trésorerie. Visible au bilan.</p>
+      </div>
+      <div>
+        <label class="dcf-label" for="dcf-shares">Actions en circulation <span>— millions</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-shares" class="dcf-number" value="100" min="0.01" step="10" />
+          <span class="dcf-unit">M</span>
+        </div>
+        <p class="dcf-note">Diluted shares outstanding</p>
+      </div>
+    </div>
+
+    <div class="dcf-grid" style="margin-bottom:4px">
+      <div>
+        <label class="dcf-label" for="dcf-price">Prix actuel <span>— optionnel, pour le verdict</span></label>
+        <div class="dcf-input-wrap">
+          <input type="number" id="dcf-price" class="dcf-number" value="0" min="0" step="1" />
+          <span class="dcf-unit">€/$</span>
+        </div>
+        <p class="dcf-note">Laissez à 0 pour voir uniquement la valeur intrinsèque</p>
+      </div>
+      <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+        <button type="button" id="dcf-calc-btn" class="btn btn-primary" style="width:100%;height:44px;font-size:15px;font-weight:700">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.3 3.3l1.4 1.4M11.3 11.3l1.4 1.4M3.3 12.7l1.4-1.4M11.3 4.7l1.4-1.4"/></svg>
+          Calculer la valeur intrinsèque
+        </button>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="dcf-error" class="dcf-error"></div>
+
+  </div>
+  </form>
+
+  <!-- ==================== RESULTS ==================== -->
+  <div id="dcf-results" style="display:none">
+
+    <!-- KPIs -->
+    <div class="stats-row" style="margin-bottom:16px">
+      <div class="stat">
+        <div class="stat-label">Valeur intrinsèque</div>
+        <div id="dcf-kpi-iv" class="stat-value" style="font-size:28px;color:var(--accent)">—</div>
+        <div class="stat-sub">par action</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Valeur d'entreprise</div>
+        <div id="dcf-kpi-ev" class="stat-value">—</div>
+        <div class="stat-sub">Enterprise Value</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label" id="dcf-kpi-upside-lbl">Potentiel haussier</div>
+        <div id="dcf-kpi-upside" class="stat-value">—</div>
+        <div class="stat-sub">vs prix actuel</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Poids valeur terminale</div>
+        <div id="dcf-kpi-tv" class="stat-value">—</div>
+        <div class="stat-sub" id="dcf-kpi-tv-note">Part de la valeur dans la TV</div>
+      </div>
+    </div>
+
+    <!-- Verdict -->
+    <div id="dcf-verdict" class="dcf-verdict" style="display:none">
+      <span class="dcf-verdict-badge">—</span>
+      <span class="dcf-verdict-detail">—</span>
+    </div>
+
+    <!-- Chart -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Flux de trésorerie actualisés — contribution par année</div>
+      <p style="font-size:12px;color:var(--text-4);margin:0 0 12px">Barres bleues = PV des FCF explicites (an 1-10) · Barre verte = valeur terminale actualisée</p>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="dcf-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- FCF Table -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Détail des flux projetés</div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Période</th>
+              <th>Revenus</th>
+              <th>FCF</th>
+              <th>Croissance</th>
+              <th>PV FCF</th>
+              <th>Cumulé</th>
+            </tr>
+          </thead>
+          <tbody id="dcf-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sensitivity Matrix -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Matrice de sensibilité — Valeur intrinsèque (€/action)</div>
+      <p style="font-size:12px;color:var(--text-4);margin:0 0 12px">
+        Lignes = WACC ± 2 pts · Colonnes = croissance terminale ± 1 pt ·
+        <span style="color:var(--accent)">■</span> Base ·
+        <span style="color:#6EE7B7">■</span> +20% upside ·
+        <span style="color:var(--red)">■</span> -25% downside
+      </p>
+      <div style="overflow-x:auto" id="dcf-sensitivity"></div>
+    </div>
+
+    <!-- Info box -->
+    <div class="info-box" style="margin-bottom:16px">
+      <strong>Limites du DCF</strong> — La valeur terminale représente souvent 60-80% de l'EV : des variations mineures du WACC ou du taux terminal ont un impact majeur. Ce simulateur est un outil d'aide à la décision, pas une prédiction. Combinez-le toujours avec une analyse des comparables (PEG, EV/EBITDA), des catalyseurs et des risques spécifiques.
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-bottom:40px">
+      <button type="button" id="dcf-share-btn" class="btn btn-secondary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2l4 4-4 4M14 6H7a5 5 0 0 0-5 5v1"/></svg>
+        Partager
+      </button>
+    </div>
+
+  </div><!-- /results -->
+
+</main><!-- /main -->
+
+<!-- ==================== SCRIPTS ==================== -->
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/core/calc-dcf.js"></script>
+<script src="/assets/js/views/dcf.view.js"></script>
+
+<script>
+// Pill helper (inline, pas de CI.initPills car pills custom ici)
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) { el.value = val; el.dispatchEvent(new Event('input')); }
+}
+</script>
+
+</body>
+</html>
