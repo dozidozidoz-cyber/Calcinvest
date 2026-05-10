@@ -1697,7 +1697,9 @@ table { border-collapse: collapse; width: 100%; }
   display: grid; place-items: center;
   flex-shrink: 0;
   font-size: 18px;
+  line-height: 1;
 }
+.category-divider-icon svg { display: block; }
 .category-divider-text { flex: 1; min-width: 0; }
 .category-divider-title {
   font-size: 16px;
