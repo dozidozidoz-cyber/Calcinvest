@@ -14,6 +14,7 @@
   let currentAsset = null;
   let currentData = null;
   const dataCache = {};
+  const tickerCache = {};   // cache des tickers custom fetchés
   let lastResult = null;
   let lastParams = null;
   let compAssetId = null;
@@ -85,7 +86,9 @@
       if (!byCat[a.category]) byCat[a.category] = [];
       byCat[a.category].push(a);
     });
-    c.innerHTML = Object.keys(byCat).map((cat) => `
+
+    // Grilles actifs standards
+    let html = Object.keys(byCat).map((cat) => `
       <div>
         <div class="asset-group-title">${GROUP_LABELS[cat] || cat}</div>
         <div class="asset-grid">
@@ -100,9 +103,151 @@
         </div>
       </div>
     `).join('');
+
+    // Section recherche ticker custom
+    html += `
+      <div>
+        <div class="asset-group-title">Action / ETF personnalisé</div>
+        <div class="ticker-search-wrap">
+          <div class="ticker-search-row">
+            <input
+              type="text"
+              id="d-ticker-input"
+              class="ticker-search-input"
+              placeholder="AXON, NVDA, MSFT, BRK-B…"
+              maxlength="12"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="characters"
+              spellcheck="false"
+            />
+            <button type="button" id="d-ticker-btn" class="ticker-search-btn">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="6.5" cy="6.5" r="4.5"/>
+                <path d="M10.5 10.5l3 3" stroke-linecap="round"/>
+              </svg>
+              Rechercher
+            </button>
+          </div>
+          <div id="d-ticker-status" class="ticker-status" style="display:none"></div>
+          <div id="d-ticker-result" class="asset-grid" style="margin-top:8px"></div>
+        </div>
+      </div>
+    `;
+
+    c.innerHTML = html;
+
+    // Bind asset buttons standards
     c.querySelectorAll('.asset-btn:not(.disabled)').forEach((btn) => {
       btn.addEventListener('click', () => selectAsset(btn.dataset.id));
     });
+
+    // Bind ticker search
+    const input = document.getElementById('d-ticker-input');
+    const btn   = document.getElementById('d-ticker-btn');
+
+    const doSearch = () => {
+      const sym = (input.value || '').trim().toUpperCase();
+      if (sym) fetchCustomTicker(sym);
+    };
+    btn.addEventListener('click', doSearch);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+
+    // Restaurer les tickers déjà fetchés dans cette session
+    Object.values(tickerCache).forEach((data) => renderTickerResult(data));
+  }
+
+  /* ============================================================
+     CUSTOM TICKER — fetch + sélection
+     ============================================================ */
+  async function fetchCustomTicker(symbol) {
+    const statusEl = document.getElementById('d-ticker-status');
+    const btn      = document.getElementById('d-ticker-btn');
+
+    // Déjà en cache → juste sélectionner
+    if (tickerCache[symbol]) {
+      renderTickerResult(tickerCache[symbol]);
+      selectCustomTicker(symbol);
+      return;
+    }
+
+    // Loading state
+    if (statusEl) { statusEl.style.display = 'flex'; statusEl.className = 'ticker-status loading'; statusEl.innerHTML = '<span class="ticker-spinner"></span> Chargement de ' + symbol + '…'; }
+    if (btn) btn.disabled = true;
+
+    try {
+      const res  = await fetch('/api/ticker?symbol=' + encodeURIComponent(symbol));
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        if (statusEl) { statusEl.className = 'ticker-status error'; statusEl.innerHTML = '✗ ' + (data.error || 'Erreur inconnue'); }
+        return;
+      }
+
+      // Mettre en cache
+      tickerCache[symbol] = data;
+
+      if (statusEl) { statusEl.style.display = 'none'; }
+      renderTickerResult(data);
+      selectCustomTicker(symbol);
+
+    } catch (err) {
+      if (statusEl) { statusEl.className = 'ticker-status error'; statusEl.innerHTML = '✗ Impossible de contacter le serveur. Réessayez.'; }
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function renderTickerResult(data) {
+    const container = document.getElementById('d-ticker-result');
+    if (!container) return;
+
+    const id  = data.meta.id;
+    const sym = data.meta.ticker;
+
+    // Éviter les doublons
+    if (container.querySelector(`[data-ticker="${sym}"]`)) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'asset-btn';
+    btn.dataset.ticker = sym;
+    btn.dataset.id     = id;
+    btn.innerHTML = `
+      <span class="asset-dot" style="background:#F59E0B"></span>
+      <span class="asset-name">${sym}</span>
+      <span class="asset-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;border:none">${data.meta.currency}</span>
+    `;
+    btn.title = data.meta.name + ' — ' + data.points + ' mois de données (' + data.start + ' → ' + data.end + ')';
+    btn.addEventListener('click', () => selectCustomTicker(sym));
+    container.appendChild(btn);
+  }
+
+  function selectCustomTicker(symbol) {
+    const data = tickerCache[symbol];
+    if (!data) return;
+
+    // Construire un objet "asset" compatible avec le reste du code
+    currentAsset = {
+      id:        data.meta.id,
+      name:      data.meta.name || symbol,
+      ticker:    symbol,
+      color:     '#F59E0B',
+      category:  'stock',
+      available: true,
+      pea:       false,
+      _custom:   true
+    };
+    currentData = data;
+
+    updatePickerActive();
+    // Marquer le bouton ticker custom comme actif
+    document.querySelectorAll('#d-ticker-result .asset-btn').forEach((b) => {
+      b.classList.toggle('active', b.dataset.ticker === symbol);
+    });
+    updateFeatureToggles();
+    clampDates();
+    run();
   }
 
   function updatePickerActive() {

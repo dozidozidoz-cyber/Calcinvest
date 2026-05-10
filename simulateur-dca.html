@@ -58,6 +58,66 @@ if ('serviceWorker' in navigator) {
 .scenario-btn.today .s-dd { color: var(--accent); }
 
 .asset-picker { display: grid; gap: 18px; }
+
+/* ---- Ticker search custom ---- */
+.ticker-search-wrap { display: grid; gap: 8px; }
+.ticker-search-row { display: flex; gap: 8px; }
+.ticker-search-input {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 9px 12px;
+  transition: var(--t-fast);
+  text-transform: uppercase;
+}
+.ticker-search-input::placeholder { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--text-4); }
+.ticker-search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.ticker-search-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--t-fast);
+  white-space: nowrap;
+}
+.ticker-search-btn:hover { border-color: var(--accent); color: var(--accent); }
+.ticker-search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ticker-search-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.ticker-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  padding: 7px 10px;
+  border-radius: var(--r);
+}
+.ticker-status.loading { background: var(--bg-card); color: var(--text-3); border: 1px solid var(--border); }
+.ticker-status.error   { background: rgba(248,113,113,0.08); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+
+.ticker-spinner {
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 .asset-group-title {
   font-size: 10px;
   letter-spacing: 0.16em;
