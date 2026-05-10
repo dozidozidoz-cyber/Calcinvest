@@ -3,27 +3,28 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#34D399" />
+<meta name="theme-color" content="#059669" />
 <title>CalcInvest — Simulateurs financiers pour investisseurs</title>
-<meta name="description" content="Plateforme gratuite de simulateurs financiers : rendement locatif, DCA, intérêts composés, FIRE. Backtestez vos stratégies avec des données réelles." />
+<meta name="description" content="Suite de simulateurs financiers : DCA bourse & crypto, rendement locatif, FIRE, PER, retraite, intérêts composés. Backtestez sur données réelles depuis 1871." />
 <meta property="og:title" content="CalcInvest — Simulateurs financiers" />
-<meta property="og:description" content="Backtestez vos stratégies d'investissement. Tous vos outils en un seul endroit." />
+<meta property="og:description" content="Backtestez vos stratégies. Monte Carlo, données réelles 1871→2026, fiscalité française." />
 <meta property="og:type" content="website" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/css/style.css" />
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
-  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+  navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+  navigator.serviceWorker.getRegistration().then(r => r?.update());
 }
 </script>
 </head>
 <body>
 
+<!-- ═══════════════════════════════ TOPBAR ═══════════════════════════════ -->
 <header class="topbar">
   <div class="topbar-left">
     <a href="/" class="logo">
@@ -35,175 +36,392 @@ if ('serviceWorker' in navigator) {
       </div>
       <div class="logo-text">
         <div class="logo-text-main">CalcInvest</div>
-        <div class="logo-text-sub">Plateforme</div>
       </div>
     </a>
   </div>
 
-  <div class="topbar-center">
-    <div class="segmented">
-      <button class="segmented-btn active">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg>
-        Tous les outils
-      </button>
-    </div>
-  </div>
+  <nav class="topbar-nav">
+    <a href="#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
 
   <div class="topbar-right" id="ci-user-zone">
-    <a href="/mes-projets" class="btn-ghost">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
-      <span>Projets</span>
-    </a>
+    <!-- rempli par auth.js -->
   </div>
 </header>
 
-<main class="main fade-in" style="max-width:1100px">
+<!-- ═══════════════════════════════ MAIN ═════════════════════════════════ -->
+<div class="landing-main">
 
-  <div class="hero">
-    <div class="hero-eyebrow">
-      <span>●</span>
-      Plateforme de simulation financière
+  <!-- ─── HERO ─── -->
+  <section class="landing-hero">
+
+    <div class="hero-badge">
+      <div class="hero-badge-dot">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 12l4-4 3 3 5-6"/>
+        </svg>
+      </div>
+      Données historiques 1871 → 2026
     </div>
-    <h1 class="hero-title">Simuler. Comparer.<br/><em>Décider.</em></h1>
-    <p class="hero-lede">CalcInvest est la suite d'outils qui transforme vos hypothèses en projections fiables. Backtests historiques, Monte Carlo seedé, fiscalité française réelle — pour <strong style="color:var(--text)">prendre vos décisions financières en confiance</strong>, sans bullshit.</p>
-    <div class="hero-cta">
-      <a href="/simulateur-dca" class="btn btn-primary">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l4 4 6-8"/></svg>
+
+    <h1>Simulez. Analysez.<br/><em>Décidez avec confiance.</em></h1>
+
+    <p>CalcInvest est la suite d'outils financiers qui transforme vos hypothèses en projections rigoureuses — backtests historiques, Monte Carlo, fiscalité française réelle.</p>
+
+    <div class="hero-actions">
+      <a href="/simulateur-dca" class="btn btn-primary" style="font-size:14px;padding:12px 24px">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 8l4 4 6-8"/></svg>
         Démarrer gratuitement
       </a>
-      <a href="#tools" class="btn btn-secondary">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
-        Voir les 6 calculateurs
+      <a href="/abonnement" class="btn btn-secondary" style="font-size:14px;padding:12px 24px">
+        Voir les tarifs
       </a>
     </div>
+
+    <!-- Stats bar -->
     <div class="hero-stats">
-      <div>
-        <div class="hero-stat-num"><em>6</em> outils</div>
-        <div class="hero-stat-label">Bourse · Crypto · Composés · Locatif · FIRE · PER</div>
+      <div class="hero-stat">
+        <div class="hero-stat-num"><em>8</em> outils</div>
+        <div class="hero-stat-label">Simulateurs complets</div>
       </div>
-      <div>
+      <div class="hero-stat">
         <div class="hero-stat-num"><em>13</em> actifs</div>
-        <div class="hero-stat-label">S&amp;P 500 depuis 1871, ETF UCITS, BTC, ETH…</div>
+        <div class="hero-stat-label">S&P 500, ETF, crypto, or…</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num"><em>155</em> ans</div>
+        <div class="hero-stat-label">De données historiques</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num"><em>100 %</em></div>
+        <div class="hero-stat-label">Local — zéro tracking</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ─── OUTILS ─── -->
+  <section id="outils">
+
+    <div class="section-heading-wrap">
+      <div class="section-eyebrow-v2">
+        <svg viewBox="0 0 12 12" fill="currentColor" width="8" height="8"><circle cx="6" cy="6" r="6"/></svg>
+        Les simulateurs
+      </div>
+      <h2 class="section-heading-v2">Un outil pour chaque décision financière.</h2>
+      <p class="section-sub-v2">Chaque simulateur couvre une problématique précise. Tous s'appuient sur des données réelles et une méthodologie transparente.</p>
+    </div>
+
+    <!-- ── Catégorie 1 : Marchés & Investissements ── -->
+    <div class="category-divider">
+      <div class="category-divider-icon" style="background:rgba(37,99,235,0.08);color:#2563EB">
+        📈
+      </div>
+      <div class="category-divider-text">
+        <div class="category-divider-title">Marchés & Investissements</div>
+        <div class="category-divider-desc">Backtest, valorisation, stratégies d'achat</div>
+      </div>
+      <div class="category-divider-line"></div>
+      <div class="category-divider-count">3 outils</div>
+    </div>
+
+    <div class="tools-grid">
+
+      <a href="/simulateur-dca" class="tool-card" style="--card-color:#2563EB">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 17l6-6 4 4 8-10"/><path d="M15 5h6v6"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Simulateur DCA Bourse</div>
+          <div class="tool-card-desc">Backtestez votre DCA sur 13 actifs — S&P 500 depuis 1871, ETF UCITS PEA, or, pétrole. Monte Carlo, drawdowns, rendements glissants.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 11 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+      <a href="/simulateur-dca-crypto" class="tool-card" style="--card-color:#F7931A">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">DCA Crypto</div>
+          <div class="tool-card-desc">Bitcoin, Ethereum, XRP, BNB, Solana. Cycles bull/bear, stress tests, flat tax 30 %, corrélations inter-actifs.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 8 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+      <a href="/simulateur-dcf" class="tool-card" style="--card-color:#D97706">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Valorisation DCF</div>
+          <div class="tool-card-desc">Valeur intrinsèque d'une action en 2 minutes. Flux actualisés 10 ans, Gordon Growth, matrice WACC × croissance. Ticker Yahoo Finance.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+    </div>
+
+    <!-- ── Catégorie 2 : Immobilier ── -->
+    <div class="category-divider">
+      <div class="category-divider-icon" style="background:rgba(5,150,105,0.08);color:#059669">
+        🏠
+      </div>
+      <div class="category-divider-text">
+        <div class="category-divider-title">Immobilier</div>
+        <div class="category-divider-desc">Rentabilité, cashflow, fiscalité</div>
+      </div>
+      <div class="category-divider-line"></div>
+      <div class="category-divider-count">1 outil</div>
+    </div>
+
+    <div class="tools-grid">
+
+      <a href="/simulateur-rendement-locatif" class="tool-card" style="--card-color:#059669">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 20V10l9-6 9 6v10"/><path d="M9 20v-6h6v6"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Rendement Locatif</div>
+          <div class="tool-card-desc">Rentabilité nette, cashflow mensuel, TRI sur 20 ans. Tous les régimes fiscaux : nu, LMNP, déficit foncier, SCI IS.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 13 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+    </div>
+
+    <!-- ── Catégorie 3 : Épargne & Retraite ── -->
+    <div class="category-divider">
+      <div class="category-divider-icon" style="background:rgba(124,58,237,0.08);color:#7C3AED">
+        🎯
+      </div>
+      <div class="category-divider-text">
+        <div class="category-divider-title">Épargne & Retraite</div>
+        <div class="category-divider-desc">Projections long terme, indépendance financière, pension</div>
+      </div>
+      <div class="category-divider-line"></div>
+      <div class="category-divider-count">4 outils</div>
+    </div>
+
+    <div class="tools-grid">
+
+      <a href="/simulateur-interets-composes" class="tool-card" style="--card-color:#7C3AED">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 13c2-4 4-2 6-6s4-2 6-4"/>
+            <path d="M2 20c2-4 4-2 6-6s4-2 6-4"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Intérêts Composés</div>
+          <div class="tool-card-desc">Croissance de l'épargne sur 40 ans. Inflation réelle, versements mensuels, comparaison multi-scénarios, effet du timing.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 7 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+      <a href="/calculateur-fire" class="tool-card" style="--card-color:#EA580C">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 4h8l-2 8h-4z"/><path d="M10 12v8M14 12v8"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Calculateur FIRE</div>
+          <div class="tool-card-desc">Indépendance financière : règle des 4 %, capital cible, coast-FIRE, lean/fat FIRE, Monte Carlo survie du capital.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 7 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+      <a href="/simulateur-per" class="tool-card" style="--card-color:#DC2626">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="9" width="14" height="11" rx="1"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Simulateur PER</div>
+          <div class="tool-card-desc">Plan Épargne Retraite : économie fiscale (TMI), capital final, capital vs rente, vs CTO. Règles fiscales 2026.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 6 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+      <a href="/simulateur-retraite" class="tool-card" style="--card-color:#0891B2">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Simulateur Retraite</div>
+          <div class="tool-card-desc">Pension régime général + Agirc-Arrco (règles 2025). Départ 62-68 ans, rachat de trimestres, carrière longue.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 5 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+      </a>
+
+    </div>
+
+  </section>
+
+  <!-- ─── FEATURE STRIP ─── -->
+  <div class="feature-strip">
+
+    <div class="feature-strip-item">
+      <div class="feature-strip-icon">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+          <path d="M10 2L2 6l8 4 8-4-8-4zM2 14l8 4 8-4M2 10l8 4 8-4"/>
+        </svg>
       </div>
       <div>
-        <div class="hero-stat-num"><em>100 %</em> local</div>
-        <div class="hero-stat-label">Aucune donnée envoyée, aucun tracking</div>
+        <div class="feature-strip-title">Données réelles</div>
+        <div class="feature-strip-desc">S&P 500 depuis 1871, 13 actifs à jour. Sources : Shiller, Yahoo Finance, CNAV.</div>
       </div>
+    </div>
+
+    <div class="feature-strip-item">
+      <div class="feature-strip-icon">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+          <rect x="3" y="3" width="14" height="14" rx="3"/>
+          <path d="M7 10h6M10 7v6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="feature-strip-title">100 % local</div>
+        <div class="feature-strip-desc">Calculs dans votre navigateur. Zéro données envoyées, zéro tracking.</div>
+      </div>
+    </div>
+
+    <div class="feature-strip-item">
+      <div class="feature-strip-icon">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+          <path d="M4 10l4 4 8-8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="feature-strip-title">Fiscalité française</div>
+        <div class="feature-strip-desc">PFU, TMI, LMNP, réforme retraite 2023 — intégrés nativement.</div>
+      </div>
+    </div>
+
+    <div class="feature-strip-item">
+      <div class="feature-strip-icon">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+          <circle cx="10" cy="10" r="8"/>
+          <path d="M10 6v4l3 3"/>
+        </svg>
+      </div>
+      <div>
+        <div class="feature-strip-title">Partage instantané</div>
+        <div class="feature-strip-desc">Chaque simulation génère un lien qui reproduit exactement vos paramètres.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── PREMIUM CTA ─── -->
+  <div class="premium-strip">
+    <div class="premium-strip-text">
+      <h3>Débloquez toutes les analyses</h3>
+      <p>Monte Carlo, heatmaps de rendement, stress tests, comparateur multi-actifs et export PDF — pour 4,90 €/mois, sans engagement.</p>
+    </div>
+    <div class="premium-strip-actions">
+      <a href="/abonnement" class="btn-white">
+        Voir Premium ✦
+      </a>
+      <a href="/inscription" class="btn-white-outline">
+        Créer un compte gratuit
+      </a>
     </div>
   </div>
 
-  <div id="tools" style="margin-top:36px;margin-bottom:18px">
-    <div class="section-eyebrow">
-      <span></span>
-      Les calculateurs
+</div>
+
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
+<footer class="footer-v2">
+  <div class="footer-v2-grid">
+
+    <div class="footer-brand">
+      <a href="/" class="logo" style="margin-bottom:4px">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
+            <circle cx="12" cy="12" r="7"/>
+            <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="logo-text-main" style="font-size:16px;font-weight:700">CalcInvest</div>
+      </a>
+      <p class="footer-brand-desc">Simulateurs financiers pour investisseurs particuliers. Données réelles, méthodologie transparente.</p>
+      <div style="font-size:12px;color:var(--text-4)">© 2026 CalcInvest</div>
     </div>
-    <h2 class="section-heading">Six simulateurs pour piloter votre patrimoine.</h2>
-    <p class="section-sub">Chacun est pensé pour une décision précise — du choix d'un ETF au plan de retraite anticipée. Tous travaillent sur des données réelles, pas des moyennes optimistes.</p>
-  </div>
 
-  <div class="tools-grid">
-
-    <a href="/simulateur-rendement-locatif" class="tool-card" style="--card-color:#34D399">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20V10l9-6 9 6v10"/><path d="M9 20v-6h6v6"/></svg>
+    <div>
+      <div class="footer-col-title">Simulateurs</div>
+      <div class="footer-links">
+        <a href="/simulateur-dca">DCA Bourse</a>
+        <a href="/simulateur-dca-crypto">DCA Crypto</a>
+        <a href="/simulateur-dcf">Valorisation DCF</a>
+        <a href="/simulateur-rendement-locatif">Locatif</a>
+        <a href="/simulateur-interets-composes">Intérêts Composés</a>
       </div>
-      <div class="tool-card-title">Rendement Locatif</div>
-      <div class="tool-card-desc">Calculez la rentabilité nette de votre investissement immobilier. Cashflow, TRI sur 20 ans, LMNP, déficit foncier — tous les régimes fiscaux.</div>
-      <span class="tool-card-tag"><span class="dot"></span>Live</span>
-    </a>
-
-    <a href="/simulateur-dca" class="tool-card" style="--card-color:#60A5FA">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-10"/><path d="M15 5h6v6"/></svg>
-      </div>
-      <div class="tool-card-title">Simulateur DCA</div>
-      <div class="tool-card-desc">Backtestez votre stratégie d'investissement programmé sur 13 actifs — S&amp;P 500 depuis 1871, indices mondiaux, ETF UCITS PEA, or, argent, pétrole.</div>
-      <span class="tool-card-tag"><span class="dot"></span>Live</span>
-    </a>
-
-    <a href="/simulateur-interets-composes" class="tool-card" style="--card-color:#A78BFA">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V8l8-4 8 4v12"/><path d="M4 14l8-4 8 4"/></svg>
-      </div>
-      <div class="tool-card-title">Intérêts Composés</div>
-      <div class="tool-card-desc">Projetez la croissance de votre épargne sur 40 ans. Intègre l'inflation, les versements mensuels, plusieurs scénarios.</div>
-      <span class="tool-card-tag"><span class="dot"></span>Live</span>
-    </a>
-
-    <a href="/simulateur-dca-crypto" class="tool-card" style="--card-color:#F7931A">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      <div class="tool-card-title">DCA Crypto</div>
-      <div class="tool-card-desc">Backtestez votre DCA sur Bitcoin, Ethereum, XRP, BNB, Solana. Cycles bull/bear, drawdowns historiques, volatilité, flat tax 30 %.</div>
-      <span class="tool-card-tag"><span class="dot"></span>Live</span>
-    </a>
-
-    <a href="/simulateur-dcf" class="tool-card" style="--card-color:#F59E0B">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
-      </div>
-      <div class="tool-card-title">Valorisation DCF</div>
-      <div class="tool-card-desc">Calculez la valeur intrinsèque d'une action en 2 minutes. Flux actualisés sur 10 ans, valeur terminale Gordon Growth, matrice de sensibilité WACC × croissance.</div>
-      <span class="tool-card-tag"><span class="dot"></span>Live</span>
-    </a>
-
-    <a href="/calculateur-fire" class="tool-card" style="--card-color:#FB923C">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8l-2 8h-4z"/><path d="M10 12v8M14 12v8"/></svg>
-      </div>
-      <div class="tool-card-title">Calculateur FIRE</div>
-      <div class="tool-card-desc">Simulez votre chemin vers l'indépendance financière. Règle des 4 %, âge de retraite, capital cible, coast-FIRE, lean/fat FIRE, Monte Carlo.</div>
-      <span class="tool-card-tag live"><span class="dot"></span>Live</span>
-    </a>
-
-    <a href="/simulateur-per" class="tool-card" style="--card-color:#F87171">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="9" width="14" height="11" rx="1"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg>
-      </div>
-      <div class="tool-card-title">Simulateur PER</div>
-      <div class="tool-card-desc">Plan Épargne Retraite : économie fiscale annuelle (TMI), capital final, comparaison capital vs rente, vs CTO. Règles fiscales 2026.</div>
-      <span class="tool-card-tag"><span class="dot"></span>Live</span>
-    </a>
-
-    <a href="/simulateur-retraite" class="tool-card" style="--card-color:#06B6D4">
-      <div class="tool-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      </div>
-      <div class="tool-card-title">Simulateur Retraite</div>
-      <div class="tool-card-desc">Pension régime général + Agirc-Arrco selon les règles 2025 (réforme retraite). Comparaison départ 62-68 ans, rachat de trimestres, carrière longue.</div>
-      <span class="tool-card-tag"><span class="dot"></span>Live</span>
-    </a>
-
-  </div>
-
-  <div class="info-box" style="margin-top:20px">
-    <div class="info-box-title">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
-      Pourquoi CalcInvest ?
     </div>
-    <ul>
-      <li><strong>Données réelles</strong> — toutes les simulations s'appuient sur des données historiques publiques</li>
-      <li><strong>Sauvegarde locale</strong> — vos projets restent dans votre navigateur, aucune donnée sur nos serveurs</li>
-      <li><strong>Gratuit et sans inscription</strong> — tous les outils disponibles librement</li>
-      <li><strong>Partage facile</strong> — chaque simulation génère un lien qui reproduit les paramètres</li>
-      <li><strong>Installable</strong> — ajoutez l'app sur votre écran d'accueil (PWA)</li>
-    </ul>
+
+    <div>
+      <div class="footer-col-title">Retraite & FIRE</div>
+      <div class="footer-links">
+        <a href="/calculateur-fire">Calculateur FIRE</a>
+        <a href="/simulateur-per">Simulateur PER</a>
+        <a href="/simulateur-retraite">Retraite</a>
+      </div>
+      <div class="footer-col-title" style="margin-top:24px">Compte</div>
+      <div class="footer-links">
+        <a href="/inscription">Créer un compte</a>
+        <a href="/connexion">Se connecter</a>
+        <a href="/abonnement">Premium</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="footer-col-title">À propos</div>
+      <div class="footer-links">
+        <a href="/methodologie">Méthodologie</a>
+        <a href="/mes-projets">Mes projets</a>
+        <a href="mailto:contact@calcinvest.fr">Contact</a>
+        <a href="/mentions-legales">Mentions légales</a>
+      </div>
+    </div>
+
   </div>
 
-</main>
-
-<footer class="footer">
-  <div>© 2026 CalcInvest — Outils de simulation à titre informatif</div>
-  <div>
-    <a href="/mes-projets">Mes projets</a> ·
-    <a href="/methodologie">Méthodologie</a> ·
-    <a href="mailto:contact@calcinvest.fr">Contact</a>
+  <div class="footer-v2-bottom">
+    <span>Simulation à titre informatif — pas de conseil financier</span>
+    <span>Données : Shiller, Yahoo Finance, CNAV, AGIRC-ARRCO</span>
   </div>
 </footer>
 
 <script src="/assets/js/common.js"></script>
 <script src="/assets/js/auth.js"></script>
 <script src="/assets/js/paywall.js"></script>
+<script>
+  CI.initAll && CI.initAll();
+</script>
+
 </body>
 </html>
