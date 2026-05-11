@@ -74,6 +74,15 @@
 /* ---------- Reset & base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { height: 100%; }
+
+/* SVG safety net — empêche tout SVG sans size d'envahir la page (FOUC) */
+svg:not([width]):not([height]) {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: middle;
+}
+svg { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 body {
   margin: 0;
   background: var(--bg);
