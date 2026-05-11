@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#059669" />
+<title>Simulateur SCPI — Pierre papier | CalcInvest</title>
+<meta name="description" content="Simulateur SCPI complet : rendement net, dividendes, fiscalité comparée (pleine propriété, européenne, assurance-vie, nue-propriété). Stress test + comparaison vs livret A et ETF." />
+<meta name="keywords" content="simulateur SCPI, pierre papier, rendement SCPI, fiscalité SCPI, SCPI européenne" />
+<meta property="og:title" content="Simulateur SCPI — CalcInvest" />
+<meta property="og:description" content="Calculez la rentabilité réelle de votre placement SCPI après fiscalité" />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
+  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+}
+</script>
+</head>
+<body>
+
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">SCPI · Pierre papier</div>
+        <div class="logo-text-sub">Simulateur</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="topbar-center">
+    <nav class="segmented" role="tablist" aria-label="Calculateurs">
+      <a class="segmented-btn" href="/simulateur-dca">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Bourse
+      </a>
+      <a class="segmented-btn" href="/simulateur-rendement-locatif">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>
+        Locatif
+      </a>
+      <a class="segmented-btn active" aria-current="page" href="/simulateur-scpi">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/><path d="M2 7h5M9 7h5"/></svg>
+        SCPI
+      </a>
+      <a class="segmented-btn" href="/simulateur-interets-composes">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 13c2-4 4-2 6-6s4-2 6-4"/></svg>
+        Composés
+      </a>
+      <a class="segmented-btn" href="/calculateur-fire">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M8 4h5l-2 5h-3z"/><path d="M9 9v5M7 9v5"/></svg>
+        FIRE
+      </a>
+      <a class="segmented-btn" href="/simulateur-per">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="3" y="6" width="10" height="8" rx="1"/><path d="M5 6V4a3 3 0 0 1 6 0v2"/></svg>
+        PER
+      </a>
+      <a class="segmented-btn" href="/simulateur-retraite">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Retraite
+      </a>
+    </nav>
+  </div>
+
+  <div class="topbar-right" id="ci-user-zone">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
+    </a>
+  </div>
+</header>
+
+<!-- ═══════════════════ SHELL ═══════════════════ -->
+<div class="shell" id="page-scpi">
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#params">
+        <div class="sidebar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 5h10M3 8h10M3 11h6"/></svg>
+        </div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Exploration</div>
+          <div class="sidebar-link-title">Paramètres SCPI</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+
+      <a class="sidebar-link" href="#a1">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 01</div>
+          <div class="sidebar-link-title">Synthèse financière</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#a2">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 13l4-4 3 3 5-6"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 02</div>
+          <div class="sidebar-link-title">Cashflow annuel</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#a3">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="10" width="12" height="4" rx="1"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 03</div>
+          <div class="sidebar-link-title">Comparaison fiscale</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#a4">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 13l3-5 3 3 3-7 3 4"/><path d="M11 4h2v2"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 04</div>
+          <div class="sidebar-link-title">Stress test</div>
+        </div>
+      </a>
+
+      <a class="sidebar-link" href="#a5">
+        <div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 4h5M2 8h5M2 12h5"/><path d="M9 4h5M9 8h5M9 12h5"/></svg></div>
+        <div class="sidebar-link-text">
+          <div class="sidebar-link-label">Analyse 05</div>
+          <div class="sidebar-link-title">SCPI vs alternatives</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <main class="main fade-in">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/><path d="M2 7h5M9 7h5"/></svg>
+        </span>
+        Immobilier · SCPI
+      </div>
+      <h1 class="page-title">La pierre papier, chiffrée après fiscalité.</h1>
+      <p class="page-lede">Investissement initial, versement mensuel, TDVM, revalorisation des parts, frais d'entrée — tout est intégré. Comparaison des <strong style="color:var(--text)">4 régimes fiscaux</strong> (pleine propriété, SCPI européenne, assurance-vie, nue-propriété) et stress test pour valider votre placement <em style="color:var(--accent);font-style:normal;font-weight:600">avant</em> de souscrire.</p>
+    </div>
+
+    <!-- ═══════ PARAMÈTRES ═══════ -->
+    <section class="accordion open" id="params">
+      <div class="accordion-header">
+        <div class="accordion-icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Paramètres SCPI</div>
+          <div class="accordion-summary" id="sc-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div class="accordion-body">
+        <div class="accordion-body-inner">
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><circle cx="7" cy="7" r="5"/><path d="M5 7h4M7 5v4"/></svg></div>
+              <div class="subsection-title">Investissement <span class="subsection-hint">capital initial + versement programmé</span></div>
+            </div>
+
+            <div class="field-grid">
+
+              <div class="field">
+                <div class="field-label">Capital initial</div>
+                <div class="stepper" data-min="0" data-max="2000000" data-step="1000">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="sc-k0" type="number" value="20000" />
+                  <span class="stepper-unit">€</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="sc-k0">
+                  <button class="pill" data-val="5000">5 000</button>
+                  <button class="pill" data-val="10000">10 000</button>
+                  <button class="pill" data-val="20000">20 000</button>
+                  <button class="pill" data-val="50000">50 000</button>
+                  <button class="pill" data-val="100000">100 000</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">Versement mensuel <span class="field-hint">(0 si pas de DCA)</span></div>
+                <div class="stepper" data-min="0" data-max="10000" data-step="50">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="sc-monthly" type="number" value="0" />
+                  <span class="stepper-unit">€/mois</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="sc-monthly">
+                  <button class="pill" data-val="0">0</button>
+                  <button class="pill" data-val="100">100</button>
+                  <button class="pill" data-val="200">200</button>
+                  <button class="pill" data-val="500">500</button>
+                  <button class="pill" data-val="1000">1 000</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">Durée d'investissement</div>
+                <div class="stepper" data-min="1" data-max="50" data-step="1">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="sc-years" type="number" value="20" />
+                  <span class="stepper-unit">ans</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="sc-years">
+                  <button class="pill" data-val="10">10</button>
+                  <button class="pill" data-val="15">15</button>
+                  <button class="pill" data-val="20">20</button>
+                  <button class="pill" data-val="25">25</button>
+                  <button class="pill" data-val="30">30</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">Frais d'entrée</div>
+                <div class="stepper" data-min="0" data-max="15" data-step="0.5">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="sc-fees" type="number" value="10" />
+                  <span class="stepper-unit">%</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="sc-fees">
+                  <button class="pill" data-val="0">0 (sans frais)</button>
+                  <button class="pill" data-val="8">8 (low)</button>
+                  <button class="pill" data-val="10">10 (moy)</button>
+                  <button class="pill" data-val="12">12 (haut)</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><path d="M2 11l3-4 2 2 4-5"/></svg></div>
+              <div class="subsection-title">Rendement attendu <span class="subsection-hint">distribution + revalorisation des parts</span></div>
+            </div>
+
+            <div class="field-grid">
+
+              <div class="field">
+                <div class="field-label">TDVM <span class="field-hint">Taux de Distribution sur Valeur de Marché</span></div>
+                <div class="stepper" data-min="0" data-max="12" data-step="0.1">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="sc-tdvm" type="number" value="5.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="sc-tdvm">
+                  <button class="pill" data-val="4.0">4.0 (prudent)</button>
+                  <button class="pill" data-val="5.0">5.0 (moy. marché)</button>
+                  <button class="pill" data-val="6.0">6.0 (good)</button>
+                  <button class="pill" data-val="7.5">7.5 (européenne)</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">Revalorisation parts</div>
+                <div class="stepper" data-min="-3" data-max="5" data-step="0.1">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="sc-reval" type="number" value="1.0" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="sc-reval">
+                  <button class="pill" data-val="-1">-1 (baisse)</button>
+                  <button class="pill" data-val="0">0 (stable)</button>
+                  <button class="pill" data-val="1">+1 (moy.)</button>
+                  <button class="pill" data-val="2">+2 (high)</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><path d="M3 2h6l2 2v8H3z"/><path d="M5 6h4M5 9h4"/></svg></div>
+              <div class="subsection-title">Fiscalité <span class="subsection-hint">régime + TMI</span></div>
+            </div>
+
+            <div class="field-grid">
+
+              <div class="field">
+                <div class="field-label">Régime fiscal</div>
+                <select class="select" id="sc-regime">
+                  <option value="PP">Pleine propriété (revenus fonciers)</option>
+                  <option value="EU">SCPI européenne (crédit d'impôt)</option>
+                  <option value="AV">Détention en assurance-vie</option>
+                </select>
+                <div class="field-hint" id="sc-regime-hint" style="margin-top:6px">TMI + 17.2 % PS sur les loyers.</div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">TMI (tranche marginale)</div>
+                <div class="stepper" data-min="0" data-max="45" data-step="1">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="sc-tmi" type="number" value="30" />
+                  <span class="stepper-unit">%</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="sc-tmi">
+                  <button class="pill" data-val="0">0</button>
+                  <button class="pill" data-val="11">11</button>
+                  <button class="pill" data-val="30">30</button>
+                  <button class="pill" data-val="41">41</button>
+                  <button class="pill" data-val="45">45</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" id="sc-btn-calc">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Calculer
+            </button>
+            <button class="btn btn-secondary" id="sc-btn-save">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 3h8l2 2v8H3z M5 3v4h6V3"/></svg>
+              Sauvegarder
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ ANALYSE 01 — SYNTHÈSE (FREE) ═══════ -->
+    <div class="page-eyebrow" style="margin-top:32px">
+      <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></span>
+      Analyse 01 · Synthèse
+    </div>
+
+    <section class="card" id="a1">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 13l3-3 2 2 3-5 4 4"/></svg></div>
+          Synthèse financière
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-label">Capital final</div>
+            <div class="stat-value pos" id="sc-stat-capital">—</div>
+            <div class="stat-sub">valeur des parts</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Versé total</div>
+            <div class="stat-value" id="sc-stat-verse">—</div>
+            <div class="stat-sub">cash investi</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Dividendes nets</div>
+            <div class="stat-value" id="sc-stat-divnet">—</div>
+            <div class="stat-sub">cumulés sur la durée</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">TRI annualisé</div>
+            <div class="stat-value" id="sc-stat-tri">—</div>
+            <div class="stat-sub">net après impôts</div>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-label">+/− value capital</div>
+            <div class="stat-value" id="sc-stat-pv">—</div>
+            <div class="stat-sub">revalorisation parts − frais</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Cashflow moyen</div>
+            <div class="stat-value" id="sc-stat-cf">—</div>
+            <div class="stat-sub">revenu mensuel</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Impôts cumulés</div>
+            <div class="stat-value" id="sc-stat-tax">—</div>
+            <div class="stat-sub">TMI + PS sur loyers</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Yield net</div>
+            <div class="stat-value" id="sc-stat-yield">—</div>
+            <div class="stat-sub">rendement annuel net</div>
+          </div>
+        </div>
+
+        <div class="chart-wrap" style="height:320px;margin-top:16px">
+          <canvas id="sc-chart-a01"></canvas>
+        </div>
+
+        <div class="insight" id="sc-insight-a01">
+          <div class="insight-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg>
+          </div>
+          <div class="insight-text">—</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════ ANALYSE 02 — CASHFLOW ANNUEL (FREE) ═══════ -->
+    <div class="page-eyebrow" style="margin-top:32px">
+      <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 13l4-4 3 3 5-6"/></svg></span>
+      Analyse 02 · Cashflow
+    </div>
+
+    <section class="card" id="a2">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 14h12M3 11V8M6 11V5M9 11V7M12 11V4"/></svg></div>
+          Cashflow annuel détaillé
+        </div>
+        <div class="card-meta">Dividendes nets/brut par année</div>
+      </div>
+      <div class="card-body">
+
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="sc-chart-a02"></canvas>
+        </div>
+
+        <div class="table-scroll" style="margin-top:20px;max-height:320px">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Année</th>
+                <th>Loyers bruts</th>
+                <th>Impôts</th>
+                <th>Loyers nets</th>
+              </tr>
+            </thead>
+            <tbody id="sc-table-a02"></tbody>
+          </table>
+        </div>
+
+        <div class="insight" id="sc-insight-a02">
+          <div class="insight-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M2 12l4-4 3 3 5-6"/></svg>
+          </div>
+          <div class="insight-text">—</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════ ANALYSE 03 — COMPARAISON FISCALE (PREMIUM) ═══════ -->
+    <div class="page-eyebrow" style="margin-top:32px">
+      <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="10" width="12" height="4"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></span>
+      Analyse 03 · Comparaison fiscale
+      <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--yellow);background:rgba(217,119,6,0.10);padding:2px 8px;border-radius:99px;margin-left:8px;text-transform:uppercase;letter-spacing:0.08em">Premium</span>
+    </div>
+
+    <section class="card" id="a3" data-tier="premium">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="6" width="3" height="8"/><rect x="6" y="3" width="3" height="11"/><rect x="10" y="8" width="3" height="6"/></svg></div>
+          3 régimes fiscaux comparés
+        </div>
+        <div class="card-meta">PP · Européenne · Assurance-vie</div>
+      </div>
+      <div class="card-body">
+
+        <div class="info-box">
+          <div class="info-box-title">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg>
+            Comment lire ce tableau
+          </div>
+          <strong>Pleine propriété</strong> : revenus fonciers imposés TMI + 17.2 % PS — le plus défavorable fiscalement.<br/>
+          <strong>SCPI européenne</strong> : crédit d'impôt sur l'impôt étranger, pas de prélèvements sociaux — économie de 17 pts.<br/>
+          <strong>Assurance-vie</strong> : capitalisation sans impôt pendant la phase, flat tax 30 % en sortie (ou 7.5 % + PS après 8 ans avec abattement).
+        </div>
+
+        <div class="chart-wrap" style="height:240px;margin-top:18px">
+          <canvas id="sc-chart-a03"></canvas>
+        </div>
+
+        <div class="table-scroll" style="margin-top:20px">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Régime</th>
+                <th>Capital final</th>
+                <th>Dividendes nets</th>
+                <th>Impôts</th>
+                <th>Total net</th>
+                <th>TRI</th>
+              </tr>
+            </thead>
+            <tbody id="sc-table-a03"></tbody>
+          </table>
+        </div>
+
+        <div class="insight" id="sc-insight-a03">
+          <div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M2 8l3 3 7-7"/></svg></div>
+          <div class="insight-text">—</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════ ANALYSE 04 — STRESS TEST (PREMIUM) ═══════ -->
+    <div class="page-eyebrow" style="margin-top:32px">
+      <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 13l3-5 3 3 3-7 3 4"/></svg></span>
+      Analyse 04 · Stress test
+      <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--yellow);background:rgba(217,119,6,0.10);padding:2px 8px;border-radius:99px;margin-left:8px;text-transform:uppercase;letter-spacing:0.08em">Premium</span>
+    </div>
+
+    <section class="card" id="a4" data-tier="premium">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 12l3-5 3 3 4-7 2 4"/><path d="M11 4h2v2"/></svg></div>
+          Scénarios de dégradation
+        </div>
+        <div class="card-meta">Que se passe-t-il si le TDVM baisse ?</div>
+      </div>
+      <div class="card-body">
+
+        <div class="info-box warn">
+          <div class="info-box-title">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M8 1l7 13H1z"/><path d="M8 6v4M8 12v.5"/></svg>
+            Pourquoi simuler le pire
+          </div>
+          Les SCPI ne distribuent pas un rendement fixe. Le TDVM peut baisser (immobilier de bureau post-COVID : −15 % en moyenne), et la valeur de retrait peut décrocher. Ces scénarios montrent comment votre placement résiste à ces chocs.
+        </div>
+
+        <div class="table-scroll" style="margin-top:18px">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Scénario</th>
+                <th>Capital final</th>
+                <th>Dividendes nets</th>
+                <th>Total net</th>
+                <th>vs Base</th>
+              </tr>
+            </thead>
+            <tbody id="sc-table-a04"></tbody>
+          </table>
+        </div>
+
+        <div class="insight" id="sc-insight-a04">
+          <div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M2 14l5-10 4 6 3-4"/></svg></div>
+          <div class="insight-text">—</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════ ANALYSE 05 — VS ALTERNATIVES (PREMIUM) ═══════ -->
+    <div class="page-eyebrow" style="margin-top:32px">
+      <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 4h5M2 8h5M2 12h5"/><path d="M9 4h5M9 8h5M9 12h5"/></svg></span>
+      Analyse 05 · SCPI vs alternatives
+      <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--yellow);background:rgba(217,119,6,0.10);padding:2px 8px;border-radius:99px;margin-left:8px;text-transform:uppercase;letter-spacing:0.08em">Premium</span>
+    </div>
+
+    <section class="card" id="a5" data-tier="premium">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 8l3-3 3 4 3-6 3 5"/></svg></div>
+          SCPI vs Livret A vs ETF
+        </div>
+        <div class="card-meta">Sur le même capital et la même durée</div>
+      </div>
+      <div class="card-body">
+
+        <div class="chart-wrap" style="height:260px">
+          <canvas id="sc-chart-a05"></canvas>
+        </div>
+
+        <div class="table-scroll" style="margin-top:20px">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Placement</th>
+                <th>Versé total</th>
+                <th>Capital final</th>
+                <th>Plus-value</th>
+              </tr>
+            </thead>
+            <tbody id="sc-table-a05"></tbody>
+          </table>
+        </div>
+
+        <div class="insight" id="sc-insight-a05">
+          <div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+          <div class="insight-text">—</div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="footer">
+  <div>Simulation à titre informatif · TDVM moyen marché 2023 : 4.5-5.5 % · SCPI européennes : 6-8 %</div>
+  <div><a href="/">Accueil</a> · <a href="/mes-projets">Mes projets</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/core/calc-scpi.js"></script>
+<script src="/assets/js/views/scpi.view.js"></script>
+
+</body>
+</html>

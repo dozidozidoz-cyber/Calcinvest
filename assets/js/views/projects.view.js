@@ -13,7 +13,8 @@
     'Compound':   '/simulateur-interets-composes',
     'CryptoDCA':  '/simulateur-dca-crypto',
     'FIRE':       '/calculateur-fire',
-    'PER':        '/simulateur-per'
+    'PER':        '/simulateur-per',
+    'scpi':       '/simulateur-scpi'
   };
 
   // Map type → icône SVG path + couleur
@@ -23,7 +24,8 @@
     'Compound':  { color: '#A78BFA', icon: '<path d="M4 20V8l8-4 8 4v12"/><path d="M4 14l8-4 8 4"/>' },
     'CryptoDCA': { color: '#F7931A', icon: '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>' },
     'FIRE':      { color: '#FB923C', icon: '<path d="M8 4h8l-2 8h-4z"/><path d="M10 12v8M14 12v8"/>' },
-    'PER':       { color: '#F472B6', icon: '<path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/>' }
+    'PER':       { color: '#F472B6', icon: '<path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/>' },
+    'scpi':      { color: '#0E9F6E', icon: '<rect x="3" y="4" width="7" height="16"/><rect x="14" y="4" width="7" height="16"/><path d="M3 10h7M14 10h7"/>' }
   };
 
   // Compare state

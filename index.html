@@ -66,7 +66,7 @@ if ('serviceWorker' in navigator) {
       Données historiques 1871 → 2026
     </div>
     <h1 class="page-title">Vos décisions d'investisseur, chiffrées au mois près.</h1>
-    <p class="page-lede">CalcInvest transforme vos hypothèses en projections rigoureuses. <strong style="color:var(--text)">8 simulateurs</strong> backtestés sur 155 ans de données réelles — bourse, immobilier, retraite, FIRE. Fiscalité française intégrée, 100 % local.</p>
+    <p class="page-lede">CalcInvest transforme vos hypothèses en projections rigoureuses. <strong style="color:var(--text)">9 simulateurs</strong> backtestés sur 155 ans de données réelles — bourse, immobilier, SCPI, retraite, FIRE. Fiscalité française intégrée, 100 % local.</p>
 
     <div class="btn-row" style="margin-top:28px">
       <a href="/simulateur-dca" class="btn btn-primary">
@@ -187,7 +187,7 @@ if ('serviceWorker' in navigator) {
           <rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/>
         </svg>
       </span>
-      Catalogue — 8 simulateurs
+      Catalogue — 9 simulateurs
     </div>
     <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Un outil pour chaque décision financière.</h2>
     <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:36px">
@@ -269,10 +269,10 @@ if ('serviceWorker' in navigator) {
       </div>
       <div class="category-divider-text">
         <div class="category-divider-title">Immobilier</div>
-        <div class="category-divider-desc">Rentabilité, cashflow, fiscalité</div>
+        <div class="category-divider-desc">Rentabilité, cashflow, fiscalité, pierre papier</div>
       </div>
       <div class="category-divider-line"></div>
-      <div class="category-divider-count">1 outil</div>
+      <div class="category-divider-count">2 outils</div>
     </div>
 
     <div class="tools-grid">
@@ -288,6 +288,22 @@ if ('serviceWorker' in navigator) {
           <div class="tool-card-title">Rendement Locatif</div>
           <div class="tool-card-desc">Rentabilité nette, cashflow mensuel, TRI sur 20 ans. Tous les régimes : nu, LMNP, déficit foncier, SCI IS.</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 13 analyses</span>
+        </div>
+        <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+
+      <a href="/simulateur-scpi" class="tool-card" style="--card-color:#0E9F6E">
+        <div class="tool-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <rect x="3" y="4" width="7" height="16"/>
+            <rect x="14" y="4" width="7" height="16"/>
+            <path d="M3 10h7M14 10h7M3 16h7M14 16h7"/>
+          </svg>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Simulateur SCPI</div>
+          <div class="tool-card-desc">Pierre papier : rendement net, dividendes, 4 régimes fiscaux comparés (PP, européenne, AV, NP). Stress test inclus.</div>
+          <span class="tool-card-tag"><span class="dot"></span>Live · 5 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
       </a>
@@ -489,7 +505,7 @@ if ('serviceWorker' in navigator) {
     <div class="stats-row">
       <div class="stat">
         <div class="stat-label">Simulateurs</div>
-        <div class="stat-value pos">8</div>
+        <div class="stat-value pos">9</div>
         <div class="stat-sub">complets</div>
       </div>
       <div class="stat">
@@ -563,10 +579,11 @@ if ('serviceWorker' in navigator) {
 <footer class="footer">
   <div>Simulation à titre informatif · Données : Shiller, Yahoo Finance, CNAV, AGIRC-ARRCO, INSEE</div>
   <div>
+    <a href="/simulateur-dca">Bourse</a> ·
+    <a href="/simulateur-rendement-locatif">Locatif</a> ·
+    <a href="/simulateur-scpi">SCPI</a> ·
     <a href="/methodologie">Méthodologie</a> ·
-    <a href="/mes-projets">Mes projets</a> ·
     <a href="/abonnement">Premium</a> ·
-    <a href="/inscription">Compte</a> ·
     <a href="/mentions-legales">Mentions légales</a>
   </div>
 </footer>
