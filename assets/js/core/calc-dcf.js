@@ -161,6 +161,73 @@
   CalcDCF.WACC_OFFSETS = [-0.02, -0.01, 0, 0.01, 0.02];
   CalcDCF.TG_OFFSETS   = [-0.01, -0.005, 0, 0.005, 0.01];
 
+  /* ------------------------------------------------------------
+     compareProfiles(userParams)
+     Applique les hypothèses (croissance, marge, WACC, TG) de chaque
+     profil prédéfini aux mêmes revenus/dette/actions/prix de l'user.
+     → Retourne un array de { key, label, intrinsicValue, upside, error? }
+     ------------------------------------------------------------ */
+  CalcDCF.compareProfiles = function (userParams) {
+    return Object.keys(CalcDCF.PROFILES).map(key => {
+      const prof   = CalcDCF.PROFILES[key];
+      const merged = {
+        revenue:        userParams.revenue,
+        netDebt:        userParams.netDebt,
+        shares:         userParams.shares,
+        currentPrice:   userParams.currentPrice,
+        growthPhase1:   prof.growthPhase1,
+        growthPhase2:   prof.growthPhase2,
+        fcfMargin:      prof.fcfMargin,
+        wacc:           prof.wacc,
+        terminalGrowth: prof.terminalGrowth
+      };
+      const r = CalcDCF.calcDCF(merged);
+      return {
+        key,
+        label:          prof.label,
+        intrinsicValue: r.intrinsicValue || null,
+        upside:         r.upside,
+        enterpriseValue: r.enterpriseValue || null,
+        verdict:        r.verdict,
+        verdictClass:   r.verdictClass,
+        error:          r.error || null
+      };
+    });
+  };
+
+  /* ------------------------------------------------------------
+     scenarios(p) — Bear / Base / Bull
+     Bear : croissance −5pt, marge −5pt, WACC +2pt, TG −0.5pt
+     Base : params utilisateur
+     Bull : croissance +3pt, marge +3pt, WACC −1pt, TG +0.5pt
+     ------------------------------------------------------------ */
+  CalcDCF.scenarios = function (p) {
+    const bear = Object.assign({}, p, {
+      growthPhase1:   Math.max(-30, p.growthPhase1 - 5),
+      growthPhase2:   Math.max(-15, p.growthPhase2 - 3),
+      fcfMargin:      Math.max(0,   p.fcfMargin    - 5),
+      wacc:           Math.min(25,  p.wacc         + 2),
+      terminalGrowth: Math.max(0,   p.terminalGrowth - 0.5)
+    });
+    const bull = Object.assign({}, p, {
+      growthPhase1:   p.growthPhase1   + 3,
+      growthPhase2:   p.growthPhase2   + 2,
+      fcfMargin:      Math.min(60, p.fcfMargin + 3),
+      wacc:           Math.max(4,  p.wacc      - 1),
+      terminalGrowth: Math.min(4,  p.terminalGrowth + 0.5)
+    });
+
+    const rBear = CalcDCF.calcDCF(bear);
+    const rBase = CalcDCF.calcDCF(p);
+    const rBull = CalcDCF.calcDCF(bull);
+
+    return [
+      { name: 'Bear', params: bear, result: rBear },
+      { name: 'Base', params: p,    result: rBase },
+      { name: 'Bull', params: bull, result: rBull }
+    ];
+  };
+
   // Profils prédéfinis (illustratifs)
   CalcDCF.PROFILES = {
     growth: {
