@@ -22,7 +22,7 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 </head>
-<body class="v3-landing">
+<body>
 
 <!-- ═══════════════════════════════ TOPBAR ═══════════════════════════════ -->
 <header class="topbar">
@@ -52,209 +52,147 @@ if ('serviceWorker' in navigator) {
   </div>
 </header>
 
-<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
-<section class="v3-hero">
-  <div class="v3-hero-inner">
+<!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+<main class="main fade-in" style="max-width:1100px;margin:0 auto;padding:56px 32px 96px">
 
-    <div class="v3-hero-content">
-
-      <div class="v3-hero-badge">
-        <div class="v3-hero-badge-dot">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10">
-            <polyline points="2 9 6 5 9 8 14 3"/>
-          </svg>
-        </div>
-        Données historiques 1871 → 2026
-      </div>
-
-      <h1>Vos décisions d'investisseur,<br/><em>chiffrées au mois près.</em></h1>
-
-      <p class="v3-hero-p">CalcInvest transforme vos hypothèses en projections rigoureuses. Backtests sur données réelles, Monte Carlo, fiscalité française intégrée — sans abonnement obligatoire.</p>
-
-      <div class="v3-hero-actions">
-        <a href="/simulateur-dca" class="btn btn-primary">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-            <polyline points="3 8 6.5 11.5 13 4"/>
-          </svg>
-          Démarrer gratuitement
-        </a>
-        <a href="#outils" class="btn btn-secondary">
-          Explorer les outils
-        </a>
-      </div>
-
-      <div class="v3-hero-trust">
-        <div class="v3-hero-trust-stars">
-          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
-          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
-          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
-          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
-          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
-        </div>
-        <span><strong>4,8/5</strong> · Plus de 1 200 simulations lancées ce mois-ci</span>
-      </div>
-
+  <!-- ─── HERO via page-header ─── -->
+  <div class="page-header" style="margin-bottom:48px">
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <polyline points="2 9 6 5 9 8 14 3"/>
+        </svg>
+      </span>
+      Données historiques 1871 → 2026
     </div>
+    <h1 class="page-title">Vos décisions d'investisseur, chiffrées au mois près.</h1>
+    <p class="page-lede">CalcInvest transforme vos hypothèses en projections rigoureuses. <strong style="color:var(--text)">8 simulateurs</strong> backtestés sur 155 ans de données réelles — bourse, immobilier, retraite, FIRE. Fiscalité française intégrée, 100 % local.</p>
 
-    <!-- Visual : dashboard mockup -->
-    <div class="v3-hero-visual">
-
-      <div class="v3-mock">
-        <div class="v3-mock-chrome">
-          <div class="v3-mock-dots">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="v3-mock-url">calcinvest.fr/simulateur-dca</div>
-        </div>
-
-        <div class="v3-mock-body">
-          <div class="v3-mock-title">DCA — S&P 500 · 1995 → 2026</div>
-          <div class="v3-mock-h">Capital projeté : 412 580 €</div>
-
-          <div class="v3-mock-stats">
-            <div class="v3-mock-stat">
-              <div class="v3-mock-stat-label">Versé</div>
-              <div class="v3-mock-stat-val">186 000 €</div>
-              <div class="v3-mock-stat-sub">500 €/mois × 31 ans</div>
-            </div>
-            <div class="v3-mock-stat">
-              <div class="v3-mock-stat-label">Plus-value</div>
-              <div class="v3-mock-stat-val pos">+226 580 €</div>
-              <div class="v3-mock-stat-sub pos">+121,8 %</div>
-            </div>
-            <div class="v3-mock-stat">
-              <div class="v3-mock-stat-label">TRI annualisé</div>
-              <div class="v3-mock-stat-val">8,4 %</div>
-              <div class="v3-mock-stat-sub">net inflation</div>
-            </div>
-          </div>
-
-          <div class="v3-mock-chart">
-            <svg viewBox="0 0 400 160" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="mockGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#059669" stop-opacity="0.30"/>
-                  <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <!-- Grid lines -->
-              <line x1="0" y1="40"  x2="400" y2="40"  stroke="#E2E5EC" stroke-width="0.5" stroke-dasharray="2 4"/>
-              <line x1="0" y1="80"  x2="400" y2="80"  stroke="#E2E5EC" stroke-width="0.5" stroke-dasharray="2 4"/>
-              <line x1="0" y1="120" x2="400" y2="120" stroke="#E2E5EC" stroke-width="0.5" stroke-dasharray="2 4"/>
-              <!-- Portfolio (curve, gradient fill) -->
-              <path d="M 0 145 C 40 138 80 132 120 118 S 200 95 240 80 S 320 50 400 18 L 400 160 L 0 160 Z" fill="url(#mockGrad)"/>
-              <path d="M 0 145 C 40 138 80 132 120 118 S 200 95 240 80 S 320 50 400 18"
-                    fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
-              <!-- Versements baseline (linear) -->
-              <path d="M 0 150 L 400 92" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round"/>
-              <!-- Highlight final dot -->
-              <circle cx="400" cy="18" r="4" fill="#059669"/>
-              <circle cx="400" cy="18" r="9" fill="#059669" fill-opacity="0.20"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="v3-hero-pill">
-        <div class="v3-hero-pill-icon">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-            <polyline points="3 8 6.5 11.5 13 4"/>
-          </svg>
-        </div>
-        <div>
-          <div>Backtest 155 ans</div>
-          <div class="v3-hero-pill-sub">depuis 1871</div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-<!-- ═══════════════════════════════ SOURCES BAND ═══════════════════════════════ -->
-<section class="v3-sources">
-  <div class="v3-sources-inner">
-    <div class="v3-sources-label">Sources de données</div>
-    <div class="v3-sources-list">
-      <span class="v3-source-item">Shiller</span>
-      <span class="v3-source-item">Yahoo Finance</span>
-      <span class="v3-source-item">CNAV</span>
-      <span class="v3-source-item">AGIRC-ARRCO</span>
-      <span class="v3-source-item">INSEE</span>
-      <span class="v3-source-item">Bercy</span>
+    <div class="btn-row" style="margin-top:28px">
+      <a href="/simulateur-dca" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <polyline points="3 8 6.5 11.5 13 4"/>
+        </svg>
+        Démarrer gratuitement
+      </a>
+      <a href="/abonnement" class="btn btn-secondary">
+        Voir les tarifs
+      </a>
     </div>
   </div>
-</section>
 
-<!-- ═══════════════════════════════ PROBLEM / SOLUTION ═══════════════════════════════ -->
-<section class="v3-section v3-section-alt">
-  <div class="v3-section-inner">
-
-    <div class="v3-section-eyebrow">Le constat</div>
-    <h2 class="v3-section-title">Vos décisions financières méritent mieux qu'un Excel approximatif.</h2>
-    <p class="v3-section-sub">La plupart des simulateurs en ligne se contentent d'une formule basique. Vous avez besoin de backtests, de fiscalité réelle et de scénarios de crise.</p>
-
-    <div class="v3-problem-grid">
-
-      <div class="v3-problem-card bad">
-        <div class="v3-problem-tag bad">Les autres outils</div>
-        <h3>Calculs simplistes, hypothèses optimistes</h3>
-        <ul class="v3-problem-list">
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="18" height="18"><circle cx="10" cy="10" r="8"/><path d="M7 7l6 6M13 7l-6 6"/></svg>
-            Rendement moyen fixe (« 7 % par an ») sans tenir compte des cycles
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="18" height="18"><circle cx="10" cy="10" r="8"/><path d="M7 7l6 6M13 7l-6 6"/></svg>
-            Fiscalité ignorée ou approximée
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="18" height="18"><circle cx="10" cy="10" r="8"/><path d="M7 7l6 6M13 7l-6 6"/></svg>
-            Aucun stress test sur scénarios historiques
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="18" height="18"><circle cx="10" cy="10" r="8"/><path d="M7 7l6 6M13 7l-6 6"/></svg>
-            Vos données envoyées sur un serveur tiers
-          </li>
-        </ul>
+  <!-- ─── HERO CARD : mockup d'un backtest ─── -->
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <polyline points="2 12 6 6 9 9 14 3"/>
+            <polyline points="11 3 14 3 14 6"/>
+          </svg>
+        </div>
+        Aperçu — backtest DCA S&P 500
       </div>
-
-      <div class="v3-problem-card good">
-        <div class="v3-problem-tag good">CalcInvest</div>
-        <h3>Données réelles, méthodologie transparente</h3>
-        <ul class="v3-problem-list">
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            Backtest sur 155 ans de données réelles S&P 500
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            PFU, TMI, LMNP, réforme retraite 2023 intégrés
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            Monte Carlo, drawdowns, scénarios de crise (1929, 2008…)
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            100 % local — vos paramètres ne quittent jamais votre navigateur
-          </li>
-        </ul>
-      </div>
-
+      <div class="card-meta">1995 → 2026 · 500 €/mois</div>
     </div>
+    <div class="card-body">
 
-  </div>
-</section>
+      <div class="stats-row" style="margin-bottom:18px">
+        <div class="stat">
+          <div class="stat-label">Capital projeté</div>
+          <div class="stat-value pos">412 580 €</div>
+          <div class="stat-sub">après 31 ans</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Versé total</div>
+          <div class="stat-value">186 000 €</div>
+          <div class="stat-sub">500 €/mois × 31 ans</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Plus-value</div>
+          <div class="stat-value pos">+226 580 €</div>
+          <div class="stat-sub">+121.8 %</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">TRI annualisé</div>
+          <div class="stat-value">8.4 %</div>
+          <div class="stat-sub">net inflation</div>
+        </div>
+      </div>
 
-<!-- ═══════════════════════════════ TOOLS ═══════════════════════════════ -->
-<section id="outils" class="v3-section">
-  <div class="v3-section-inner">
+      <div class="chart-wrap" style="height:260px">
+        <svg viewBox="0 0 800 260" preserveAspectRatio="none" width="100%" height="100%">
+          <defs>
+            <linearGradient id="heroGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#059669" stop-opacity="0.28"/>
+              <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="0"   y1="60"  x2="800" y2="60"  stroke="#E2E5EC" stroke-width="0.5" stroke-dasharray="3 5"/>
+          <line x1="0"   y1="130" x2="800" y2="130" stroke="#E2E5EC" stroke-width="0.5" stroke-dasharray="3 5"/>
+          <line x1="0"   y1="200" x2="800" y2="200" stroke="#E2E5EC" stroke-width="0.5" stroke-dasharray="3 5"/>
+          <!-- Portfolio curve -->
+          <path d="M 0 240 C 80 232 160 220 240 198 S 400 158 480 130 S 640 82 800 22 L 800 260 L 0 260 Z" fill="url(#heroGrad)"/>
+          <path d="M 0 240 C 80 232 160 220 240 198 S 400 158 480 130 S 640 82 800 22"
+                fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Versements baseline -->
+          <path d="M 0 248 L 800 152" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="5 4" stroke-linecap="round"/>
+          <!-- Final dot -->
+          <circle cx="800" cy="22" r="5" fill="#059669"/>
+          <circle cx="800" cy="22" r="12" fill="#059669" fill-opacity="0.18"/>
+        </svg>
+      </div>
 
-    <div class="v3-section-eyebrow">8 simulateurs</div>
-    <h2 class="v3-section-title">Un outil pour chaque décision financière.</h2>
-    <p class="v3-section-sub">Chaque simulateur couvre une problématique précise, avec données historiques et méthodologie transparente.</p>
+      <div class="chart-legend">
+        <span><span class="legend-dot" style="background:#059669"></span>Portefeuille (dividendes réinvestis)</span>
+        <span><span class="legend-dot" style="background:#9CA3AF"></span>Versements cumulés</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SOURCES DE DONNÉES ─── -->
+  <section style="margin-top:64px">
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <rect x="3" y="3" width="10" height="10" rx="1"/>
+          <path d="M3 7h10M3 11h10M7 3v10"/>
+        </svg>
+      </span>
+      Sources de données
+    </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Construit sur les meilleures données publiques.</h2>
+    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:24px">
+      Pas de chiffres approximatifs ni de moyennes marketing. Chaque simulateur s'appuie sur des datasets de référence, mis à jour mensuellement.
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">Shiller — S&P 500 depuis 1871</span>
+      <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">Yahoo Finance — ETF & crypto</span>
+      <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">CNAV — régime général</span>
+      <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">AGIRC-ARRCO — complémentaire</span>
+      <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">INSEE — inflation & immobilier</span>
+      <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">Bercy — fiscalité 2026</span>
+    </div>
+  </section>
+
+  <!-- ─── CATALOGUE DES OUTILS ─── -->
+  <section id="outils" style="margin-top:72px">
+
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/>
+          <rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/>
+        </svg>
+      </span>
+      Catalogue — 8 simulateurs
+    </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Un outil pour chaque décision financière.</h2>
+    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:36px">
+      Chaque simulateur couvre une problématique précise, avec données historiques et méthodologie transparente.
+    </p>
 
     <!-- Catégorie 1 : Marchés -->
     <div class="category-divider">
@@ -273,7 +211,6 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div class="tools-grid">
-
       <a href="/simulateur-dca" class="tool-card" style="--card-color:#2563EB">
         <div class="tool-card-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
@@ -283,7 +220,7 @@ if ('serviceWorker' in navigator) {
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Simulateur DCA Bourse</div>
-          <div class="tool-card-desc">Backtest sur 13 actifs (S&P 500 depuis 1871, ETF UCITS PEA, or, pétrole). Monte Carlo, drawdowns, rendements glissants.</div>
+          <div class="tool-card-desc">Backtest sur 13 actifs (S&P 500 depuis 1871, ETF UCITS PEA, or). Monte Carlo, drawdowns, rendements glissants.</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 11 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -315,12 +252,11 @@ if ('serviceWorker' in navigator) {
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Valorisation DCF</div>
-          <div class="tool-card-desc">Valeur intrinsèque d'une action en 2 minutes. Flux actualisés 10 ans, Gordon Growth, matrice WACC × croissance.</div>
+          <div class="tool-card-desc">Valeur intrinsèque d'une action en 2 minutes. Flux actualisés, Gordon Growth, matrice WACC × croissance.</div>
           <span class="tool-card-tag"><span class="dot"></span>Live</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
       </a>
-
     </div>
 
     <!-- Catégorie 2 : Immobilier -->
@@ -340,7 +276,6 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div class="tools-grid">
-
       <a href="/simulateur-rendement-locatif" class="tool-card" style="--card-color:#059669">
         <div class="tool-card-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
@@ -351,12 +286,11 @@ if ('serviceWorker' in navigator) {
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Rendement Locatif</div>
-          <div class="tool-card-desc">Rentabilité nette, cashflow mensuel, TRI sur 20 ans. Tous les régimes fiscaux : nu, LMNP, déficit foncier, SCI IS.</div>
+          <div class="tool-card-desc">Rentabilité nette, cashflow mensuel, TRI sur 20 ans. Tous les régimes : nu, LMNP, déficit foncier, SCI IS.</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 13 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
       </a>
-
     </div>
 
     <!-- Catégorie 3 : Épargne -->
@@ -376,7 +310,6 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div class="tools-grid">
-
       <a href="/simulateur-interets-composes" class="tool-card" style="--card-color:#7C3AED">
         <div class="tool-card-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
@@ -402,7 +335,7 @@ if ('serviceWorker' in navigator) {
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Calculateur FIRE</div>
-          <div class="tool-card-desc">Indépendance financière : règle des 4 %, coast-FIRE, lean/fat FIRE, Monte Carlo survie du capital.</div>
+          <div class="tool-card-desc">Indépendance financière : règle des 4 %, coast-FIRE, lean/fat FIRE, Monte Carlo survie capital.</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 7 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -437,134 +370,157 @@ if ('serviceWorker' in navigator) {
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
       </a>
+    </div>
+
+  </section>
+
+  <!-- ─── COMMENT ÇA MARCHE ─── -->
+  <section id="comment" style="margin-top:72px">
+
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <path d="M2 8a6 6 0 1 0 6-6"/>
+          <polyline points="2 2 2 8 8 8"/>
+        </svg>
+      </span>
+      Comment ça marche
+    </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Une simulation rigoureuse en 3 étapes.</h2>
+    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
+      Pas d'inscription obligatoire, pas de friction. Vous lancez votre première simulation en moins d'une minute.
+    </p>
+
+    <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+
+      <div class="stat" style="text-align:left;padding:28px">
+        <div style="display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:14px;font-weight:700;font-family:var(--font-mono);margin-bottom:14px">01</div>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.015em">Choisissez votre simulateur</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55">DCA, immobilier, retraite, FIRE… 8 outils couvrent les principales décisions d'investisseur.</div>
+      </div>
+
+      <div class="stat" style="text-align:left;padding:28px">
+        <div style="display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:14px;font-weight:700;font-family:var(--font-mono);margin-bottom:14px">02</div>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.015em">Renseignez vos paramètres</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55">Vos chiffres réels — capital, versement, durée, fiscalité. Tout reste dans votre navigateur.</div>
+      </div>
+
+      <div class="stat" style="text-align:left;padding:28px">
+        <div style="display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:14px;font-weight:700;font-family:var(--font-mono);margin-bottom:14px">03</div>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.015em">Lisez l'analyse complète</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55">KPIs, graphiques, scénarios historiques, Monte Carlo. Exportez ou partagez par URL.</div>
+      </div>
 
     </div>
 
-  </div>
-</section>
+  </section>
 
-<!-- ═══════════════════════════════ HOW IT WORKS ═══════════════════════════════ -->
-<section id="comment" class="v3-section v3-section-alt">
-  <div class="v3-section-inner">
+  <!-- ─── POURQUOI ─── -->
+  <section style="margin-top:72px">
 
-    <div class="v3-section-eyebrow">Comment ça marche</div>
-    <h2 class="v3-section-title">Une simulation rigoureuse en 3 étapes.</h2>
-    <p class="v3-section-sub">Pas d'inscription obligatoire, pas de friction. Vous lancez votre première simulation en moins d'une minute.</p>
-
-    <div class="v3-steps">
-
-      <div class="v3-step">
-        <div class="v3-step-num">1</div>
-        <h3>Choisissez votre simulateur</h3>
-        <p>DCA, immobilier, retraite, FIRE… 8 outils couvrent les principales décisions d'investisseur.</p>
-      </div>
-
-      <div class="v3-step">
-        <div class="v3-step-num">2</div>
-        <h3>Renseignez vos paramètres</h3>
-        <p>Vos chiffres réels — capital, versement, durée, fiscalité. Tout reste dans votre navigateur.</p>
-      </div>
-
-      <div class="v3-step">
-        <div class="v3-step-num">3</div>
-        <h3>Lisez l'analyse complète</h3>
-        <p>KPIs, graphiques, scénarios historiques, Monte Carlo. Exportez ou partagez par URL en un clic.</p>
-      </div>
-
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M8 5v3l2 2"/>
+        </svg>
+      </span>
+      Pourquoi CalcInvest
     </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Construit pour les investisseurs sérieux.</h2>
+    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
+      Pas un calculateur grand public — un outil d'analyse pensé pour des décisions qui engagent votre patrimoine sur 20 ans.
+    </p>
 
-  </div>
-</section>
+    <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
 
-<!-- ═══════════════════════════════ WHY ═══════════════════════════════ -->
-<section class="v3-section">
-  <div class="v3-section-inner">
-
-    <div class="v3-section-eyebrow">Pourquoi CalcInvest</div>
-    <h2 class="v3-section-title">Construit pour les investisseurs qui prennent leurs décisions au sérieux.</h2>
-    <p class="v3-section-sub">Pas un calculateur grand public : un outil d'analyse pensé pour des choix qui engagent votre patrimoine sur 20 ans.</p>
-
-    <div class="v3-why">
-
-      <div class="v3-why-card">
-        <div class="v3-why-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+      <div class="stat" style="text-align:left;padding:28px">
+        <div style="display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent);margin-bottom:16px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
             <line x1="12" y1="22.08" x2="12" y2="12"/>
           </svg>
         </div>
-        <h3>Données réelles, pas des moyennes</h3>
-        <p>S&P 500 mensuel depuis 1871, ETF UCITS, immobilier INSEE, pension CNAV. Backtest sur chaque période de l'histoire.</p>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.015em">Données réelles, pas des moyennes</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55">S&P 500 mensuel depuis 1871, ETF UCITS, immobilier INSEE, pension CNAV. Backtest sur chaque période de l'histoire.</div>
       </div>
 
-      <div class="v3-why-card">
-        <div class="v3-why-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+      <div class="stat" style="text-align:left;padding:28px">
+        <div style="display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent);margin-bottom:16px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
             <rect x="3" y="3" width="18" height="18" rx="3"/>
             <path d="M9 12h6M12 9v6"/>
           </svg>
         </div>
-        <h3>Fiscalité française intégrée</h3>
-        <p>PFU 30 %, TMI variable, LMNP, déficit foncier, abattements PER, réforme retraite 2023 — pas de fiscalité « moyenne ».</p>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.015em">Fiscalité française intégrée</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55">PFU 30 %, TMI variable, LMNP, déficit foncier, abattements PER, réforme retraite 2023 — pas de fiscalité « moyenne ».</div>
       </div>
 
-      <div class="v3-why-card">
-        <div class="v3-why-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+      <div class="stat" style="text-align:left;padding:28px">
+        <div style="display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent);margin-bottom:16px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
             <rect x="2" y="3" width="20" height="14" rx="2"/>
             <path d="M8 21h8M12 17v4"/>
             <path d="M7 8l3 3 5-5"/>
           </svg>
         </div>
-        <h3>100 % local, zéro tracking</h3>
-        <p>Tous les calculs s'exécutent dans votre navigateur. Pas de tracking, pas de compte requis, pas de données envoyées.</p>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.015em">100 % local, zéro tracking</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55">Tous les calculs s'exécutent dans votre navigateur. Pas de tracking, pas de compte requis, pas de données envoyées.</div>
       </div>
 
     </div>
 
-  </div>
-</section>
+  </section>
 
-<!-- ═══════════════════════════════ SOCIAL PROOF ═══════════════════════════════ -->
-<section class="v3-section v3-section-alt">
-  <div class="v3-section-inner">
+  <!-- ─── EN CHIFFRES ─── -->
+  <section style="margin-top:72px">
 
-    <div class="v3-section-eyebrow">En chiffres</div>
-    <h2 class="v3-section-title">L'outil de référence pour les investisseurs francophones.</h2>
-    <p class="v3-section-sub">Sans levée de fonds, sans pub, sans tracking — juste les meilleurs outils possibles.</p>
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <path d="M2 13h2v-4H2zM6 13h2V7H6zM10 13h2V4h-2zM14 13V2"/>
+        </svg>
+      </span>
+      En chiffres
+    </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:24px">L'outil de référence pour les investisseurs francophones.</h2>
 
-    <div class="v3-proof-stats">
-      <div class="v3-proof-stat">
-        <div class="v3-proof-stat-num"><em>8</em></div>
-        <div class="v3-proof-stat-label">Simulateurs complets</div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-label">Simulateurs</div>
+        <div class="stat-value pos">8</div>
+        <div class="stat-sub">complets</div>
       </div>
-      <div class="v3-proof-stat">
-        <div class="v3-proof-stat-num"><em>13</em></div>
-        <div class="v3-proof-stat-label">Actifs backtestables</div>
+      <div class="stat">
+        <div class="stat-label">Actifs backtestables</div>
+        <div class="stat-value">13</div>
+        <div class="stat-sub">S&P, ETF, crypto, or…</div>
       </div>
-      <div class="v3-proof-stat">
-        <div class="v3-proof-stat-num"><em>155</em></div>
-        <div class="v3-proof-stat-label">Ans de données réelles</div>
+      <div class="stat">
+        <div class="stat-label">Données réelles</div>
+        <div class="stat-value">155 ans</div>
+        <div class="stat-sub">depuis 1871</div>
       </div>
-      <div class="v3-proof-stat">
-        <div class="v3-proof-stat-num"><em>2 000</em></div>
-        <div class="v3-proof-stat-label">Trajectoires Monte Carlo</div>
+      <div class="stat">
+        <div class="stat-label">Monte Carlo</div>
+        <div class="stat-value">2 000</div>
+        <div class="stat-sub">trajectoires</div>
       </div>
     </div>
 
-  </div>
-</section>
+  </section>
 
-<!-- ═══════════════════════════════ PREMIUM CTA ═══════════════════════════════ -->
-<section class="v3-section">
-  <div class="v3-section-inner">
+  <!-- ─── PREMIUM CTA ─── -->
+  <section class="card" style="margin-top:72px;background:linear-gradient(135deg,#0E1116 0%,#1A2028 100%);border-color:#1A2028;color:#fff;overflow:hidden;position:relative">
+    <div style="position:absolute;top:-150px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(5,150,105,0.25) 0%,transparent 60%);pointer-events:none"></div>
+    <div class="card-body" style="padding:40px 48px;position:relative;display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center">
 
-    <div class="v3-cta-dark">
-      <div class="v3-cta-dark-text">
-        <h2>Débloquez les analyses avancées dès 4,90 €/mois</h2>
-        <p>Monte Carlo 2 000 trajectoires, heatmaps de rendement, drawdowns, stress tests, export PDF. Sans engagement.</p>
-        <div class="v3-cta-dark-actions">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;font-family:var(--font-mono)">Premium · 4,90 €/mois</div>
+        <h3 style="font-size:26px;font-weight:700;letter-spacing:-0.03em;margin-bottom:12px;color:#fff;line-height:1.15">Débloquez toutes les analyses avancées.</h3>
+        <p style="font-size:14.5px;color:rgba(255,255,255,0.65);line-height:1.6;margin-bottom:24px;max-width:480px">Monte Carlo 2 000 trajectoires, heatmaps de rendement, drawdowns, stress tests, export PDF. Sans engagement.</p>
+        <div class="btn-row">
           <a href="/abonnement" class="btn btn-primary" style="background:#fff;color:#0E1116;border-color:#fff">
             Voir Premium
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -575,94 +531,43 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
 
-      <div class="v3-cta-dark-side">
-        <ul class="v3-cta-dark-bullets">
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            Toutes les analyses avancées débloquées
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            Projets sauvegardés illimités
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            Export PDF des résultats
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            Sans publicité
-          </li>
-          <li>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
-            Résiliable en un clic
-          </li>
-        </ul>
-      </div>
-    </div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px">
+        <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:rgba(255,255,255,0.88)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
+          Toutes les analyses avancées
+        </li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:rgba(255,255,255,0.88)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
+          Projets sauvegardés illimités
+        </li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:rgba(255,255,255,0.88)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
+          Export PDF des résultats
+        </li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:rgba(255,255,255,0.88)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
+          Sans publicité
+        </li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:rgba(255,255,255,0.88)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="4 10 8 14 16 6"/></svg>
+          Résiliable en un clic
+        </li>
+      </ul>
 
-  </div>
-</section>
+    </div>
+  </section>
+
+</main>
 
 <!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
-<footer class="footer-v2">
-  <div class="footer-v2-grid">
-
-    <div class="footer-brand">
-      <a href="/" class="logo" style="margin-bottom:4px">
-        <div class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
-            <circle cx="12" cy="12" r="7"/>
-            <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="logo-text-main" style="font-size:16px;font-weight:700">CalcInvest</div>
-      </a>
-      <p class="footer-brand-desc">Simulateurs financiers pour investisseurs particuliers. Données réelles, méthodologie transparente.</p>
-      <div style="font-size:12px;color:var(--text-4)">© 2026 CalcInvest</div>
-    </div>
-
-    <div>
-      <div class="footer-col-title">Simulateurs</div>
-      <div class="footer-links">
-        <a href="/simulateur-dca">DCA Bourse</a>
-        <a href="/simulateur-dca-crypto">DCA Crypto</a>
-        <a href="/simulateur-dcf">Valorisation DCF</a>
-        <a href="/simulateur-rendement-locatif">Locatif</a>
-        <a href="/simulateur-interets-composes">Intérêts Composés</a>
-      </div>
-    </div>
-
-    <div>
-      <div class="footer-col-title">Retraite & FIRE</div>
-      <div class="footer-links">
-        <a href="/calculateur-fire">Calculateur FIRE</a>
-        <a href="/simulateur-per">Simulateur PER</a>
-        <a href="/simulateur-retraite">Retraite</a>
-      </div>
-      <div class="footer-col-title" style="margin-top:24px">Compte</div>
-      <div class="footer-links">
-        <a href="/inscription">Créer un compte</a>
-        <a href="/connexion">Se connecter</a>
-        <a href="/abonnement">Premium</a>
-      </div>
-    </div>
-
-    <div>
-      <div class="footer-col-title">À propos</div>
-      <div class="footer-links">
-        <a href="/methodologie">Méthodologie</a>
-        <a href="/mes-projets">Mes projets</a>
-        <a href="mailto:contact@calcinvest.fr">Contact</a>
-        <a href="/mentions-legales">Mentions légales</a>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="footer-v2-bottom">
-    <span>Simulation à titre informatif — pas de conseil financier</span>
-    <span>Données : Shiller, Yahoo Finance, CNAV, AGIRC-ARRCO</span>
+<footer class="footer">
+  <div>Simulation à titre informatif · Données : Shiller, Yahoo Finance, CNAV, AGIRC-ARRCO, INSEE</div>
+  <div>
+    <a href="/methodologie">Méthodologie</a> ·
+    <a href="/mes-projets">Mes projets</a> ·
+    <a href="/abonnement">Premium</a> ·
+    <a href="/inscription">Compte</a> ·
+    <a href="/mentions-legales">Mentions légales</a>
   </div>
 </footer>
 
