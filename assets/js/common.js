@@ -588,6 +588,74 @@
       CI.initGlossaryObserver();
       CI._tooltipsInited = true;
     }
+    if (!CI._scrollInited) {
+      CI.initScrollReveal(root);
+      CI.initTopbarScroll();
+      CI.initFloatingCTA();
+      CI._scrollInited = true;
+    }
+  };
+
+  /* ===========================================================
+     SCROLL REVEAL — fade-up au passage dans le viewport
+     =========================================================== */
+  CI.initScrollReveal = function (root) {
+    root = root || document;
+    if (typeof IntersectionObserver === 'undefined') {
+      root.querySelectorAll('.reveal').forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    root.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  };
+
+  /* ===========================================================
+     TOPBAR — état compact au scroll
+     =========================================================== */
+  CI.initTopbarScroll = function () {
+    const topbar = document.querySelector('.topbar');
+    if (!topbar) return;
+    let ticking = false;
+    function update() {
+      if (window.scrollY > 60) topbar.classList.add('is-scrolled');
+      else topbar.classList.remove('is-scrolled');
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
+  };
+
+  /* ===========================================================
+     FLOATING CTA — apparaît entre 800px et fin du scroll
+     =========================================================== */
+  CI.initFloatingCTA = function () {
+    const cta = document.querySelector('.floating-cta');
+    if (!cta) return;
+    let ticking = false;
+    function update() {
+      const doc = document.documentElement;
+      const scrolled = window.scrollY;
+      const max = doc.scrollHeight - doc.clientHeight;
+      if (scrolled > 800 && scrolled < max - 200) {
+        cta.classList.add('is-visible');
+      } else {
+        cta.classList.remove('is-visible');
+      }
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
   };
 
   /* ===========================================================

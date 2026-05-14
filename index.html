@@ -56,7 +56,7 @@ if ('serviceWorker' in navigator) {
 <main class="main fade-in" style="max-width:1100px;margin:0 auto;padding:56px 32px 96px">
 
   <!-- ─── HERO via page-header ─── -->
-  <div class="page-header" style="margin-bottom:48px">
+  <div class="page-header reveal" style="margin-bottom:48px">
     <div class="page-eyebrow">
       <span class="page-eyebrow-icon">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
@@ -68,21 +68,42 @@ if ('serviceWorker' in navigator) {
     <h1 class="page-title">Vos décisions d'investisseur, chiffrées au mois près.</h1>
     <p class="page-lede">CalcInvest transforme vos hypothèses en projections rigoureuses. <strong style="color:var(--text)">9 simulateurs</strong> backtestés sur 155 ans de données réelles — bourse, immobilier, SCPI, retraite, FIRE. Fiscalité française intégrée, 100 % local.</p>
 
-    <div class="btn-row" style="margin-top:28px">
-      <a href="/simulateur-dca" class="btn btn-primary">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-          <polyline points="3 8 6.5 11.5 13 4"/>
-        </svg>
-        Démarrer gratuitement
+    <!-- Quick action bar — sélectionne ton simulateur direct -->
+    <form class="hero-action-bar" onsubmit="event.preventDefault(); const u=document.getElementById('hero-quick-select').value; if(u) window.location.href=u;">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color:var(--text-3);flex-shrink:0">
+        <circle cx="7" cy="7" r="5"/>
+        <path d="M14 14l-3-3"/>
+      </svg>
+      <select id="hero-quick-select" aria-label="Choisissez un simulateur">
+        <option value="">Quel placement voulez-vous simuler ?</option>
+        <option value="/simulateur-dca">DCA Bourse — backtest depuis 1871</option>
+        <option value="/simulateur-dca-crypto">DCA Crypto — BTC, ETH, SOL, BNB</option>
+        <option value="/simulateur-dcf">Valorisation DCF d'une action</option>
+        <option value="/simulateur-rendement-locatif">Rendement locatif</option>
+        <option value="/simulateur-scpi">SCPI — pierre papier</option>
+        <option value="/simulateur-interets-composes">Intérêts composés</option>
+        <option value="/calculateur-fire">FIRE — indépendance financière</option>
+        <option value="/simulateur-per">PER — Plan Épargne Retraite</option>
+        <option value="/simulateur-retraite">Retraite régime général</option>
+      </select>
+      <button type="submit">
+        Lancer
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+    </form>
+
+    <div class="btn-row" style="margin-top:20px">
+      <a href="#outils" class="btn btn-secondary">
+        Parcourir le catalogue
       </a>
-      <a href="/abonnement" class="btn btn-secondary">
-        Voir les tarifs
+      <a href="/abonnement" class="btn btn-secondary" style="background:transparent;border-color:transparent;color:var(--text-3)">
+        Tarifs →
       </a>
     </div>
   </div>
 
   <!-- ─── HERO CARD : mockup d'un backtest ─── -->
-  <section class="card">
+  <section class="card reveal">
     <div class="card-header">
       <div class="card-title">
         <div class="card-title-icon">
@@ -152,7 +173,7 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── SOURCES DE DONNÉES ─── -->
-  <section style="margin-top:64px">
+  <section class="reveal" style="margin-top:64px">
     <div class="page-eyebrow">
       <span class="page-eyebrow-icon">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
@@ -177,8 +198,85 @@ if ('serviceWorker' in navigator) {
     </div>
   </section>
 
+  <!-- ─── POUR QUI : personas cliquables ─── -->
+  <section class="reveal" style="margin-top:72px">
+
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <circle cx="8" cy="6" r="3"/>
+          <path d="M2 14c0-3 3-5 6-5s6 2 6 5"/>
+        </svg>
+      </span>
+      Par profil d'investisseur
+    </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Quel investisseur êtes-vous ?</h2>
+    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
+      Choisissez votre profil — on vous oriente vers les outils faits pour vos décisions.
+    </p>
+
+    <div class="persona-grid">
+
+      <a href="/simulateur-dca" class="persona-card reveal reveal-d1" style="--persona-color:#2563EB">
+        <div class="persona-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+            <polyline points="16 7 22 7 22 13"/>
+          </svg>
+        </div>
+        <div class="persona-card-eyebrow">L'investisseur DCA</div>
+        <div class="persona-card-quote">« Combien si j'avais commencé en 2000 ? »</div>
+        <div class="persona-card-desc">Backtestez votre stratégie sur les vraies crises (2000, 2008, 2020) avant d'y engager 30 ans d'épargne.</div>
+        <div class="persona-card-tools">
+          <span class="persona-card-tool">DCA Bourse</span>
+          <span class="persona-card-tool">DCA Crypto</span>
+          <span class="persona-card-tool">Intérêts composés</span>
+        </div>
+        <svg class="persona-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+
+      <a href="/simulateur-rendement-locatif" class="persona-card reveal reveal-d2" style="--persona-color:#059669">
+        <div class="persona-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+            <path d="M3 12L12 3l9 9"/>
+            <path d="M9 21V12h6v9"/>
+            <path d="M3 21h18"/>
+          </svg>
+        </div>
+        <div class="persona-card-eyebrow">L'acheteur immobilier</div>
+        <div class="persona-card-quote">« Ce bien est-il vraiment rentable ? »</div>
+        <div class="persona-card-desc">Cashflow mensuel, TRI 20 ans, comparaison nu / LMNP / SCI IS, SCPI vs locatif direct — le chiffre net après impôts.</div>
+        <div class="persona-card-tools">
+          <span class="persona-card-tool">Locatif</span>
+          <span class="persona-card-tool">SCPI</span>
+          <span class="persona-card-tool">DCF</span>
+        </div>
+        <svg class="persona-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+
+      <a href="/simulateur-retraite" class="persona-card reveal reveal-d3" style="--persona-color:#0891B2">
+        <div class="persona-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="persona-card-eyebrow">Le futur retraité</div>
+        <div class="persona-card-quote">« 62 ans ou 67 ? À combien la pension ? »</div>
+        <div class="persona-card-desc">Régime général + Agirc-Arrco, rachat de trimestres, carrière longue, FIRE. Les vrais chiffres post-réforme 2023.</div>
+        <div class="persona-card-tools">
+          <span class="persona-card-tool">Retraite</span>
+          <span class="persona-card-tool">PER</span>
+          <span class="persona-card-tool">FIRE</span>
+        </div>
+        <svg class="persona-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+
+    </div>
+  </section>
+
   <!-- ─── CATALOGUE DES OUTILS ─── -->
-  <section id="outils" style="margin-top:72px">
+  <section id="outils" class="reveal" style="margin-top:72px">
 
     <div class="page-eyebrow">
       <span class="page-eyebrow-icon">
@@ -391,7 +489,7 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── COMMENT ÇA MARCHE ─── -->
-  <section id="comment" style="margin-top:72px">
+  <section id="comment" class="reveal" style="margin-top:72px">
 
     <div class="page-eyebrow">
       <span class="page-eyebrow-icon">
@@ -432,7 +530,7 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── POURQUOI ─── -->
-  <section style="margin-top:72px">
+  <section class="reveal" style="margin-top:72px">
 
     <div class="page-eyebrow">
       <span class="page-eyebrow-icon">
@@ -490,7 +588,7 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── EN CHIFFRES ─── -->
-  <section style="margin-top:72px">
+  <section class="reveal" style="margin-top:72px">
 
     <div class="page-eyebrow">
       <span class="page-eyebrow-icon">
@@ -527,8 +625,291 @@ if ('serviceWorker' in navigator) {
 
   </section>
 
+  <!-- ─── TÉMOIGNAGES ─── -->
+  <section class="reveal" style="margin-top:72px">
+
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <path d="M3 4h4v4H3zM5 8c0 2-1 3-2 3M9 4h4v4H9zM11 8c0 2-1 3-2 3"/>
+        </svg>
+      </span>
+      Ils utilisent CalcInvest
+    </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Pourquoi nos utilisateurs reviennent.</h2>
+    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
+      Investisseurs particuliers, conseillers patrimoniaux, futurs retraités — voici ce qu'ils en disent.
+    </p>
+
+    <div class="testimonials-grid">
+
+      <div class="testimonial-card reveal reveal-d1">
+        <div class="testimonial-rating">
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+        </div>
+        <p class="testimonial-quote">Le seul outil qui m'a montré à quel point la fiscalité française change le rendement réel d'un investissement locatif. Je ne signe plus sans passer par le simulateur.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">JM</div>
+          <div class="testimonial-author-info">
+            <div class="testimonial-author-name">Jean-Marc D.</div>
+            <div class="testimonial-author-role">Locatif · 3 biens</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-d2">
+        <div class="testimonial-rating">
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+        </div>
+        <p class="testimonial-quote">Le backtest DCA sur 155 ans m'a fait comprendre que j'aurais survécu à 2008 si j'avais continué à investir. C'est cette tranquillité qui justifie l'abonnement.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">SL</div>
+          <div class="testimonial-author-info">
+            <div class="testimonial-author-name">Sophie L.</div>
+            <div class="testimonial-author-role">DCA Bourse · PEA</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-d3">
+        <div class="testimonial-rating">
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5z"/></svg>
+        </div>
+        <p class="testimonial-quote">Avant de partir en retraite, j'ai comparé départ à 62 et 67 ans avec rachat de trimestres. Décision prise en 20 min — sans CGP ni rendez-vous CARSAT.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">RT</div>
+          <div class="testimonial-author-info">
+            <div class="testimonial-author-name">Robert T.</div>
+            <div class="testimonial-author-role">Retraite · 61 ans</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── BLOG TEASER ─── -->
+  <section class="reveal" style="margin-top:72px">
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px">
+      <div>
+        <div class="page-eyebrow">
+          <span class="page-eyebrow-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+              <rect x="2" y="3" width="12" height="10" rx="1"/>
+              <path d="M5 7h6M5 10h4"/>
+            </svg>
+          </span>
+          Ressources
+        </div>
+        <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:6px">Articles & guides.</h2>
+        <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:520px">
+          Méthodologie, cas concrets, analyses : tout ce qu'il faut pour creuser un sujet financier.
+        </p>
+      </div>
+      <a href="/blog" class="btn btn-secondary" style="font-size:13px">
+        Voir tous les articles →
+      </a>
+    </div>
+
+    <div class="blog-grid">
+
+      <a href="/blog/dca-vs-lump-sum" class="blog-card reveal reveal-d1">
+        <div class="blog-card-cover">
+          <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="56" height="56">
+            <polyline points="6 60 26 36 40 50 74 12"/>
+            <polyline points="56 12 74 12 74 30"/>
+          </svg>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta">
+            <span class="blog-card-meta-tag">Stratégie</span>
+            <span>8 min</span>
+          </div>
+          <div class="blog-card-title">DCA vs lump sum : que dit l'historique 1871-2026 ?</div>
+          <div class="blog-card-excerpt">155 années de S&P 500 testées : le lump sum bat le DCA dans 68 % des cas. Mais voici quand le DCA reprend l'avantage.</div>
+          <span class="blog-card-link">Lire l'article
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <a href="/blog/scpi-vs-locatif" class="blog-card reveal reveal-d2">
+        <div class="blog-card-cover">
+          <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="56" height="56">
+            <rect x="10" y="20" width="24" height="50"/>
+            <rect x="46" y="20" width="24" height="50"/>
+            <path d="M10 36h24M46 36h24"/>
+          </svg>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta">
+            <span class="blog-card-meta-tag">Immobilier</span>
+            <span>12 min</span>
+          </div>
+          <div class="blog-card-title">SCPI ou locatif direct : le match fiscal complet</div>
+          <div class="blog-card-excerpt">À TMI 30 %, sur 20 ans, sur 100 k€ d'investissement : qui gagne ? Simulation chiffrée avec les 4 régimes SCPI.</div>
+          <span class="blog-card-link">Lire l'article
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <a href="/blog/reforme-retraite-2023" class="blog-card reveal reveal-d3">
+        <div class="blog-card-cover">
+          <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="56" height="56">
+            <circle cx="40" cy="40" r="30"/>
+            <polyline points="40 22 40 40 54 48"/>
+          </svg>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta">
+            <span class="blog-card-meta-tag">Retraite</span>
+            <span>6 min</span>
+          </div>
+          <div class="blog-card-title">Réforme 2023 : combien vous coûte réellement le report à 64 ans ?</div>
+          <div class="blog-card-excerpt">Pour un salarié moyen né en 1965, la perte sur la durée de retraite est de 38 000 €. Le calcul détaillé.</div>
+          <span class="blog-card-link">Lire l'article
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ─── FAQ ─── -->
+  <section class="reveal" style="margin-top:72px">
+
+    <div class="page-eyebrow">
+      <span class="page-eyebrow-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M6 6a2 2 0 1 1 3 1.5L8 9M8 11.5v0.5"/>
+        </svg>
+      </span>
+      Questions fréquentes
+    </div>
+    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Avant de vous lancer, l'essentiel.</h2>
+    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
+      Les questions qui reviennent le plus souvent — méthodologie, fiabilité, données.
+    </p>
+
+    <div style="max-width:760px">
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg>
+          </div>
+          <div class="accordion-titles">
+            <div class="accordion-title">Les données utilisées sont-elles fiables ?</div>
+            <div class="accordion-summary">Sources publiques de référence, mises à jour mensuelles</div>
+          </div>
+          <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner" style="font-size:13.5px;color:var(--text-2);line-height:1.65">
+          Toutes les données proviennent de sources publiques et reconnues : Shiller pour le S&P 500 depuis 1871 (avec dividendes et CPI), Yahoo Finance pour les ETF et cryptos, INSEE pour l'inflation et l'immobilier, CNAV et AGIRC-ARRCO pour les pensions. Les datasets sont vérifiés mensuellement.
+        </div></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg>
+          </div>
+          <div class="accordion-titles">
+            <div class="accordion-title">Faut-il créer un compte pour utiliser les simulateurs ?</div>
+            <div class="accordion-summary">Non — accès libre, optionnel pour sauvegarder</div>
+          </div>
+          <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner" style="font-size:13.5px;color:var(--text-2);line-height:1.65">
+          Non, tous les simulateurs sont accessibles sans compte. Vous pouvez les utiliser directement dans votre navigateur. Le compte gratuit sert à sauvegarder vos projets et les retrouver entre sessions — le Premium débloque les analyses avancées (Monte Carlo, heatmaps, stress tests).
+        </div></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="3" width="10" height="10" rx="1"/><path d="M6 6h4M6 9h4"/></svg>
+          </div>
+          <div class="accordion-titles">
+            <div class="accordion-title">La fiscalité française est-elle correctement modélisée ?</div>
+            <div class="accordion-summary">PFU, TMI, LMNP, abattements PER, réforme retraite 2023</div>
+          </div>
+          <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner" style="font-size:13.5px;color:var(--text-2);line-height:1.65">
+          Oui : PFU 30 %, TMI variable, micro-foncier vs réel, LMNP au réel ou amortissable, déficit foncier, abattements PER, prélèvements sociaux 17.2 %, abattement assurance-vie 4 600 € après 8 ans, règles 2025 pour Agirc-Arrco, réforme retraite 2023 (départ 64 ans progressif). Les calculs sont à jour de la dernière LFSS.
+        </div></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 8l3 3 3-3"/></svg>
+          </div>
+          <div class="accordion-titles">
+            <div class="accordion-title">Mes données sont-elles envoyées à un serveur ?</div>
+            <div class="accordion-summary">Aucune — tous les calculs sont locaux</div>
+          </div>
+          <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner" style="font-size:13.5px;color:var(--text-2);line-height:1.65">
+          Non. Tous les calculs s'exécutent dans votre navigateur (JavaScript pur). Vos paramètres ne sont envoyés à aucun serveur. Si vous créez un compte, seuls les projets sauvegardés sont stockés (chiffrés) chez Supabase. Aucun tracking, aucune analytique tierce.
+        </div></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M8 4v4l3 2"/><circle cx="8" cy="8" r="6"/></svg>
+          </div>
+          <div class="accordion-titles">
+            <div class="accordion-title">Puis-je revenir sur une simulation plus tard ?</div>
+            <div class="accordion-summary">Oui — URL partageable + sauvegarde projet</div>
+          </div>
+          <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner" style="font-size:13.5px;color:var(--text-2);line-height:1.65">
+          Deux options. <strong>(1) URL partageable</strong> : chaque simulation génère une URL qui contient vos paramètres — copiez-la, mettez-la en favori, partagez-la. <strong>(2) Compte gratuit</strong> : enregistrez jusqu'à 3 projets (illimité en Premium) avec un nom, et retrouvez-les depuis la page « Mes projets ».
+        </div></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M8 14s5-2 5-7V3l-5-2-5 2v4c0 5 5 7 5 7z"/></svg>
+          </div>
+          <div class="accordion-titles">
+            <div class="accordion-title">CalcInvest fait-il du conseil financier ?</div>
+            <div class="accordion-summary">Non — un outil d'analyse, pas de conseil personnalisé</div>
+          </div>
+          <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner" style="font-size:13.5px;color:var(--text-2);line-height:1.65">
+          Non — CalcInvest est un outil d'analyse, pas un conseiller en investissement. Les simulations sont à titre informatif. Pour un projet patrimonial structurant, consultez un Conseiller en Gestion de Patrimoine (CGP) certifié.
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ─── PREMIUM CTA ─── -->
-  <section class="card" style="margin-top:72px;background:linear-gradient(135deg,#0E1116 0%,#1A2028 100%);border-color:#1A2028;color:#fff;overflow:hidden;position:relative">
+  <section class="card reveal" style="margin-top:72px;background:linear-gradient(135deg,#0E1116 0%,#1A2028 100%);border-color:#1A2028;color:#fff;overflow:hidden;position:relative">
     <div style="position:absolute;top:-150px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(5,150,105,0.25) 0%,transparent 60%);pointer-events:none"></div>
     <div class="card-body" style="padding:40px 48px;position:relative;display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center">
 
@@ -587,6 +968,16 @@ if ('serviceWorker' in navigator) {
     <a href="/mentions-legales">Mentions légales</a>
   </div>
 </footer>
+
+<!-- ═══════════════════ FLOATING CTA ═══════════════════ -->
+<a href="/abonnement" class="floating-cta" aria-label="Découvrir Premium">
+  <span class="floating-cta-icon">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+      <polygon points="8 1 10 5.5 15 6.3 11.5 9.7 12.4 14.7 8 12.3 3.6 14.7 4.5 9.7 1 6.3 6 5.5"/>
+    </svg>
+  </span>
+  Premium · 4,90 €/mois
+</a>
 
 <script src="/assets/js/common.js"></script>
 <script src="/assets/js/auth.js"></script>
