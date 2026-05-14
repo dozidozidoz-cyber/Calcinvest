@@ -13,54 +13,94 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/css/style.css" />
 <style>
+  /* TOC sticky modernisée */
   .methodo-toc {
     position: sticky;
-    top: 16px;
-    background: var(--bg-elev);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--r);
-    padding: 16px;
+    top: 84px; /* sous topbar */
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 18px 18px 14px;
     font-size: 13px;
+    box-shadow: var(--shadow-sm);
   }
   .methodo-toc a {
     display: block;
-    color: var(--text-2);
+    color: var(--text-3);
     text-decoration: none;
-    padding: 4px 0;
-    transition: color .15s;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: var(--r-sm);
+    transition: var(--t-fast);
+    font-weight: 500;
+    letter-spacing: -0.005em;
   }
-  .methodo-toc a:hover { color: var(--accent); }
+  .methodo-toc a:hover {
+    color: var(--text);
+    background: var(--bg-hover);
+  }
+  .methodo-toc a.is-active {
+    color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 600;
+  }
   .methodo-toc-title {
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: .08em;
-    color: var(--text-3);
+    letter-spacing: .12em;
+    color: var(--text-4);
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    padding: 0 10px;
   }
-  .methodo-section { margin-bottom: 56px; }
+  /* Sections en cards */
+  .methodo-section {
+    margin-bottom: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--t);
+    scroll-margin-top: 96px;
+  }
+  .methodo-section:hover { box-shadow: var(--shadow); }
   .methodo-section h2 {
-    font-size: 22px;
-    margin-bottom: 4px;
-    color: var(--text-1);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 10px;
+    color: var(--text);
+    line-height: 1.15;
+  }
+  .methodo-section > p:first-of-type {
+    color: var(--text-3);
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 20px;
   }
   .methodo-section h3 {
-    font-size: 14px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--text-3);
-    margin-top: 24px;
-    margin-bottom: 10px;
-    font-weight: 600;
+    letter-spacing: .12em;
+    color: var(--text-4);
+    margin-top: 28px;
+    margin-bottom: 14px;
+    font-weight: 700;
   }
+  /* Formules : look code-block */
   .formula {
     font-family: var(--font-mono);
     font-size: 13px;
-    background: var(--bg-2);
+    background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg) 100%);
+    border: 1px solid var(--border-soft);
     border-left: 3px solid var(--accent);
-    padding: 10px 14px;
+    border-radius: var(--r);
+    padding: 12px 16px;
     margin: 8px 0;
     overflow-x: auto;
+    color: var(--text-2);
+    box-shadow: var(--shadow-sm);
   }
   .params-list {
     list-style: none;
@@ -88,27 +128,35 @@
     gap: 12px;
   }
   .glossary-card {
-    background: var(--bg-elev);
+    background: var(--bg);
     border: 1px solid var(--border-soft);
     border-radius: var(--r);
-    padding: 14px;
+    padding: 16px;
+    transition: var(--t-fast);
+  }
+  .glossary-card:hover {
+    border-color: var(--accent-mid);
+    background: var(--bg-card);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
   }
   .glossary-key {
     font-weight: 700;
     color: var(--accent);
     font-size: 14px;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
   }
   .glossary-full {
     font-size: 12px;
-    color: var(--text-2);
-    margin-bottom: 6px;
+    color: var(--text-3);
+    margin-bottom: 8px;
     font-style: italic;
   }
   .glossary-desc {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-2);
-    line-height: 1.5;
+    line-height: 1.55;
   }
   @media (max-width: 1100px) {
     .methodo-shell { grid-template-columns: 1fr !important; }
@@ -119,44 +167,53 @@
 </head>
 <body>
 
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
 <header class="topbar">
   <div class="topbar-left">
     <a href="/" class="logo">
       <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
           <circle cx="12" cy="12" r="7"/>
           <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="logo-text">
         <div class="logo-text-main">CalcInvest</div>
-        <div class="logo-text-sub">Méthodologie</div>
       </div>
     </a>
   </div>
-  <div class="topbar-right">
-    <a href="/mes-projets" class="btn-ghost">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h5l1 2h6v7H2z"/></svg>
-      <span>Mes projets</span>
-    </a>
-    <a href="/" class="btn-ghost">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l-4 5 4 5M2 8h12"/></svg>
-      <span>Retour</span>
-    </a>
+
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link active">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+
+  <div class="topbar-right" id="ci-user-zone">
+    <!-- rempli par auth.js -->
   </div>
 </header>
 
-<main class="main fade-in">
-  <div class="page-header">
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
-      </span>
-      Documentation
+<!-- ═══════════════════ HERO V3 LITE ═══════════════════ -->
+<section class="v3-hero-bg" style="padding:64px 0 72px">
+  <div class="v3-hero-inner" style="grid-template-columns:1fr;text-align:center;max-width:760px">
+    <div class="reveal">
+      <div class="v3-hero-pill-badge" style="margin:0 auto 24px">
+        <span class="dot"></span>
+        Documentation technique · 9 simulateurs
+      </div>
+      <h1 class="v3-hero-title" style="margin:0 auto 20px;font-size:clamp(36px,5vw,60px)">
+        Méthodologie &amp; <em>Glossaire</em>.
+      </h1>
+      <p class="v3-hero-lede" style="margin:0 auto">
+        Toutes les formules, hypothèses et sources utilisées par les calculateurs CalcInvest. <strong>Aucune boîte noire</strong> : tu peux vérifier chaque chiffre.
+      </p>
     </div>
-    <h1 class="page-title">Méthodologie &amp; Glossaire</h1>
-    <p class="page-lede">Toutes les formules, hypothèses et sources utilisées par les calculateurs CalcInvest. Aucune boîte noire : tu peux vérifier chaque chiffre.</p>
   </div>
+</section>
+
+<main class="main fade-in" style="max-width:1100px;margin:0 auto;padding:0 32px 96px">
 
   <div class="methodo-shell" style="display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:flex-start">
 
@@ -165,6 +222,8 @@
       <div class="methodo-toc-title">Sommaire</div>
       <a href="#principes">Principes généraux</a>
       <a href="#locatif">Rendement locatif</a>
+      <a href="#scpi">SCPI · Pierre papier</a>
+      <a href="#dcf">Valorisation DCF</a>
       <a href="#composes">Intérêts composés</a>
       <a href="#dca-bourse">DCA Bourse</a>
       <a href="#dca-crypto">DCA Crypto</a>
@@ -180,7 +239,7 @@
     <div>
 
       <!-- ============= PRINCIPES ============= -->
-      <section class="methodo-section" id="principes">
+      <section class="methodo-section reveal" id="principes">
         <h2>Principes généraux</h2>
         <p class="text-muted" style="font-size:14px;line-height:1.7">
           Tous les calculateurs CalcInvest tournent <strong>localement dans ton navigateur</strong>. Aucune donnée n'est envoyée sur un serveur. Les simulations sont déterministes : les mêmes paramètres produisent toujours le même résultat.
@@ -204,7 +263,7 @@
       </section>
 
       <!-- ============= LOCATIF ============= -->
-      <section class="methodo-section" id="locatif">
+      <section class="methodo-section reveal" id="locatif">
         <h2>Rendement locatif</h2>
         <p class="text-muted" style="font-size:13px">Calcul du rendement et du cashflow d'un investissement locatif sur un horizon donné, avec amortissement du crédit, fiscalité et plus-value à la revente.</p>
 
@@ -242,8 +301,73 @@
         </ul>
       </section>
 
+      <!-- ============= SCPI ============= -->
+      <section class="methodo-section reveal" id="scpi">
+        <h2>SCPI · Pierre papier</h2>
+        <p>Simulation d'investissement en SCPI (Société Civile de Placement Immobilier) avec versement initial + DCA optionnel, revalorisation des parts, distribution mensuelle et 4 régimes fiscaux comparés.</p>
+
+        <h3>Formules clés</h3>
+        <div class="formula">Capital effectif = Cash investi × (1 − Frais d'entrée)</div>
+        <div class="formula">Dividende mensuel = Capital × (TDVM / 12)</div>
+        <div class="formula">Revalorisation mensuelle = (1 + reval_annuelle)^(1/12) − 1</div>
+        <div class="formula">Yield net = Dividendes nets cumulés / Capital moyen / durée</div>
+
+        <h3>Régimes fiscaux modélisés</h3>
+        <ul class="params-list">
+          <li><strong>Pleine propriété</strong> : loyers imposés au TMI + 17.2 % PS — le plus défavorable</li>
+          <li><strong>SCPI européenne</strong> : crédit d'impôt sur l'impôt étranger → TMI seul, pas de PS (économie ≈ 17 pts)</li>
+          <li><strong>Assurance-vie</strong> : capitalisation auto sans impôt en phase, puis 7.5 % IR + 17.2 % PS après 8 ans (avec abattement 4 600 €) ou flat tax 30 % avant</li>
+          <li><strong>Nue-propriété</strong> : pas de loyers pendant démembrement, récupération pleine propriété à terme</li>
+        </ul>
+
+        <h3>Hypothèses par défaut</h3>
+        <ul class="params-list">
+          <li><code>tdvm</code> : 5.5 % (moyenne marché 2024)</li>
+          <li><code>reval</code> : +1 % / an (valeur des parts)</li>
+          <li><code>fraisEntree</code> : 10 % (norme du marché)</li>
+          <li><code>ps</code> : 17.2 % (prélèvements sociaux 2025)</li>
+        </ul>
+      </section>
+
+      <!-- ============= DCF ============= -->
+      <section class="methodo-section reveal" id="dcf">
+        <h2>Valorisation DCF</h2>
+        <p>Modèle d'actualisation des flux futurs (Discounted Cash Flow) à 2 phases de croissance + valeur terminale (Gordon Growth). Estime la valeur intrinsèque d'une action.</p>
+
+        <h3>Formules clés</h3>
+        <div class="formula">FCF[an n] = Revenus × (1 + g)^n × Marge FCF</div>
+        <div class="formula">PV[an n] = FCF[an n] / (1 + WACC)^n</div>
+        <div class="formula">Valeur terminale = FCF[10] × (1 + g_term) / (WACC − g_term)</div>
+        <div class="formula">PV terminal = Valeur terminale / (1 + WACC)^10</div>
+        <div class="formula">EV (Enterprise Value) = Σ PV[1..10] + PV terminal</div>
+        <div class="formula">Equity Value = EV − Dette nette</div>
+        <div class="formula">Valeur intrinsèque / action = Equity Value / Actions en circulation</div>
+
+        <h3>Structure du modèle</h3>
+        <ul class="params-list">
+          <li><strong>Phase 1 (années 1-5)</strong> : croissance haute (typiquement 8-15 % pour growth, 3-6 % pour value)</li>
+          <li><strong>Phase 2 (années 6-10)</strong> : croissance modérée (transition vers la maturité)</li>
+          <li><strong>Valeur terminale</strong> : modèle de Gordon — croissance perpétuelle ≤ croissance économique long terme (typiquement 2-3 %)</li>
+        </ul>
+
+        <h3>Validation</h3>
+        <ul class="params-list">
+          <li>WACC <strong>doit</strong> être supérieur à la croissance terminale (sinon valeur infinie)</li>
+          <li>Si Equity Value &lt; 0, le modèle alerte que la dette dépasse l'EV</li>
+          <li>Matrice de sensibilité 5×5 sur WACC (±2 pts) × croissance terminale (±1 pt)</li>
+        </ul>
+
+        <h3>Verdict</h3>
+        <ul class="params-list">
+          <li>Upside &gt; +20 % : <code>SOUS-ÉVALUÉ</code></li>
+          <li>+5 % &lt; Upside &lt; +20 % : <code>LÉGÈREMENT SOUS-ÉVALUÉ</code></li>
+          <li>−10 % &lt; Upside &lt; +5 % : <code>JUSTE PRIX</code></li>
+          <li>Upside &lt; −10 % : <code>SURÉVALUÉ</code></li>
+        </ul>
+      </section>
+
       <!-- ============= COMPOSÉS ============= -->
-      <section class="methodo-section" id="composes">
+      <section class="methodo-section reveal" id="composes">
         <h2>Intérêts composés</h2>
         <p class="text-muted" style="font-size:13px">Capitalisation d'un capital initial + versements mensuels à un taux annuel constant.</p>
 
@@ -266,7 +390,7 @@
       </section>
 
       <!-- ============= DCA BOURSE ============= -->
-      <section class="methodo-section" id="dca-bourse">
+      <section class="methodo-section reveal" id="dca-bourse">
         <h2>DCA Bourse</h2>
         <p class="text-muted" style="font-size:13px">Backtest d'une stratégie d'investissement régulier sur des indices ou ETF, avec données mensuelles historiques réelles.</p>
 
@@ -294,7 +418,7 @@
       </section>
 
       <!-- ============= DCA CRYPTO ============= -->
-      <section class="methodo-section" id="dca-crypto">
+      <section class="methodo-section reveal" id="dca-crypto">
         <h2>DCA Crypto</h2>
         <p class="text-muted" style="font-size:13px">DCA sur les 5 majors crypto (BTC, ETH, XRP, BNB, SOL) avec analyse spécifique aux marchés volatils.</p>
 
@@ -318,7 +442,7 @@
       </section>
 
       <!-- ============= FIRE ============= -->
-      <section class="methodo-section" id="fire">
+      <section class="methodo-section reveal" id="fire">
         <h2>FIRE — Indépendance financière</h2>
         <p class="text-muted" style="font-size:13px">Calcul de l'objectif d'épargne et de la trajectoire pour atteindre l'indépendance financière (concept FIRE).</p>
 
@@ -340,7 +464,7 @@
       </section>
 
       <!-- ============= PER ============= -->
-      <section class="methodo-section" id="per">
+      <section class="methodo-section reveal" id="per">
         <h2>PER — Plan d'Épargne Retraite</h2>
         <p class="text-muted" style="font-size:13px">Simulateur PER avec économie d'impôt sur les versements et fiscalité de sortie en capital ou rente.</p>
 
@@ -364,7 +488,7 @@
       </section>
 
       <!-- ============= RETRAITE ============= -->
-      <section class="methodo-section" id="retraite">
+      <section class="methodo-section reveal" id="retraite">
         <h2>Retraite — Régime général + Agirc-Arrco</h2>
         <p class="text-muted" style="font-size:13px">Estimation de la pension future basée sur les règles CNAV 2025 (réforme retraite 2023) et le système à points Agirc-Arrco. Public ciblé : salariés du privé en France.</p>
 
@@ -404,7 +528,7 @@
       </section>
 
       <!-- ============= SOURCES ============= -->
-      <section class="methodo-section" id="sources">
+      <section class="methodo-section reveal" id="sources">
         <h2>Sources des données</h2>
 
         <h3>Bourse — historiques mensuels</h3>
@@ -434,14 +558,14 @@
       </section>
 
       <!-- ============= GLOSSAIRE ============= -->
-      <section class="methodo-section" id="glossaire">
+      <section class="methodo-section reveal" id="glossaire">
         <h2>Glossaire complet</h2>
         <p class="text-muted" style="font-size:13px">Les termes financiers utilisés dans CalcInvest. Tu peux aussi survoler n'importe quel terme dans les analyses pour voir sa définition.</p>
         <div class="glossary-grid" id="glossary-grid"></div>
       </section>
 
       <!-- ============= AVERTISSEMENT ============= -->
-      <section class="methodo-section" id="disclaimer">
+      <section class="methodo-section reveal" id="disclaimer">
         <h2>Avertissement</h2>
         <div class="info-box" style="background:rgba(248, 113, 113, 0.06);border-color:rgba(248, 113, 113, 0.3)">
           <div class="info-box-title" style="color:var(--red, #F87171)">
@@ -468,6 +592,7 @@
 </footer>
 
 <script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
 <script>
   // Auto-render glossary from CI.GLOSSARY
   (function () {
@@ -484,14 +609,37 @@
     }).join('');
   })();
 
-  // Smooth-scroll TOC anchors
+  // Smooth-scroll TOC anchors (avec offset pour topbar)
   document.querySelectorAll('.methodo-toc a').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
       const el = document.querySelector(a.getAttribute('href'));
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 96;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
     });
   });
+
+  // Highlight TOC link actif au scroll
+  (function () {
+    const links = document.querySelectorAll('.methodo-toc a');
+    if (!links.length || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        links.forEach(l => {
+          if (l.getAttribute('href') === '#' + id) l.classList.add('is-active');
+          else l.classList.remove('is-active');
+        });
+      });
+    }, { threshold: 0.2, rootMargin: '-120px 0px -60% 0px' });
+    document.querySelectorAll('.methodo-section[id]').forEach(s => observer.observe(s));
+  })();
+
+  // Init animations
+  if (window.CI && CI.initAll) CI.initAll();
 </script>
 </body>
 </html>
