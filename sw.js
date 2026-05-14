@@ -1,16 +1,19 @@
 // CalcInvest Service Worker
 // Stratégie :
-//   - HTML + JS applicatif : network-first (toujours à jour)
+//   - HTML + JS + CSS : network-first (toujours à jour, fallback offline cache)
 //   - manifest.json (data + PWA) : network-first (source de vérité features)
-//   - Data prix JSON, CSS, icons : cache-first (stable, gros fichiers)
+//   - Data prix JSON, icons : cache-first (stable, gros fichiers)
+//
+// IMPORTANT : la CSS est volontairement EXCLUE de cache-first depuis v52
+// car le navigateur n'invalidait pas l'install event si seule la CSS changeait
+// (sw.js identique → pas d'update détecté → CSS stale jusqu'au prochain bump
+//  manuel de CACHE_VERSION). En network-first, chaque navigation revalide
+// la CSS via Vercel (304 Not Modified si inchangée, donc latence négligeable).
 
-const CACHE_VERSION = 'calcinvest-v51';
+const CACHE_VERSION = 'calcinvest-v52';
 
-// Seuls les assets vraiment stables vont en cache-first.
-// manifest.json est volontairement EXCLU : il contrôle quels actifs
-// sont disponibles, donc doit toujours être frais.
+// Seuls les assets STABLES vont en cache-first (icons, data JSONs).
 const STATIC_ASSETS = [
-  '/assets/css/style.css',
   '/assets/icons/icon-192.svg',
   '/assets/icons/icon-512.svg',
   '/assets/data/sp500.json',
@@ -34,12 +37,13 @@ const STATIC_ASSETS = [
   '/assets/data/sol.json'
 ];
 
-// JS, HTML, et manifest → toujours network-first
+// HTML, JS, CSS, manifest → toujours network-first
 const NETWORK_FIRST_PATTERNS = [
   /\.html$/,
+  /\.css$/,                          // ← AJOUT v52 : la CSS reste fraîche
   /\/assets\/js\//,
-  /\/manifest\.json$/,            // PWA manifest
-  /\/assets\/data\/manifest\.json$/, // catalogue des actifs
+  /\/manifest\.json$/,
+  /\/assets\/data\/manifest\.json$/,
   /^\/$/
 ];
 

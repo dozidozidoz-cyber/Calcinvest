@@ -15,12 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/css/style.css" />
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
-  navigator.serviceWorker.getRegistration().then(r => r?.update());
-}
-</script>
+
 </head>
 <body>
 
@@ -52,8 +47,35 @@ if ('serviceWorker' in navigator) {
   </div>
 </header>
 
+<!-- ═══════════════════ SUB-NAV STICKY (apparaît au scroll après hero) ═══════════════════ -->
+<nav class="v3-subnav" data-subnav aria-label="Navigation par catégorie">
+  <div class="v3-subnav-inner">
+    <a href="#cat-marches" class="v3-subnav-link" data-subnav-link>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="2 11 6 6 9 9 14 3"/></svg>
+      Marchés
+    </a>
+    <a href="#cat-immo" class="v3-subnav-link" data-subnav-link>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 7L8 3l5 4v7H3z"/><path d="M6 14V9h4v5"/></svg>
+      Immobilier
+    </a>
+    <a href="#cat-epargne" class="v3-subnav-link" data-subnav-link>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>
+      Épargne & Retraite
+    </a>
+    <a href="#comment" class="v3-subnav-link" data-subnav-link>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+      Comment ça marche
+    </a>
+    <span class="v3-subnav-spacer"></span>
+    <a href="/abonnement" class="v3-subnav-cta">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><polygon points="8 1 10 5.5 15 6.3 11.5 9.7 12.4 14.7 8 12.3 3.6 14.7 4.5 9.7 1 6.3 6 5.5"/></svg>
+      <span>Premium · 4,90 €</span>
+    </a>
+  </div>
+</nav>
+
 <!-- ═══════════════════ HERO V3 — Full-bleed avec showcase ═══════════════════ -->
-<section class="v3-hero-bg">
+<section class="v3-hero-bg" data-subnav-trigger>
   <div class="v3-hero-inner">
 
     <!-- Colonne gauche : titre + lede + CTAs -->
@@ -83,25 +105,25 @@ if ('serviceWorker' in navigator) {
 
       <div class="v3-hero-stats">
         <div class="v3-hero-stat-mini">
-          <div class="v3-hero-stat-mini-num"><em>9</em> outils</div>
+          <div class="v3-hero-stat-mini-num"><em data-countup="9">0</em> outils</div>
           <div class="v3-hero-stat-mini-label">Simulateurs complets</div>
         </div>
         <div class="v3-hero-stat-mini">
-          <div class="v3-hero-stat-mini-num"><em>155</em> ans</div>
+          <div class="v3-hero-stat-mini-num"><em data-countup="155">0</em> ans</div>
           <div class="v3-hero-stat-mini-label">Données historiques</div>
         </div>
         <div class="v3-hero-stat-mini">
-          <div class="v3-hero-stat-mini-num"><em>100</em> %</div>
+          <div class="v3-hero-stat-mini-num"><em data-countup="100">0</em> %</div>
           <div class="v3-hero-stat-mini-label">Local · zéro tracking</div>
         </div>
       </div>
     </div>
 
     <!-- Colonne droite : showcase mockups flottants -->
-    <div class="v3-hero-showcase reveal reveal-d2">
+    <div class="v3-hero-showcase reveal reveal-d2" data-parallax-container>
 
       <!-- Mock chart card (gros, en haut à droite) -->
-      <div class="v3-mock v3-mock-chart">
+      <div class="v3-mock v3-mock-chart" data-parallax="18" data-parallax-rotate="3">
         <div class="v3-mock-chrome">
           <span class="v3-mock-chrome-dot"></span>
           <span class="v3-mock-chrome-dot"></span>
@@ -133,7 +155,7 @@ if ('serviceWorker' in navigator) {
       </div>
 
       <!-- Mock stats card (plus petit, en bas à gauche) -->
-      <div class="v3-mock v3-mock-stats">
+      <div class="v3-mock v3-mock-stats" data-parallax="28" data-parallax-rotate="-4">
         <div class="v3-mock-chrome">
           <span class="v3-mock-chrome-dot"></span>
           <span class="v3-mock-chrome-dot"></span>
@@ -174,22 +196,23 @@ if ('serviceWorker' in navigator) {
 <main class="main fade-in" style="max-width:1100px;margin:0 auto;padding:0 32px 96px">
 
   <!-- ─── SOURCES DE DONNÉES ─── -->
-  <section class="reveal" style="margin-top:24px">
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-          <rect x="3" y="3" width="10" height="10" rx="1"/>
-          <path d="M3 7h10M3 11h10M7 3v10"/>
-        </svg>
-      </span>
-      Sources de données
-    </div>
-    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Construit sur les meilleures données publiques.</h2>
-    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:24px">
-      Pas de chiffres approximatifs ni de moyennes marketing. Chaque simulateur s'appuie sur des datasets de référence, mis à jour mensuellement.
-    </p>
+  <section class="reveal" style="margin-top:64px">
 
-    <div style="display:flex;flex-wrap:wrap;gap:10px">
+    <div class="v3-section-head">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <rect x="3" y="3" width="10" height="10" rx="1"/>
+            <path d="M3 7h10M3 11h10M7 3v10"/>
+          </svg>
+        </span>
+        Sources de données
+      </div>
+      <h2>Construit sur les <em>meilleures données publiques</em>.</h2>
+      <p>Pas de chiffres approximatifs ni de moyennes marketing. Chaque simulateur s'appuie sur des datasets de référence, mis à jour mensuellement.</p>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
       <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">Shiller — S&P 500 depuis 1871</span>
       <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">Yahoo Finance — ETF & crypto</span>
       <span class="pill" style="font-family:var(--font-sans);font-size:12.5px;padding:8px 14px">CNAV — régime général</span>
@@ -200,21 +223,21 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── POUR QUI : personas cliquables ─── -->
-  <section class="reveal" style="margin-top:72px">
+  <section class="reveal" style="margin-top:96px">
 
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-          <circle cx="8" cy="6" r="3"/>
-          <path d="M2 14c0-3 3-5 6-5s6 2 6 5"/>
-        </svg>
-      </span>
-      Par profil d'investisseur
+    <div class="v3-section-head">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <circle cx="8" cy="6" r="3"/>
+            <path d="M2 14c0-3 3-5 6-5s6 2 6 5"/>
+          </svg>
+        </span>
+        Par profil d'investisseur
+      </div>
+      <h2>Quel <em>investisseur</em> êtes-vous&nbsp;?</h2>
+      <p>Choisissez votre profil — on vous oriente vers les outils faits pour vos décisions.</p>
     </div>
-    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Quel investisseur êtes-vous ?</h2>
-    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
-      Choisissez votre profil — on vous oriente vers les outils faits pour vos décisions.
-    </p>
 
     <div class="persona-grid">
 
@@ -277,24 +300,24 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── CATALOGUE DES OUTILS ─── -->
-  <section id="outils" class="reveal" style="margin-top:72px">
+  <section id="outils" class="reveal" style="margin-top:96px">
 
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-          <rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/>
-          <rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/>
-        </svg>
-      </span>
-      Catalogue — 9 simulateurs
+    <div class="v3-section-head">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/>
+            <rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/>
+          </svg>
+        </span>
+        Catalogue — 9 simulateurs
+      </div>
+      <h2>Un outil pour chaque <em>décision financière</em>.</h2>
+      <p>Chaque simulateur couvre une problématique précise, avec données historiques et méthodologie transparente.</p>
     </div>
-    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Un outil pour chaque décision financière.</h2>
-    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:36px">
-      Chaque simulateur couvre une problématique précise, avec données historiques et méthodologie transparente.
-    </p>
 
     <!-- Catégorie 1 : Marchés -->
-    <div class="category-divider">
+    <div class="category-divider" id="cat-marches">
       <div class="category-divider-icon" style="background:rgba(37,99,235,0.08);color:#2563EB">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
           <polyline points="2 14 7 8 11 11 18 4"/>
@@ -359,7 +382,7 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <!-- Catégorie 2 : Immobilier -->
-    <div class="category-divider">
+    <div class="category-divider" id="cat-immo">
       <div class="category-divider-icon" style="background:rgba(5,150,105,0.08);color:#059669">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
           <path d="M3 9.5L10 3l7 6.5V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
@@ -409,7 +432,7 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <!-- Catégorie 3 : Épargne -->
-    <div class="category-divider">
+    <div class="category-divider" id="cat-epargne">
       <div class="category-divider-icon" style="background:rgba(124,58,237,0.08);color:#7C3AED">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
           <path d="M10 2v4M10 14v4M2 10h4M14 10h4"/>
@@ -575,21 +598,21 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── POURQUOI ─── -->
-  <section class="reveal" style="margin-top:72px">
+  <section class="reveal" style="margin-top:96px">
 
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-          <circle cx="8" cy="8" r="6"/>
-          <path d="M8 5v3l2 2"/>
-        </svg>
-      </span>
-      Pourquoi CalcInvest
+    <div class="v3-section-head">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <circle cx="8" cy="8" r="6"/>
+            <path d="M8 5v3l2 2"/>
+          </svg>
+        </span>
+        Pourquoi CalcInvest
+      </div>
+      <h2>Construit pour les <em>investisseurs sérieux</em>.</h2>
+      <p>Pas un calculateur grand public — un outil d'analyse pensé pour des décisions qui engagent votre patrimoine sur 20 ans.</p>
     </div>
-    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Construit pour les investisseurs sérieux.</h2>
-    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
-      Pas un calculateur grand public — un outil d'analyse pensé pour des décisions qui engagent votre patrimoine sur 20 ans.
-    </p>
 
     <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
 
@@ -633,37 +656,39 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── EN CHIFFRES ─── -->
-  <section class="reveal" style="margin-top:72px">
+  <section class="reveal" style="margin-top:96px">
 
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-          <path d="M2 13h2v-4H2zM6 13h2V7H6zM10 13h2V4h-2zM14 13V2"/>
-        </svg>
-      </span>
-      En chiffres
+    <div class="v3-section-head" style="margin-bottom:32px">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <path d="M2 13h2v-4H2zM6 13h2V7H6zM10 13h2V4h-2zM14 13V2"/>
+          </svg>
+        </span>
+        En chiffres
+      </div>
+      <h2>L'outil de <em>référence</em> pour les investisseurs francophones.</h2>
     </div>
-    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:24px">L'outil de référence pour les investisseurs francophones.</h2>
 
     <div class="stats-row">
       <div class="stat">
         <div class="stat-label">Simulateurs</div>
-        <div class="stat-value pos">9</div>
+        <div class="stat-value pos" data-countup="9">0</div>
         <div class="stat-sub">complets</div>
       </div>
       <div class="stat">
         <div class="stat-label">Actifs backtestables</div>
-        <div class="stat-value">13</div>
+        <div class="stat-value" data-countup="13">0</div>
         <div class="stat-sub">S&P, ETF, crypto, or…</div>
       </div>
       <div class="stat">
         <div class="stat-label">Données réelles</div>
-        <div class="stat-value">155 ans</div>
+        <div class="stat-value" data-countup="155" data-countup-suffix=" ans">0</div>
         <div class="stat-sub">depuis 1871</div>
       </div>
       <div class="stat">
         <div class="stat-label">Monte Carlo</div>
-        <div class="stat-value">2 000</div>
+        <div class="stat-value" data-countup="2000">0</div>
         <div class="stat-sub">trajectoires</div>
       </div>
     </div>
@@ -671,20 +696,20 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── TÉMOIGNAGES ─── -->
-  <section class="reveal" style="margin-top:72px">
+  <section class="reveal" style="margin-top:96px">
 
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-          <path d="M3 4h4v4H3zM5 8c0 2-1 3-2 3M9 4h4v4H9zM11 8c0 2-1 3-2 3"/>
-        </svg>
-      </span>
-      Ils utilisent CalcInvest
+    <div class="v3-section-head">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <path d="M3 4h4v4H3zM5 8c0 2-1 3-2 3M9 4h4v4H9zM11 8c0 2-1 3-2 3"/>
+          </svg>
+        </span>
+        Ils utilisent CalcInvest
+      </div>
+      <h2>Pourquoi nos utilisateurs <em>reviennent</em>.</h2>
+      <p>Investisseurs particuliers, conseillers patrimoniaux, futurs retraités — voici ce qu'ils en disent.</p>
     </div>
-    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Pourquoi nos utilisateurs reviennent.</h2>
-    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
-      Investisseurs particuliers, conseillers patrimoniaux, futurs retraités — voici ce qu'ils en disent.
-    </p>
 
     <div class="testimonials-grid">
 
@@ -746,24 +771,23 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── BLOG TEASER ─── -->
-  <section class="reveal" style="margin-top:72px">
+  <section class="reveal" style="margin-top:96px">
 
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px">
-      <div>
-        <div class="page-eyebrow">
-          <span class="page-eyebrow-icon">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-              <rect x="2" y="3" width="12" height="10" rx="1"/>
-              <path d="M5 7h6M5 10h4"/>
-            </svg>
-          </span>
-          Ressources
-        </div>
-        <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:6px">Articles & guides.</h2>
-        <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:520px">
-          Méthodologie, cas concrets, analyses : tout ce qu'il faut pour creuser un sujet financier.
-        </p>
+    <div class="v3-section-head">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <rect x="2" y="3" width="12" height="10" rx="1"/>
+            <path d="M5 7h6M5 10h4"/>
+          </svg>
+        </span>
+        Ressources
       </div>
+      <h2>Articles & <em>guides</em>.</h2>
+      <p>Méthodologie, cas concrets, analyses : tout ce qu'il faut pour creuser un sujet financier.</p>
+    </div>
+
+    <div style="text-align:center;margin:-16px 0 32px">
       <a href="/blog" class="btn btn-secondary" style="font-size:13px">
         Voir tous les articles →
       </a>
@@ -836,23 +860,23 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <!-- ─── FAQ ─── -->
-  <section class="reveal" style="margin-top:72px">
+  <section class="reveal" style="margin-top:96px">
 
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
-          <circle cx="8" cy="8" r="6"/>
-          <path d="M6 6a2 2 0 1 1 3 1.5L8 9M8 11.5v0.5"/>
-        </svg>
-      </span>
-      Questions fréquentes
+    <div class="v3-section-head">
+      <div class="page-eyebrow" style="margin:0 auto 14px">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+            <circle cx="8" cy="8" r="6"/>
+            <path d="M6 6a2 2 0 1 1 3 1.5L8 9M8 11.5v0.5"/>
+          </svg>
+        </span>
+        Questions fréquentes
+      </div>
+      <h2>Avant de vous lancer, <em>l'essentiel</em>.</h2>
+      <p>Les questions qui reviennent le plus souvent — méthodologie, fiabilité, données.</p>
     </div>
-    <h2 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px">Avant de vous lancer, l'essentiel.</h2>
-    <p style="font-size:14.5px;color:var(--text-3);line-height:1.6;max-width:680px;margin-bottom:32px">
-      Les questions qui reviennent le plus souvent — méthodologie, fiabilité, données.
-    </p>
 
-    <div style="max-width:760px">
+    <div style="max-width:760px;margin:0 auto">
 
       <div class="accordion">
         <div class="accordion-header">

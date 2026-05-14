@@ -27,12 +27,7 @@
   .tax-toggle label:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
   .tax-toggle input[type="radio"] { display: none; }
 </style>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('controllerchange', function() { window.location.reload(); });
-  navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
-}
-</script>
+
 </head>
 <body>
 

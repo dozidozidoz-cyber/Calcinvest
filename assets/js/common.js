@@ -592,8 +592,134 @@
       CI.initScrollReveal(root);
       CI.initTopbarScroll();
       CI.initFloatingCTA();
+      CI.initCountUp(root);
+      CI.initParallax(root);
+      CI.initSubNav();
       CI._scrollInited = true;
     }
+  };
+
+  /* ===========================================================
+     COUNT-UP — anime les chiffres au passage dans le viewport
+     Usage : <span data-countup="412580" data-countup-suffix=" €">0</span>
+     ou simplement <span data-countup="9">0</span>
+     =========================================================== */
+  CI.initCountUp = function (root) {
+    root = root || document;
+    if (typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        observer.unobserve(el);
+        const target  = parseFloat(el.dataset.countup) || 0;
+        const dec     = parseInt(el.dataset.countupDec || '0', 10);
+        const suffix  = el.dataset.countupSuffix || '';
+        const prefix  = el.dataset.countupPrefix || '';
+        const dur     = parseInt(el.dataset.countupDuration || '1400', 10);
+        const start   = performance.now();
+        function step(now) {
+          const t = Math.min(1, (now - start) / dur);
+          // easeOutQuart
+          const e = 1 - Math.pow(1 - t, 4);
+          const val = target * e;
+          el.textContent = prefix + val.toLocaleString('fr-FR', {
+            minimumFractionDigits: dec,
+            maximumFractionDigits: dec
+          }) + suffix;
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }, { threshold: 0.4 });
+    root.querySelectorAll('[data-countup]').forEach(el => {
+      // Init à 0 visuellement pour éviter le flash
+      const dec    = parseInt(el.dataset.countupDec || '0', 10);
+      const suffix = el.dataset.countupSuffix || '';
+      const prefix = el.dataset.countupPrefix || '';
+      el.textContent = prefix + (0).toLocaleString('fr-FR', {
+        minimumFractionDigits: dec, maximumFractionDigits: dec
+      }) + suffix;
+      observer.observe(el);
+    });
+  };
+
+  /* ===========================================================
+     PARALLAX MOUSE — déplace les éléments selon position souris
+     Usage : <div data-parallax="20"> où "20" = intensité en px
+     =========================================================== */
+  CI.initParallax = function (root) {
+    root = root || document;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const containers = root.querySelectorAll('[data-parallax-container]');
+    containers.forEach(container => {
+      const targets = container.querySelectorAll('[data-parallax]');
+      if (!targets.length) return;
+      let raf = null;
+      let mouseX = 0, mouseY = 0;
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        mouseX = (e.clientX - rect.left - rect.width / 2)  / rect.width;
+        mouseY = (e.clientY - rect.top  - rect.height / 2) / rect.height;
+        if (!raf) raf = requestAnimationFrame(apply);
+      });
+      container.addEventListener('mouseleave', () => {
+        mouseX = 0; mouseY = 0;
+        if (!raf) raf = requestAnimationFrame(apply);
+      });
+      function apply() {
+        targets.forEach(t => {
+          const strength = parseFloat(t.dataset.parallax) || 12;
+          const rotate   = t.dataset.parallaxRotate || '0';
+          t.style.transform = `translate(${mouseX * strength}px, ${mouseY * strength}px) rotate(${rotate}deg)`;
+        });
+        raf = null;
+      }
+    });
+  };
+
+  /* ===========================================================
+     SUB-NAV STICKY — barre de navigation contextuelle
+     qui apparaît au scroll après le hero
+     =========================================================== */
+  CI.initSubNav = function () {
+    const subnav = document.querySelector('[data-subnav]');
+    if (!subnav) return;
+    // Trigger : déclencher quand le hero est >70% sorti du viewport
+    const trigger = document.querySelector('[data-subnav-trigger]');
+    if (!trigger) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        // Quand le trigger sort par le HAUT (scroll down passé), montrer la subnav
+        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+          subnav.classList.add('is-visible');
+        } else {
+          subnav.classList.remove('is-visible');
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
+    observer.observe(trigger);
+
+    // Surligner le lien actif selon section visible
+    const links = subnav.querySelectorAll('[data-subnav-link]');
+    if (!links.length) return;
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        links.forEach(l => {
+          if (l.getAttribute('href') === '#' + id) l.classList.add('is-active');
+          else l.classList.remove('is-active');
+        });
+      });
+    }, { threshold: 0.3, rootMargin: '-100px 0px -50% 0px' });
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        const target = document.getElementById(href.slice(1));
+        if (target) sectionObserver.observe(target);
+      }
+    });
   };
 
   /* ===========================================================

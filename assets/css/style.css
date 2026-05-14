@@ -3639,6 +3639,99 @@ html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 }
 
 /* ============================================================
+   SUB-NAV STICKY — navigation contextuelle par catégorie
+   ============================================================ */
+.v3-subnav {
+  position: fixed;
+  top: 64px; /* sous topbar */
+  left: 0; right: 0;
+  z-index: 45;
+  background: rgba(247, 248, 250, 0.92);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--border-soft);
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1),
+              opacity 0.35s ease;
+}
+.v3-subnav.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.topbar.is-scrolled ~ * .v3-subnav.is-visible,
+.v3-subnav.is-visible.compact { top: 56px; } /* aligné si topbar compact */
+
+.v3-subnav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.v3-subnav-inner::-webkit-scrollbar { display: none; }
+.v3-subnav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  border-radius: var(--r);
+  text-decoration: none;
+  transition: var(--t-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.v3-subnav-link svg { width: 14px; height: 14px; opacity: 0.8; }
+.v3-subnav-link:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+.v3-subnav-link.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.v3-subnav-link.is-active svg { opacity: 1; }
+.v3-subnav-spacer { flex: 1; }
+.v3-subnav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: var(--r);
+  text-decoration: none;
+  transition: background var(--t-fast), transform var(--t-fast);
+  flex-shrink: 0;
+}
+.v3-subnav-cta:hover {
+  background: var(--accent-2);
+  transform: translateY(-1px);
+}
+@media (max-width: 640px) {
+  .v3-subnav-inner { padding: 0 16px; }
+  .v3-subnav-cta span { display: none; }
+}
+
+/* Quand topbar est compact, sub-nav remonte automatiquement */
+body:has(.topbar.is-scrolled) .v3-subnav { top: 56px; }
+@supports not (selector(:has(*))) {
+  /* Fallback si :has() pas supporté : sub-nav reste à 64px */
+}
+
+/* ============================================================
    v3 — PREMIUM LANDING (Ramify-inspired)
    ============================================================ */
 
