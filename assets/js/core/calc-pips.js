@@ -28,17 +28,64 @@
     'EUR/JPY': { base: 'EUR', quote: 'JPY', pipSize: 0.01,   price: 167.00, category: 'forex' },
     'EUR/CHF': { base: 'EUR', quote: 'CHF', pipSize: 0.0001, price: 0.9800, category: 'forex' },
     'GBP/JPY': { base: 'GBP', quote: 'JPY', pipSize: 0.01,   price: 196.00, category: 'forex' },
-    // Métaux précieux
-    'XAU/USD': { base: 'XAU', quote: 'USD', pipSize: 0.01,   price: 2400.00, category: 'metal' }, // Or — convention 0.01 par pip
-    'XAG/USD': { base: 'XAG', quote: 'USD', pipSize: 0.001,  price: 28.00,   category: 'metal' }, // Argent
+    // Exotiques (carry trade)
+    'USD/MXN': { base: 'USD', quote: 'MXN', pipSize: 0.0001, price: 17.00,  category: 'forex_exotic' },
+    'USD/TRY': { base: 'USD', quote: 'TRY', pipSize: 0.0001, price: 32.00,  category: 'forex_exotic' },
+    'USD/ZAR': { base: 'USD', quote: 'ZAR', pipSize: 0.0001, price: 18.50,  category: 'forex_exotic' },
+    // Métaux précieux & énergie
+    'XAU/USD': { base: 'XAU', quote: 'USD', pipSize: 0.01,   price: 2400.00, category: 'metal' },
+    'XAG/USD': { base: 'XAG', quote: 'USD', pipSize: 0.001,  price: 28.00,   category: 'metal' },
+    'XPT/USD': { base: 'XPT', quote: 'USD', pipSize: 0.01,   price: 980.00,  category: 'metal' },  // Platine
+    'WTI':     { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 72.00,   category: 'commodity' }, // Pétrole WTI
+    'BRENT':   { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 76.00,   category: 'commodity' }, // Pétrole Brent
+    'NATGAS':  { base: 'USD', quote: 'USD', pipSize: 0.001,  price: 2.85,    category: 'commodity' }, // Gaz naturel
     // Indices CFD (1 pip = 1 point)
     'US30':    { base: 'USD', quote: 'USD', pipSize: 1.0,    price: 39000,   category: 'index' }, // Dow
     'NAS100':  { base: 'USD', quote: 'USD', pipSize: 1.0,    price: 17500,   category: 'index' }, // Nasdaq
     'SPX500':  { base: 'USD', quote: 'USD', pipSize: 0.1,    price: 5200,    category: 'index' }, // S&P 500
     'GER40':   { base: 'EUR', quote: 'EUR', pipSize: 1.0,    price: 18200,   category: 'index' }, // DAX
+    'FRA40':   { base: 'EUR', quote: 'EUR', pipSize: 1.0,    price: 7500,    category: 'index' }, // CAC 40
+    'UK100':   { base: 'GBP', quote: 'GBP', pipSize: 1.0,    price: 8100,    category: 'index' }, // FTSE 100
+    'JPN225':  { base: 'JPY', quote: 'JPY', pipSize: 1.0,    price: 38000,   category: 'index' }, // Nikkei
+    // Actions US (CFD ou direct via broker)
+    'AAPL':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 190.00,  category: 'stock' },
+    'MSFT':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 420.00,  category: 'stock' },
+    'TSLA':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 250.00,  category: 'stock' },
+    'NVDA':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 130.00,  category: 'stock' },
+    'AMZN':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 185.00,  category: 'stock' },
+    'GOOGL':   { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 175.00,  category: 'stock' },
     // Crypto (1 pip = 0.01 sur BTC, 0.001 sur ETH)
     'BTC/USD': { base: 'BTC', quote: 'USD', pipSize: 1.0,    price: 95000,   category: 'crypto' },
-    'ETH/USD': { base: 'ETH', quote: 'USD', pipSize: 0.1,    price: 3500,    category: 'crypto' }
+    'ETH/USD': { base: 'ETH', quote: 'USD', pipSize: 0.1,    price: 3500,    category: 'crypto' },
+    'SOL/USD': { base: 'SOL', quote: 'USD', pipSize: 0.01,   price: 180.00,  category: 'crypto' },
+    'BNB/USD': { base: 'BNB', quote: 'USD', pipSize: 0.01,   price: 620.00,  category: 'crypto' },
+    'XRP/USD': { base: 'XRP', quote: 'USD', pipSize: 0.0001, price: 2.40,    category: 'crypto' },
+    'DOGE/USD':{ base: 'DOGE',quote: 'USD', pipSize: 0.00001,price: 0.18,    category: 'crypto' },
+    'ADA/USD': { base: 'ADA', quote: 'USD', pipSize: 0.0001, price: 0.90,    category: 'crypto' },
+    'AVAX/USD':{ base: 'AVAX',quote: 'USD', pipSize: 0.001,  price: 36.00,   category: 'crypto' }
+  };
+
+  // ─── Profils brokers ──────────────────────────────────────
+  // Frais typiques observés en mai 2026. Le user peut surcharger.
+  const BROKERS = {
+    'custom':         { name: 'Personnalisé',          spreadPips: 1.5,  commType: 'perlot', commValue: 7,   swapPips: -0.5, note: 'À paramétrer' },
+    'ibkr':           { name: 'Interactive Brokers',   spreadPips: 0.2,  commType: 'perlot', commValue: 2,   swapPips: -0.3, note: 'ECN — spread minuscule, commission par lot' },
+    'tradeRepublic':  { name: 'Trade Republic',        spreadPips: 0,    commType: 'fixed',  commValue: 1,   swapPips: 0,    note: '1 € fixe — pas de spread artificiel' },
+    'saxo':           { name: 'Saxo Bank',             spreadPips: 0.8,  commType: 'fixed',  commValue: 0,   swapPips: -0.4, note: 'Spread inclus, 0 € commission' },
+    'degiro':         { name: 'Degiro / Flatex',       spreadPips: 1.0,  commType: 'fixed',  commValue: 2,   swapPips: -0.5, note: 'Forfait par ordre' },
+    'boursoBank':     { name: 'BoursoBank',            spreadPips: 1.5,  commType: 'fixed',  commValue: 1.99,swapPips: -0.6, note: 'Spread légèrement plus large' },
+    'bourseDirect':   { name: 'Bourse Direct',         spreadPips: 1.2,  commType: 'fixed',  commValue: 0.99,swapPips: -0.4, note: 'CFD compétitif' },
+    'xtb':            { name: 'XTB',                   spreadPips: 0.5,  commType: 'fixed',  commValue: 0,   swapPips: -0.5, note: 'Spread variable, 0 € commission' },
+    'etoro':          { name: 'eToro',                 spreadPips: 2.0,  commType: 'fixed',  commValue: 0,   swapPips: -0.8, note: 'Spread plus large, frais cachés' }
+  };
+
+  // ─── Profils traders preset ──────────────────────────────
+  const TRADER_PROFILES = {
+    'debutant':   { name: 'Débutant prudent',     riskPct: 0.5, rrRatio: 2,    stopPct: 5,  numTrades: 50,  leverage: 5,  note: 'Maximum 0.5 % par trade, R/R 1:2' },
+    'conservateur':{ name: 'Conservateur',         riskPct: 1,   rrRatio: 2,    stopPct: 4,  numTrades: 100, leverage: 10, note: 'Règle standard 1 % par trade' },
+    'agressif':   { name: 'Trader agressif',      riskPct: 2,   rrRatio: 1.5,  stopPct: 3,  numTrades: 200, leverage: 20, note: '2 % par trade, R/R modéré' },
+    'scalper':    { name: 'Scalper',              riskPct: 0.5, rrRatio: 1,    stopPct: 0.5,numTrades: 1000,leverage: 30, note: 'Beaucoup de trades, petits gains' },
+    'swing':      { name: 'Swing trader',         riskPct: 1.5, rrRatio: 3,    stopPct: 8,  numTrades: 80,  leverage: 5,  note: 'Peu de trades, gros R/R asymétrique' }
   };
 
   // Taux de conversion par défaut (approximatifs — l'utilisateur peut surcharger)
@@ -222,7 +269,7 @@
     return Number.isFinite(n) ? n : (fb || 0);
   }
 
-  const api = { pipValue, positionSize, tradePnL, PAIRS, FX_RATES_EUR };
+  const api = { pipValue, positionSize, tradePnL, PAIRS, FX_RATES_EUR, BROKERS, TRADER_PROFILES };
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;

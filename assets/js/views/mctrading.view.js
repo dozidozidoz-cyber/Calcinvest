@@ -170,6 +170,10 @@
       });
     });
     const btn = $('mc-btn-calc'); if (btn) btn.addEventListener('click', run);
+
+    if (CI && CI.attachSaveButton) {
+      CI.attachSaveButton({ btnId: 'mc-btn-save', type: 'mctrading', getParams: readParams, defaultName: 'Système Monte Carlo' });
+    }
     run();
   }
 

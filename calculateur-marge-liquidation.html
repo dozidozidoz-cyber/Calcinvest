@@ -91,35 +91,7 @@
           <div class="field-grid">
             <div class="field">
               <div class="field-label">Paire / Actif</div>
-              <select class="select" id="mg-pair">
-                <optgroup label="Forex majors">
-                  <option value="EUR/USD">EUR/USD</option>
-                  <option value="GBP/USD">GBP/USD</option>
-                  <option value="USD/JPY">USD/JPY</option>
-                  <option value="USD/CHF">USD/CHF</option>
-                  <option value="AUD/USD">AUD/USD</option>
-                  <option value="USD/CAD">USD/CAD</option>
-                </optgroup>
-                <optgroup label="Crosses EUR">
-                  <option value="EUR/GBP">EUR/GBP</option>
-                  <option value="EUR/JPY">EUR/JPY</option>
-                  <option value="EUR/CHF">EUR/CHF</option>
-                  <option value="GBP/JPY">GBP/JPY</option>
-                </optgroup>
-                <optgroup label="Métaux">
-                  <option value="XAU/USD">XAU/USD (Or)</option>
-                  <option value="XAG/USD">XAG/USD (Argent)</option>
-                </optgroup>
-                <optgroup label="Indices CFD">
-                  <option value="US30">US30 (Dow)</option>
-                  <option value="NAS100">NAS100</option>
-                  <option value="SPX500">SPX500</option>
-                  <option value="GER40">GER40 (DAX)</option>
-                </optgroup>
-                <optgroup label="Crypto CFD">
-                  <option value="BTC/USD">BTC/USD</option>
-                  <option value="ETH/USD">ETH/USD</option>
-                </optgroup>
+              <select class="select" id="mg-pair" data-instruments data-default="EUR/USD">
               </select>
             </div>
 
@@ -215,6 +187,10 @@
 
         <div class="btn-row">
           <button class="btn btn-primary" id="mg-btn-calc"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>Calculer</button>
+          <button class="btn btn-secondary" id="mg-btn-save">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 3h8l2 2v8H3z"/><path d="M5 3v4h6V3"/></svg>
+            Sauvegarder
+          </button>
           <button class="btn btn-secondary" onclick="CI.copyShareUrl && CI.copyShareUrl()">Partager</button>
         </div>
 

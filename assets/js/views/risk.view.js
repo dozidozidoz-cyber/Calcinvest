@@ -205,8 +205,36 @@
     }
   }
 
+  function populateTraderProfile() {
+    const sel = $('rk-profile');
+    if (!sel || sel.dataset.populated) return;
+    sel.dataset.populated = '1';
+    if (!window.PIPS || !window.PIPS.TRADER_PROFILES) return;
+    sel.innerHTML = '<option value="">Personnalisé</option>' +
+      Object.entries(window.PIPS.TRADER_PROFILES).map(([k, p]) =>
+        `<option value="${k}">${p.name}</option>`).join('');
+    sel.addEventListener('change', () => {
+      const p = window.PIPS.TRADER_PROFILES[sel.value];
+      if (!p) return;
+      $('rk-risk').value = p.riskPct;
+      $('rk-rr').value = p.rrRatio;
+      $('rk-stop').value = p.stopPct;
+      $('rk-n').value = p.numTrades;
+      const note = $('rk-profile-note');
+      if (note) note.textContent = p.note || '';
+      run();
+    });
+    // Sync note initiale si profil pré-sélectionné
+    const cur = window.PIPS.TRADER_PROFILES[sel.value];
+    if (cur) {
+      const note = $('rk-profile-note');
+      if (note) note.textContent = cur.note;
+    }
+  }
+
   function init() {
     if (CI && CI.initAll) CI.initAll();
+    populateTraderProfile();
 
     if (CI && CI.getUrlParam) {
       ['bal->rk-balance','risk->rk-risk','stop->rk-stop','wr->rk-wr','rr->rk-rr','n->rk-n','streak->rk-streak']
@@ -226,6 +254,12 @@
     });
 
     const btn = $('rk-btn-calc'); if (btn) btn.addEventListener('click', run);
+    if (CI && CI.attachSaveButton) {
+      CI.attachSaveButton({
+        btnId: 'rk-btn-save', type: 'risk', getParams: readParams,
+        defaultName: 'Profil risk management'
+      });
+    }
     run();
   }
 

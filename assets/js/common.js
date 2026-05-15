@@ -612,8 +612,121 @@
       CI.initProgressBar();
       CI.initScrollTop();
       CI.initMegaMenu();
+      CI.initInstrumentSelects();
+      CI.initRecentTools();
       CI._scrollInited = true;
     }
+  };
+
+  /* ===========================================================
+     INSTRUMENT SELECTS — peuple dynamiquement tous les <select>
+     marqués data-instruments depuis window.PIPS.PAIRS
+     =========================================================== */
+  CI.initInstrumentSelects = function () {
+    if (typeof window.PIPS === 'undefined' || !window.PIPS.PAIRS) return;
+    document.querySelectorAll('select[data-instruments]').forEach(sel => {
+      if (sel.dataset.populated) return;
+      sel.dataset.populated = '1';
+      const currentValue = sel.value || sel.dataset.default || 'EUR/USD';
+
+      // Groupe par catégorie
+      const groups = {};
+      Object.entries(window.PIPS.PAIRS).forEach(([symbol, info]) => {
+        const cat = info.category;
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push({ symbol, info });
+      });
+
+      const labels = {
+        'forex': 'Forex majors & crosses',
+        'forex_exotic': 'Forex exotiques',
+        'metal': 'Métaux précieux',
+        'commodity': 'Énergie & matières premières',
+        'index': 'Indices CFD',
+        'stock': 'Actions US',
+        'crypto': 'Cryptomonnaies'
+      };
+      const order = ['forex', 'forex_exotic', 'metal', 'commodity', 'index', 'stock', 'crypto'];
+
+      let html = '';
+      order.forEach(cat => {
+        if (!groups[cat]) return;
+        html += `<optgroup label="${labels[cat] || cat}">`;
+        groups[cat].forEach(({ symbol }) => {
+          html += `<option value="${symbol}">${symbol}</option>`;
+        });
+        html += `</optgroup>`;
+      });
+      sel.innerHTML = html;
+      sel.value = currentValue;
+    });
+  };
+
+  /* ===========================================================
+     RECENT TOOLS — track les outils visités (localStorage)
+     =========================================================== */
+  const RECENT_KEY = 'ci_recent_tools_v1';
+  const TOOL_CATALOG = {
+    '/simulateur-dca':                  { label: 'DCA Bourse',         cat: 'Marchés',  color: '#2563EB' },
+    '/simulateur-dca-crypto':           { label: 'DCA Crypto',         cat: 'Marchés',  color: '#F7931A' },
+    '/simulateur-dcf':                  { label: 'Valorisation DCF',   cat: 'Marchés',  color: '#D97706' },
+    '/simulateur-rendement-locatif':    { label: 'Rendement Locatif',  cat: 'Immobilier', color: '#059669' },
+    '/simulateur-scpi':                 { label: 'SCPI',               cat: 'Immobilier', color: '#0E9F6E' },
+    '/calculateur-pips':                { label: 'Calculateur PIPS',   cat: 'Trading',  color: '#7C3AED' },
+    '/calculateur-marge-liquidation':   { label: 'Marge & Liquidation',cat: 'Trading',  color: '#8B5CF6' },
+    '/calculateur-couts-trading':       { label: 'Coûts du trade',     cat: 'Trading',  color: '#9333EA' },
+    '/calculateur-risk-management':     { label: 'Risk Management',    cat: 'Trading',  color: '#A855F7' },
+    '/simulateur-monte-carlo-trading':  { label: 'Monte Carlo Trading',cat: 'Trading',  color: '#A78BFA' },
+    '/calculateur-fiscalite-trading':   { label: 'Fiscalité Trading',  cat: 'Trading',  color: '#C026D3' },
+    '/simulateur-interets-composes':    { label: 'Intérêts Composés',  cat: 'Épargne',  color: '#7C3AED' },
+    '/calculateur-fire':                { label: 'FIRE',               cat: 'Épargne',  color: '#EA580C' },
+    '/simulateur-per':                  { label: 'PER',                cat: 'Épargne',  color: '#DC2626' },
+    '/simulateur-retraite':             { label: 'Retraite',           cat: 'Épargne',  color: '#0891B2' }
+  };
+
+  CI.initRecentTools = function () {
+    const path = window.location.pathname.replace(/\/$/, '').toLowerCase();
+    if (TOOL_CATALOG[path]) {
+      // Track la visite
+      let recent;
+      try { recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { recent = []; }
+      recent = recent.filter(p => p !== path);
+      recent.unshift(path);
+      recent = recent.slice(0, 5);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(recent)); } catch {}
+    }
+    // Render dans le container .ci-recent-tools si présent (home)
+    const container = document.querySelector('[data-recent-tools]');
+    if (!container) return;
+    let recent;
+    try { recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { recent = []; }
+    if (!recent.length) { container.style.display = 'none'; return; }
+    container.innerHTML = recent.slice(0, 3).map(p => {
+      const t = TOOL_CATALOG[p];
+      if (!t) return '';
+      return `
+        <a href="${p}" class="recent-tool" style="--cat-color:${t.color}">
+          <span class="recent-tool-cat">${t.cat}</span>
+          <span class="recent-tool-label">${t.label}</span>
+          <svg class="recent-tool-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>`;
+    }).join('');
+  };
+
+  /* ===========================================================
+     TRADING — helper pour ajouter un bouton "Sauvegarder"
+     Utilisé par toutes les views trading
+     =========================================================== */
+  CI.attachSaveButton = function (opts) {
+    // opts = { btnId, type, getParams: () => ({...}), defaultName: 'Mon setup' }
+    const btn = document.getElementById(opts.btnId);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const params = opts.getParams();
+      CI.promptSave && CI.promptSave(opts.type, params, opts.defaultName || 'Mon setup', () => {
+        CI.toast && CI.toast('Setup enregistré ✓', 'success');
+      });
+    });
   };
 
   /* ===========================================================

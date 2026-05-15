@@ -215,6 +215,10 @@
     document.querySelectorAll('input[name="mg-dir"]').forEach(r => r.addEventListener('change', run));
 
     const btn = $('mg-btn-calc'); if (btn) btn.addEventListener('click', run);
+
+    if (CI && CI.attachSaveButton) {
+      CI.attachSaveButton({ btnId: 'mg-btn-save', type: 'margin', getParams: readParams, defaultName: 'Setup marge & liquidation' });
+    }
     run();
   }
 

@@ -79,22 +79,7 @@
           <div class="field-grid">
             <div class="field">
               <div class="field-label">Paire / Actif</div>
-              <select class="select" id="ct-pair">
-                <optgroup label="Forex majors">
-                  <option value="EUR/USD">EUR/USD</option><option value="GBP/USD">GBP/USD</option><option value="USD/JPY">USD/JPY</option><option value="USD/CHF">USD/CHF</option>
-                </optgroup>
-                <optgroup label="Crosses">
-                  <option value="EUR/GBP">EUR/GBP</option><option value="EUR/JPY">EUR/JPY</option><option value="GBP/JPY">GBP/JPY</option>
-                </optgroup>
-                <optgroup label="Métaux">
-                  <option value="XAU/USD">XAU/USD (Or)</option><option value="XAG/USD">XAG/USD</option>
-                </optgroup>
-                <optgroup label="Indices">
-                  <option value="US30">US30</option><option value="NAS100">NAS100</option><option value="GER40">GER40</option>
-                </optgroup>
-                <optgroup label="Crypto">
-                  <option value="BTC/USD">BTC/USD</option><option value="ETH/USD">ETH/USD</option>
-                </optgroup>
+              <select class="select" id="ct-pair" data-instruments data-default="EUR/USD">
               </select>
             </div>
 
@@ -135,8 +120,17 @@
         <div class="subsection">
           <div class="subsection-header">
             <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><rect x="2" y="3" width="10" height="8"/></svg></div>
-            <div class="subsection-title">Frais broker <span class="subsection-hint">vérifiez sur la fiche tarifaire</span></div>
+            <div class="subsection-title">Frais broker <span class="subsection-hint">choisissez un broker ou personnalisez</span></div>
           </div>
+
+          <div class="field-grid" style="margin-bottom:14px">
+            <div class="field" style="grid-column:1/-1">
+              <div class="field-label">Profil broker</div>
+              <select class="select" id="ct-broker-profile"></select>
+              <div class="field-hint" id="ct-broker-note" style="margin-top:6px">À paramétrer</div>
+            </div>
+          </div>
+
           <div class="field-grid">
             <div class="field">
               <div class="field-label">Spread typique</div>

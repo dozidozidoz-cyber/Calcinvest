@@ -238,6 +238,10 @@
     const btn = $('pp-btn-calc');
     if (btn) btn.addEventListener('click', run);
 
+
+    if (CI && CI.attachSaveButton) {
+      CI.attachSaveButton({ btnId: 'pp-btn-save', type: 'pips', getParams: readParams, defaultName: 'Setup PIPS' });
+    }
     run();
   }
 

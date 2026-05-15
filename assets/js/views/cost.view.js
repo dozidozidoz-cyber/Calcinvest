@@ -145,8 +145,37 @@
     renderA03(p);
   }
 
+  // ─── Broker profile selector ───
+  function populateBrokerSelect() {
+    const sel = $('ct-broker-profile');
+    if (!sel || sel.dataset.populated) return;
+    sel.dataset.populated = '1';
+    if (!window.PIPS || !window.PIPS.BROKERS) return;
+    const opts = Object.entries(window.PIPS.BROKERS).map(([key, b]) =>
+      `<option value="${key}">${b.name}</option>`).join('');
+    sel.innerHTML = opts;
+    sel.addEventListener('change', () => {
+      const b = window.PIPS.BROKERS[sel.value];
+      if (!b) return;
+      $('ct-spread').value = b.spreadPips;
+      $('ct-comm-type').value = b.commType;
+      $('ct-comm-value').value = b.commValue;
+      $('ct-swap').value = b.swapPips;
+      const note = $('ct-broker-note');
+      if (note) note.textContent = b.note || '';
+      run();
+    });
+    // Sync note initiale
+    const cur = window.PIPS.BROKERS[sel.value];
+    if (cur) {
+      const note = $('ct-broker-note');
+      if (note) note.textContent = cur.note || '';
+    }
+  }
+
   function init() {
     if (CI && CI.initAll) CI.initAll();
+    populateBrokerSelect();
     ['ct-pair','ct-lotsize','ct-currency','ct-spread','ct-comm-type','ct-comm-value','ct-swap','ct-nights','ct-move','ct-start','ct-ret','ct-months','ct-wd','ct-tax'].forEach(id => {
       const el = $(id); if (!el) return;
       el.addEventListener('change', run);
@@ -155,6 +184,15 @@
       });
     });
     const btn = $('ct-btn-calc'); if (btn) btn.addEventListener('click', run);
+    // Save button
+    if (CI && CI.attachSaveButton) {
+      CI.attachSaveButton({
+        btnId: 'ct-btn-save',
+        type: 'cost',
+        getParams: readParams,
+        defaultName: 'Setup coûts trade'
+      });
+    }
     run();
   }
 

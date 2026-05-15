@@ -8,13 +8,20 @@
 
   // Map type → URL de l'outil (pour rouvrir un projet avec ses params)
   const TOOL_URLS = {
-    'Locatif':    '/simulateur-rendement-locatif',
-    'DCA':        '/simulateur-dca',
-    'Compound':   '/simulateur-interets-composes',
-    'CryptoDCA':  '/simulateur-dca-crypto',
-    'FIRE':       '/calculateur-fire',
-    'PER':        '/simulateur-per',
-    'scpi':       '/simulateur-scpi'
+    'Locatif':       '/simulateur-rendement-locatif',
+    'DCA':           '/simulateur-dca',
+    'Compound':      '/simulateur-interets-composes',
+    'CryptoDCA':     '/simulateur-dca-crypto',
+    'FIRE':          '/calculateur-fire',
+    'PER':           '/simulateur-per',
+    'scpi':          '/simulateur-scpi',
+    // Trading
+    'pips':          '/calculateur-pips',
+    'margin':        '/calculateur-marge-liquidation',
+    'cost':          '/calculateur-couts-trading',
+    'risk':          '/calculateur-risk-management',
+    'mctrading':     '/simulateur-monte-carlo-trading',
+    'fisca-trading': '/calculateur-fiscalite-trading'
   };
 
   // Map type → icône SVG path + couleur
@@ -25,7 +32,14 @@
     'CryptoDCA': { color: '#F7931A', icon: '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>' },
     'FIRE':      { color: '#FB923C', icon: '<path d="M8 4h8l-2 8h-4z"/><path d="M10 12v8M14 12v8"/>' },
     'PER':       { color: '#F472B6', icon: '<path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/>' },
-    'scpi':      { color: '#0E9F6E', icon: '<rect x="3" y="4" width="7" height="16"/><rect x="14" y="4" width="7" height="16"/><path d="M3 10h7M14 10h7"/>' }
+    'scpi':      { color: '#0E9F6E', icon: '<rect x="3" y="4" width="7" height="16"/><rect x="14" y="4" width="7" height="16"/><path d="M3 10h7M14 10h7"/>' },
+    // Trading
+    'pips':          { color: '#7C3AED', icon: '<path d="M3 12h18M7 8l4 4-4 4M17 8l-4 4 4 4"/>' },
+    'margin':        { color: '#8B5CF6', icon: '<path d="M3 20h18M5 16V10M10 16V6M15 16V8M20 16V4"/>' },
+    'cost':          { color: '#9333EA', icon: '<path d="M3 4h18M3 9h18M3 14h12"/><path d="M16 19l3-3-3-3"/>' },
+    'risk':          { color: '#A855F7', icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>' },
+    'mctrading':     { color: '#A78BFA', icon: '<circle cx="6" cy="6" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="9" cy="14" r="2"/>' },
+    'fisca-trading': { color: '#C026D3', icon: '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 11h8M8 15h6"/>' }
   };
 
   // Compare state

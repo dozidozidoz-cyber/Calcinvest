@@ -172,6 +172,10 @@
       });
     });
     const btn = $('fs-btn-calc'); if (btn) btn.addEventListener('click', run);
+
+    if (CI && CI.attachSaveButton) {
+      CI.attachSaveButton({ btnId: 'fs-btn-save', type: 'fisca-trading', getParams: readParams, defaultName: 'Situation fiscale' });
+    }
     run();
   }
 
