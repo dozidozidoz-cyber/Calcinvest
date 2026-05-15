@@ -35,6 +35,38 @@
     'ADA': 'cardano', 'AVAX': 'avalanche-2'
   };
 
+  // Symboles routés via le proxy /api/price (Yahoo Finance côté serveur)
+  // Couvre stocks, indices, métaux, commodities
+  const YAHOO_PROXIED = new Set([
+    'XAU/USD', 'XAG/USD', 'XPT/USD',
+    'WTI', 'BRENT', 'NATGAS',
+    'US30', 'NAS100', 'SPX500', 'GER40', 'FRA40', 'UK100', 'JPN225',
+    'AAPL', 'MSFT', 'TSLA', 'NVDA', 'AMZN', 'GOOGL'
+  ]);
+
+  /**
+   * Appelle le proxy serverless /api/price pour les actifs non couverts
+   * par les API publiques CORS-friendly.
+   * @param {string} symbol  Ex. "AAPL", "XAU/USD", "US30"
+   * @returns {Promise<number|null>}
+   */
+  async function fetchProxyPrice(symbol) {
+    try {
+      const res = await fetch('/api/price?symbol=' + encodeURIComponent(symbol), {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data && typeof data.price === 'number' && Number.isFinite(data.price)) {
+        return data.price;
+      }
+      return null;
+    } catch (e) {
+      console.warn('[api-prices] proxy fetch failed:', e.message);
+      return null;
+    }
+  }
+
   /**
    * Récupère les taux forex via frankfurter.app (ECB).
    * Base par défaut : EUR. Renvoie un dict { USD: 1.08, GBP: 0.86, ... }
@@ -93,9 +125,18 @@
    * @returns {Promise<number|null>}
    */
   async function getPrice(pair) {
-    if (!pair || !pair.includes('/')) return null;
+    if (!pair) return null;
     const cache = readCache();
     if (cache[pair] != null) return cache[pair];
+
+    // Symboles sans "/" (US30, AAPL, WTI...) → proxy direct
+    if (!pair.includes('/')) {
+      if (YAHOO_PROXIED.has(pair)) {
+        const p = await fetchProxyPrice(pair);
+        if (p != null) { cache[pair] = p; writeCache(cache); return p; }
+      }
+      return null;
+    }
 
     const [base, quote] = pair.split('/');
 
@@ -111,15 +152,22 @@
       return null;
     }
 
-    // Forex / Métaux via frankfurter
-    // frankfurter accepte XAU, XAG comme devises également pour certaines paires
+    // Métaux + paires proxied (XAU/USD, XAG/USD, ...) → proxy serverless
+    if (YAHOO_PROXIED.has(pair)) {
+      const p = await fetchProxyPrice(pair);
+      if (p != null) { cache[pair] = p; writeCache(cache); return p; }
+      // Fall through au cas où Frankfurter aurait quelque chose
+    }
+
+    // Forex via frankfurter
     try {
       const rates = await fetchForexRates(base);
-      if (!rates) return null;
-      const r = rates[quote];
-      if (r != null) {
-        cache[pair] = r; writeCache(cache);
-        return r;
+      if (rates) {
+        const r = rates[quote];
+        if (r != null) {
+          cache[pair] = r; writeCache(cache);
+          return r;
+        }
       }
       // Fallback : essayer le sens inverse (1 / rate(quote → base))
       const reverse = await fetchForexRates(quote);
@@ -129,6 +177,10 @@
         return p;
       }
     } catch {}
+
+    // Dernier recours : essayer le proxy même si non explicitement mappé
+    const p = await fetchProxyPrice(pair);
+    if (p != null) { cache[pair] = p; writeCache(cache); return p; }
 
     return null;
   }
