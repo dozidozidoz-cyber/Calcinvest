@@ -613,6 +613,7 @@
       CI.initScrollTop();
       CI.initMegaMenu();
       CI.initInstrumentSelects();
+      CI.initLivePrices();
       CI.initRecentTools();
       CI.initCommandPalette();
       CI.initDarkMode();
@@ -873,6 +874,91 @@
       });
       sel.innerHTML = html;
       sel.value = currentValue;
+    });
+  };
+
+  /* ===========================================================
+     LIVE PRICES — bouton "prix en temps réel" à côté du select
+     Usage : sur le HTML, ajouter data-live-price="<inputId>"
+     sur le <select data-instruments>. Le module va injecter
+     un bouton qui fetch via PRICES.getPrice() et alimente l'input.
+     =========================================================== */
+  CI.initLivePrices = function () {
+    if (typeof window.PRICES === 'undefined') return;
+    document.querySelectorAll('select[data-instruments][data-live-price]').forEach(sel => {
+      if (sel.dataset.liveBtn) return;
+      sel.dataset.liveBtn = '1';
+      const targetId = sel.dataset.livePrice;
+      const targetInput = document.getElementById(targetId);
+      if (!targetInput) return;
+
+      // Crée le bouton (placé après le select dans le DOM)
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn-live-price';
+      btn.title = 'Charger le prix temps réel';
+      btn.innerHTML = `
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+          <path d="M14 8A6 6 0 1 1 8 2"/><polyline points="14 2 14 6 10 6"/>
+        </svg>
+        <span class="btn-live-price-text">Prix live</span>
+      `;
+      Object.assign(btn.style, {
+        marginTop: '6px', padding: '6px 10px', background: 'var(--bg)',
+        border: '1px solid var(--border)', borderRadius: 'var(--r-sm)',
+        color: 'var(--text-3)', fontSize: '11px', fontWeight: '600',
+        display: 'inline-flex', alignItems: 'center', gap: '6px',
+        cursor: 'pointer', transition: 'var(--t-fast)'
+      });
+      btn.addEventListener('mouseenter', () => { btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; });
+      btn.addEventListener('mouseleave', () => { btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text-3)'; });
+
+      // Status badge
+      const status = document.createElement('span');
+      status.className = 'live-price-status';
+      Object.assign(status.style, { marginLeft: '8px', fontSize: '10px', color: 'var(--text-4)' });
+
+      btn.addEventListener('click', async () => {
+        const pair = sel.value;
+        if (!pair) return;
+        btn.disabled = true;
+        const oldHtml = btn.innerHTML;
+        btn.innerHTML = '<span style="font-size:11px">⏳ Chargement…</span>';
+        try {
+          // Sync aussi PIPS.PAIRS[pair].price pour les conversions internes
+          const price = window.PRICES.syncPipsBase
+            ? await window.PRICES.syncPipsBase(pair)
+            : await window.PRICES.getPrice(pair);
+          if (price != null && Number.isFinite(price)) {
+            targetInput.value = price;
+            targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+            targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+            const age = window.PRICES.cacheAge();
+            status.textContent = `✓ ${price.toFixed(price >= 100 ? 2 : 4)} ${pair.split('/')[1] || ''} · MAJ ${age != null ? 'il y a ' + age + 's' : 'maintenant'}`;
+            status.style.color = 'var(--accent)';
+            CI.toast && CI.toast('Prix mis à jour : ' + price.toFixed(price >= 100 ? 2 : 4), 'success', 2000);
+          } else {
+            status.textContent = '✗ Indisponible pour cet instrument';
+            status.style.color = 'var(--red, #F87171)';
+            CI.toast && CI.toast('Prix indisponible pour ' + pair + ' (action / indice / commodity sans free API)', 'warn', 3500);
+          }
+        } catch (e) {
+          status.textContent = '✗ Erreur réseau';
+          status.style.color = 'var(--red, #F87171)';
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = oldHtml;
+        }
+      });
+
+      // Insère sous le <select>
+      const wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.flexWrap = 'wrap';
+      wrap.style.alignItems = 'center';
+      wrap.appendChild(btn);
+      wrap.appendChild(status);
+      sel.insertAdjacentElement('afterend', wrap);
     });
   };
 
