@@ -206,7 +206,10 @@
     if (!pair) return { error: 'Paire inconnue : ' + p.pair };
 
     const riskAmount = balance * riskPct;
-    const contractSize = pair.contractSize || 100000;
+    // Permet à l'utilisateur de surcharger (broker conventions varient)
+    const contractSize = num(p.contractSize, 0) > 0
+      ? num(p.contractSize, 0)
+      : (pair.contractSize || 100000);
 
     // Pip value pour 1 lot standard (contractSize unités)
     const pv = pipValue({

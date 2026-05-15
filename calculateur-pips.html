@@ -246,6 +246,24 @@
               </div>
             </div>
 
+            <div class="field">
+              <div class="field-label">
+                Taille du contrat <span class="field-hint">selon votre broker (units / lot)</span>
+              </div>
+              <div class="stepper" data-min="0.0001" data-max="10000000" data-step="1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="pp-contract-size" type="number" value="100000" step="any" />
+                <span class="stepper-unit" id="pp-contract-unit">EUR</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="pp-contract-size">
+                <button class="pill" data-val="100000">100 000 (Forex std)</button>
+                <button class="pill" data-val="10000">10 000 (mini)</button>
+                <button class="pill" data-val="1000">1 000 (micro)</button>
+                <button class="pill" data-val="1">1 (CFD)</button>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -265,6 +283,44 @@
         </div>
 
       </div></div>
+    </section>
+
+    <!-- ═══════ RÉSULTAT PRINCIPAL ═══════ -->
+    <section class="card" id="result-hero" style="margin-top:32px;border:1px solid var(--accent);background:linear-gradient(135deg, rgba(52,211,153,0.08), rgba(52,211,153,0.02))">
+      <div class="card-body" style="padding:28px 28px 22px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;margin-bottom:10px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3 3 7-7"/></svg>
+          Taille de lot à entrer dans votre broker
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;margin-bottom:10px">
+          <div style="font-size:clamp(38px, 6vw, 56px);font-weight:800;color:var(--accent);letter-spacing:-0.02em;line-height:1;font-family:var(--font-mono)" id="hero-lots">—</div>
+          <div style="font-size:18px;font-weight:600;color:var(--text-2)" id="hero-lots-unit">lots</div>
+        </div>
+
+        <div style="font-size:14px;color:var(--text-3);line-height:1.5;margin-bottom:14px" id="hero-translation">—</div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:12px;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)">
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-4);font-weight:600;margin-bottom:4px">Risque max</div>
+            <div style="font-size:16px;font-weight:700;color:var(--red, #F87171)" id="hero-risk">—</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-4);font-weight:600;margin-bottom:4px">Gain si TP</div>
+            <div style="font-size:16px;font-weight:700;color:var(--accent)" id="hero-gain">—</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-4);font-weight:600;margin-bottom:4px">Notionnel position</div>
+            <div style="font-size:16px;font-weight:700;color:var(--text)" id="hero-notional">—</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-4);font-weight:600;margin-bottom:4px">Levier utilisé</div>
+            <div style="font-size:16px;font-weight:700;color:var(--text)" id="hero-leverage">—</div>
+          </div>
+        </div>
+
+        <div id="hero-warning" style="margin-top:14px;display:none"></div>
+      </div>
     </section>
 
     <!-- ═══════ ANALYSE 01 ═══════ -->

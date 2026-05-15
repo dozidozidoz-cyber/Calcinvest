@@ -34,6 +34,7 @@
       accountCurr: txt('pp-currency', 'EUR'),
       lotSize:    val('pp-lotsize', 0),   // optionnel, calculé sinon
       entryPrice: val('pp-entry', 0),
+      contractSize: val('pp-contract-size', 0),  // override broker convention
       direction:  document.querySelector('input[name="pp-dir"]:checked')?.value || 'long'
     };
   }
@@ -68,6 +69,14 @@
       const unitSpan = lotWrap.querySelector('.stepper-unit');
       if (unitSpan) unitSpan.textContent = info.unitLabel || info.base;
     }
+    // Reset taille du contrat (auto, sauf si l'user a touché)
+    const cs = $('pp-contract-size');
+    if (cs && (cs.dataset.auto === '1' || !cs.dataset.userTouched)) {
+      cs.value = info.contractSize;
+      cs.dataset.auto = '1';
+    }
+    const csUnit = $('pp-contract-unit');
+    if (csUnit) csUnit.textContent = (info.unitLabel || info.base) + ' / lot';
     // Default stopPips intelligent selon la classe (un trader BTC ne met pas 30 pips)
     const stop = $('pp-stop');
     if (stop && (stop.dataset.auto === '1' || !stop.dataset.userTouched)) {
@@ -167,7 +176,8 @@
       balance: p.balance,
       riskPct: p.riskPct,
       stopPips: p.stopPips,
-      accountCurr: p.accountCurr
+      accountCurr: p.accountCurr,
+      contractSize: p.contractSize
     });
 
     if (ps.error) {
@@ -266,7 +276,8 @@
     // Position sizée pour le risque demandé
     const ps = PIPS.positionSize({
       pair: p.pair, balance: p.balance, riskPct: p.riskPct,
-      stopPips: p.stopPips, accountCurr: p.accountCurr
+      stopPips: p.stopPips, accountCurr: p.accountCurr,
+      contractSize: p.contractSize
     });
     if (ps.error) return;
 
@@ -301,6 +312,78 @@
   }
 
   // ─── RUN ───────────────────────────────────────────────
+  // ─── HERO RESULT : "tape X lots dans ton broker" ──────
+  function renderHero(p, info, effContract) {
+    const ps = PIPS.positionSize({
+      pair: p.pair,
+      balance: p.balance,
+      riskPct: p.riskPct,
+      stopPips: p.stopPips,
+      accountCurr: p.accountCurr,
+      contractSize: effContract
+    });
+    if (ps.error) {
+      const heroLots = $('hero-lots');
+      if (heroLots) heroLots.textContent = '—';
+      const t = $('hero-translation');
+      if (t) t.innerHTML = `<span style="color:var(--red,#F87171)">⚠ ${ps.error}</span>`;
+      return;
+    }
+
+    const unitLabel = info.unitLabel || info.base;
+    const isForex = info.category === 'forex' || info.category === 'forex_exotic';
+    const lots = ps.standardLots;
+
+    // CHIFFRE PRINCIPAL : le lot à entrer dans le broker
+    const lotsDec = lots < 0.01 ? 4 : (lots < 1 ? 3 : 2);
+    $('hero-lots').textContent = lots.toFixed(lotsDec);
+    $('hero-lots-unit').textContent = lots >= 2 ? 'lots' : 'lot';
+
+    // Traduction en unités réelles
+    let translation;
+    if (isForex) {
+      translation = `Soit <strong>${fmtM(ps.units, 0)} ${unitLabel}</strong> sur ${p.pair}. Cette taille est à entrer directement dans le champ "Volume" de votre plateforme (MT4/MT5/cTrader/web).`;
+    } else if (info.category === 'crypto' || info.category === 'metal' || info.category === 'commodity' || info.category === 'index' || info.category === 'stock') {
+      const unitsStr = fmtM(ps.units, ps.units < 1 ? 4 : (ps.units < 100 ? 2 : 0));
+      translation = `Soit <strong>${unitsStr} ${unitLabel}</strong> sur ${p.pair}. <span style="color:var(--text-4)">1 lot = ${fmtM(effContract, 0)} ${unitLabel} chez votre broker (modifiable au-dessus si différent).</span>`;
+    } else {
+      translation = `Soit <strong>${fmtM(ps.units, 2)} ${unitLabel}</strong> sur ${p.pair}.`;
+    }
+    $('hero-translation').innerHTML = translation;
+
+    // Risque
+    $('hero-risk').textContent = '−' + fmtM(ps.riskAmount, 0) + ' ' + p.accountCurr;
+
+    // Gain si TP
+    const gainOnTP = p.targetPips * ps.pipValuePerUnit * ps.units;
+    $('hero-gain').textContent = '+' + fmtM(gainOnTP, 0) + ' ' + p.accountCurr;
+
+    // Notional + leverage
+    const entryPrice = (parseFloat($('pp-entry')?.value) || info.price) || 0;
+    const notional = ps.units * entryPrice;
+    const lev = p.balance > 0 ? notional / p.balance : 0;
+    $('hero-notional').textContent = (CI.fmtCompact ? CI.fmtCompact(notional) : fmtM(notional, 0)) + ' ' + (info.quote || p.accountCurr);
+    $('hero-leverage').textContent = lev.toFixed(1) + '×';
+
+    // Warning sizing aberrant
+    const warn = $('hero-warning');
+    if (warn) {
+      warn.style.display = 'none';
+      warn.innerHTML = '';
+      if (lev > 30) {
+        warn.style.display = 'block';
+        warn.innerHTML = `<div style="padding:12px 14px;background:rgba(248,113,113,0.10);border:1px solid rgba(248,113,113,0.30);border-radius:8px;color:var(--text-2);font-size:13px;line-height:1.5">
+          ⚠ <strong>Position de ${lev.toFixed(0)}× votre capital</strong> — la plupart des brokers ne proposent pas ce levier, ou l'autorisent uniquement pour les pro/instituts. Sur ${p.pair}, un stop à <strong>${p.stopPips} pips = ${fmtM(p.stopPips * info.pipSize, info.pipSize < 0.01 ? 4 : 2)} ${info.quote || 'USD'}</strong> est probablement trop serré pour cet actif volatil. Augmentez le stop ou réduisez le % de risque.
+        </div>`;
+      } else if (lev > 10) {
+        warn.style.display = 'block';
+        warn.innerHTML = `<div style="padding:10px 12px;background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.30);border-radius:8px;color:var(--text-2);font-size:13px">
+          ℹ Levier ${lev.toFixed(1)}× — vérifiez que votre broker autorise cette marge sur ${p.pair}.
+        </div>`;
+      }
+    }
+  }
+
   function run() {
     if (typeof PIPS === 'undefined') return;
     const p = readParams();
@@ -308,10 +391,12 @@
 
     // Pip value pour 1 lot standard (contractSize selon l'actif)
     const info = PIPS.PAIRS[p.pair] || {};
+    const effContract = (p.contractSize > 0) ? p.contractSize : (info.contractSize || 100000);
     const pv = PIPS.pipValue({
-      pair: p.pair, lotSize: info.contractSize || 100000, accountCurr: p.accountCurr
+      pair: p.pair, lotSize: effContract, accountCurr: p.accountCurr
     });
 
+    renderHero(p, info, effContract);
     renderA01(p, pv);
     renderA02(p);
     renderA03(p);
@@ -345,7 +430,7 @@
     updatePairDefaults();
 
     // Listeners
-    ['pp-pair','pp-balance','pp-risk','pp-stop','pp-target','pp-currency','pp-entry','pp-lotsize'].forEach(id => {
+    ['pp-pair','pp-balance','pp-risk','pp-stop','pp-target','pp-currency','pp-entry','pp-lotsize','pp-contract-size'].forEach(id => {
       const el = $(id);
       if (!el) return;
       // Marquer "touché par l'user" pour ne plus écraser sur changement de paire
