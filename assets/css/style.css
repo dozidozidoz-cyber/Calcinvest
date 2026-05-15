@@ -3732,6 +3732,184 @@ body:has(.topbar.is-scrolled) .v3-subnav { top: 56px; }
 }
 
 /* ============================================================
+   MEGA MENU — nav contextuelle 4 catégories (topbar simulateurs)
+   ============================================================ */
+.megamenu-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 4px;
+}
+.megamenu {
+  position: relative;
+  --cat-color: var(--accent);
+}
+.megamenu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-3);
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--r) - 4px);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+  letter-spacing: -0.005em;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.megamenu-trigger:hover,
+.megamenu:hover .megamenu-trigger,
+.megamenu.is-open .megamenu-trigger {
+  color: var(--text);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+.megamenu.is-active .megamenu-trigger {
+  color: var(--cat-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+.megamenu.is-active .megamenu-trigger-icon { color: var(--cat-color); opacity: 1; }
+.megamenu-trigger-icon { display: inline-flex; opacity: 0.7; transition: opacity var(--t-fast); }
+.megamenu:hover .megamenu-trigger-icon { opacity: 1; }
+.megamenu-chevron {
+  margin-left: 2px;
+  display: inline-flex;
+  color: var(--text-4);
+  transition: transform var(--t-fast);
+}
+.megamenu:hover .megamenu-chevron,
+.megamenu.is-open .megamenu-chevron { transform: rotate(180deg); color: var(--text-2); }
+
+/* Panel */
+.megamenu-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  min-width: 340px;
+  max-width: 420px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12), 0 4px 16px rgba(15, 23, 42, 0.06);
+  padding: 12px;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  z-index: 60;
+}
+/* Buffer transparent au-dessus du panel pour que la souris puisse
+   transiter du trigger vers le panel sans perdre le hover */
+.megamenu-panel::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
+}
+.megamenu:hover .megamenu-panel,
+.megamenu:focus-within .megamenu-panel,
+.megamenu.is-open .megamenu-panel {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.megamenu-panel-head {
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 6px;
+}
+.megamenu-panel-eyebrow {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cat-color);
+  font-family: var(--font-mono);
+}
+.megamenu-panel-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.megamenu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--r);
+  text-decoration: none;
+  color: var(--text-2);
+  transition: background var(--t-fast);
+}
+.megamenu-item:hover {
+  background: var(--bg-hover);
+}
+.megamenu-item.is-active {
+  background: color-mix(in srgb, var(--cat-color) 10%, transparent);
+}
+.megamenu-item-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--cat-color) 10%, transparent);
+  color: var(--cat-color);
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  transition: transform var(--t-fast);
+}
+.megamenu-item:hover .megamenu-item-icon { transform: scale(1.06); }
+.megamenu-item-text { flex: 1; min-width: 0; }
+.megamenu-item-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 2px;
+  line-height: 1.25;
+}
+.megamenu-item.is-active .megamenu-item-label { color: var(--cat-color); }
+.megamenu-item-desc {
+  font-size: 11.5px;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+/* Responsive : sur mobile, panel sort en pleine largeur sous topbar */
+@media (max-width: 880px) {
+  .megamenu-nav { flex-wrap: wrap; gap: 2px; padding: 3px; }
+  .megamenu-trigger { padding: 6px 10px; font-size: 12px; }
+  .megamenu-trigger-icon, .megamenu-chevron { display: none; }
+  .megamenu-panel {
+    position: fixed;
+    top: var(--topbar-h);
+    left: 12px; right: 12px;
+    transform: translateY(-6px);
+    min-width: 0;
+    max-width: none;
+  }
+  .megamenu:hover .megamenu-panel,
+  .megamenu.is-open .megamenu-panel { transform: translateY(0); }
+}
+@media (max-width: 640px) {
+  /* Sur très petit écran : la nav du topbar-center prend toute la largeur */
+  .topbar { grid-template-columns: auto 1fr auto; }
+  .topbar-center { grid-column: span 3; order: 3; padding: 6px 12px 8px; }
+}
+
+/* ============================================================
    READING PROGRESS BAR — apparaît en haut des articles & docs
    ============================================================ */
 .v3-progress {

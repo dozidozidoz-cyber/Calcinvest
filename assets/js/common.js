@@ -611,8 +611,149 @@
       CI.initSubNav();
       CI.initProgressBar();
       CI.initScrollTop();
+      CI.initMegaMenu();
       CI._scrollInited = true;
     }
+  };
+
+  /* ===========================================================
+     MEGA MENU — nav contextuelle 4 catégories
+     S'injecte dans .topbar-center sur les pages simulateur.
+     Hover sur desktop, click-toggle sur touch.
+     =========================================================== */
+  CI.initMegaMenu = function () {
+    const container = document.querySelector('.topbar-center');
+    if (!container) return;
+    // Skip si pas de .segmented (= pages non-simulateur, ou déjà géré)
+    const oldNav = container.querySelector('.segmented');
+    if (!oldNav) return;
+
+    const ICONS = {
+      // Outils — réutilisés depuis le site
+      dca:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
+      crypto:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polygon points="12 2 2 7 12 12 22 7"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+      dcf:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+      locatif:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 21h18"/></svg>',
+      scpi:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="7" height="16"/><rect x="14" y="4" width="7" height="16"/><path d="M3 10h7M14 10h7M3 16h7M14 16h7"/></svg>',
+      pips:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12h18M7 8l4 4-4 4M17 8l-4 4 4 4"/></svg>',
+      margin:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 20h18M5 16V10M10 16V6M15 16V8M20 16V4"/></svg>',
+      cost:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 4h18M3 9h18M3 14h12"/><path d="M16 19l3-3-3-3"/></svg>',
+      risk:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>',
+      mc:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="6" cy="6" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="9" cy="14" r="2"/><circle cx="5" cy="15" r="2"/><circle cx="14" cy="14" r="2"/></svg>',
+      fisca:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 11h8M8 15h6"/></svg>',
+      compound: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21V5"/><path d="M3 16c3-3 5-1 8-4s5-5 8-5"/></svg>',
+      fire:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 2C8 7 7 10 7 14a5 5 0 0 0 10 0c0-4-1-7-5-12z"/><path d="M9 17c0-2.5 1.5-4 3-5"/></svg>',
+      per:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>',
+      retraite: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+      // Catégories
+      catMarches:  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="2 11 6 6 9 9 14 3"/></svg>',
+      catImmo:     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 7L8 3l5 4v7H3z"/><path d="M6 14V9h4v5"/></svg>',
+      catTrading:  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M2 8h12M5 5l3 3-3 3M11 5l-3 3 3 3"/></svg>',
+      catEpargne:  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>',
+      chevron:     '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="3 5 6 8 9 5"/></svg>'
+    };
+
+    const CATEGORIES = [
+      {
+        id: 'marches', label: 'Marchés', color: '#2563EB', icon: ICONS.catMarches,
+        tools: [
+          { url: '/simulateur-dca',        label: 'DCA Bourse',          desc: 'Backtest 1871-2026, 13 actifs',  icon: ICONS.dca },
+          { url: '/simulateur-dca-crypto', label: 'DCA Crypto',          desc: 'BTC, ETH, SOL, BNB, XRP',         icon: ICONS.crypto },
+          { url: '/simulateur-dcf',        label: 'Valorisation DCF',    desc: 'Valeur intrinsèque d\'une action', icon: ICONS.dcf }
+        ]
+      },
+      {
+        id: 'immo', label: 'Immobilier', color: '#059669', icon: ICONS.catImmo,
+        tools: [
+          { url: '/simulateur-rendement-locatif', label: 'Rendement Locatif', desc: 'Cashflow, TRI, LMNP, SCI IS',     icon: ICONS.locatif },
+          { url: '/simulateur-scpi',              label: 'SCPI · Pierre papier', desc: '4 régimes fiscaux comparés',   icon: ICONS.scpi }
+        ]
+      },
+      {
+        id: 'trading', label: 'Trading', color: '#7C3AED', icon: ICONS.catTrading,
+        tools: [
+          { url: '/calculateur-pips',                  label: 'Calculateur PIPS',         desc: 'Position sizing, pip value',     icon: ICONS.pips },
+          { url: '/calculateur-marge-liquidation',     label: 'Marge & Liquidation',      desc: 'Marge, prix de liq, SL/TP',      icon: ICONS.margin },
+          { url: '/calculateur-couts-trading',         label: 'Coûts du trade',           desc: 'Spread, commission, swap',       icon: ICONS.cost },
+          { url: '/calculateur-risk-management',       label: 'Risk Management',          desc: 'Expectancy, R/R, P(ruine)',      icon: ICONS.risk },
+          { url: '/simulateur-monte-carlo-trading',    label: 'Monte Carlo Trading',      desc: '2000 trajectoires de votre système', icon: ICONS.mc },
+          { url: '/calculateur-fiscalite-trading',     label: 'Fiscalité Trading FR',     desc: 'PFU vs IR, CTO vs PEA',          icon: ICONS.fisca }
+        ]
+      },
+      {
+        id: 'epargne', label: 'Épargne & Retraite', color: '#0891B2', icon: ICONS.catEpargne,
+        tools: [
+          { url: '/simulateur-interets-composes', label: 'Intérêts Composés',   desc: 'Croissance épargne 40 ans',         icon: ICONS.compound },
+          { url: '/calculateur-fire',             label: 'Calculateur FIRE',     desc: 'Indépendance financière, règle 4 %', icon: ICONS.fire },
+          { url: '/simulateur-per',               label: 'Simulateur PER',       desc: 'PER vs CTO, économie fiscale',       icon: ICONS.per },
+          { url: '/simulateur-retraite',          label: 'Simulateur Retraite',  desc: 'Régime général + Agirc-Arrco',       icon: ICONS.retraite }
+        ]
+      }
+    ];
+
+    const currentPath = window.location.pathname.replace(/\/$/, '').toLowerCase();
+
+    function isActiveTool(url) { return currentPath === url.toLowerCase(); }
+    function isActiveCategory(cat) { return cat.tools.some(t => isActiveTool(t.url)); }
+
+    const html = CATEGORIES.map(cat => {
+      const activeCat = isActiveCategory(cat);
+      const tools = cat.tools.map(t => {
+        const active = isActiveTool(t.url);
+        return `
+          <a href="${t.url}" class="megamenu-item ${active ? 'is-active' : ''}" style="--cat-color:${cat.color}">
+            <div class="megamenu-item-icon">${t.icon}</div>
+            <div class="megamenu-item-text">
+              <div class="megamenu-item-label">${t.label}</div>
+              <div class="megamenu-item-desc">${t.desc}</div>
+            </div>
+          </a>`;
+      }).join('');
+      return `
+        <div class="megamenu ${activeCat ? 'is-active' : ''}" data-cat="${cat.id}" style="--cat-color:${cat.color}">
+          <button class="megamenu-trigger" type="button" aria-expanded="false">
+            <span class="megamenu-trigger-icon">${cat.icon}</span>
+            ${cat.label}
+            <span class="megamenu-chevron">${ICONS.chevron}</span>
+          </button>
+          <div class="megamenu-panel" role="menu">
+            <div class="megamenu-panel-head">
+              <span class="megamenu-panel-eyebrow">${cat.tools.length} outils</span>
+            </div>
+            <div class="megamenu-panel-items">${tools}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = '<nav class="megamenu-nav" aria-label="Navigation outils">' + html + '</nav>';
+
+    // Touch device : click pour ouvrir, sinon hover natif via CSS
+    const isTouch = window.matchMedia('(hover: none)').matches;
+    if (isTouch) {
+      container.querySelectorAll('.megamenu-trigger').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const mm = btn.closest('.megamenu');
+          const wasOpen = mm.classList.contains('is-open');
+          // Ferme tous les autres
+          container.querySelectorAll('.megamenu.is-open').forEach(m => m.classList.remove('is-open'));
+          if (!wasOpen) mm.classList.add('is-open');
+        });
+      });
+      // Click outside ferme
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.megamenu')) {
+          container.querySelectorAll('.megamenu.is-open').forEach(m => m.classList.remove('is-open'));
+        }
+      });
+    }
+
+    // Échap ferme tout
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        container.querySelectorAll('.megamenu.is-open').forEach(m => m.classList.remove('is-open'));
+      }
+    });
   };
 
   /* ===========================================================
