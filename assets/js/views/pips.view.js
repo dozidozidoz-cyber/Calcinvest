@@ -11,16 +11,29 @@
     return Number(n).toLocaleString('fr-FR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
   };
 
+  // Helper safe pour lire la valeur d'un élément potentiellement absent
+  function val(id, fallback) {
+    const el = $(id);
+    if (!el) return fallback;
+    const v = parseFloat(el.value);
+    return Number.isFinite(v) ? v : fallback;
+  }
+  function txt(id, fallback) {
+    const el = $(id);
+    if (!el) return fallback;
+    return el.value || fallback;
+  }
+
   function readParams() {
     return {
-      pair:       $('pp-pair').value || 'EUR/USD',
-      balance:    parseFloat($('pp-balance').value) || 10000,
-      riskPct:    parseFloat($('pp-risk').value) || 1,
-      stopPips:   parseFloat($('pp-stop').value) || 30,
-      targetPips: parseFloat($('pp-target').value) || 60,
-      accountCurr: $('pp-currency').value || 'EUR',
-      lotSize:    parseFloat($('pp-lotsize').value) || 0,
-      entryPrice: parseFloat($('pp-entry').value) || 0,
+      pair:       txt('pp-pair', 'EUR/USD'),
+      balance:    val('pp-balance', 10000),
+      riskPct:    val('pp-risk', 1),
+      stopPips:   val('pp-stop', 30),
+      targetPips: val('pp-target', 60),
+      accountCurr: txt('pp-currency', 'EUR'),
+      lotSize:    val('pp-lotsize', 0),   // optionnel, calculé sinon
+      entryPrice: val('pp-entry', 0),
       direction:  document.querySelector('input[name="pp-dir"]:checked')?.value || 'long'
     };
   }
@@ -228,9 +241,14 @@
     run();
   }
 
+  function safeInit() {
+    try { init(); }
+    catch(e) { console.error('[pips.view] init failed:', e.message); }
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', safeInit);
   } else {
-    init();
+    safeInit();
   }
 })();

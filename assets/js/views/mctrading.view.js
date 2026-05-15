@@ -39,7 +39,6 @@
     $('mc-stat-final-p50').textContent = fmt(r.finalP50) + ' €';
     $('mc-stat-final-p5').textContent = fmt(r.finalP5) + ' €';
     $('mc-stat-final-p95').textContent = fmt(r.finalP95) + ' €';
-    $('mc-stat-final-mean').textContent = fmt(r.finalMean) + ' €';
 
     // Gain median en %
     const medGainPct = ((r.finalP50 - p.startBalance) / p.startBalance) * 100;
@@ -174,6 +173,11 @@
     run();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  function safeInit() {
+    try { init(); }
+    catch(e) { console.error('[view] init failed:', e.message); }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
 })();

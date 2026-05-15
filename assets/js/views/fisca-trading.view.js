@@ -175,6 +175,11 @@
     run();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  function safeInit() {
+    try { init(); }
+    catch(e) { console.error('[view] init failed:', e.message); }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
 })();
