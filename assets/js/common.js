@@ -678,7 +678,9 @@
     // Pages utiles
     const pages = [
       { url: '/',                  label: 'Accueil',           cat: 'Page', keywords: 'home accueil' },
-      { url: '/methodologie',      label: 'Méthodologie & Glossaire', cat: 'Page', keywords: 'methodo glossaire docs formules' },
+      { url: '/methodologie',      label: 'Méthodologie',      cat: 'Page', keywords: 'methodo docs formules sources' },
+      { url: '/glossaire',         label: 'Glossaire financier',cat: 'Page', keywords: 'glossaire termes definitions cagr tri pfu drawdown' },
+      { url: '/comparer',          label: 'Comparer simulations',cat: 'Page', keywords: 'comparer comparaison projets simulations cote a cote' },
       { url: '/blog',              label: 'Blog',              cat: 'Page', keywords: 'blog articles ressources' },
       { url: '/abonnement',        label: 'Tarifs & Premium',  cat: 'Page', keywords: 'tarifs premium abonnement prix' },
       { url: '/mes-projets',       label: 'Mes Projets',       cat: 'Page', keywords: 'projets sauvegarde' },
@@ -895,7 +897,9 @@
     '/simulateur-interets-composes':    { label: 'Intérêts Composés',  cat: 'Épargne',  color: '#7C3AED' },
     '/calculateur-fire':                { label: 'FIRE',               cat: 'Épargne',  color: '#EA580C' },
     '/simulateur-per':                  { label: 'PER',                cat: 'Épargne',  color: '#DC2626' },
-    '/simulateur-retraite':             { label: 'Retraite',           cat: 'Épargne',  color: '#0891B2' }
+    '/simulateur-retraite':             { label: 'Retraite',           cat: 'Épargne',  color: '#0891B2' },
+    '/comparer':                        { label: 'Comparer simulations',cat: 'Outils',  color: '#34D399' },
+    '/glossaire':                       { label: 'Glossaire financier',cat: 'Docs',    color: '#94A3B8' }
   };
 
   CI.initRecentTools = function () {

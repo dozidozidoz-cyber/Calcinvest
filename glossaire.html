@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Glossaire financier — CalcInvest</title>
+<meta name="description" content="Glossaire complet des termes financiers : CAGR, TRI, CAPE, drawdown, PFU, abattement, SCPI, DCA, et plus. Définitions claires et utilisables." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+  .glossaire-shell { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+  .glossaire-search {
+    position: sticky; top: 76px; z-index: 5;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 14px; margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .glossaire-search input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--r-sm); padding: 12px 14px; color: var(--text);
+    font-size: 15px; outline: none; transition: var(--t-fast);
+  }
+  .glossaire-search input:focus { border-color: var(--accent); }
+  .glossaire-stats { font-size: 12px; color: var(--text-4); margin-top: 8px; padding: 0 4px; }
+  .alpha-nav {
+    display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 24px;
+    padding: 12px; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+  }
+  .alpha-nav button {
+    min-width: 32px; height: 32px; padding: 0 8px;
+    background: transparent; border: 1px solid var(--border);
+    border-radius: var(--r-sm); color: var(--text-3);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: var(--t-fast);
+  }
+  .alpha-nav button:hover { background: var(--bg-hover); color: var(--text); }
+  .alpha-nav button.disabled { opacity: 0.3; pointer-events: none; }
+  .alpha-nav button.is-active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .glossary-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 18px; transition: var(--t);
+    scroll-margin-top: 180px;
+  }
+  .glossary-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .glossary-key { font-family: var(--font-mono); font-weight: 700; color: var(--accent); font-size: 16px; }
+  .glossary-full { font-size: 13px; color: var(--text-3); margin: 4px 0 10px; font-weight: 500; }
+  .glossary-desc { font-size: 13.5px; line-height: 1.6; color: var(--text-2); }
+  .glossary-empty { text-align: center; padding: 60px 20px; color: var(--text-4); }
+  mark { background: rgba(52,211,153,.25); color: var(--text); border-radius: 3px; padding: 0 2px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">CalcInvest</div>
+      </div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/glossaire" class="topbar-nav-link active">Glossaire</a>
+    <a href="/blog" class="topbar-nav-link">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<section class="v3-hero-bg" style="padding:48px 0 32px">
+  <div class="v3-hero-inner" style="grid-template-columns:1fr;text-align:center;max-width:760px">
+    <div class="reveal">
+      <div class="v3-hero-pill-badge" style="margin:0 auto 18px">
+        <span class="dot"></span>
+        <span id="g-count">Glossaire</span>
+      </div>
+      <h1 class="v3-hero-title" style="margin:0 auto 12px;font-size:clamp(32px,4.5vw,52px)">
+        Glossaire <em>financier</em>.
+      </h1>
+      <p class="v3-hero-lede" style="margin:0 auto;max-width:560px">
+        Toutes les définitions des termes utilisés dans les simulateurs CalcInvest, des plus simples aux plus techniques.
+      </p>
+    </div>
+  </div>
+</section>
+
+<main class="glossaire-shell">
+  <div class="glossaire-search">
+    <input type="search" id="g-search" placeholder="Rechercher un terme (ex. CAGR, drawdown, PFU)…" autocomplete="off" autofocus />
+    <div class="glossaire-stats" id="g-stats"></div>
+  </div>
+
+  <nav class="alpha-nav" id="alpha-nav" aria-label="Navigation alphabétique"></nav>
+
+  <div class="glossary-grid" id="glossary-grid"></div>
+  <div class="glossary-empty" id="g-empty" style="display:none">Aucun terme trouvé.</div>
+</main>
+
+<footer class="footer">
+  <div>© 2026 CalcInvest — Simulation à titre informatif</div>
+  <div>
+    <a href="/">Accueil</a> ·
+    <a href="/methodologie">Méthodologie</a> ·
+    <a href="/glossaire">Glossaire</a> ·
+    <a href="/blog">Blog</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+(function () {
+  const G = (window.CI && CI.GLOSSARY) || {};
+  const grid = document.getElementById('glossary-grid');
+  const empty = document.getElementById('g-empty');
+  const stats = document.getElementById('g-stats');
+  const count = document.getElementById('g-count');
+  const search = document.getElementById('g-search');
+  const alphaNav = document.getElementById('alpha-nav');
+  const keys = Object.keys(G).sort();
+  count.textContent = keys.length + ' termes définis';
+
+  // Build alpha nav (A-Z)
+  const presentLetters = new Set(keys.map(k => k[0].toUpperCase()));
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  alphaNav.innerHTML = letters.map(l => {
+    const present = presentLetters.has(l);
+    return `<button data-letter="${l}" class="${present ? '' : 'disabled'}">${l}</button>`;
+  }).join('');
+
+  function escHtml(s) { return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+  function highlight(text, q) {
+    if (!q) return escHtml(text);
+    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return escHtml(text).replace(re, '<mark>$1</mark>');
+  }
+
+  function render(q) {
+    q = (q || '').trim().toLowerCase();
+    const filtered = keys.filter(k => {
+      const e = G[k];
+      if (!q) return true;
+      return k.toLowerCase().includes(q)
+        || (e.full || '').toLowerCase().includes(q)
+        || (e.desc || '').toLowerCase().includes(q);
+    });
+    if (!filtered.length) {
+      grid.innerHTML = ''; empty.style.display = 'block';
+      stats.textContent = 'Aucun résultat pour « ' + q + ' »';
+      return;
+    }
+    empty.style.display = 'none';
+    grid.innerHTML = filtered.map(k => {
+      const e = G[k];
+      return `<div class="glossary-card" id="g-${k}">
+        <div class="glossary-key">${highlight(k, q)}</div>
+        <div class="glossary-full">${highlight(e.full || '', q)}</div>
+        <div class="glossary-desc">${highlight(e.desc || '', q)}</div>
+      </div>`;
+    }).join('');
+    stats.textContent = q
+      ? filtered.length + ' résultat' + (filtered.length > 1 ? 's' : '') + ' pour « ' + q + ' »'
+      : filtered.length + ' termes';
+  }
+
+  search.addEventListener('input', e => render(e.target.value));
+
+  alphaNav.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-letter]');
+    if (!btn || btn.classList.contains('disabled')) return;
+    const L = btn.dataset.letter;
+    const first = keys.find(k => k[0].toUpperCase() === L);
+    if (first) {
+      const card = document.getElementById('g-' + first);
+      if (card) {
+        const top = card.getBoundingClientRect().top + window.scrollY - 200;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }
+  });
+
+  // Pre-filter via ?q=...
+  const urlQ = new URLSearchParams(location.search).get('q');
+  if (urlQ) { search.value = urlQ; render(urlQ); }
+  else render('');
+
+  if (window.CI && CI.initAll) CI.initAll();
+})();
+</script>
+</body>
+</html>

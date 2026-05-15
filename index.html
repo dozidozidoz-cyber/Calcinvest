@@ -1191,6 +1191,51 @@
     </div>
   </div>
 
+  <!-- ─── NEWSLETTER ─── -->
+  <section class="card reveal" id="newsletter" style="margin:64px auto 0;max-width:720px;text-align:center">
+    <div style="padding:36px 24px">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent);padding:6px 12px;border-radius:999px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="12" height="12"><path d="M2 4h12v8H2z"/><path d="M2 4l6 5 6-5"/></svg>
+        Newsletter
+      </div>
+      <h2 style="font-size:26px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em">Un email par mois, zéro spam.</h2>
+      <p style="color:var(--text-3);font-size:14px;margin:0 auto 22px;max-width:480px">
+        Nouveaux simulateurs, mises à jour fiscales, analyses des marchés. Désinscription en 1 clic.
+      </p>
+      <form id="newsletter-form" style="display:flex;gap:8px;max-width:440px;margin:0 auto;flex-wrap:wrap">
+        <input type="email" required placeholder="votre@email.com"
+               style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;color:var(--text);font-size:14px;outline:none" />
+        <button type="submit" class="btn btn-accent" style="padding:12px 22px;font-weight:600">S'inscrire</button>
+        <div data-msg style="width:100%;font-size:12px;margin-top:8px;min-height:16px"></div>
+      </form>
+    </div>
+  </section>
+
+  <script>
+  (function () {
+    const form = document.getElementById('newsletter-form');
+    if (!form) return;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailInput = form.querySelector('input[type="email"]');
+      const btn = form.querySelector('button');
+      const msg = form.querySelector('[data-msg]');
+      const email = (emailInput.value || '').trim();
+      if (!email || !email.includes('@')) { msg.textContent = 'Email invalide.'; msg.style.color = 'var(--red)'; return; }
+      btn.disabled = true; btn.textContent = 'Envoi…';
+      try {
+        const res = await fetch('https://formspree.io/f/myzgwdwa', {
+          method: 'POST', headers: { 'Accept':'application/json', 'Content-Type':'application/json' },
+          body: JSON.stringify({ email, source: 'home' })
+        });
+        if (res.ok) { msg.textContent = '✓ Inscrit ! Surveillez votre boîte mail.'; msg.style.color = 'var(--accent)'; emailInput.value = ''; }
+        else throw new Error('net');
+      } catch { msg.textContent = 'Erreur, réessayez.'; msg.style.color = 'var(--red)'; }
+      finally { btn.disabled = false; btn.textContent = 'S\'inscrire'; }
+    });
+  })();
+  </script>
+
 </main>
 
 <!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
@@ -1203,6 +1248,8 @@
     <a href="/calculateur-pips">PIPS</a> ·
     <a href="/calculateur-risk-management">Risk Mgmt</a> ·
     <a href="/methodologie">Méthodologie</a> ·
+    <a href="/glossaire">Glossaire</a> ·
+    <a href="/comparer">Comparer</a> ·
     <a href="/blog">Blog</a> ·
     <a href="/abonnement">Premium</a> ·
     <a href="/mentions-legales">Mentions légales</a>

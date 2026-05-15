@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#059669" />
+<title>Comparateur de simulations — CalcInvest</title>
+<meta name="description" content="Comparez 2 ou 3 simulations sauvegardées côte à côte : DCA vs DCA, locatif A vs B, PER vs CTO, etc. Tous vos projets confrontés en un coup d'œil." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+  .cmp-slot {
+    background: var(--bg-card);
+    border: 1px dashed var(--border);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    position: relative;
+    min-height: 320px;
+    transition: border-color var(--t-fast);
+  }
+  .cmp-slot.has-project { border-style: solid; border-color: var(--border); }
+  .cmp-slot.is-empty { display: grid; place-items: center; }
+  .cmp-slot-empty-text { text-align: center; color: var(--text-4); }
+  .cmp-slot-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); }
+  .cmp-slot-title { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+  .cmp-slot-type { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 3px 9px; border-radius: var(--r-full); font-family: var(--font-mono); }
+  .cmp-slot-remove { color: var(--text-4); cursor: pointer; background: none; border: none; }
+  .cmp-slot-remove:hover { color: var(--red); }
+  .cmp-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 880px) { .cmp-row { grid-template-columns: 1fr; } }
+  .cmp-stat-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-soft); font-size: 13px; }
+  .cmp-stat-row:last-child { border-bottom: none; }
+  .cmp-stat-key { color: var(--text-3); }
+  .cmp-stat-val { font-family: var(--font-mono); font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">CalcInvest</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<section class="v3-hero-bg" style="padding:56px 0 56px">
+  <div class="v3-hero-inner" style="grid-template-columns:1fr;text-align:center;max-width:760px">
+    <div class="reveal">
+      <div class="v3-hero-pill-badge" style="margin:0 auto 20px">
+        <span class="dot"></span>
+        Comparateur de simulations
+      </div>
+      <h1 class="v3-hero-title" style="margin:0 auto 16px;font-size:clamp(30px,4vw,46px)">
+        Comparez <em>vos simulations</em> côte à côte.
+      </h1>
+      <p class="v3-hero-lede" style="margin:0 auto">
+        Sélectionnez 2 ou 3 projets sauvegardés et voyez les chiffres clés alignés. DCA SP500 vs Nasdaq, locatif A vs B, PER vs CTO… <strong>aucune ambiguïté.</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<main class="main fade-in" style="max-width:1280px;margin:0 auto;padding:0 32px 96px">
+
+  <div class="reveal" id="cmp-empty-state" style="display:none">
+    <div class="card" style="padding:48px;text-align:center;max-width:580px;margin:0 auto">
+      <div style="font-size:40px;margin-bottom:14px">📊</div>
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:10px">Aucun projet sauvegardé</h2>
+      <p style="color:var(--text-3);font-size:14.5px;line-height:1.6;margin-bottom:20px">
+        Pour comparer des simulations, sauvegardez d'abord 2 ou 3 projets depuis n'importe quel simulateur (bouton "Sauvegarder").
+      </p>
+      <a href="/" class="btn btn-primary">Aller au catalogue</a>
+    </div>
+  </div>
+
+  <div id="cmp-content" style="display:none">
+
+    <!-- Sélecteurs -->
+    <section class="reveal" style="margin-top:24px">
+      <div class="cmp-row" id="cmp-slots"></div>
+    </section>
+
+    <!-- Comparaison synthétique -->
+    <section class="card reveal" id="cmp-summary" style="margin-top:24px;display:none">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 4h12M2 8h12M2 12h12"/></svg></div>
+          Comparaison des paramètres
+        </div>
+      </div>
+      <div class="card-body" id="cmp-summary-body"></div>
+    </section>
+
+    <!-- CTA -->
+    <section class="reveal" style="margin-top:32px;text-align:center">
+      <a href="/" class="btn btn-secondary">+ Ajouter un nouveau projet</a>
+    </section>
+
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div>Vos projets sont sauvegardés localement dans votre navigateur — aucune donnée envoyée</div>
+  <div><a href="/">Accueil</a> · <a href="/mes-projets">Mes projets</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const projects = CI.getProjects ? CI.getProjects() : [];
+
+  // TYPE catalogue (depuis projects.view.js)
+  const TYPE_META = {
+    'Locatif':       { url: '/simulateur-rendement-locatif', label: 'Locatif',      color: '#059669' },
+    'DCA':           { url: '/simulateur-dca',                label: 'DCA Bourse',   color: '#2563EB' },
+    'Compound':      { url: '/simulateur-interets-composes',  label: 'Intérêts comp.', color: '#7C3AED' },
+    'CryptoDCA':     { url: '/simulateur-dca-crypto',         label: 'DCA Crypto',   color: '#F7931A' },
+    'FIRE':          { url: '/calculateur-fire',              label: 'FIRE',         color: '#EA580C' },
+    'PER':           { url: '/simulateur-per',                label: 'PER',          color: '#DC2626' },
+    'scpi':          { url: '/simulateur-scpi',               label: 'SCPI',         color: '#0E9F6E' },
+    'pips':          { url: '/calculateur-pips',              label: 'PIPS',         color: '#7C3AED' },
+    'margin':        { url: '/calculateur-marge-liquidation', label: 'Marge',        color: '#8B5CF6' },
+    'cost':          { url: '/calculateur-couts-trading',     label: 'Coûts',        color: '#9333EA' },
+    'risk':          { url: '/calculateur-risk-management',   label: 'Risk Mgmt',    color: '#A855F7' },
+    'mctrading':     { url: '/simulateur-monte-carlo-trading', label: 'MC Trading', color: '#A78BFA' },
+    'fisca-trading': { url: '/calculateur-fiscalite-trading', label: 'Fiscalité',    color: '#C026D3' }
+  };
+
+  if (!projects.length) {
+    document.getElementById('cmp-empty-state').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('cmp-content').style.display = 'block';
+
+  // 3 slots, on en remplit 0, 1 ou 2 par défaut selon ce qu'il y a
+  const slots = document.getElementById('cmp-slots');
+  let selected = []; // ids des projets sélectionnés
+
+  function getProjectById(id) {
+    return projects.find(p => p.id === id);
+  }
+
+  function renderSlot(slotIdx) {
+    const selectedId = selected[slotIdx];
+    const project = selectedId ? getProjectById(selectedId) : null;
+
+    const div = document.createElement('div');
+    div.className = 'cmp-slot' + (project ? ' has-project' : ' is-empty');
+
+    if (!project) {
+      // Empty slot — show project picker
+      div.innerHTML = `
+        <div class="cmp-slot-empty-text">
+          <div style="font-size:28px;color:var(--text-4);margin-bottom:10px">＋</div>
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:14px">Slot ${slotIdx + 1} — vide</div>
+          <select class="select cmp-slot-picker" data-slot="${slotIdx}" style="width:100%;max-width:240px">
+            <option value="">Choisir un projet…</option>
+            ${projects.map(p => {
+              const meta = TYPE_META[p.type] || { label: p.type };
+              return `<option value="${p.id}">${p.name} (${meta.label})</option>`;
+            }).join('')}
+          </select>
+        </div>`;
+    } else {
+      const meta = TYPE_META[project.type] || { label: project.type, color: 'var(--accent)' };
+      const params = project.params || {};
+      div.innerHTML = `
+        <div class="cmp-slot-header">
+          <span class="cmp-slot-type" style="color:${meta.color};background:color-mix(in srgb, ${meta.color} 10%, transparent)">${meta.label}</span>
+          <button class="cmp-slot-remove" data-slot="${slotIdx}" title="Retirer">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M3 3l10 10M13 3L3 13"/></svg>
+          </button>
+        </div>
+        <div class="cmp-slot-title" style="margin-bottom:12px">${project.name}</div>
+        ${renderParams(params)}
+        <a href="${meta.url}" class="btn btn-secondary" style="font-size:12px;padding:6px 12px;margin-top:14px">Ouvrir →</a>
+      `;
+    }
+    return div;
+  }
+
+  function renderParams(params) {
+    return Object.entries(params).slice(0, 8).map(([k, v]) => {
+      let displayVal = v;
+      if (typeof v === 'number') {
+        displayVal = v.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+      }
+      return `<div class="cmp-stat-row"><span class="cmp-stat-key">${k}</span><span class="cmp-stat-val">${displayVal}</span></div>`;
+    }).join('');
+  }
+
+  function renderAll() {
+    slots.innerHTML = '';
+    [0, 1, 2].forEach(i => slots.appendChild(renderSlot(i)));
+
+    // Listeners
+    slots.querySelectorAll('.cmp-slot-picker').forEach(sel => {
+      sel.addEventListener('change', e => {
+        const slotIdx = parseInt(e.target.dataset.slot, 10);
+        selected[slotIdx] = e.target.value || null;
+        renderAll();
+        renderSummary();
+      });
+    });
+    slots.querySelectorAll('.cmp-slot-remove').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const slotIdx = parseInt(e.currentTarget.dataset.slot, 10);
+        selected[slotIdx] = null;
+        renderAll();
+        renderSummary();
+      });
+    });
+  }
+
+  function renderSummary() {
+    const active = selected.filter(Boolean).map(id => getProjectById(id)).filter(Boolean);
+    const sumCard = document.getElementById('cmp-summary');
+    const sumBody = document.getElementById('cmp-summary-body');
+
+    if (active.length < 2) {
+      sumCard.style.display = 'none';
+      return;
+    }
+    sumCard.style.display = '';
+
+    // Récup toutes les clés de params réunies
+    const allKeys = new Set();
+    active.forEach(p => Object.keys(p.params || {}).forEach(k => allKeys.add(k)));
+    const keys = Array.from(allKeys);
+
+    // Build table
+    let html = '<div class="table-scroll"><table class="data-table"><thead><tr><th>Paramètre</th>';
+    active.forEach(p => html += `<th>${p.name}</th>`);
+    html += '</tr></thead><tbody>';
+    keys.forEach(k => {
+      html += `<tr><td><strong>${k}</strong></td>`;
+      active.forEach(p => {
+        const v = p.params?.[k];
+        let display = v == null ? '—' : (typeof v === 'number' ? v.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) : v);
+        html += `<td>${display}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    sumBody.innerHTML = html;
+  }
+
+  // Auto-fill premiers slots avec premiers projets de même type
+  if (projects.length >= 2) selected = [projects[0].id, projects[1].id, null];
+  else if (projects.length >= 1) selected = [projects[0].id, null, null];
+
+  renderAll();
+  renderSummary();
+
+  CI.initAll && CI.initAll();
+})();
+</script>
+
+</body>
+</html>
