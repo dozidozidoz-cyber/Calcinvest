@@ -438,7 +438,15 @@
       const max = stp.dataset.max !== undefined ? parseFloat(stp.dataset.max) : null;
 
       stp.querySelectorAll('.stepper-btn').forEach((btn) => {
-        const dir = parseInt(btn.dataset.dir, 10);
+        // Supporte les 2 conventions :
+        //   data-dir="1" / data-dir="-1"
+        //   data-act="plus" / data-act="minus"
+        let dir = parseInt(btn.dataset.dir, 10);
+        if (!Number.isFinite(dir)) {
+          if (btn.dataset.act === 'plus')  dir = 1;
+          else if (btn.dataset.act === 'minus') dir = -1;
+          else return; // bouton inconnu
+        }
         let holdTimer = null;
         let holdInterval = null;
 
@@ -479,12 +487,14 @@
 
       // Arrow keys
       input.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowUp') {
+        const btnUp   = stp.querySelector('[data-dir="1"], [data-act="plus"]');
+        const btnDown = stp.querySelector('[data-dir="-1"], [data-act="minus"]');
+        if (e.key === 'ArrowUp' && btnUp) {
           e.preventDefault();
-          stp.querySelector('[data-dir="1"]').click();
-        } else if (e.key === 'ArrowDown') {
+          btnUp.click();
+        } else if (e.key === 'ArrowDown' && btnDown) {
           e.preventDefault();
-          stp.querySelector('[data-dir="-1"]').click();
+          btnDown.click();
         }
       });
 
@@ -523,13 +533,17 @@
       const targetId = pills.dataset.target;
       const target = document.getElementById(targetId);
 
+      // Supporte les 2 conventions : data-value OU data-val
+      const getVal = (b) => b.dataset.value != null ? b.dataset.value : b.dataset.val;
+
       pills.addEventListener('click', (e) => {
         const btn = e.target.closest('.pill');
         if (!btn) return;
         pills.querySelectorAll('.pill').forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
-        if (target && btn.dataset.value != null) {
-          target.value = btn.dataset.value;
+        const v = getVal(btn);
+        if (target && v != null) {
+          target.value = v;
           target.dispatchEvent(new Event('input', { bubbles: true }));
           target.dispatchEvent(new Event('change', { bubbles: true }));
         }
@@ -540,7 +554,7 @@
         target.addEventListener('input', () => {
           const v = String(target.value);
           pills.querySelectorAll('.pill').forEach((b) => {
-            b.classList.toggle('active', String(b.dataset.value) === v);
+            b.classList.toggle('active', String(getVal(b)) === v);
           });
         });
       }
