@@ -890,6 +890,8 @@
     '/calculateur-risk-management':     { label: 'Risk Management',    cat: 'Trading',  color: '#A855F7' },
     '/simulateur-monte-carlo-trading':  { label: 'Monte Carlo Trading',cat: 'Trading',  color: '#A78BFA' },
     '/calculateur-fiscalite-trading':   { label: 'Fiscalité Trading',  cat: 'Trading',  color: '#C026D3' },
+    '/comparateur-brokers':             { label: 'Comparateur Brokers',cat: 'Trading',  color: '#B91C7E' },
+    '/calculateur-volatilite':          { label: 'ATR & Kelly',        cat: 'Trading',  color: '#9D174D' },
     '/simulateur-interets-composes':    { label: 'Intérêts Composés',  cat: 'Épargne',  color: '#7C3AED' },
     '/calculateur-fire':                { label: 'FIRE',               cat: 'Épargne',  color: '#EA580C' },
     '/simulateur-per':                  { label: 'PER',                cat: 'Épargne',  color: '#DC2626' },
@@ -1002,7 +1004,9 @@
           { url: '/calculateur-couts-trading',         label: 'Coûts du trade',           desc: 'Spread, commission, swap',       icon: ICONS.cost },
           { url: '/calculateur-risk-management',       label: 'Risk Management',          desc: 'Expectancy, R/R, P(ruine)',      icon: ICONS.risk },
           { url: '/simulateur-monte-carlo-trading',    label: 'Monte Carlo Trading',      desc: '2000 trajectoires de votre système', icon: ICONS.mc },
-          { url: '/calculateur-fiscalite-trading',     label: 'Fiscalité Trading FR',     desc: 'PFU vs IR, CTO vs PEA',          icon: ICONS.fisca }
+          { url: '/calculateur-fiscalite-trading',     label: 'Fiscalité Trading FR',     desc: 'PFU vs IR, CTO vs PEA',          icon: ICONS.fisca },
+          { url: '/comparateur-brokers',               label: 'Comparateur Brokers',      desc: 'IBKR, Trade Republic, Saxo...',  icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><rect x="2" y="2" width="4" height="4"/><rect x="6" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/></svg>' },
+          { url: '/calculateur-volatilite',            label: 'ATR & Kelly',              desc: 'Volatilité + sizing optimal',    icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><path d="M2 10l4-6 4 6 4-3"/></svg>' }
         ]
       },
       {

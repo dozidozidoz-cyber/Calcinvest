@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#7C3AED" />
+<title>Calculateur ATR &amp; Kelly — Volatilité, sizing optimal | CalcInvest</title>
+<meta name="description" content="Stop loss basé sur l'ATR (Average True Range), Kelly Criterion pour le sizing optimal, risque portefeuille multi-positions corrélées." />
+<meta name="keywords" content="ATR calculator forex, kelly criterion trading, position sizing kelly, multi-position risk" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">ATR &amp; Kelly</div><div class="logo-text-sub">Trading avancé</div></div>
+    </a>
+  </div>
+  <div class="topbar-center">
+    <nav class="segmented">
+      <a class="segmented-btn" href="/calculateur-pips">PIPS</a>
+      <a class="segmented-btn" href="/calculateur-risk-management">Risk</a>
+      <a class="segmented-btn active" aria-current="page" href="/calculateur-volatilite">ATR</a>
+      <a class="segmented-btn" href="/comparateur-brokers">Brokers</a>
+    </nav>
+  </div>
+  <div class="topbar-right" id="ci-user-zone">
+    <a href="/mes-projets" class="btn-ghost"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><path d="M2 4h5l1 2h6v7H2z"/></svg><span>Projets</span></a>
+  </div>
+</header>
+
+<div class="shell" id="page-vol">
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Paramètres</div>
+      <a class="sidebar-link active" href="#params"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 5h10M3 8h10M3 11h6"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Instrument</div><div class="sidebar-link-title">ATR + système</div></div></a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+      <a class="sidebar-link" href="#a1"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 10l4-6 4 6 4-3"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 01</div><div class="sidebar-link-title">Stop ATR-based</div></div></a>
+      <a class="sidebar-link" href="#a2"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="2" width="12" height="12"/><path d="M2 6h12M2 10h12M6 2v12M10 2v12"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 02</div><div class="sidebar-link-title">Matrice ATR × R/R</div></div></a>
+      <a class="sidebar-link" href="#a3"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2 2"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 03</div><div class="sidebar-link-title">Kelly Criterion</div></div></a>
+      <a class="sidebar-link" href="#a4"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="5" r="2"/><circle cx="8" cy="11" r="2"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 04</div><div class="sidebar-link-title">Multi-positions corrélées</div></div></a>
+    </div>
+  </aside>
+
+  <main class="main fade-in">
+
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 10l4-6 4 6 4-3"/></svg></span>
+        Trading · ATR & Kelly
+      </div>
+      <h1 class="page-title">Sizer son stop avec la vraie volatilité.</h1>
+      <p class="page-lede">Stop loss basé sur l'<strong style="color:var(--text)">ATR (Average True Range)</strong> au lieu de "au feeling", <strong style="color:var(--text)">Kelly Criterion</strong> pour la taille de position optimale, gestion du <strong style="color:var(--text)">risque multi-positions corrélées</strong>. Les outils des traders quantitatifs.</p>
+    </div>
+
+    <section class="accordion open" id="params">
+      <div class="accordion-header">
+        <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Instrument &amp; système</div>
+          <div class="accordion-summary" id="vol-sum">—</div>
+        </div>
+        <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="accordion-body"><div class="accordion-body-inner">
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><path d="M2 10l3-5 3 4 3-7"/></svg></div>
+            <div class="subsection-title">Volatilité (ATR)</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Instrument</div>
+              <select class="select" id="vol-pair" data-instruments data-default="EUR/USD"></select>
+              <div class="field-hint" id="vol-atr-typical" style="margin-top:6px">—</div>
+            </div>
+            <div class="field">
+              <div class="field-label">ATR 14j (en pips) <span class="field-hint">vide = utiliser valeur typique</span></div>
+              <div class="stepper" data-min="0" data-max="100000" data-step="1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-atr-custom" type="number" placeholder="auto" />
+                <span class="stepper-unit">pips</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Multiplicateur ATR (stop)</div>
+              <div class="stepper" data-min="0.5" data-max="5" data-step="0.1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-mult" type="number" value="1.5" step="0.1" />
+                <span class="stepper-unit">×</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="vol-mult">
+                <button class="pill" data-val="1">1 (scalper)</button>
+                <button class="pill" data-val="1.5">1.5 (Wilder)</button>
+                <button class="pill" data-val="2">2 (swing)</button>
+                <button class="pill" data-val="3">3 (position)</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">R/R ratio cible</div>
+              <div class="stepper" data-min="0.5" data-max="10" data-step="0.1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-rr" type="number" value="2" step="0.1" />
+                <span class="stepper-unit">x</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><circle cx="7" cy="7" r="5"/></svg></div>
+            <div class="subsection-title">Statistiques de votre système (pour Kelly)</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Win Rate</div>
+              <div class="stepper" data-min="1" data-max="99" data-step="1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-wr" type="number" value="55" />
+                <span class="stepper-unit">%</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><circle cx="4" cy="5" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="7" cy="11" r="2"/></svg></div>
+            <div class="subsection-title">Portefeuille multi-positions</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Capital total</div>
+              <div class="stepper" data-min="100" data-max="10000000" data-step="100">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-balance" type="number" value="10000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Nombre positions simultanées</div>
+              <div class="stepper" data-min="1" data-max="20" data-step="1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-nbpos" type="number" value="3" />
+                <span class="stepper-unit">positions</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Risque par position</div>
+              <div class="stepper" data-min="0.1" data-max="10" data-step="0.1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-riskpos" type="number" value="1" step="0.1" />
+                <span class="stepper-unit">%</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Corrélation moyenne <span class="field-hint">−1 hedge / 0 indep / +1 même direction</span></div>
+              <div class="stepper" data-min="-1" data-max="1" data-step="0.1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="vol-corr" type="number" value="0.5" step="0.1" />
+                <span class="stepper-unit"></span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="vol-corr">
+                <button class="pill" data-val="0">0 (indep)</button>
+                <button class="pill" data-val="0.5">0.5 (moyen)</button>
+                <button class="pill" data-val="0.8">0.8 (forte)</button>
+                <button class="pill" data-val="1">1 (parfaite)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div></div>
+    </section>
+
+    <!-- A1 : ATR Stop -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 10l4-6 4 6 4-3"/></svg></span>Analyse 01 · Stop basé sur l'ATR</div>
+    <section class="card" id="a1">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 10l3-5 3 4 3-7 3 4"/></svg></div>Stop suggéré par la volatilité réelle</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">ATR 14 jours</div><div class="stat-value" id="vol-stat-atr">—</div><div class="stat-sub" id="vol-stat-atr-cat">—</div></div>
+          <div class="stat"><div class="stat-label">Stop suggéré</div><div class="stat-value warn" id="vol-stat-stop">—</div><div class="stat-sub" id="vol-stat-stop-note">ATR × multiplicateur</div></div>
+          <div class="stat"><div class="stat-label">Target suggéré</div><div class="stat-value pos" id="vol-stat-target">—</div><div class="stat-sub">stop × R/R</div></div>
+        </div>
+        <div class="info-box" style="margin-top:18px">
+          <div class="info-box-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg> Méthode Wilder</div>
+          <strong>ATR (Average True Range)</strong> mesure la volatilité moyenne d'un actif sur N jours (typiquement 14). Un stop loss de <strong>1.5× ATR</strong> est largement utilisé : il laisse assez d'amplitude pour éviter les "wicks" tout en limitant le risque. Plus volatil = stop plus large = position plus petite (à risque % constant).
+        </div>
+      </div>
+    </section>
+
+    <!-- A2 : Matrice ATR -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="2" width="12" height="12"/></svg></span>Analyse 02 · Matrice multiplicateur × R/R</div>
+    <section class="card" id="a2">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="2" width="12" height="12"/><path d="M2 6h12M2 10h12M6 2v12M10 2v12"/></svg></div>Comparer plusieurs setups</div></div>
+      <div class="card-body">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th rowspan="2">× ATR</th><th rowspan="2">Stop</th>
+                <th colspan="4">Target selon R/R (et win-rate breakeven)</th>
+              </tr>
+              <tr><th>R/R 1:1</th><th>R/R 1:1.5</th><th>R/R 1:2</th><th>R/R 1:3</th></tr>
+            </thead>
+            <tbody id="vol-table-matrix"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- A3 : Kelly -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><circle cx="8" cy="8" r="5"/></svg></span>Analyse 03 · Kelly Criterion</div>
+    <section class="card" id="a3">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2 2"/></svg></div>Sizing optimal mathématique</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Full Kelly</div><div class="stat-value" id="vol-stat-fk">—</div><div class="stat-sub">théorique max</div></div>
+          <div class="stat"><div class="stat-label">Half Kelly (reco)</div><div class="stat-value pos" id="vol-stat-hk">—</div><div class="stat-sub">prudent — std des pros</div></div>
+          <div class="stat"><div class="stat-label">Quarter Kelly</div><div class="stat-value" id="vol-stat-qk">—</div><div class="stat-sub">très conservateur</div></div>
+        </div>
+        <div class="insight" id="vol-insight-kelly"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="2 9 6 5 9 8 14 3"/></svg></div><div class="insight-text">—</div></div>
+        <div class="info-box" style="margin-top:18px">
+          <div class="info-box-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg> Formule Kelly</div>
+          <code>f* = (Win% × R/R − (1 − Win%)) / R/R</code>
+          <br/><br/>
+          <strong>f*</strong> est le pourcentage <em>théorique optimal</em> du capital à risquer par trade pour <strong>maximiser la croissance log-géométrique</strong>. En pratique : <strong>diviser par 2</strong> (demi-Kelly) ou par 4 (quart-Kelly) pour réduire la volatilité de l'equity curve. Si Kelly est négatif, votre système perd statistiquement de l'argent.
+        </div>
+      </div>
+    </section>
+
+    <!-- A4 : Multi-positions -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="5" r="2"/></svg></span>Analyse 04 · Risque multi-positions corrélées</div>
+    <section class="card" id="a4">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="5" r="2"/><circle cx="8" cy="11" r="2"/></svg></div>Si plusieurs positions tombent ensemble</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Risque combiné</div><div class="stat-value warn" id="vol-stat-totalrisk">—</div><div class="stat-sub" id="vol-stat-totalrisk-pct">—</div></div>
+          <div class="stat"><div class="stat-label">Worst case</div><div class="stat-value neg" id="vol-stat-worst">—</div><div class="stat-sub">toutes positions perdent</div></div>
+          <div class="stat"><div class="stat-label">Ratio diversification</div><div class="stat-value" id="vol-stat-div">—</div><div class="stat-sub">1 = aucun bénéfice</div></div>
+        </div>
+        <div class="insight" id="vol-insight-multi"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M2 12l3-3 2 2 4-5"/></svg></div><div class="insight-text">—</div></div>
+        <div class="info-box warn" style="margin-top:18px">
+          <div class="info-box-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M8 1L1 14h14z"/><path d="M8 6v4"/></svg> Le piège des corrélations</div>
+          <strong>EUR/USD + GBP/USD + AUD/USD</strong> ont une corrélation ~0.85 entre eux. Si vous prenez 3 positions long en même temps en pensant être "diversifié", vous avez en réalité <em>une seule position triplée</em>. Les krachs USD font tomber tout en même temps. <strong>Pour vraie diversification : trader des paires non-USD, mixer crypto + métaux + indices.</strong>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <div>Calculs à titre informatif · ATR typiques observés mai 2026 · Kelly formule Edward Thorp</div>
+  <div><a href="/">Accueil</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
+<script src="/assets/js/core/calc-pips.js"></script>
+<script src="/assets/js/core/calc-atr.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n, dec) => { dec = dec == null ? 1 : dec; return Number.isFinite(n) ? n.toLocaleString('fr-FR', {minimumFractionDigits: dec, maximumFractionDigits: dec}) : '—'; };
+
+  function readParams() {
+    const atrCustom = parseFloat($('vol-atr-custom').value);
+    return {
+      pair: $('vol-pair').value || 'EUR/USD',
+      atrCustom: Number.isFinite(atrCustom) && atrCustom > 0 ? atrCustom : null,
+      multiplier: parseFloat($('vol-mult').value) || 1.5,
+      rrRatio: parseFloat($('vol-rr').value) || 2,
+      winRate: parseFloat($('vol-wr').value) || 55,
+      balance: parseFloat($('vol-balance').value) || 10000,
+      nbPositions: parseInt($('vol-nbpos').value) || 3,
+      riskPctPer: parseFloat($('vol-riskpos').value) || 1,
+      correlation: parseFloat($('vol-corr').value) || 0.5
+    };
+  }
+
+  function run() {
+    if (typeof ATR === 'undefined') return;
+    const p = readParams();
+    $('vol-sum').textContent = `${p.pair} · ATR × ${p.multiplier} · WR ${p.winRate}% · ${p.nbPositions} positions`;
+
+    // A1 : ATR Stop
+    const a = ATR.atrStop(p);
+    $('vol-stat-atr').textContent = fmt(a.atr14Pips, 0) + ' pips';
+    $('vol-stat-atr-cat').textContent = (a.atrIsTypical ? '(typique) · ' : '(custom) · ') + 'Volatilité ' + a.volatilityCategory;
+    $('vol-stat-stop').textContent = fmt(a.stopSuggested, 0) + ' pips';
+    $('vol-stat-stop-note').textContent = a.reasonShort;
+    $('vol-stat-target').textContent = fmt(a.targetSuggested, 0) + ' pips';
+
+    // Hint ATR typique
+    $('vol-atr-typical').textContent = `ATR typique 14j : ${ATR.ATR14_TYPICAL[p.pair] || 50} pips`;
+
+    // A2 : Matrix
+    const matrix = ATR.atrTable(p);
+    $('vol-table-matrix').innerHTML = matrix.map(row => {
+      const tdTargets = row.targets.map(t => {
+        const passOK = p.winRate >= t.breakevenWR;
+        return `<td><strong>${fmt(t.targetPips, 0)}</strong> pips<br/><span class="${passOK ? 'pos' : 'neg'}" style="font-size:11px">BE ${fmt(t.breakevenWR, 1)}% ${passOK ? '✓' : '✗'}</span></td>`;
+      }).join('');
+      const isCurrent = Math.abs(row.multiplier - p.multiplier) < 0.01;
+      return `<tr${isCurrent ? ' style="background:var(--accent-soft);font-weight:600"' : ''}>
+        <td>×${row.multiplier}</td>
+        <td>${fmt(row.stopPips, 0)} pips</td>
+        ${tdTargets}
+      </tr>`;
+    }).join('');
+
+    // A3 : Kelly
+    const k = ATR.kelly(p);
+    $('vol-stat-fk').textContent = fmt(k.fullKelly, 2) + ' %';
+    $('vol-stat-fk').className = 'stat-value ' + (k.fullKelly > 25 ? 'warn' : k.isProfitable ? 'pos' : 'neg');
+    $('vol-stat-hk').textContent = fmt(k.halfKelly, 2) + ' %';
+    $('vol-stat-qk').textContent = fmt(k.quarterKelly, 2) + ' %';
+
+    $('vol-insight-kelly').innerHTML = `
+      Avec WR ${p.winRate}% et R/R 1:${p.rrRatio}, votre Kelly est <strong>${fmt(k.fullKelly, 2)} %</strong>.
+      Recommandation : <strong class="pos">Half Kelly = ${fmt(k.halfKelly, 2)} %</strong> par trade.
+      <br/><strong>${k.verdict}</strong>
+    `;
+
+    // A4 : Multi-trade
+    const m = ATR.multiTrade(p);
+    $('vol-stat-totalrisk').textContent = fmt(m.totalRiskAmount, 0) + ' €';
+    $('vol-stat-totalrisk-pct').textContent = fmt(m.totalRiskPct, 2) + ' % du capital';
+    $('vol-stat-worst').textContent = fmt(m.worstCaseLoss, 0) + ' € (' + fmt(m.worstCaseLossPct, 1) + '%)';
+    $('vol-stat-div').textContent = '×' + fmt(m.diversificationRatio, 2);
+
+    $('vol-insight-multi').innerHTML = `
+      ${p.nbPositions} positions à ${p.riskPctPer}% chacune avec corrélation ${p.correlation.toFixed(1)} :
+      risque combiné réel <strong class="warn">${fmt(m.totalRiskPct, 2)} %</strong>
+      (au lieu de ${fmt(p.nbPositions * p.riskPctPer, 1)} % naïf).
+      <br/>${m.verdict}
+    `;
+  }
+
+  function init() {
+    if (CI && CI.initAll) CI.initAll();
+    ['vol-pair','vol-atr-custom','vol-mult','vol-rr','vol-wr','vol-balance','vol-nbpos','vol-riskpos','vol-corr'].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', run);
+      if (el.tagName === 'INPUT') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 200); });
+    });
+    run();
+  }
+
+  function safeInit() { try { init(); } catch(e) { console.error('[vol]', e.message); } }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+
+</body>
+</html>
