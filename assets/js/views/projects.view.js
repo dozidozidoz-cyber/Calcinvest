@@ -21,7 +21,8 @@
     'cost':          '/calculateur-couts-trading',
     'risk':          '/calculateur-risk-management',
     'mctrading':     '/simulateur-monte-carlo-trading',
-    'fisca-trading': '/calculateur-fiscalite-trading'
+    'fisca-trading': '/calculateur-fiscalite-trading',
+    'impot-revenu':  '/calculateur-impot-revenu'
   };
 
   // Map type → icône SVG path + couleur
@@ -39,7 +40,8 @@
     'cost':          { color: '#9333EA', icon: '<path d="M3 4h18M3 9h18M3 14h12"/><path d="M16 19l3-3-3-3"/>' },
     'risk':          { color: '#A855F7', icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>' },
     'mctrading':     { color: '#A78BFA', icon: '<circle cx="6" cy="6" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="9" cy="14" r="2"/>' },
-    'fisca-trading': { color: '#C026D3', icon: '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 11h8M8 15h6"/>' }
+    'fisca-trading': { color: '#C026D3', icon: '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 11h8M8 15h6"/>' },
+    'impot-revenu':  { color: '#DC2626', icon: '<rect x="4" y="3" width="14" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/>' }
   };
 
   // Compare state

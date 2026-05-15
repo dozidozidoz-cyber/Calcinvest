@@ -898,6 +898,7 @@
     '/calculateur-fire':                { label: 'FIRE',               cat: 'Épargne',  color: '#EA580C' },
     '/simulateur-per':                  { label: 'PER',                cat: 'Épargne',  color: '#DC2626' },
     '/simulateur-retraite':             { label: 'Retraite',           cat: 'Épargne',  color: '#0891B2' },
+    '/calculateur-impot-revenu':        { label: 'Impôt Revenu',       cat: 'Fiscalité',color: '#DC2626' },
     '/comparer':                        { label: 'Comparer simulations',cat: 'Outils',  color: '#34D399' },
     '/glossaire':                       { label: 'Glossaire financier',cat: 'Docs',    color: '#94A3B8' }
   };
