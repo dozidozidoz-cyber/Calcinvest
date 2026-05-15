@@ -282,8 +282,51 @@
     ];
   }
 
+  /**
+   * Calcule combien d'années il faut pour atteindre un cashflow net mensuel cible.
+   * Simule jusqu'à 50 ans et renvoie l'année où l'objectif est atteint.
+   *
+   * @param {Object} p   Paramètres SCPI standard
+   * @param {number} targetMonthly  Rente nette mensuelle cible (€/mois)
+   * @returns {Object} { years, capitalAtTarget, monthlyAtTarget, found }
+   */
+  function yearsToTargetRente(p, targetMonthly) {
+    targetMonthly = num(targetMonthly, 500);
+    const maxYears = 50;
+    // On simule mois par mois jusqu'à dépasser la cible
+    const params = Object.assign({}, p, { years: maxYears });
+    const r = calcSCPI(params);
+    const serie = r.serie;
+    const targetAnnual = targetMonthly * 12;
+
+    // On considère que la rente atteinte = dividendes nets des 12 derniers mois
+    for (let m = 12; m < serie.length; m++) {
+      let annualNet = 0;
+      for (let k = m - 11; k <= m; k++) annualNet += serie[k].divNet;
+      if (annualNet >= targetAnnual) {
+        return {
+          found: true,
+          years: Math.ceil(m / 12),
+          monthsExact: m,
+          capitalAtTarget: serie[m].value,
+          monthlyAtTarget: annualNet / 12,
+          versePourAtteindre: serie[m].cashOut
+        };
+      }
+    }
+    // Pas atteint
+    const lastAnnualNet = serie.slice(-12).reduce((s, x) => s + x.divNet, 0);
+    return {
+      found: false,
+      years: maxYears,
+      capitalAtTarget: serie[serie.length - 1].value,
+      monthlyAtTarget: lastAnnualNet / 12,
+      versePourAtteindre: serie[serie.length - 1].cashOut
+    };
+  }
+
   // ─── Export ─────────────────────────────────────────────
-  const api = { calcSCPI, compareRegimes, stressTest, compareAlternatives };
+  const api = { calcSCPI, compareRegimes, stressTest, compareAlternatives, yearsToTargetRente };
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
