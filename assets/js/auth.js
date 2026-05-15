@@ -16,6 +16,16 @@
   const SUPABASE_URL  = 'https://VOTRE_PROJECT_ID.supabase.co';
   const SUPABASE_KEY  = 'VOTRE_ANON_PUBLIC_KEY';
 
+  /* ----------------------------------------------------------
+     🛠️  MODE DEV — auto-activé tant que Supabase n'est pas configuré.
+     → isPremium() retourne true partout
+     → la paywall ne bloque rien
+     → un badge "Mode dev" s'affiche en bas à droite
+     Bascule manuellement en mode prod en mettant à false (utile pour
+     tester la paywall une fois Supabase configuré) :
+     ---------------------------------------------------------- */
+  const DEV_MODE = SUPABASE_URL.includes('VOTRE_PROJECT_ID');
+
   /* Clé localStorage pour la session */
   const SESSION_KEY   = 'ci_session_v1';
   const USER_KEY      = 'ci_user_v1';
@@ -120,6 +130,9 @@
      Premium check via user_metadata (mis à jour par webhook Stripe)
      ---------------------------------------------------------- */
   function isPremium() {
+    // 🛠️ Mode dev : tout débloqué
+    if (DEV_MODE) return true;
+
     const u = getUser();
     if (!u) return false;
     const meta = u.user_metadata || {};
@@ -134,6 +147,9 @@
   }
 
   function isLoggedIn() {
+    // 🛠️ Mode dev : faux mais débloqué via isPremium()
+    if (DEV_MODE) return false;
+
     const s = getSession();
     if (!s?.access_token) return false;
     // Vérif expiration du JWT (exp en secondes)
@@ -142,6 +158,30 @@
       if (payload.exp * 1000 < Date.now()) return false;
     } catch { return false; }
     return true;
+  }
+
+  /* ----------------------------------------------------------
+     Mode dev — badge discret + console info
+     ---------------------------------------------------------- */
+  function renderDevBadge() {
+    if (!DEV_MODE) return;
+    if (document.getElementById('ci-dev-badge')) return;
+    const badge = document.createElement('div');
+    badge.id = 'ci-dev-badge';
+    badge.style.cssText = `
+      position: fixed; bottom: 12px; right: 12px;
+      background: rgba(217,119,6,0.92); color: #fff;
+      padding: 5px 12px; border-radius: 99px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      font-family: 'JetBrains Mono', monospace;
+      box-shadow: 0 4px 12px rgba(217,119,6,0.30);
+      z-index: 9999; pointer-events: none;
+      backdrop-filter: blur(8px);
+    `;
+    badge.textContent = '🛠 Mode dev · Premium débloqué';
+    document.body.appendChild(badge);
+    console.info('%c[CalcInvest] Mode dev actif', 'color:#D97706;font-weight:600',
+      '— Supabase n\'est pas configuré, toutes les analyses Premium sont débloquées.');
   }
 
   /* ----------------------------------------------------------
@@ -160,6 +200,16 @@
   function renderTopbarUser() {
     const container = document.getElementById('ci-user-zone');
     if (!container) return;
+
+    // 🛠️ Mode dev : juste un lien tarifs (pas d'auth fonctionnelle)
+    if (DEV_MODE) {
+      container.innerHTML = `
+        <a href="/abonnement" class="btn-ghost" style="font-size:13px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polygon points="8 1 10 5.5 15 6.3 11.5 9.7 12.4 14.7 8 12.3 3.6 14.7 4.5 9.7 1 6.3 6 5.5"/></svg>
+          Tarifs
+        </a>`;
+      return;
+    }
 
     if (!isLoggedIn()) {
       container.innerHTML = `
@@ -220,6 +270,12 @@
      Init global
      ---------------------------------------------------------- */
   async function init() {
+    // 🛠️ Mode dev : skip Supabase, juste afficher la topbar et le badge
+    if (DEV_MODE) {
+      renderTopbarUser();
+      renderDevBadge();
+      return;
+    }
     // Si token expiré, tente refresh
     if (getSession() && !isLoggedIn()) {
       await refreshSession();

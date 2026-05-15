@@ -55,8 +55,23 @@
     const CI = window.CI;
     if (!CI) return;
 
-    // Si premium → rien à faire
-    if (CI.isPremium && CI.isPremium()) return;
+    // Si premium → tout débloquer (retire d'éventuels overlays anciens)
+    if (CI.isPremium && CI.isPremium()) {
+      document.querySelectorAll('.paywall-wrapped').forEach(section => {
+        const inner = section.querySelector('.paywall-content-blur');
+        const overlay = section.querySelector('.paywall-overlay');
+        if (inner) {
+          // Restaure les enfants
+          while (inner.firstChild) section.insertBefore(inner.firstChild, inner);
+          inner.remove();
+        }
+        if (overlay) overlay.remove();
+        section.classList.remove('paywall-wrapped');
+        section.style.position = '';
+        section.style.overflow = '';
+      });
+      return;
+    }
 
     const sections = document.querySelectorAll('[data-tier="premium"]');
     if (!sections.length) return;
