@@ -99,13 +99,15 @@
       const dataVerse = serie.map(pt => pt.cashOut);
       const dataDivCum = serie.map(pt => pt.cumDivNet);
 
-      if (window.CI && CI.drawChart) {
-        CI.drawChart('sc-chart-a01', labels, [
-          { data: dataValue,  color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.18)', width: 2,   label: 'Valeur parts' },
-          { data: dataVerse,  color: '#9CA3AF', dash: [4, 3], width: 1.5,                       label: 'Versé cumulé' },
-          { data: dataDivCum, color: '#2563EB', width: 1.8,                                     label: 'Dividendes nets cum.' }
-        ], { xLabel: 'Années', yLabel: '€', yFormat: 'money' });
-      }
+      try {
+        if (window.CI && CI.drawChart) {
+          CI.drawChart('sc-chart-a01', labels, [
+            { data: dataValue,  color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.18)', width: 2,   label: 'Valeur parts' },
+            { data: dataVerse,  color: '#9CA3AF', dash: [4, 3], width: 1.5,                       label: 'Versé cumulé' },
+            { data: dataDivCum, color: '#2563EB', width: 1.8,                                     label: 'Dividendes nets cum.' }
+          ], { xLabel: 'Années', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
+        }
+      } catch (e) { console.warn('[scpi a01 chart]', e); }
     }
 
     const triPos = s.tri >= 0;
@@ -135,17 +137,6 @@
       yearly.push({ year: y, divBrut, divNet, tax });
     }
 
-    const labels  = yearly.map(y => 'A' + y.year);
-    const dataNet = yearly.map(y => y.divNet);
-    const dataTax = yearly.map(y => y.tax);
-
-    if (window.CI && CI.drawChart) {
-      CI.drawChart('sc-chart-a02', labels, [
-        { data: dataNet, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.20)', width: 2,   label: 'Net' },
-        { data: dataTax, color: '#DC2626', width: 1.5, dash: [3, 3],                       label: 'Impôts' }
-      ], { xLabel: 'Année', yLabel: '€', yFormat: 'money' });
-    }
-
     const tbody = $('sc-table-a02');
     if (tbody) {
       tbody.innerHTML = yearly.map(y => `
@@ -157,6 +148,19 @@
         </tr>
       `).join('');
     }
+
+    const labels  = yearly.map(y => 'A' + y.year);
+    const dataNet = yearly.map(y => y.divNet);
+    const dataTax = yearly.map(y => y.tax);
+
+    try {
+      if (window.CI && CI.drawChart) {
+        CI.drawChart('sc-chart-a02', labels, [
+          { data: dataNet, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.20)', width: 2,   label: 'Net' },
+          { data: dataTax, color: '#DC2626', width: 1.5, dash: [3, 3],                       label: 'Impôts' }
+        ], { xLabel: 'Année', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
+      }
+    } catch (e) { console.warn('[scpi a02 chart]', e); }
 
     const cfMonthly = r.summary.cashflowMensuelMoyen;
     const lastYearNet = yearly[yearly.length - 1]?.divNet || 0;
@@ -189,11 +193,13 @@
     const labels = data.map(d => REGIME_LABEL[d.regime] || d.regime);
     const dataTotal = data.map(d => d.totalRetour);
 
-    if (window.CI && CI.drawChart) {
-      CI.drawChart('sc-chart-a03', labels, [
-        { data: dataTotal, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.25)', width: 2.5, label: 'Total net' }
-      ], { xLabel: 'Régime', yLabel: '€', yFormat: 'money' });
-    }
+    try {
+      if (window.CI && CI.drawChart) {
+        CI.drawChart('sc-chart-a03', labels, [
+          { data: dataTotal, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.25)', width: 2.5, label: 'Total net' }
+        ], { xLabel: 'Régime', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
+      }
+    } catch (e) { console.warn('[scpi a03 chart]', e); }
 
     const best = data.reduce((a, b) => b.totalRetour > a.totalRetour ? b : a);
     const yours = data.find(d => d.regime === p.regime) || data[0];
@@ -258,11 +264,13 @@
     const labels = data.map(d => d.name);
     const dataTotal = data.map(d => d.total);
 
-    if (window.CI && CI.drawChart) {
-      CI.drawChart('sc-chart-a05', labels, [
-        { data: dataTotal, color: '#2563EB', fill: true, fillColor: 'rgba(37,99,235,0.20)', width: 2 }
-      ], { xLabel: 'Placement', yLabel: '€', yFormat: 'money' });
-    }
+    try {
+      if (window.CI && CI.drawChart) {
+        CI.drawChart('sc-chart-a05', labels, [
+          { data: dataTotal, color: '#2563EB', fill: true, fillColor: 'rgba(37,99,235,0.20)', width: 2 }
+        ], { xLabel: 'Placement', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
+      }
+    } catch (e) { console.warn('[scpi a05 chart]', e); }
 
     const scpiTotal = data[0].total;
     const best = data.reduce((a, b) => b.total > a.total ? b : a);
