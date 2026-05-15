@@ -68,6 +68,27 @@
       const unitSpan = lotWrap.querySelector('.stepper-unit');
       if (unitSpan) unitSpan.textContent = info.unitLabel || info.base;
     }
+    // Default stopPips intelligent selon la classe (un trader BTC ne met pas 30 pips)
+    const stop = $('pp-stop');
+    if (stop && (stop.dataset.auto === '1' || !stop.dataset.userTouched)) {
+      const stopByCategory = {
+        'forex':         30,
+        'forex_exotic':  60,
+        'metal':         200,
+        'commodity':     100,
+        'index':         50,
+        'stock':         50,
+        'crypto':        1000
+      };
+      const defaultStop = stopByCategory[info.category] || 30;
+      stop.value = defaultStop;
+      stop.dataset.auto = '1';
+      const target = $('pp-target');
+      if (target && (target.dataset.auto === '1' || !target.dataset.userTouched)) {
+        target.value = defaultStop * 2;
+        target.dataset.auto = '1';
+      }
+    }
     // Update suffix dans le hint
     const hint = $('pp-pair-hint');
     if (hint) {
@@ -157,36 +178,68 @@
     const info = PIPS.PAIRS[p.pair];
     const unitLabel = ps.unitLabel || info.base;
 
-    // Décimales pour les unités : forex en entier, crypto/métaux à 4
-    const unitDec = ps.isForex ? 0 : 4;
+    // Affichage UNITS d'abord pour non-forex (1 lot = 1 BTC n'a pas de sens didactique)
+    // Forex : "0.33 lot" en gros, "33 333 EUR" en sous
+    // Non-forex : "3.33 BTC" en gros, "(soit 3.33 lots CFD)" en sous
+    const unitDec = ps.isForex ? 0 : (ps.units >= 100 ? 2 : 4);
 
     $('pp-stat-risk-amount').textContent = fmtM(ps.riskAmount, 2) + ' ' + p.accountCurr;
-    $('pp-stat-lots').textContent = fmtM(ps.standardLots, ps.standardLots < 1 ? 4 : 2) + ' lot' + (ps.standardLots >= 2 ? 's' : '');
-    $('pp-stat-units').textContent = fmtM(ps.units, unitDec) + ' ' + unitLabel;
+
+    if (ps.isForex) {
+      $('pp-stat-lots').textContent = fmtM(ps.standardLots, ps.standardLots < 1 ? 3 : 2) + ' lot' + (ps.standardLots >= 2 ? 's' : '');
+      $('pp-stat-units').textContent = fmtM(ps.units, 0) + ' ' + unitLabel;
+    } else {
+      // Non-forex : prioriser units
+      $('pp-stat-lots').textContent = fmtM(ps.units, unitDec) + ' ' + unitLabel;
+      $('pp-stat-units').textContent = ps.contractSize === 1
+        ? `(1 lot CFD = 1 ${unitLabel})`
+        : `(${fmtM(ps.standardLots, 3)} lot · 1 lot = ${ps.contractSize} ${unitLabel})`;
+    }
+
     $('pp-stat-pipvalue-pos').textContent = fmtM(ps.pipValuePerLot * ps.standardLots, 2) + ' ' + p.accountCurr + '/pip';
+
+    // Notional + warning si position démesurée
+    const entryPrice = (parseFloat($('pp-entry')?.value) || info.price) || 0;
+    const notional = ps.units * entryPrice; // en quote currency (proxy USD)
+    const leverageImplicit = p.balance > 0 ? notional / p.balance : 0;
+
+    let warning = '';
+    if (leverageImplicit > 30) {
+      warning = `<div style="margin-top:10px;padding:10px 12px;background:rgba(248,113,113,0.10);border:1px solid rgba(248,113,113,0.30);border-radius:8px;color:var(--text-2);font-size:13px">
+        ⚠ <strong>Position notionnelle ${CI.fmtCompact ? CI.fmtCompact(notional) : fmtM(notional, 0)} ${info.quote || p.accountCurr}</strong> — soit <strong>${leverageImplicit.toFixed(0)}× votre capital</strong>.
+        Sur ${p.pair}, un stop à <strong>${p.stopPips} pips = ${fmtM(p.stopPips * info.pipSize, info.pipSize < 0.01 ? 4 : 2)} ${info.quote || 'USD'}</strong> est très serré pour cet actif volatil.
+        Élargissez le stop ou réduisez le % de risque pour un sizing plus prudent.
+      </div>`;
+    } else if (leverageImplicit > 10) {
+      warning = `<div style="margin-top:10px;padding:10px 12px;background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.30);border-radius:8px;color:var(--text-2);font-size:13px">
+        ℹ Notional <strong>${CI.fmtCompact ? CI.fmtCompact(notional) : fmtM(notional, 0)} ${info.quote || p.accountCurr}</strong> (${leverageImplicit.toFixed(1)}× le capital) — vérifiez que votre broker autorise ce levier.
+      </div>`;
+    }
 
     // Insight adapté à la classe d'actif
     let posDesc;
     if (ps.isForex) {
-      // Forex : on parle en lots / mini lots
-      posDesc = `<strong>${fmtM(ps.standardLots, 3)} lot${ps.standardLots >= 2 ? 's' : ''}</strong> (${fmtM(ps.miniLots, 2)} mini lots, soit <strong>${fmtM(ps.units, 0)} ${unitLabel}</strong>)`;
+      posDesc = `<strong>${fmtM(ps.standardLots, 3)} lot${ps.standardLots >= 2 ? 's' : ''}</strong> (soit ${fmtM(ps.miniLots, 2)} mini lots, ${fmtM(ps.units, 0)} ${unitLabel})`;
     } else if (info.category === 'crypto') {
-      posDesc = `<strong>${fmtM(ps.units, 4)} ${unitLabel}</strong> (${fmtM(ps.standardLots, 4)} lot${ps.standardLots >= 2 ? 's' : ''})`;
-    } else if (info.category === 'metal' || info.category === 'commodity') {
-      posDesc = `<strong>${fmtM(ps.units, 2)} ${unitLabel}</strong> (${fmtM(ps.standardLots, 3)} lot${ps.standardLots >= 2 ? 's' : ''} = ${ps.contractSize} ${unitLabel}/lot)`;
+      posDesc = `<strong>${fmtM(ps.units, ps.units < 1 ? 4 : 3)} ${unitLabel}</strong>`;
+    } else if (info.category === 'metal') {
+      posDesc = `<strong>${fmtM(ps.units, 2)} ${unitLabel}</strong> (${fmtM(ps.standardLots, 3)} lot CFD)`;
+    } else if (info.category === 'commodity') {
+      posDesc = `<strong>${fmtM(ps.units, 2)} ${unitLabel}</strong>`;
     } else if (info.category === 'index') {
-      posDesc = `<strong>${fmtM(ps.units, 2)} contrat${ps.units >= 2 ? 's' : ''}</strong> à ${p.accountCurr} 1 / point`;
+      posDesc = `<strong>${fmtM(ps.units, 2)} contrat${ps.units >= 2 ? 's' : ''}</strong>`;
     } else if (info.category === 'stock') {
-      posDesc = `<strong>${fmtM(ps.units, 0)} actions</strong>`;
+      posDesc = `<strong>${fmtM(ps.units, 0)} action${ps.units >= 2 ? 's' : ''}</strong>`;
     } else {
       posDesc = `<strong>${fmtM(ps.units, unitDec)} ${unitLabel}</strong>`;
     }
 
     $('pp-insight-a02').innerHTML = `
-      Pour risquer <strong>${fmtM(ps.riskAmount, 0)} ${p.accountCurr}</strong> (${p.riskPct}% du capital)
+      <div>Pour risquer <strong>${fmtM(ps.riskAmount, 0)} ${p.accountCurr}</strong> (${p.riskPct}% du capital)
       avec un stop à <strong>${p.stopPips} pips</strong> sur <em>${p.pair}</em>,
       prends une position de ${posDesc}.
-      Chaque pip vous coûte/rapporte ${fmtM(ps.pipValuePerLot * ps.standardLots, 2)} ${p.accountCurr}.
+      Chaque pip vous coûte/rapporte ${fmtM(ps.pipValuePerLot * ps.standardLots, 2)} ${p.accountCurr}.</div>
+      ${warning}
     `;
 
     // R/R rapide
@@ -253,9 +306,10 @@
     const p = readParams();
     updateParamSummary(p);
 
-    // Pip value pour 1 lot standard
+    // Pip value pour 1 lot standard (contractSize selon l'actif)
+    const info = PIPS.PAIRS[p.pair] || {};
     const pv = PIPS.pipValue({
-      pair: p.pair, lotSize: 100000, accountCurr: p.accountCurr
+      pair: p.pair, lotSize: info.contractSize || 100000, accountCurr: p.accountCurr
     });
 
     renderA01(p, pv);
@@ -291,11 +345,23 @@
     updatePairDefaults();
 
     // Listeners
-    ['pp-pair','pp-balance','pp-risk','pp-stop','pp-target','pp-currency','pp-entry'].forEach(id => {
+    ['pp-pair','pp-balance','pp-risk','pp-stop','pp-target','pp-currency','pp-entry','pp-lotsize'].forEach(id => {
       const el = $(id);
       if (!el) return;
-      el.addEventListener('change', () => { if (id === 'pp-pair') updatePairDefaults(); run(); });
+      // Marquer "touché par l'user" pour ne plus écraser sur changement de paire
+      const markTouched = () => {
+        if (id !== 'pp-pair' && id !== 'pp-currency') {
+          el.dataset.userTouched = '1';
+          el.dataset.auto = '0';
+        }
+      };
+      el.addEventListener('change', () => {
+        markTouched();
+        if (id === 'pp-pair') updatePairDefaults();
+        run();
+      });
       if (el.tagName === 'INPUT') el.addEventListener('input', () => {
+        markTouched();
         clearTimeout(el._t);
         el._t = setTimeout(() => { if (id === 'pp-pair') updatePairDefaults(); run(); }, 150);
       });
