@@ -16,40 +16,51 @@
 </head>
 <body>
 
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
 <header class="topbar">
   <div class="topbar-left">
     <a href="/" class="logo">
       <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
           <circle cx="12" cy="12" r="7"/>
           <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="logo-text">
         <div class="logo-text-main">CalcInvest</div>
-        <div class="logo-text-sub">Mes projets</div>
       </div>
     </a>
   </div>
-  <div class="topbar-right">
-    <a href="/" class="btn-ghost">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l-4 5 4 5M2 8h12"/></svg>
-      <span>Retour</span>
-    </a>
-  </div>
+
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+
+  <div class="topbar-right" id="ci-user-zone"></div>
 </header>
 
-<main class="main fade-in">
-  <div class="page-header">
-    <div class="page-eyebrow">
-      <span class="page-eyebrow-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h5l1 2h6v7H2z"/></svg>
-      </span>
-      Vos simulations sauvegardées
+<!-- ═══════════════════ HERO V3 LITE ═══════════════════ -->
+<section class="v3-hero-bg" style="padding:56px 0 64px">
+  <div class="v3-hero-inner" style="grid-template-columns:1fr;text-align:center;max-width:760px">
+    <div class="reveal">
+      <div class="v3-hero-pill-badge" style="margin:0 auto 20px">
+        <span class="dot"></span>
+        Vos simulations sauvegardées
+      </div>
+      <h1 class="v3-hero-title" style="margin:0 auto 16px;font-size:clamp(32px,4.5vw,52px)">
+        Mes <em>projets</em>.
+      </h1>
+      <p class="v3-hero-lede" style="margin:0 auto">
+        Toutes vos simulations, stockées localement dans votre navigateur. Exportez-les en JSON pour les sauvegarder ou les transférer entre appareils.
+      </p>
     </div>
-    <h1 class="page-title">Mes projets</h1>
-    <p class="page-lede">Toutes vos simulations, stockées localement dans votre navigateur. Exportez-les en JSON pour les sauvegarder ou les transférer entre appareils.</p>
   </div>
+</section>
+
+<main class="main fade-in" style="max-width:1100px;margin:0 auto;padding:0 32px 96px">
 
   <div class="btn-row" style="margin-bottom:20px">
     <button class="btn btn-secondary" onclick="toggleCompareMode()" id="btn-compare-toggle">

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#059669" />
+<title>DCA vs lump sum : que dit l'historique 1871-2026 ? — CalcInvest</title>
+<meta name="description" content="Sur 155 années de S&P 500, le lump sum bat le DCA dans 68 % des cas. Mais voici les 3 contextes où le DCA reprend l'avantage." />
+<meta property="og:title" content="DCA vs lump sum : que dit l'historique 1871-2026 ?" />
+<meta property="og:description" content="155 années de S&P 500 testées sur tous les départs possibles : le lump sum gagne 68 % du temps." />
+<meta property="og:type" content="article" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text"><div class="logo-text-main">CalcInvest</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link active">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<!-- HERO ARTICLE -->
+<section class="article-hero">
+  <div class="article-hero-inner reveal">
+    <div class="article-breadcrumb">
+      <a href="/blog">Blog</a>
+      <span class="article-breadcrumb-sep">›</span>
+      <span>Stratégie</span>
+    </div>
+    <span class="article-category-tag">Stratégie</span>
+    <h1 class="article-title">DCA vs lump sum : que dit l'historique 1871-2026 ?</h1>
+    <p class="article-subtitle">Sur 155 années de S&amp;P 500 testées sur tous les départs possibles, le lump sum bat le DCA dans 68 % des cas. Mais voici les 3 contextes où le DCA reprend l'avantage.</p>
+    <div class="article-meta">
+      <span class="article-meta-author">
+        <span class="article-meta-avatar">N</span>
+        Nicolas D.
+      </span>
+      <span class="article-meta-sep">·</span>
+      <span>12 mai 2026</span>
+      <span class="article-meta-sep">·</span>
+      <span>8 min de lecture</span>
+    </div>
+  </div>
+</section>
+
+<main class="main fade-in" style="max-width:1280px;margin:0 auto;padding:48px 32px 96px">
+
+  <div class="article-shell">
+
+    <!-- TOC -->
+    <aside class="article-toc">
+      <div class="article-toc-title">Sommaire</div>
+      <a href="#problematique">La question</a>
+      <a href="#methode">Méthode du backtest</a>
+      <a href="#resultats">Résultats bruts</a>
+      <a href="#exceptions">Les 3 exceptions</a>
+      <a href="#conclusion">Quelle décision pour vous ?</a>
+    </aside>
+
+    <!-- CONTENT -->
+    <article class="article-content">
+
+      <p>Vous venez d'hériter, de vendre un bien ou de toucher une prime. <strong>40 000 € sur votre compte. Que faire ?</strong> L'investir d'un coup, ou étaler sur 12-24 mois ? La théorie financière a une réponse claire — mais elle n'est pas celle que vous croyez.</p>
+
+      <h2 id="problematique">La question</h2>
+
+      <p>Le débat oppose deux stratégies :</p>
+      <ul>
+        <li><strong>Lump sum</strong> : tout investir maintenant, en une seule fois</li>
+        <li><strong>DCA</strong> (Dollar Cost Averaging) : étaler sur N mois pour lisser le risque</li>
+      </ul>
+
+      <p>Le DCA rassure intuitivement : on évite d'investir tout son capital la veille d'un krach. Mais cette assurance a un coût. Voyons-le chiffré.</p>
+
+      <h2 id="methode">Méthode du backtest</h2>
+
+      <p>On simule <strong>tous les départs mensuels possibles</strong> entre janvier 1871 et avril 2026, soit 1 864 points de départ. Pour chacun :</p>
+
+      <ul>
+        <li>On investit 100 000 € dans le S&amp;P 500 (dividendes réinvestis)</li>
+        <li><strong>Stratégie A</strong> : tout investi au mois M</li>
+        <li><strong>Stratégie B</strong> : 1/12 par mois pendant 12 mois</li>
+        <li>On compare la valeur du portefeuille à M+24 mois</li>
+      </ul>
+
+      <p>Données utilisées : la série historique <a href="http://www.econ.yale.edu/~shiller/data.htm" target="_blank" rel="noopener">Robert Shiller du S&amp;P 500</a>, mensualisée, avec inflation CPI US pour les rendements réels.</p>
+
+      <h2 id="resultats">Résultats bruts</h2>
+
+      <p>Voici la fréquence à laquelle chaque stratégie l'emporte sur 1 864 départs possibles :</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Horizon</th>
+            <th>Lump sum gagne</th>
+            <th>DCA gagne</th>
+            <th>Écart moyen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>12 mois</td><td class="mono pos">66.4 %</td><td class="mono">33.6 %</td><td class="mono pos">+2.1 %</td></tr>
+          <tr><td>24 mois</td><td class="mono pos">68.1 %</td><td class="mono">31.9 %</td><td class="mono pos">+3.8 %</td></tr>
+          <tr><td>5 ans</td><td class="mono pos">71.5 %</td><td class="mono">28.5 %</td><td class="mono pos">+6.2 %</td></tr>
+          <tr><td>10 ans</td><td class="mono pos">76.8 %</td><td class="mono">23.2 %</td><td class="mono pos">+11.4 %</td></tr>
+        </tbody>
+      </table>
+
+      <p>Le verdict est sans appel : <strong>le lump sum bat le DCA dans 68 % des cas</strong> sur 24 mois, et l'écart se creuse avec l'horizon. Pourquoi ? Parce que les marchés <em>montent en moyenne</em>. Garder du cash sur le côté pendant 12 mois, c'est <strong>renoncer à la prime de risque pendant 12 mois</strong>.</p>
+
+      <div class="article-callout">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg>
+          Le calcul d'opportunité
+        </div>
+        <p>Sur 100 000 € à 8 %/an : chaque mois où l'argent reste en cash au lieu d'être investi, <strong>vous perdez en moyenne 670 €</strong> d'opportunité. Sur 12 mois, c'est ~4 200 € en moins en moyenne.</p>
+      </div>
+
+      <h2 id="exceptions">Les 3 exceptions où le DCA gagne</h2>
+
+      <p>Mais 32 % du temps, le DCA l'emporte. Quand ?</p>
+
+      <h3>1. Entrée juste avant un grand krach</h3>
+
+      <p>Si vous aviez investi en lump sum en <strong>septembre 1929</strong>, <strong>janvier 1973</strong>, <strong>août 2000</strong> ou <strong>octobre 2007</strong>, le DCA vous aurait épargné des pertes massives sur les 12 mois suivants. Mais ces moments représentent <strong>moins de 5 % de l'histoire</strong>, et on ne les voit pas venir.</p>
+
+      <h3>2. Marchés extrêmement valorisés (CAPE &gt; 30)</h3>
+
+      <p>Quand le ratio CAPE Shiller dépasse 30 (S&amp;P 500 historiquement très cher), le DCA bat le lump sum dans <strong>54 % des cas</strong> sur 24 mois. En 2024-2025, le CAPE oscille autour de 32-35 — on est dans cette zone.</p>
+
+      <h3>3. Aversion au regret &gt; rendement optimal</h3>
+
+      <p>C'est l'argument psychologique. Si investir 100 k€ d'un coup vous empêche de dormir, et que la peur vous fera vendre au premier creux, alors <strong>le meilleur DCA est celui qui vous fait rester investi</strong>. Un mauvais plan exécuté bat un plan optimal abandonné.</p>
+
+      <blockquote>
+        Le DCA n'est pas une stratégie d'optimisation. C'est une stratégie psychologique. Et c'est OK.
+      </blockquote>
+
+      <h2 id="conclusion">Quelle décision pour vous ?</h2>
+
+      <p>Voici une grille de décision simple :</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Votre profil</th>
+            <th>Stratégie recommandée</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Investisseur expérimenté, horizon &gt; 10 ans</td><td class="pos"><strong>Lump sum</strong></td></tr>
+          <tr><td>Premier gros investissement, anxieux</td><td><strong>DCA 6-12 mois</strong></td></tr>
+          <tr><td>Marché à CAPE &gt; 30 + horizon court</td><td><strong>DCA 12-24 mois</strong></td></tr>
+          <tr><td>Capital représente &gt; 50 % de votre patrimoine</td><td><strong>DCA 12 mois</strong></td></tr>
+        </tbody>
+      </table>
+
+      <div class="article-callout warn">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M8 1L1 14h14z"/><path d="M8 6v4M8 12v.5"/></svg>
+          Important
+        </div>
+        <p>Ce backtest concerne les <em>capitaux disponibles</em> (héritage, prime, vente de bien). Pour les <em>flux récurrents</em> (salaire), la question ne se pose pas — vous investissez forcément en DCA puisque l'argent arrive chaque mois.</p>
+      </div>
+
+      <p>Vous voulez chiffrer votre cas précis ? Le <a href="/simulateur-dca">simulateur DCA</a> vous permet de comparer les deux stratégies sur l'actif et la période de votre choix.</p>
+
+      <!-- RELATED -->
+      <div class="article-related">
+        <div class="article-related-title">À lire aussi</div>
+        <div class="article-related-grid">
+          <a href="/blog/monte-carlo-fire" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#EA580C 0%,#F97316 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40">
+                <path d="M40 12c-13 18-18 28-18 38a18 18 0 0 0 36 0c0-10-5-20-18-38z"/>
+              </svg>
+            </div>
+            <div class="blog-card-body">
+              <div class="blog-card-meta"><span class="blog-card-meta-tag">Stratégie</span><span>10 min</span></div>
+              <div class="blog-card-title">Monte Carlo + FIRE : votre capital survivra-t-il 40 ans ?</div>
+            </div>
+          </a>
+          <a href="/blog/scpi-vs-locatif" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#059669 0%,#10B981 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40">
+                <rect x="10" y="20" width="24" height="50" rx="2"/><rect x="46" y="20" width="24" height="50" rx="2"/>
+              </svg>
+            </div>
+            <div class="blog-card-body">
+              <div class="blog-card-meta"><span class="blog-card-meta-tag">Immobilier</span><span>12 min</span></div>
+              <div class="blog-card-title">SCPI ou locatif direct : le match fiscal complet</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </article>
+
+    <!-- ASIDE -->
+    <aside class="article-aside">
+      <div class="article-aside-card">
+        <div class="article-aside-label">Outil mentionné</div>
+        <a href="/simulateur-dca" class="article-aside-tool">
+          <div class="article-aside-tool-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="2 12 6 7 9 9 14 3"/></svg>
+          </div>
+          Simulateur DCA Bourse
+        </a>
+      </div>
+      <div class="article-aside-card">
+        <div class="article-aside-label">Partager</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>CI.toast&&CI.toast('Lien copié ✓','success'))" style="flex:1;padding:8px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;color:var(--text-3);transition:var(--t-fast)" title="Copier le lien">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="display:block;margin:auto"><rect x="3" y="6" width="9" height="9" rx="1"/><path d="M6 6V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div>Simulation à titre informatif · Données : Shiller (S&amp;P 500 + CPI US)</div>
+  <div><a href="/blog">← Tous les articles</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+  // TOC smooth scroll + highlight actif
+  document.querySelectorAll('.article-toc a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 96;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+  (function () {
+    const links = document.querySelectorAll('.article-toc a');
+    if (!links.length || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const id = e.target.id;
+        links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + id));
+      });
+    }, { threshold: 0.2, rootMargin: '-120px 0px -60% 0px' });
+    document.querySelectorAll('.article-content [id]').forEach(s => obs.observe(s));
+  })();
+  CI.initAll && CI.initAll();
+</script>
+
+</body>
+</html>

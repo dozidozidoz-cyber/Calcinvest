@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#059669" />
+<title>Mentions légales — CalcInvest</title>
+<meta name="description" content="Mentions légales, conditions d'utilisation, politique de confidentialité et avertissement de CalcInvest." />
+<meta name="robots" content="index, follow" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+  .legal-toc {
+    position: sticky;
+    top: 84px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 18px 18px 14px;
+    font-size: 13px;
+    box-shadow: var(--shadow-sm);
+  }
+  .legal-toc-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--text-4);
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding: 0 10px;
+  }
+  .legal-toc a {
+    display: block;
+    color: var(--text-3);
+    text-decoration: none;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: var(--r-sm);
+    transition: var(--t-fast);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  .legal-toc a:hover { color: var(--text); background: var(--bg-hover); }
+  .legal-toc a.is-active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+  .legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: 96px;
+    transition: box-shadow var(--t);
+  }
+  .legal-section:hover { box-shadow: var(--shadow); }
+  .legal-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .legal-section h2-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .legal-section h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--text-4);
+    margin-top: 22px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .legal-section p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .legal-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 14px;
+  }
+  .legal-section ul li {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+    padding: 6px 0;
+    padding-left: 18px;
+    position: relative;
+  }
+  .legal-section ul li::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 14px;
+    width: 4px; height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .legal-section strong { color: var(--text); font-weight: 600; }
+  .legal-section a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .legal-section a:hover { text-decoration: underline; }
+  .legal-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 18px 0;
+  }
+  .legal-info-item {
+    background: var(--bg);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r);
+    padding: 12px 16px;
+  }
+  .legal-info-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--text-4);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .legal-info-value {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  @media (max-width: 880px) {
+    .legal-shell { grid-template-columns: 1fr !important; }
+    .legal-toc { position: static; margin-bottom: 24px; }
+    .legal-info-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-text-main">CalcInvest</div>
+      </div>
+    </a>
+  </div>
+
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<!-- ═══════════════════ HERO V3 LITE ═══════════════════ -->
+<section class="v3-hero-bg" style="padding:56px 0 64px">
+  <div class="v3-hero-inner" style="grid-template-columns:1fr;text-align:center;max-width:760px">
+    <div class="reveal">
+      <div class="v3-hero-pill-badge" style="margin:0 auto 20px">
+        <span class="dot"></span>
+        Cadre juridique · Mai 2026
+      </div>
+      <h1 class="v3-hero-title" style="margin:0 auto 16px;font-size:clamp(32px,4.5vw,52px)">
+        Mentions <em>légales</em>.
+      </h1>
+      <p class="v3-hero-lede" style="margin:0 auto">
+        Conditions d'utilisation, politique de confidentialité, hébergement et avertissement. Tout est public, vérifiable, et conçu pour vous protéger.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main fade-in" style="max-width:1100px;margin:0 auto;padding:0 32px 96px">
+
+  <div class="legal-shell" style="display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:flex-start">
+
+    <!-- TOC -->
+    <aside class="legal-toc">
+      <div class="legal-toc-title">Sommaire</div>
+      <a href="#editeur">Éditeur du site</a>
+      <a href="#hebergement">Hébergement</a>
+      <a href="#propriete">Propriété intellectuelle</a>
+      <a href="#donnees">Données personnelles (RGPD)</a>
+      <a href="#cookies">Cookies & tracking</a>
+      <a href="#abonnement">Abonnement Premium</a>
+      <a href="#avertissement">Avertissement financier</a>
+      <a href="#responsabilite">Limitation de responsabilité</a>
+      <a href="#contact">Contact</a>
+    </aside>
+
+    <div>
+
+      <!-- ÉDITEUR -->
+      <section class="legal-section reveal" id="editeur">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M3 17h14M5 17V8l5-4 5 4v9M8 17v-4h4v4"/></svg></span>
+          Éditeur du site
+        </h2>
+        <p>Le site <strong>calcinvest.fr</strong> est édité par un particulier dans le cadre d'un projet personnel sans structure juridique commerciale au moment de la publication. Pour toute demande, utilisez le formulaire de contact ou l'adresse e-mail ci-dessous.</p>
+
+        <div class="legal-info-grid">
+          <div class="legal-info-item">
+            <div class="legal-info-label">Nom du service</div>
+            <div class="legal-info-value">CalcInvest</div>
+          </div>
+          <div class="legal-info-item">
+            <div class="legal-info-label">Domaine</div>
+            <div class="legal-info-value">calcinvest.fr</div>
+          </div>
+          <div class="legal-info-item">
+            <div class="legal-info-label">Directeur de publication</div>
+            <div class="legal-info-value">Nicolas D.</div>
+          </div>
+          <div class="legal-info-item">
+            <div class="legal-info-label">Contact</div>
+            <div class="legal-info-value"><a href="mailto:contact@calcinvest.fr">contact@calcinvest.fr</a></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HÉBERGEMENT -->
+      <section class="legal-section reveal" id="hebergement">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="4" width="16" height="6" rx="1"/><rect x="2" y="12" width="16" height="6" rx="1"/><circle cx="5" cy="7" r="0.8" fill="currentColor"/><circle cx="5" cy="15" r="0.8" fill="currentColor"/></svg></span>
+          Hébergement
+        </h2>
+        <p>Le site est hébergé par <strong>Vercel Inc.</strong>, un service d'hébergement statique et de fonctions serverless basé aux États-Unis.</p>
+
+        <div class="legal-info-grid">
+          <div class="legal-info-item">
+            <div class="legal-info-label">Hébergeur</div>
+            <div class="legal-info-value">Vercel Inc.</div>
+          </div>
+          <div class="legal-info-item">
+            <div class="legal-info-label">Adresse</div>
+            <div class="legal-info-value">340 S Lemon Ave #4133, Walnut, CA 91789, USA</div>
+          </div>
+          <div class="legal-info-item">
+            <div class="legal-info-label">Site</div>
+            <div class="legal-info-value"><a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a></div>
+          </div>
+          <div class="legal-info-item">
+            <div class="legal-info-label">Authentification & DB</div>
+            <div class="legal-info-value">Supabase (Irlande, UE)</div>
+          </div>
+        </div>
+
+        <h3>Sous-traitants techniques</h3>
+        <ul>
+          <li><strong>Vercel</strong> — hébergement et CDN edge (US, conforme DPF UE-US)</li>
+          <li><strong>Supabase</strong> — base de données et authentification (UE, conforme RGPD)</li>
+          <li><strong>Stripe</strong> — paiement et gestion des abonnements (UE, PCI-DSS niveau 1)</li>
+          <li><strong>Google Fonts</strong> — typographie (servie via CDN sans tracking utilisateur côté Google selon configuration)</li>
+        </ul>
+      </section>
+
+      <!-- PROPRIÉTÉ INTELLECTUELLE -->
+      <section class="legal-section reveal" id="propriete">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M10 2L3 6v5c0 4 3 7 7 7s7-3 7-7V6l-7-4z"/><polyline points="7 10 9 12 13 8"/></svg></span>
+          Propriété intellectuelle
+        </h2>
+        <p>L'ensemble des contenus du site (textes, formules, graphiques, code source, design) sont la propriété exclusive de l'éditeur sauf mention contraire. Toute reproduction totale ou partielle sans autorisation préalable est interdite.</p>
+
+        <h3>Données financières historiques</h3>
+        <p>Les données historiques utilisées dans les simulateurs proviennent de sources publiques librement consultables :</p>
+        <ul>
+          <li><strong>S&P 500 (1871–2026)</strong> — Robert J. Shiller (Yale University, données publiques)</li>
+          <li><strong>ETF & cryptos</strong> — Yahoo Finance API publique</li>
+          <li><strong>Inflation, immobilier</strong> — INSEE (open data)</li>
+          <li><strong>Régime général retraite</strong> — CNAV et code de la Sécurité sociale</li>
+          <li><strong>Complémentaire retraite</strong> — AGIRC-ARRCO (barèmes publics)</li>
+          <li><strong>Fiscalité</strong> — Code général des impôts, BOFiP, Bercy</li>
+        </ul>
+
+        <h3>Marques tierces</h3>
+        <p>Les marques et logos cités (Stripe, Supabase, Vercel, etc.) appartiennent à leurs propriétaires respectifs et sont mentionnés à titre informatif uniquement.</p>
+      </section>
+
+      <!-- DONNÉES PERSONNELLES -->
+      <section class="legal-section reveal" id="donnees">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="4" y="8" width="12" height="9" rx="1"/><path d="M7 8V6a3 3 0 0 1 6 0v2"/><circle cx="10" cy="12" r="1" fill="currentColor"/></svg></span>
+          Données personnelles (RGPD)
+        </h2>
+        <p><strong>CalcInvest ne collecte aucune donnée personnelle financière.</strong> Tous les calculs s'exécutent localement dans votre navigateur (JavaScript pur). Aucun paramètre de simulation n'est envoyé à nos serveurs.</p>
+
+        <h3>Données collectées (seulement avec un compte)</h3>
+        <ul>
+          <li><strong>E-mail</strong> — pour la création de compte et l'authentification (Supabase Auth)</li>
+          <li><strong>Mot de passe</strong> — stocké sous forme de hash bcrypt par Supabase, jamais accessible en clair</li>
+          <li><strong>Projets sauvegardés</strong> — paramètres de simulation que vous choisissez explicitement de sauvegarder</li>
+          <li><strong>Plan d'abonnement</strong> — statut Premium et date d'expiration (Stripe webhook → Supabase)</li>
+        </ul>
+
+        <h3>Vos droits</h3>
+        <p>Conformément au RGPD et à la loi Informatique et Libertés, vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition. Pour exercer ces droits, contactez <a href="mailto:contact@calcinvest.fr">contact@calcinvest.fr</a>.</p>
+
+        <h3>Suppression de compte</h3>
+        <p>Vous pouvez supprimer votre compte à tout moment depuis votre espace personnel. La suppression entraîne l'effacement immédiat et définitif de toutes vos données (e-mail, projets, statut Premium).</p>
+
+        <h3>Durée de conservation</h3>
+        <ul>
+          <li><strong>Compte actif</strong> : tant que vous l'utilisez</li>
+          <li><strong>Compte inactif &gt; 24 mois</strong> : notification puis suppression automatique</li>
+          <li><strong>Factures Stripe</strong> : 10 ans (obligation légale comptable)</li>
+        </ul>
+      </section>
+
+      <!-- COOKIES -->
+      <section class="legal-section reveal" id="cookies">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="10" cy="10" r="8"/><circle cx="7" cy="8" r="0.5" fill="currentColor"/><circle cx="12" cy="7" r="0.5" fill="currentColor"/><circle cx="13" cy="12" r="0.5" fill="currentColor"/><circle cx="8" cy="13" r="0.5" fill="currentColor"/></svg></span>
+          Cookies & tracking
+        </h2>
+        <p><strong>CalcInvest n'utilise aucun cookie de tracking, aucune analytique tierce (pas de Google Analytics, pas de Meta Pixel, pas de Hotjar).</strong></p>
+
+        <h3>Cookies techniques nécessaires</h3>
+        <ul>
+          <li><strong>Token JWT</strong> (localStorage) — session d'authentification, dure 1h auto-renouvelable. Effacé à la déconnexion.</li>
+          <li><strong>Préférences URL</strong> (query string) — paramètres de simulation pour partager une URL. Pas un cookie, juste l'URL.</li>
+          <li><strong>Service Worker cache</strong> — données historiques mises en cache pour fonctionner offline. Aucune donnée personnelle.</li>
+        </ul>
+        <p>Aucune bannière de consentement cookie n'est requise puisqu'aucun cookie de mesure d'audience ou marketing n'est déposé.</p>
+      </section>
+
+      <!-- ABONNEMENT -->
+      <section class="legal-section reveal" id="abonnement">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polygon points="10 2 12 6.5 17 7 13 10.5 14 16 10 13 6 16 7 10.5 3 7 8 6.5"/></svg></span>
+          Abonnement Premium
+        </h2>
+        <p>L'abonnement Premium est facturé <strong>4,90 € TTC par mois</strong>, sans engagement de durée. Il est géré par <strong>Stripe Inc.</strong> et donne accès aux analyses avancées de tous les simulateurs.</p>
+
+        <h3>Modalités</h3>
+        <ul>
+          <li><strong>Tarif</strong> : 4,90 € TTC/mois (TVA française 20 % incluse)</li>
+          <li><strong>Engagement</strong> : aucun, résiliable à tout moment depuis le portail client Stripe</li>
+          <li><strong>Renouvellement</strong> : automatique chaque mois jusqu'à résiliation</li>
+          <li><strong>Effet de la résiliation</strong> : accès Premium maintenu jusqu'à la fin de la période payée</li>
+          <li><strong>Remboursement</strong> : pas de remboursement au prorata, mais accès Premium reste actif</li>
+          <li><strong>Facture</strong> : PDF envoyée automatiquement par e-mail à chaque prélèvement</li>
+        </ul>
+
+        <h3>Droit de rétractation</h3>
+        <p>Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation de 14 jours <strong>ne s'applique pas</strong> aux services pleinement exécutés avant la fin du délai, dès lors que l'utilisateur a accédé aux contenus Premium. Si vous souhaitez tester avant de payer, le plan gratuit est sans limite de durée et sans carte bancaire requise.</p>
+
+        <h3>Litiges paiement</h3>
+        <p>En cas de litige relatif au paiement, contactez d'abord <a href="mailto:contact@calcinvest.fr">contact@calcinvest.fr</a>. Pour les conflits non résolus, vous pouvez saisir la plateforme européenne de règlement en ligne des litiges : <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
+      </section>
+
+      <!-- AVERTISSEMENT -->
+      <section class="legal-section reveal" id="avertissement">
+        <h2 style="color:var(--yellow)">
+          <span class="legal-section-h2-icon" style="background:rgba(217,119,6,0.10);color:var(--yellow)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M10 2L1 17h18z"/><line x1="10" y1="8" x2="10" y2="12"/><circle cx="10" cy="14.5" r="0.5" fill="currentColor"/></svg></span>
+          Avertissement financier
+        </h2>
+        <p><strong>CalcInvest est un outil d'analyse et de simulation. Ce n'est pas un conseiller en investissement, ni un courtier, ni une banque.</strong></p>
+
+        <h3>Ce que CalcInvest fait</h3>
+        <ul>
+          <li>Calcule des projections sur des hypothèses que <em>vous</em> choisissez</li>
+          <li>Backteste des stratégies sur des données historiques réelles</li>
+          <li>Applique les règles fiscales françaises 2025-2026 en vigueur</li>
+          <li>Affiche des KPIs financiers standards (TRI, CAGR, drawdown, etc.)</li>
+        </ul>
+
+        <h3>Ce que CalcInvest <em>ne fait pas</em></h3>
+        <ul>
+          <li><strong>Ne donne aucun conseil personnalisé</strong> : votre situation patrimoniale globale n'est pas prise en compte</li>
+          <li><strong>Ne garantit aucun résultat futur</strong> : les performances passées ne préjugent pas des performances futures</li>
+          <li><strong>Ne gère aucun portefeuille</strong> : aucun ordre n'est passé, aucun actif n'est détenu pour vous</li>
+          <li><strong>Ne remplace pas un Conseiller en Gestion de Patrimoine</strong> certifié pour des décisions structurantes</li>
+        </ul>
+
+        <p style="background:rgba(217,119,6,0.06);border-left:3px solid var(--yellow);padding:14px 18px;border-radius:var(--r);margin-top:18px"><strong style="color:var(--yellow)">Recommandation forte :</strong> avant tout investissement significatif (achat immobilier, transfert de capitaux, ouverture de PER, etc.), consultez un <strong>Conseiller en Investissement Financier</strong> (CIF) immatriculé à l'ORIAS ou un <strong>Conseiller en Gestion de Patrimoine</strong> (CGP) certifié.</p>
+      </section>
+
+      <!-- RESPONSABILITÉ -->
+      <section class="legal-section reveal" id="responsabilite">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M10 2v16M3 5l7 3 7-3M3 15l7 3 7-3"/></svg></span>
+          Limitation de responsabilité
+        </h2>
+        <p>L'éditeur s'efforce de maintenir les calculateurs à jour et exempts d'erreurs, mais ne peut garantir l'absence totale de bugs, d'imprécisions ou de retards de mise à jour des barèmes fiscaux.</p>
+
+        <p>L'utilisation de CalcInvest se fait sous votre <strong>seule responsabilité</strong>. L'éditeur ne saurait être tenu responsable :</p>
+        <ul>
+          <li>des pertes financières directes ou indirectes liées à des décisions prises sur la base des simulations</li>
+          <li>d'erreurs de calcul résultant d'évolutions législatives non encore intégrées</li>
+          <li>de la non-disponibilité temporaire du service</li>
+          <li>de la perte de données en cas de panne d'un sous-traitant technique (Supabase, Vercel)</li>
+        </ul>
+
+        <p>L'utilisateur reconnaît que les simulations sont fournies <strong>"telles quelles"</strong>, sans garantie d'exactitude absolue, et qu'il lui appartient de vérifier les chiffres clés avant toute décision engageante.</p>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="legal-section reveal" id="contact">
+        <h2>
+          <span class="legal-section-h2-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="4" width="16" height="12" rx="1"/><polyline points="2 6 10 11 18 6"/></svg></span>
+          Contact
+        </h2>
+        <p>Pour toute question (juridique, technique, commerciale, RGPD, suppression de compte, signalement de bug) :</p>
+
+        <div class="legal-info-grid">
+          <div class="legal-info-item">
+            <div class="legal-info-label">E-mail</div>
+            <div class="legal-info-value"><a href="mailto:contact@calcinvest.fr">contact@calcinvest.fr</a></div>
+          </div>
+          <div class="legal-info-item">
+            <div class="legal-info-label">Délai de réponse</div>
+            <div class="legal-info-value">Sous 5 jours ouvrés</div>
+          </div>
+        </div>
+
+        <p style="margin-top:14px;font-size:12.5px;color:var(--text-4)">Document mis à jour le 14 mai 2026 · Version 1.0</p>
+      </section>
+
+    </div>
+
+  </div>
+
+</main>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="footer">
+  <div>Simulation à titre informatif · Données : Shiller, Yahoo Finance, CNAV, AGIRC-ARRCO, INSEE</div>
+  <div>
+    <a href="/">Accueil</a> ·
+    <a href="/methodologie">Méthodologie</a> ·
+    <a href="/blog">Blog</a> ·
+    <a href="/abonnement">Premium</a> ·
+    <a href="/mentions-legales">Mentions légales</a>
+  </div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+  // Smooth scroll TOC + highlight actif
+  document.querySelectorAll('.legal-toc a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 96;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  (function () {
+    const links = document.querySelectorAll('.legal-toc a');
+    if (!links.length || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + id));
+      });
+    }, { threshold: 0.2, rootMargin: '-120px 0px -60% 0px' });
+    document.querySelectorAll('.legal-section[id]').forEach(s => observer.observe(s));
+  })();
+
+  CI.initAll && CI.initAll();
+</script>
+
+</body>
+</html>

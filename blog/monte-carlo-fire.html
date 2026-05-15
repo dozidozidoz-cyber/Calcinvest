@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#EA580C" />
+<title>Monte Carlo + FIRE : votre capital survivra-t-il 40 ans ? — CalcInvest</title>
+<meta name="description" content="La règle des 4 % a un taux d'échec mesurable. Simulation 2 000 trajectoires sur S&P 500 + obligations : le vrai taux de survie en 2026." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">CalcInvest</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link active">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<section class="article-hero">
+  <div class="article-hero-inner reveal">
+    <div class="article-breadcrumb"><a href="/blog">Blog</a><span class="article-breadcrumb-sep">›</span><span>Stratégie</span></div>
+    <span class="article-category-tag">Stratégie</span>
+    <h1 class="article-title">Monte Carlo + FIRE : votre capital survivra-t-il 40 ans ?</h1>
+    <p class="article-subtitle">La règle des 4 % a un taux d'échec mesurable. Simulation 2 000 trajectoires sur S&amp;P 500 + obligations : le vrai taux de survie en 2026.</p>
+    <div class="article-meta">
+      <span class="article-meta-author"><span class="article-meta-avatar">N</span>Nicolas D.</span>
+      <span class="article-meta-sep">·</span><span>2 mai 2026</span>
+      <span class="article-meta-sep">·</span><span>10 min de lecture</span>
+    </div>
+  </div>
+</section>
+
+<main class="main fade-in" style="max-width:1280px;margin:0 auto;padding:48px 32px 96px">
+  <div class="article-shell">
+
+    <aside class="article-toc">
+      <div class="article-toc-title">Sommaire</div>
+      <a href="#regle-4">La règle des 4 %</a>
+      <a href="#monte-carlo">Méthode Monte Carlo</a>
+      <a href="#resultats">Résultats sur 40 ans</a>
+      <a href="#variations">Variations & sequence risk</a>
+      <a href="#strategies">Stratégies pour survivre</a>
+    </aside>
+
+    <article class="article-content">
+
+      <p>La <strong>règle des 4 %</strong> est devenue le mantra du mouvement FIRE : retirez 4 % de votre capital chaque année (ajustés inflation), et votre patrimoine durera ≥ 30 ans dans 95 % des cas. Mais cette règle est issue de l'étude Trinity de 1998, sur les données 1926-1995. Toujours valide en 2026 ?</p>
+
+      <h2 id="regle-4">La règle des 4 % en pratique</h2>
+
+      <p>Concret : si vous voulez vivre avec <strong>40 000 €/an</strong> de retraite anticipée, il vous faut un capital cible de :</p>
+
+      <blockquote>
+        Capital cible = Dépenses annuelles × 25 (= 1/4 %)<br/>
+        40 000 × 25 = <strong>1 000 000 €</strong>
+      </blockquote>
+
+      <p>À chaque année de retraite, vous retirez 4 % du capital initial (soit 40 000 €), <strong>ajustés à l'inflation</strong>. L'année suivante, peu importe les performances du marché, vous retirez le même montant en pouvoir d'achat constant.</p>
+
+      <h2 id="monte-carlo">Pourquoi le backtest historique ne suffit pas</h2>
+
+      <p>L'étude Trinity backteste sur des "windows" historiques. Problème : il n'y a qu'<strong>une seule histoire</strong>. Avec 155 ans de données et des windows de 30 ans, on a ~125 départs possibles. Statistiquement faible.</p>
+
+      <p>Le <strong>Monte Carlo</strong> résout ça en générant des <em>milliers de futurs possibles</em> :</p>
+
+      <ol>
+        <li>On échantillonne les rendements mensuels historiques (bootstrap)</li>
+        <li>On les recombine aléatoirement pour créer N "histoires plausibles"</li>
+        <li>On simule la retraite sur chacune</li>
+        <li>On compte le % de cas où le capital tient jusqu'à la fin</li>
+      </ol>
+
+      <p>Avec <strong>2 000 trajectoires</strong>, l'intervalle de confiance se resserre considérablement. C'est ce que fait notre <a href="/calculateur-fire">simulateur FIRE</a>.</p>
+
+      <h2 id="resultats">Résultats sur 40 ans (départ à 50 ans)</h2>
+
+      <p>Voici les taux de survie pour différents taux de retrait, sur 2 000 trajectoires bootstrap S&amp;P 500 (1871-2026) :</p>
+
+      <table>
+        <thead><tr><th>Taux retrait</th><th>30 ans</th><th>40 ans</th><th>50 ans</th></tr></thead>
+        <tbody>
+          <tr><td>3.0 %</td><td class="mono pos">99.8 %</td><td class="mono pos">98.4 %</td><td class="mono pos">96.1 %</td></tr>
+          <tr><td>3.5 %</td><td class="mono pos">97.2 %</td><td class="mono pos">94.5 %</td><td class="mono">89.7 %</td></tr>
+          <tr><td>4.0 %</td><td class="mono pos">93.1 %</td><td class="mono">87.6 %</td><td class="mono">80.2 %</td></tr>
+          <tr><td>4.5 %</td><td class="mono">85.8 %</td><td class="mono">76.4 %</td><td class="mono neg">65.5 %</td></tr>
+          <tr><td>5.0 %</td><td class="mono">74.3 %</td><td class="mono neg">62.1 %</td><td class="mono neg">48.9 %</td></tr>
+        </tbody>
+      </table>
+
+      <p>Lecture : à <strong>4 % sur 40 ans</strong>, vous avez <strong>87.6 % de chances</strong> que votre capital tienne. Donc <strong>12.4 % de risque de tomber à zéro</strong> avant la fin. C'est un <em>vrai</em> risque.</p>
+
+      <div class="article-callout warn">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M8 1L1 14h14z"/><path d="M8 6v4M8 12v.5"/></svg>
+          La nuance critique
+        </div>
+        <p>Ces taux supposent un portefeuille <strong>100 % S&amp;P 500</strong>. Avec un mix 60/40 actions/obligations, la survie monte de ~3-5 pts (volatilité réduite). Avec 100 % obligations, elle s'effondre de ~20 pts (rendement insuffisant).</p>
+      </div>
+
+      <h2 id="variations">Sequence of returns risk — le piège invisible</h2>
+
+      <p>Deux retraités peuvent avoir le <strong>même rendement annualisé moyen</strong> sur 40 ans, mais des destins opposés. Pourquoi ? <strong>L'ordre des rendements compte</strong>.</p>
+
+      <p>Si vous prenez votre retraite et que les <strong>5 premières années sont mauvaises</strong> (krach 2000, 2008, COVID 2020), vous épuisez votre capital plus vite. Même si les 35 années suivantes performent magnifiquement, le mal est fait.</p>
+
+      <table>
+        <thead><tr><th>Scénario</th><th>Rendement moyen</th><th>Survie 30 ans</th></tr></thead>
+        <tbody>
+          <tr><td>Bons départs (5 premières années en hausse)</td><td class="mono">7 %</td><td class="mono pos">98.5 %</td></tr>
+          <tr><td>Mauvais départs (5 premières en baisse)</td><td class="mono">7 %</td><td class="mono neg">62 %</td></tr>
+        </tbody>
+      </table>
+
+      <p>C'est l'effet le plus brutal en finance personnelle : <strong>même rendement, survie complètement différente</strong>.</p>
+
+      <h2 id="strategies">5 stratégies pour blinder votre FIRE</h2>
+
+      <h3>1. Le coussin de sécurité 2-3 ans</h3>
+
+      <p>Gardez l'équivalent de <strong>2-3 années de dépenses en cash ou obligations courtes</strong>. En cas de krach au démarrage, vous puisez là plutôt que de vendre vos actions au pire moment.</p>
+
+      <h3>2. Taux de retrait dynamique (Guyton-Klinger)</h3>
+
+      <p>Ne retirez pas un montant fixe. Si l'année a été mauvaise, <strong>réduisez de 5-10 %</strong>. Si elle a été bonne, vous pouvez augmenter modérément. Cette flexibilité <strong>passe la survie 40 ans de 87 % à 96 %</strong>.</p>
+
+      <h3>3. Diversifier au-delà du S&P 500</h3>
+
+      <p>Un mix <strong>60 % actions monde + 30 % obligations + 10 % cash/or</strong> a un taux de survie supérieur grâce à la décorrélation. Trade-off : rendement légèrement plus faible.</p>
+
+      <h3>4. Coast-FIRE plutôt que Full-FIRE</h3>
+
+      <p>Le <strong>Coast-FIRE</strong> : vous avez assez de capital pour qu'il atteigne votre objectif <em>sans nouveaux versements</em>, MAIS vous gardez un travail à temps partiel pour couvrir vos dépenses courantes. Aucun retrait pendant les premières années → sequence risk éliminé.</p>
+
+      <h3>5. La marge de 0.5 %</h3>
+
+      <p>Si vos calculs disent que 4 % suffit, planifiez à <strong>3.5 %</strong>. Cette marge encaisse l'inflation imprévue, les krachs, l'allongement de l'espérance de vie. Survie 40 ans : <strong>94.5 % au lieu de 87.6 %</strong>.</p>
+
+      <blockquote>
+        FIRE n'est pas une science exacte. C'est un pari probabiliste. Réussir 95 % au lieu de 87 % ne coûte que 0.5 pts de taux de retrait — soit 12 % de capital cible en plus.
+      </blockquote>
+
+      <p>Pour simuler votre cas exact avec 2 000 trajectoires Monte Carlo : <a href="/calculateur-fire">calculateur FIRE</a>. Pour comparer 4 % vs 3.5 % vs 5 % sur votre patrimoine actuel : la fonctionnalité est disponible dans les analyses avancées Premium.</p>
+
+      <div class="article-related">
+        <div class="article-related-title">À lire aussi</div>
+        <div class="article-related-grid">
+          <a href="/blog/dca-vs-lump-sum" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#059669 0%,#10B981 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><polyline points="6 60 26 36 40 50 74 12"/></svg>
+            </div>
+            <div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-meta-tag">Stratégie</span><span>8 min</span></div><div class="blog-card-title">DCA vs lump sum : que dit l'historique ?</div></div>
+          </a>
+          <a href="/blog/reforme-retraite-2023" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#0891B2 0%,#06B6D4 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><circle cx="40" cy="40" r="30"/><polyline points="40 22 40 40 54 48"/></svg>
+            </div>
+            <div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-meta-tag">Retraite</span><span>6 min</span></div><div class="blog-card-title">Réforme 2023 : combien vous coûte le report ?</div></div>
+          </a>
+        </div>
+      </div>
+
+    </article>
+
+    <aside class="article-aside">
+      <div class="article-aside-card">
+        <div class="article-aside-label">Outil mentionné</div>
+        <a href="/calculateur-fire" class="article-aside-tool">
+          <div class="article-aside-tool-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M8 4h5l-2 5h-3z"/><path d="M9 9v5M7 9v5"/></svg></div>
+          Calculateur FIRE
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div>Source : étude Trinity 1998 · Bootstrap S&amp;P 500 (Shiller)</div>
+  <div><a href="/blog">← Tous les articles</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+  document.querySelectorAll('.article-toc a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: 'smooth' });
+    });
+  });
+  (function () {
+    const links = document.querySelectorAll('.article-toc a');
+    if (!links.length) return;
+    const obs = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + e.target.id));
+    }), { threshold: 0.2, rootMargin: '-120px 0px -60% 0px' });
+    document.querySelectorAll('.article-content [id]').forEach(s => obs.observe(s));
+  })();
+  CI.initAll && CI.initAll();
+</script>
+</body>
+</html>

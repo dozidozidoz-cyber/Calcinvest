@@ -12,12 +12,65 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+  /* Background subtil v3 pour pages auth */
+  body.auth-body {
+    background:
+      radial-gradient(ellipse 1200px 500px at 80% 20%, rgba(5, 150, 105, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 800px 500px at 10% 90%, rgba(37, 99, 235, 0.04) 0%, transparent 50%),
+      var(--bg);
+    background-attachment: fixed;
+    position: relative;
+  }
+  body.auth-body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 30%, rgba(5,150,105,0.04) 1.5px, transparent 2px),
+      radial-gradient(circle at 75% 70%, rgba(37,99,235,0.03) 1.5px, transparent 2px);
+    background-size: 60px 60px, 80px 80px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+  .auth-page { position: relative; z-index: 2; }
+  .auth-card {
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 24px 48px rgba(15,23,42,0.06);
+    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.96);
+  }
+  .auth-top-nav {
+    position: fixed;
+    top: 24px; left: 24px;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 8px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-full);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: var(--t-fast);
+  }
+  .auth-top-nav:hover { color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); }
+</style>
 </head>
-<body>
+<body class="auth-body">
+
+<a href="/" class="auth-top-nav">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M10 12L6 8l4-4"/></svg>
+  Retour à l'accueil
+</a>
 
 <div class="auth-page">
 
-  <div class="auth-card">
+  <div class="auth-card reveal">
 
     <!-- Logo -->
     <div class="auth-logo">

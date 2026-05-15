@@ -595,8 +595,70 @@
       CI.initCountUp(root);
       CI.initParallax(root);
       CI.initSubNav();
+      CI.initProgressBar();
+      CI.initScrollTop();
       CI._scrollInited = true;
     }
+  };
+
+  /* ===========================================================
+     READING PROGRESS BAR — barre fine en haut, % de scroll
+     Active si <body data-progress> ou auto sur pages "longues"
+     =========================================================== */
+  CI.initProgressBar = function () {
+    // Crée la barre si pas présente
+    let bar = document.querySelector('.v3-progress');
+    if (!bar) {
+      const wantsProgress = document.body.hasAttribute('data-progress')
+                         || document.querySelector('.legal-section, .methodo-section, .article-content');
+      if (!wantsProgress) return;
+      bar = document.createElement('div');
+      bar.className = 'v3-progress is-active';
+      document.body.appendChild(bar);
+    }
+    let ticking = false;
+    function update() {
+      const doc = document.documentElement;
+      const scrolled = window.scrollY;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const pct = max > 0 ? Math.min(100, (scrolled / max) * 100) : 0;
+      bar.style.width = pct + '%';
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
+  };
+
+  /* ===========================================================
+     SCROLL TO TOP — bouton FAB en bas à gauche
+     =========================================================== */
+  CI.initScrollTop = function () {
+    let btn = document.querySelector('.v3-scroll-top');
+    if (!btn) {
+      // Auto-injecté seulement si la page est "longue"
+      const isLong = document.documentElement.scrollHeight > window.innerHeight * 3;
+      if (!isLong) return;
+      btn = document.createElement('button');
+      btn.className = 'v3-scroll-top';
+      btn.setAttribute('aria-label', 'Retour en haut');
+      btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M8 12V4M4 8l4-4 4 4"/></svg>';
+      btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      document.body.appendChild(btn);
+    }
+    let ticking = false;
+    function update() {
+      if (window.scrollY > 1000) btn.classList.add('is-visible');
+      else btn.classList.remove('is-visible');
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
   };
 
   /* ===========================================================
