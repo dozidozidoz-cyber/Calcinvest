@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#7C3AED" />
+<title>Monte Carlo Trading — Simulez votre système | CalcInvest</title>
+<meta name="description" content="Lancez 2 000 trajectoires de votre système de trading. Distribution drawdowns, courbes équité percentiles, probabilité de ruine et d'atteindre votre objectif." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">Monte Carlo Trading</div><div class="logo-text-sub">Simulateur</div></div>
+    </a>
+  </div>
+  <div class="topbar-center">
+    <nav class="segmented">
+      <a class="segmented-btn" href="/calculateur-pips">PIPS</a>
+      <a class="segmented-btn" href="/calculateur-marge-liquidation">Marge</a>
+      <a class="segmented-btn" href="/calculateur-couts-trading">Coûts</a>
+      <a class="segmented-btn" href="/calculateur-risk-management">Risk</a>
+      <a class="segmented-btn active" aria-current="page" href="/simulateur-monte-carlo-trading">MC Trading</a>
+    </nav>
+  </div>
+  <div class="topbar-right" id="ci-user-zone"><a href="/mes-projets" class="btn-ghost"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><path d="M2 4h5l1 2h6v7H2z"/></svg><span>Projets</span></a></div>
+</header>
+
+<div class="shell" id="page-mctrading">
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#params"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 5h10M3 8h10M3 11h6"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Système</div><div class="sidebar-link-title">Paramètres</div></div></a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+      <a class="sidebar-link" href="#a1"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="8" width="3" height="6"/><rect x="6" y="4" width="3" height="10"/><rect x="10" y="6" width="3" height="8"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 01</div><div class="sidebar-link-title">Distribution finale</div></div></a>
+      <a class="sidebar-link" href="#a2"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 13l4-4 3 3 5-6"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 02</div><div class="sidebar-link-title">Courbes équité</div></div></a>
+      <a class="sidebar-link" href="#a3"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 4l3 3-3 3M13 4l-3 3 3 3M2 12h12"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 03</div><div class="sidebar-link-title">Drawdowns</div></div></a>
+      <a class="sidebar-link" href="#a4"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 04</div><div class="sidebar-link-title">Probabilités</div></div></a>
+      <a class="sidebar-link" href="#a5"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="2" width="4" height="4"/><rect x="6" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="2" y="6" width="4" height="4"/><rect x="6" y="6" width="4" height="4"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 05</div><div class="sidebar-link-title">Heatmap WR × R/R</div></div></a>
+    </div>
+  </aside>
+
+  <main class="main fade-in">
+
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><circle cx="5" cy="5" r="1.5"/><circle cx="11" cy="6" r="1.5"/><circle cx="8" cy="11" r="1.5"/></svg></span>
+        Trading · Monte Carlo
+      </div>
+      <h1 class="page-title">2 000 futurs possibles de votre système.</h1>
+      <p class="page-lede">Au lieu d'un seul backtest historique, on simule <strong style="color:var(--text)">2 000 séquences aléatoires</strong> de N trades avec vos paramètres. Distribution complète des résultats finaux, drawdowns probables, probabilité de ruine et d'atteindre votre objectif. <em style="color:var(--accent);font-style:normal;font-weight:600">La variance révélée.</em></p>
+    </div>
+
+    <!-- ═══ PARAMÈTRES ═══ -->
+    <section class="accordion open" id="params">
+      <div class="accordion-header">
+        <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Système &amp; horizon</div>
+          <div class="accordion-summary" id="mc-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="accordion-body"><div class="accordion-body-inner">
+
+        <div class="field-grid">
+          <div class="field">
+            <div class="field-label">Capital de départ</div>
+            <div class="stepper" data-min="100" data-max="10000000" data-step="100">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-balance" type="number" value="10000" />
+              <span class="stepper-unit">€</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+            <div class="pills" data-target="mc-balance">
+              <button class="pill" data-val="5000">5 000</button>
+              <button class="pill" data-val="10000">10 000</button>
+              <button class="pill" data-val="50000">50 000</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Win rate</div>
+            <div class="stepper" data-min="1" data-max="99" data-step="1">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-wr" type="number" value="55" />
+              <span class="stepper-unit">%</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+            <div class="pills" data-target="mc-wr">
+              <button class="pill" data-val="40">40</button>
+              <button class="pill" data-val="50">50</button>
+              <button class="pill" data-val="55">55</button>
+              <button class="pill" data-val="65">65</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">R/R ratio</div>
+            <div class="stepper" data-min="0.1" data-max="10" data-step="0.1">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-rr" type="number" value="2" step="0.1" />
+              <span class="stepper-unit">x</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+            <div class="pills" data-target="mc-rr">
+              <button class="pill" data-val="1">1</button>
+              <button class="pill" data-val="1.5">1.5</button>
+              <button class="pill" data-val="2">2</button>
+              <button class="pill" data-val="3">3</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Risque par trade</div>
+            <div class="stepper" data-min="0.1" data-max="20" data-step="0.1">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-risk" type="number" value="1" step="0.1" />
+              <span class="stepper-unit">%</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+            <div class="pills" data-target="mc-risk">
+              <button class="pill" data-val="0.5">0.5</button>
+              <button class="pill" data-val="1">1</button>
+              <button class="pill" data-val="2">2</button>
+              <button class="pill" data-val="5">5</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Nombre de trades / horizon</div>
+            <div class="stepper" data-min="10" data-max="5000" data-step="10">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-n" type="number" value="200" />
+              <span class="stepper-unit">trades</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+            <div class="pills" data-target="mc-n">
+              <button class="pill" data-val="50">50</button>
+              <button class="pill" data-val="200">200</button>
+              <button class="pill" data-val="500">500</button>
+              <button class="pill" data-val="1000">1000</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Nombre de simulations</div>
+            <div class="stepper" data-min="100" data-max="5000" data-step="100">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-sims" type="number" value="2000" />
+              <span class="stepper-unit">sims</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+            <div class="pills" data-target="mc-sims">
+              <button class="pill" data-val="500">500 (rapide)</button>
+              <button class="pill" data-val="2000">2 000</button>
+              <button class="pill" data-val="5000">5 000 (max)</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Objectif de capital (optionnel)</div>
+            <div class="stepper" data-min="0" data-max="10000000" data-step="500">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-target" type="number" value="20000" />
+              <span class="stepper-unit">€</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="mc-btn-calc"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>Relancer la simulation</button>
+        </div>
+
+      </div></div>
+    </section>
+
+    <!-- A1 : Distribution finale -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="8" width="3" height="6"/><rect x="6" y="4" width="3" height="10"/></svg></span>Analyse 01 · Distribution finale</div>
+    <section class="card" id="a1">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="8" width="3" height="6"/><rect x="6" y="4" width="3" height="10"/></svg></div>Où finissent les 2 000 trajectoires ?</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Médiane (P50)</div><div class="stat-value pos" id="mc-stat-final-p50">—</div><div class="stat-sub">scénario central</div></div>
+          <div class="stat"><div class="stat-label">Pire 5 % (P5)</div><div class="stat-value neg" id="mc-stat-final-p5">—</div><div class="stat-sub">scénario défavorable</div></div>
+          <div class="stat"><div class="stat-label">Meilleur 5 % (P95)</div><div class="stat-value pos" id="mc-stat-final-p95">—</div><div class="stat-sub">scénario favorable</div></div>
+          <div class="stat"><div class="stat-label">Gain médian</div><div class="stat-value" id="mc-stat-median-gain">—</div><div class="stat-sub">% vs capital initial</div></div>
+        </div>
+        <div class="insight" id="mc-insight-a01"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg></div><div class="insight-text">—</div></div>
+      </div>
+    </section>
+
+    <!-- A2 : Equity curve -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 13l4-4 3 3 5-6"/></svg></span>Analyse 02 · Courbes équité percentiles</div>
+    <section class="card" id="a2">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 13l4-4 3 3 5-6"/></svg></div>Évolution dans le temps</div></div>
+      <div class="card-body">
+        <div class="info-box">
+          La <strong>zone verte</strong> montre où évoluent 90 % des trajectoires (entre P5 et P95).
+          La <strong>ligne pleine</strong> = médiane. Les <strong>tirets verts</strong> = P75 (top 25 %) ; <strong>tirets rouges</strong> = P25 (bottom 25 %).
+        </div>
+        <div class="chart-wrap" style="height:340px;margin-top:18px"><canvas id="mc-chart-equity"></canvas></div>
+      </div>
+    </section>
+
+    <!-- A3 : Drawdowns -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 4l3 3-3 3"/></svg></span>Analyse 03 · Distribution des drawdowns</div>
+    <section class="card" id="a3">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 4l3 3-3 3M13 4l-3 3 3 3M2 12h12"/></svg></div>Quel drawdown max attendre ?</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">DD médian</div><div class="stat-value" id="mc-stat-dd-p50">—</div><div class="stat-sub">scénario normal</div></div>
+          <div class="stat"><div class="stat-label">DD 75 %</div><div class="stat-value warn" id="mc-stat-dd-p75">—</div><div class="stat-sub">1 cas sur 4</div></div>
+          <div class="stat"><div class="stat-label">DD 95 %</div><div class="stat-value neg" id="mc-stat-dd-p95">—</div><div class="stat-sub">1 cas sur 20</div></div>
+          <div class="stat"><div class="stat-label">DD max observé</div><div class="stat-value neg" id="mc-stat-dd-max">—</div><div class="stat-sub">pire trajectoire</div></div>
+          <div class="stat"><div class="stat-label">Streak max moyen</div><div class="stat-value" id="mc-stat-streak">—</div><div class="stat-sub">pertes consécutives</div></div>
+        </div>
+        <div class="insight" id="mc-insight-a03"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M8 1L1 14h14z"/></svg></div><div class="insight-text">—</div></div>
+      </div>
+    </section>
+
+    <!-- A4 : Probabilités -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg></span>Analyse 04 · Probabilités clés</div>
+    <section class="card" id="a4">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M5 8l2 2 4-4"/></svg></div>Chances réelles de chaque scénario</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">P(ruine) ≤ −50 %</div><div class="stat-value pos" id="mc-stat-pruin">—</div><div class="stat-sub">trajectoires catastrophiques</div></div>
+          <div class="stat"><div class="stat-label">P(perte)</div><div class="stat-value" id="mc-stat-ploss">—</div><div class="stat-sub">finit sous capital</div></div>
+          <div class="stat"><div class="stat-label">P(doubler)</div><div class="stat-value pos" id="mc-stat-pdouble">—</div><div class="stat-sub">×2 capital</div></div>
+          <div class="stat"><div class="stat-label">P(tripler)</div><div class="stat-value pos" id="mc-stat-ptriple">—</div><div class="stat-sub">×3 capital</div></div>
+          <div class="stat"><div class="stat-label">P(atteindre cible)</div><div class="stat-value" id="mc-stat-ptarget">—</div><div class="stat-sub">objectif fixé</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- A5 : Heatmap -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="2" width="4" height="4"/><rect x="6" y="6" width="4" height="4"/></svg></span>Analyse 05 · Heatmap WR × R/R</div>
+    <section class="card" id="a5">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="2" width="4" height="4"/><rect x="6" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="2" y="6" width="4" height="4"/></svg></div>Combinaisons WR × R/R qui marchent</div></div>
+      <div class="card-body">
+        <div class="info-box">
+          % de trajectoires <strong>profitables</strong> pour chaque combo Win Rate × R/R Ratio (200 sims par cellule, avec votre risque % et nombre de trades). <strong>Vert sombre</strong> = système très robuste, <strong>rouge</strong> = système qui détruit le capital.
+        </div>
+        <div id="mc-heatmap" style="margin-top:18px;overflow-x:auto">Calcul…</div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <div>Monte Carlo avec RNG seedé · ~1-3 s pour 2 000 simulations · Heatmap : ~5-10 s</div>
+  <div><a href="/">Accueil</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
+<script src="/assets/js/core/calc-mctrading.js"></script>
+<script src="/assets/js/views/mctrading.view.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#7C3AED" />
+<title>Fiscalité Trading FR — PFU vs IR, CTO vs PEA | CalcInvest</title>
+<meta name="description" content="Comparez PFU 30 % vs option IR au barème, CTO vs PEA, statut trader occasionnel vs habituel, imputation des moins-values reportables 10 ans." />
+<meta name="keywords" content="fiscalité trading france, PFU flat tax, CTO PEA, BIC professionnel trader, moins-value reportable" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">Fiscalité Trading</div><div class="logo-text-sub">France 2025</div></div>
+    </a>
+  </div>
+  <div class="topbar-center">
+    <nav class="segmented">
+      <a class="segmented-btn" href="/calculateur-pips">PIPS</a>
+      <a class="segmented-btn" href="/calculateur-marge-liquidation">Marge</a>
+      <a class="segmented-btn" href="/calculateur-couts-trading">Coûts</a>
+      <a class="segmented-btn" href="/simulateur-monte-carlo-trading">MC</a>
+      <a class="segmented-btn active" aria-current="page" href="/calculateur-fiscalite-trading">Fiscalité</a>
+    </nav>
+  </div>
+  <div class="topbar-right" id="ci-user-zone"><a href="/mes-projets" class="btn-ghost"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><path d="M2 4h5l1 2h6v7H2z"/></svg><span>Projets</span></a></div>
+</header>
+
+<div class="shell" id="page-fisca">
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Calculateur</div>
+      <a class="sidebar-link active" href="#params"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 5h10M3 8h10M3 11h6"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Situation</div><div class="sidebar-link-title">Revenus & PV</div></div></a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+      <a class="sidebar-link" href="#a1"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="10" width="12" height="4"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 01</div><div class="sidebar-link-title">PFU vs IR</div></div></a>
+      <a class="sidebar-link" href="#a2"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 02</div><div class="sidebar-link-title">CTO vs PEA</div></div></a>
+      <a class="sidebar-link" href="#a3"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M8 1L1 14h14z"/><path d="M8 6v4"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 03</div><div class="sidebar-link-title">Statut occasionnel/habituel</div></div></a>
+      <a class="sidebar-link" href="#a4"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 8h12M5 5l3 3-3 3M11 5l-3 3 3 3"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 04</div><div class="sidebar-link-title">Imputation moins-values</div></div></a>
+    </div>
+  </aside>
+
+  <main class="main fade-in">
+
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="3" y="2" width="10" height="12"/><path d="M5 5h6M5 8h6M5 11h4"/></svg></span>
+        Trading · Fiscalité FR
+      </div>
+      <h1 class="page-title">L'impôt qui n'est pas dans le P&amp;L de votre broker.</h1>
+      <p class="page-lede">PFU 30 % vs option IR au barème, CTO vs PEA, <strong style="color:var(--text)">trader occasionnel vs habituel</strong>, imputation des moins-values reportables 10 ans. Tout ce que le fisc voit dans votre déclaration et que <em style="color:var(--accent);font-style:normal;font-weight:600">votre broker ne calcule jamais pour vous</em>.</p>
+    </div>
+
+    <section class="accordion open" id="params">
+      <div class="accordion-header">
+        <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Votre situation fiscale</div>
+          <div class="accordion-summary" id="fs-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="accordion-body"><div class="accordion-body-inner">
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><circle cx="7" cy="7" r="5"/></svg></div>
+            <div class="subsection-title">Revenus &amp; gains</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Plus-value trading annuelle (nette)</div>
+              <div class="stepper" data-min="0" data-max="10000000" data-step="500">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-pv" type="number" value="10000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="fs-pv">
+                <button class="pill" data-val="1000">1 000</button>
+                <button class="pill" data-val="5000">5 000</button>
+                <button class="pill" data-val="20000">20 000</button>
+                <button class="pill" data-val="50000">50 000</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label">Autres revenus du foyer (net imposable)</div>
+              <div class="stepper" data-min="0" data-max="500000" data-step="1000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-other" type="number" value="40000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="fs-other">
+                <button class="pill" data-val="20000">20 000 (smic+)</button>
+                <button class="pill" data-val="40000">40 000 (cadre)</button>
+                <button class="pill" data-val="80000">80 000 (cadre+)</button>
+                <button class="pill" data-val="150000">150 000</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label">Quotient familial (parts)</div>
+              <div class="stepper" data-min="1" data-max="6" data-step="0.5">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-qf" type="number" value="1" step="0.5" />
+                <span class="stepper-unit">parts</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="fs-qf">
+                <button class="pill" data-val="1">1 (célib)</button>
+                <button class="pill" data-val="2">2 (couple)</button>
+                <button class="pill" data-val="2.5">2.5 (+1 enfant)</button>
+                <button class="pill" data-val="3">3 (+2 enfants)</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label">Durée détention compte (pour PEA)</div>
+              <div class="stepper" data-min="0" data-max="40" data-step="1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-years" type="number" value="6" />
+                <span class="stepper-unit">ans</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="fs-years">
+                <button class="pill" data-val="2">2</button>
+                <button class="pill" data-val="5">5 (seuil PEA)</button>
+                <button class="pill" data-val="10">10</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><path d="M7 1L1 13h12z"/></svg></div>
+            <div class="subsection-title">Volume d'activité (statut)</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Nombre de trades / an</div>
+              <div class="stepper" data-min="0" data-max="10000" data-step="10">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-trades" type="number" value="50" />
+                <span class="stepper-unit">trades</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Volume échangé annuel</div>
+              <div class="stepper" data-min="0" data-max="10000000" data-step="5000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-turnover" type="number" value="50000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Bénéfice annuel</div>
+              <div class="stepper" data-min="0" data-max="10000000" data-step="1000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-profit" type="number" value="5000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Activité principale ?</div>
+              <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);cursor:pointer">
+                <input type="checkbox" id="fs-principal" style="width:18px;height:18px;cursor:pointer">
+                <span style="font-size:13px">Le trading est ma principale source de revenus</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><path d="M2 7h10M5 4l-3 3 3 3"/></svg></div>
+            <div class="subsection-title">Moins-values reportables <span class="subsection-hint">les 10 dernières années</span></div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Perte 2025</div>
+              <div class="stepper" data-min="0" data-max="1000000" data-step="500">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-loss-2025" type="number" value="0" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Perte 2024</div>
+              <div class="stepper" data-min="0" data-max="1000000" data-step="500">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-loss-2024" type="number" value="0" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Perte 2023</div>
+              <div class="stepper" data-min="0" data-max="1000000" data-step="500">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-loss-2023" type="number" value="0" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Gain à imputer (2026)</div>
+              <div class="stepper" data-min="0" data-max="1000000" data-step="500">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="fs-current-gain" type="number" value="0" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="fs-btn-calc">Calculer</button>
+        </div>
+
+      </div></div>
+    </section>
+
+    <!-- A1 : PFU vs IR -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="10" width="12" height="4"/></svg></span>Analyse 01 · PFU 30 % vs Option IR</div>
+    <section class="card" id="a1">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="10" width="12" height="4"/><path d="M5 10V6m3 4V4m3 6V7"/></svg></div>Quel régime choisir pour la PV trading ?</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">PFU (flat tax 30 %)</div><div class="stat-value warn" id="fs-stat-pfu">—</div><div class="stat-sub">12.8 % IR + 17.2 % PS</div></div>
+          <div class="stat"><div class="stat-label">Taux effectif PFU</div><div class="stat-value" id="fs-stat-pfu-rate">—</div><div class="stat-sub">de la PV</div></div>
+          <div class="stat"><div class="stat-label">Net après PFU</div><div class="stat-value pos" id="fs-stat-pfu-net">—</div><div class="stat-sub">à conserver</div></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Option IR (barème)</div><div class="stat-value warn" id="fs-stat-ir">—</div><div class="stat-sub">TMI + 17.2 % PS</div></div>
+          <div class="stat"><div class="stat-label">Taux effectif IR</div><div class="stat-value" id="fs-stat-ir-rate">—</div><div class="stat-sub">de la PV</div></div>
+          <div class="stat"><div class="stat-label">Net après IR</div><div class="stat-value pos" id="fs-stat-ir-net">—</div><div class="stat-sub">à conserver</div></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Gagnant</div><div class="stat-value pos" id="fs-stat-winner">—</div><div class="stat-sub">à choisir</div></div>
+          <div class="stat"><div class="stat-label">Économie</div><div class="stat-value pos" id="fs-stat-savings">—</div><div class="stat-sub">vs autre option</div></div>
+          <div class="stat"><div class="stat-label">TMI avant → après</div><div class="stat-value" id="fs-stat-tmi">—</div><div class="stat-sub">impact PV sur tranche</div></div>
+        </div>
+        <div class="insight" id="fs-insight-a01"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="2 9 6 5 9 8 14 3"/></svg></div><div class="insight-text">—</div></div>
+        <div class="info-box" style="margin-top:18px">
+          <div class="info-box-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg> Règle simple</div>
+          <strong>TMI 0 ou 11 %</strong> → option IR presque toujours meilleure. <strong>TMI 30 %+</strong> → PFU 30 % presque toujours meilleur. L'option IR est <strong>globale</strong> : si vous l'activez, elle s'applique à tous vos revenus du capital (dividendes, intérêts) sur l'année.
+        </div>
+      </div>
+    </section>
+
+    <!-- A2 : CTO vs PEA -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/></svg></span>Analyse 02 · CTO vs PEA</div>
+    <section class="card" id="a2">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/></svg></div>Quel compte privilégier ?</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">CTO — Impôt</div><div class="stat-value warn" id="fs-stat-cto-total">—</div><div class="stat-sub">PFU 30 % sur PV</div></div>
+          <div class="stat"><div class="stat-label">CTO — Net</div><div class="stat-value pos" id="fs-stat-cto-net">—</div><div class="stat-sub">après impôt</div></div>
+          <div class="stat"><div class="stat-label">PEA — Impôt</div><div class="stat-value warn" id="fs-stat-pea-total">—</div><div class="stat-sub">17.2 % PS (si ≥ 5 ans)</div></div>
+          <div class="stat"><div class="stat-label">PEA — Net</div><div class="stat-value pos" id="fs-stat-pea-net">—</div><div class="stat-sub">après impôt</div></div>
+          <div class="stat"><div class="stat-label">Statut PEA</div><div class="stat-value" id="fs-stat-pea-status">—</div><div class="stat-sub">éligibilité</div></div>
+        </div>
+        <div class="insight" id="fs-insight-a02"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="2 9 6 5 9 8 14 3"/></svg></div><div class="insight-text">—</div></div>
+      </div>
+    </section>
+
+    <!-- A3 : Statut -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M8 1L1 14h14z"/><path d="M8 6v4"/></svg></span>Analyse 03 · Statut occasionnel ou habituel</div>
+    <section class="card" id="a3">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M8 1L1 14h14z"/><path d="M8 6v4M8 12v.5"/></svg></div>Êtes-vous à risque de requalification BIC pro ?</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat" style="grid-column:span 2"><div class="stat-label">Votre régime</div><div class="stat-value pos" id="fs-stat-regime" style="font-size:36px">—</div><div class="stat-sub">selon vos critères</div></div>
+          <div class="stat"><div class="stat-label">Drapeaux atteints</div><div class="stat-value" id="fs-stat-flags">—</div><div class="stat-sub">sur 4</div></div>
+        </div>
+        <div class="insight" id="fs-insight-a03"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M8 1L1 14h14z"/></svg></div><div class="insight-text">—</div></div>
+        <div class="info-box warn" style="margin-top:18px">
+          <div class="info-box-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M8 1L1 14h14z"/></svg> Critères jurisprudentiels indicatifs</div>
+          La requalification en BIC professionnel se fait à la discrétion du fisc selon un faisceau d'indices : <strong>fréquence des opérations</strong> (200+ trades/an), <strong>volume échangé</strong> (200 k€+), <strong>caractère habituel</strong> et <strong>caractère principal</strong> de l'activité. <em>Aucun seuil légal strict</em> — c'est l'appréciation globale qui compte. En cas de doute, consultez un fiscaliste avant la déclaration.
+        </div>
+      </div>
+    </section>
+
+    <!-- A4 : Imputation MV -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 7h10M5 4l-3 3 3 3"/></svg></span>Analyse 04 · Imputation des moins-values</div>
+    <section class="card" id="a4">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 7h10M5 4l-3 3 3 3"/></svg></div>Vos pertes passées allègent vos gains futurs</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">MV reportables</div><div class="stat-value" id="fs-stat-total-losses">—</div><div class="stat-sub">10 dernières années</div></div>
+          <div class="stat"><div class="stat-label">Imputé cette année</div><div class="stat-value pos" id="fs-stat-offset">—</div><div class="stat-sub">déduit du gain</div></div>
+          <div class="stat"><div class="stat-label">Gain imposable restant</div><div class="stat-value warn" id="fs-stat-taxable">—</div><div class="stat-sub">après imputation</div></div>
+          <div class="stat"><div class="stat-label">Économie fiscale</div><div class="stat-value pos" id="fs-stat-savings-imp">—</div><div class="stat-sub">~30 % du montant imputé</div></div>
+        </div>
+        <div class="insight" id="fs-insight-a04"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="2 9 6 5 9 8 14 3"/></svg></div><div class="insight-text">—</div></div>
+        <div class="info-box" style="margin-top:18px">
+          <div class="info-box-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg> Comment ça marche</div>
+          Les <strong>moins-values mobilières</strong> (CTO et PEA fermé) sont reportables sur les <strong>10 années suivantes</strong>. Elles s'imputent en priorité sur les plus-values de même nature (mobilières) avant taxation. La déclaration se fait sur le formulaire <strong>2074</strong> (et 2074-CMV pour le suivi des pertes).
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <div>Fiscalité 2025 (revenus 2024) · À titre informatif — consultez un fiscaliste pour les situations complexes</div>
+  <div><a href="/">Accueil</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
+<script src="/assets/js/core/calc-fisca-trading.js"></script>
+<script src="/assets/js/views/fisca-trading.view.js"></script>
+
+</body>
+</html>
