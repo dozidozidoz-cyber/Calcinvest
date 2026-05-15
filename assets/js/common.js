@@ -614,8 +614,220 @@
       CI.initMegaMenu();
       CI.initInstrumentSelects();
       CI.initRecentTools();
+      CI.initCommandPalette();
+      CI.initDarkMode();
       CI._scrollInited = true;
     }
+  };
+
+  /* ===========================================================
+     DARK MODE — toggle bouton, persist localStorage
+     =========================================================== */
+  const DARK_KEY = 'ci_theme_v1';
+  CI.initDarkMode = function () {
+    // Applique le thème stocké
+    const stored = localStorage.getItem(DARK_KEY);
+    if (stored === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+
+    // Injecte le bouton dans le topbar-right s'il y a un user-zone
+    const userZone = document.getElementById('ci-user-zone');
+    if (userZone && !document.querySelector('.darkmode-toggle')) {
+      const btn = document.createElement('button');
+      btn.className = 'darkmode-toggle';
+      btn.setAttribute('aria-label', 'Basculer thème');
+      btn.title = 'Basculer thème clair/sombre';
+      btn.innerHTML = `
+        <svg class="sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M13 9.5A6 6 0 1 1 6.5 3a4.5 4.5 0 0 0 6.5 6.5z"/></svg>
+      `;
+      btn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          localStorage.setItem(DARK_KEY, 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem(DARK_KEY, 'dark');
+        }
+      });
+      // Insère en première position de user-zone
+      userZone.insertBefore(btn, userZone.firstChild);
+    }
+  };
+
+  /* ===========================================================
+     COMMAND PALETTE (Ctrl+K) — recherche universelle
+     =========================================================== */
+  CI.initCommandPalette = function () {
+    // Build items list: outils + articles + glossaire
+    const items = [];
+
+    // Outils depuis TOOL_CATALOG (défini plus haut)
+    Object.entries(TOOL_CATALOG).forEach(([url, info]) => {
+      items.push({
+        url,
+        label: info.label,
+        cat: info.cat,
+        color: info.color,
+        keywords: (info.label + ' ' + info.cat).toLowerCase(),
+        type: 'tool',
+        icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>'
+      });
+    });
+
+    // Pages utiles
+    const pages = [
+      { url: '/',                  label: 'Accueil',           cat: 'Page', keywords: 'home accueil' },
+      { url: '/methodologie',      label: 'Méthodologie & Glossaire', cat: 'Page', keywords: 'methodo glossaire docs formules' },
+      { url: '/blog',              label: 'Blog',              cat: 'Page', keywords: 'blog articles ressources' },
+      { url: '/abonnement',        label: 'Tarifs & Premium',  cat: 'Page', keywords: 'tarifs premium abonnement prix' },
+      { url: '/mes-projets',       label: 'Mes Projets',       cat: 'Page', keywords: 'projets sauvegarde' },
+      { url: '/mentions-legales',  label: 'Mentions légales',  cat: 'Page', keywords: 'rgpd cookies cgv' }
+    ];
+    pages.forEach(p => {
+      items.push({
+        ...p, type: 'page', color: '#6B7280',
+        keywords: p.keywords + ' ' + p.label.toLowerCase(),
+        icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 2h7l3 3v9H3z"/></svg>'
+      });
+    });
+
+    // Articles blog
+    const articles = [
+      { url: '/blog/dca-vs-lump-sum',         label: 'DCA vs Lump Sum',         cat: 'Article' },
+      { url: '/blog/scpi-vs-locatif',         label: 'SCPI vs Locatif',         cat: 'Article' },
+      { url: '/blog/reforme-retraite-2023',   label: 'Réforme retraite 2023',   cat: 'Article' },
+      { url: '/blog/per-cto-assurance-vie',   label: 'PER vs CTO vs AV',        cat: 'Article' },
+      { url: '/blog/monte-carlo-fire',        label: 'Monte Carlo + FIRE',      cat: 'Article' }
+    ];
+    articles.forEach(a => {
+      items.push({
+        ...a, type: 'article', color: '#A855F7',
+        keywords: (a.label + ' article').toLowerCase(),
+        icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 7h6M5 10h4"/></svg>'
+      });
+    });
+
+    // Injecte le bouton trigger dans le topbar
+    const userZone = document.getElementById('ci-user-zone');
+    if (userZone && !document.querySelector('.cmdk-trigger')) {
+      const trigger = document.createElement('button');
+      trigger.className = 'cmdk-trigger';
+      trigger.setAttribute('aria-label', 'Rechercher');
+      trigger.innerHTML = `
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
+        <span class="cmdk-trigger-text">Rechercher…</span>
+        <kbd>Ctrl K</kbd>
+      `;
+      trigger.addEventListener('click', openPalette);
+      userZone.insertBefore(trigger, userZone.firstChild);
+    }
+
+    // Crée le modal (caché)
+    let backdrop = document.querySelector('.cmdk-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'cmdk-backdrop';
+      backdrop.innerHTML = `
+        <div class="cmdk-modal" role="dialog" aria-label="Recherche">
+          <div class="cmdk-search">
+            <span class="cmdk-search-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
+            </span>
+            <input type="text" placeholder="Rechercher un outil, un article, une page…" autocomplete="off" />
+            <kbd>Esc</kbd>
+          </div>
+          <div class="cmdk-results"></div>
+        </div>`;
+      document.body.appendChild(backdrop);
+    }
+
+    const input = backdrop.querySelector('input');
+    const results = backdrop.querySelector('.cmdk-results');
+    let focused = 0;
+
+    function openPalette() {
+      backdrop.classList.add('is-open');
+      setTimeout(() => input.focus(), 50);
+      render('');
+    }
+    function closePalette() {
+      backdrop.classList.remove('is-open');
+      input.value = '';
+    }
+
+    function render(query) {
+      const q = query.trim().toLowerCase();
+      const filtered = q
+        ? items.filter(i => i.keywords.includes(q))
+        : items;
+
+      if (!filtered.length) {
+        results.innerHTML = `<div class="cmdk-empty">Aucun résultat pour "${query}"</div>`;
+        return;
+      }
+
+      // Group by category
+      const groups = {};
+      filtered.forEach(i => {
+        if (!groups[i.cat]) groups[i.cat] = [];
+        groups[i.cat].push(i);
+      });
+
+      let html = '';
+      Object.entries(groups).forEach(([cat, list]) => {
+        html += `<div class="cmdk-group"><div class="cmdk-group-label">${cat}</div>`;
+        list.forEach((item, idx) => {
+          const globalIdx = filtered.indexOf(item);
+          html += `
+            <a href="${item.url}" class="cmdk-item ${globalIdx === focused ? 'is-focused' : ''}"
+               data-idx="${globalIdx}" style="--item-color:${item.color || 'var(--text-3)'}">
+              <span class="cmdk-item-icon">${item.icon}</span>
+              <div class="cmdk-item-text">
+                <div class="cmdk-item-label">${item.label}</div>
+              </div>
+              <span class="cmdk-item-cat">${item.cat}</span>
+            </a>`;
+        });
+        html += `</div>`;
+      });
+      results.innerHTML = html;
+      // Update focused index ref
+      results.dataset.total = filtered.length;
+      results.dataset.list = JSON.stringify(filtered.map(i => i.url));
+    }
+
+    function moveFocus(delta) {
+      const total = parseInt(results.dataset.total || 0, 10);
+      if (!total) return;
+      focused = (focused + delta + total) % total;
+      render(input.value);
+    }
+
+    function activateFocused() {
+      const list = JSON.parse(results.dataset.list || '[]');
+      const url = list[focused];
+      if (url) window.location.href = url;
+    }
+
+    input.addEventListener('input', () => { focused = 0; render(input.value); });
+
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closePalette();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        backdrop.classList.contains('is-open') ? closePalette() : openPalette();
+        return;
+      }
+      if (!backdrop.classList.contains('is-open')) return;
+      if (e.key === 'Escape')        { closePalette(); e.preventDefault(); }
+      if (e.key === 'ArrowDown')     { moveFocus(1); e.preventDefault(); }
+      if (e.key === 'ArrowUp')       { moveFocus(-1); e.preventDefault(); }
+      if (e.key === 'Enter')         { activateFocused(); e.preventDefault(); }
+    });
   };
 
   /* ===========================================================
