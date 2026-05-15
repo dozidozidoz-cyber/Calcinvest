@@ -36,7 +36,7 @@
     const pair = PAIRS[p.pair];
     if (!pair) return { error: 'Paire inconnue : ' + p.pair };
 
-    const lots         = num(p.lotSize, 100000);
+    const lots         = num(p.lotSize, pair.contractSize || 100000);
     const entry        = num(p.entryPrice, pair.price);
     const lev          = Math.max(1, num(p.leverage, 30));
     const balance      = num(p.balance, 10000);

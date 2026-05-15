@@ -12,10 +12,12 @@
   };
 
   function readParams() {
+    const pairKey = $('mg-pair').value || 'EUR/USD';
+    const info = (window.PIPS && PIPS.PAIRS[pairKey]) || { contractSize: 100000 };
     return {
-      pair:        $('mg-pair').value || 'EUR/USD',
+      pair:        pairKey,
       direction:   document.querySelector('input[name="mg-dir"]:checked')?.value || 'long',
-      lotSize:     parseFloat($('mg-lotsize').value) || 100000,
+      lotSize:     parseFloat($('mg-lotsize').value) || info.contractSize || 100000,
       entryPrice:  parseFloat($('mg-entry').value)   || 0,
       leverage:    parseFloat($('mg-leverage').value)|| 30,
       balance:     parseFloat($('mg-balance').value) || 10000,
@@ -41,12 +43,33 @@
         el.dataset.auto = '1';
       }
     });
+    // Reset lotSize default à 1 contrat standard
+    const lot = $('mg-lotsize');
+    if (lot && (!lot.value || lot.dataset.auto === '1')) {
+      lot.value = info.contractSize;
+      lot.dataset.auto = '1';
+    }
+    // Update unit label suffix
+    const unitEl = document.querySelector('#mg-lotsize ~ .stepper-unit, label[for="mg-lotsize"]');
+    // (le HTML actuel a un span statique "unités" — on le met à jour via JS)
+    const lotWrap = lot && lot.closest('.stepper');
+    if (lotWrap) {
+      const unitSpan = lotWrap.querySelector('.stepper-unit');
+      if (unitSpan) unitSpan.textContent = info.unitLabel || info.base;
+    }
   }
 
   function updateParamSummary(p) {
     const sum = $('mg-sum-params');
     if (!sum) return;
-    sum.textContent = `${p.pair} · ${p.direction === 'short' ? 'SHORT' : 'LONG'} ${(p.lotSize/100000).toFixed(2)} lot · ${p.leverage}× · ${fmt(p.balance, 0)} ${p.accountCurr}`;
+    const info = (window.PIPS && PIPS.PAIRS[p.pair]) || { contractSize: 100000, unitLabel: '' };
+    const cs = info.contractSize || 100000;
+    const lots = p.lotSize / cs;
+    const unitLabel = info.unitLabel || info.base || '';
+    const sizeStr = (info.category === 'forex' || info.category === 'forex_exotic')
+      ? `${lots.toFixed(2)} lot`
+      : `${fmt(p.lotSize, p.lotSize < 10 ? 4 : 2)} ${unitLabel}`;
+    sum.textContent = `${p.pair} · ${p.direction === 'short' ? 'SHORT' : 'LONG'} ${sizeStr} · ${p.leverage}× · ${fmt(p.balance, 0)} ${p.accountCurr}`;
   }
 
   // ─── A1 : Marge & Liquidation ───
@@ -77,7 +100,14 @@
     const isViable = m.freeMargin > 0;
     const dangerLevel = m.marginLevel < 200 ? 'élevé' : m.marginLevel < 500 ? 'modéré' : 'faible';
     $('mg-insight-a01').innerHTML = `
-      Position <strong>${p.direction === 'short' ? 'SHORT' : 'LONG'} ${(p.lotSize/100000).toFixed(2)} lot</strong>
+      Position <strong>${p.direction === 'short' ? 'SHORT' : 'LONG'} ${(() => {
+        const info2 = (window.PIPS && PIPS.PAIRS[p.pair]) || { contractSize: 100000 };
+        const cs2 = info2.contractSize || 100000;
+        const lots2 = p.lotSize / cs2;
+        return (info2.category === 'forex' || info2.category === 'forex_exotic')
+          ? `${lots2.toFixed(2)} lot`
+          : `${fmt(p.lotSize, p.lotSize < 10 ? 4 : 2)} ${info2.unitLabel || info2.base}`;
+      })()}</strong>
       sur <em>${p.pair}</em> à levier ${p.leverage}×.
       ${isViable
         ? `Marge bloquée : <strong>${fmt(m.marginRequired, 0)} ${m.accountCurrency}</strong> (margin level ${fmt(m.marginLevel, 0)} %, risque ${dangerLevel}).`

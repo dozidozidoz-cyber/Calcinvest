@@ -13,56 +13,70 @@
   'use strict';
 
   // ─── Base de paires connues ──────────────────────────────
-  // Pour chaque paire : base + quote + taille de pip + prix indicatif
+  // Pour chaque paire :
+  //   - base + quote
+  //   - pipSize : plus petite variation de prix
+  //   - contractSize : nombre d'unités pour "1 lot" (convention broker)
+  //       Forex          : 1 lot = 100 000 unités base
+  //       Métaux XAU     : 1 lot = 100 oz (gold spot CFD)
+  //       Métaux XAG     : 1 lot = 5 000 oz (silver spot CFD)
+  //       Métaux XPT     : 1 lot = 50 oz
+  //       Énergie WTI/Brent : 1 lot = 100 barils
+  //       Énergie NATGAS : 1 lot = 1 000 mmBtu
+  //       Indices CFD    : 1 lot = 1 contrat (P&L = points × 1)
+  //       Stocks CFD     : 1 lot = 1 action
+  //       Crypto         : 1 lot = 1 unité de crypto (BTC, ETH...)
+  //   - unitLabel : libellé pour le user (ex : "BTC", "oz", "actions")
+  //   - price : indicatif (sera écrasé par API live si dispo)
   const PAIRS = {
-    // Forex majors
-    'EUR/USD': { base: 'EUR', quote: 'USD', pipSize: 0.0001, price: 1.0800, category: 'forex' },
-    'GBP/USD': { base: 'GBP', quote: 'USD', pipSize: 0.0001, price: 1.2700, category: 'forex' },
-    'USD/JPY': { base: 'USD', quote: 'JPY', pipSize: 0.01,   price: 155.00, category: 'forex' },
-    'USD/CHF': { base: 'USD', quote: 'CHF', pipSize: 0.0001, price: 0.9100, category: 'forex' },
-    'AUD/USD': { base: 'AUD', quote: 'USD', pipSize: 0.0001, price: 0.6600, category: 'forex' },
-    'NZD/USD': { base: 'NZD', quote: 'USD', pipSize: 0.0001, price: 0.6000, category: 'forex' },
-    'USD/CAD': { base: 'USD', quote: 'CAD', pipSize: 0.0001, price: 1.3500, category: 'forex' },
-    // Crosses EUR
-    'EUR/GBP': { base: 'EUR', quote: 'GBP', pipSize: 0.0001, price: 0.8500, category: 'forex' },
-    'EUR/JPY': { base: 'EUR', quote: 'JPY', pipSize: 0.01,   price: 167.00, category: 'forex' },
-    'EUR/CHF': { base: 'EUR', quote: 'CHF', pipSize: 0.0001, price: 0.9800, category: 'forex' },
-    'GBP/JPY': { base: 'GBP', quote: 'JPY', pipSize: 0.01,   price: 196.00, category: 'forex' },
-    // Exotiques (carry trade)
-    'USD/MXN': { base: 'USD', quote: 'MXN', pipSize: 0.0001, price: 17.00,  category: 'forex_exotic' },
-    'USD/TRY': { base: 'USD', quote: 'TRY', pipSize: 0.0001, price: 32.00,  category: 'forex_exotic' },
-    'USD/ZAR': { base: 'USD', quote: 'ZAR', pipSize: 0.0001, price: 18.50,  category: 'forex_exotic' },
-    // Métaux précieux & énergie
-    'XAU/USD': { base: 'XAU', quote: 'USD', pipSize: 0.01,   price: 2400.00, category: 'metal' },
-    'XAG/USD': { base: 'XAG', quote: 'USD', pipSize: 0.001,  price: 28.00,   category: 'metal' },
-    'XPT/USD': { base: 'XPT', quote: 'USD', pipSize: 0.01,   price: 980.00,  category: 'metal' },  // Platine
-    'WTI':     { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 72.00,   category: 'commodity' }, // Pétrole WTI
-    'BRENT':   { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 76.00,   category: 'commodity' }, // Pétrole Brent
-    'NATGAS':  { base: 'USD', quote: 'USD', pipSize: 0.001,  price: 2.85,    category: 'commodity' }, // Gaz naturel
-    // Indices CFD (1 pip = 1 point)
-    'US30':    { base: 'USD', quote: 'USD', pipSize: 1.0,    price: 39000,   category: 'index' }, // Dow
-    'NAS100':  { base: 'USD', quote: 'USD', pipSize: 1.0,    price: 17500,   category: 'index' }, // Nasdaq
-    'SPX500':  { base: 'USD', quote: 'USD', pipSize: 0.1,    price: 5200,    category: 'index' }, // S&P 500
-    'GER40':   { base: 'EUR', quote: 'EUR', pipSize: 1.0,    price: 18200,   category: 'index' }, // DAX
-    'FRA40':   { base: 'EUR', quote: 'EUR', pipSize: 1.0,    price: 7500,    category: 'index' }, // CAC 40
-    'UK100':   { base: 'GBP', quote: 'GBP', pipSize: 1.0,    price: 8100,    category: 'index' }, // FTSE 100
-    'JPN225':  { base: 'JPY', quote: 'JPY', pipSize: 1.0,    price: 38000,   category: 'index' }, // Nikkei
-    // Actions US (CFD ou direct via broker)
-    'AAPL':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 190.00,  category: 'stock' },
-    'MSFT':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 420.00,  category: 'stock' },
-    'TSLA':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 250.00,  category: 'stock' },
-    'NVDA':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 130.00,  category: 'stock' },
-    'AMZN':    { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 185.00,  category: 'stock' },
-    'GOOGL':   { base: 'USD', quote: 'USD', pipSize: 0.01,   price: 175.00,  category: 'stock' },
-    // Crypto (1 pip = 0.01 sur BTC, 0.001 sur ETH)
-    'BTC/USD': { base: 'BTC', quote: 'USD', pipSize: 1.0,    price: 95000,   category: 'crypto' },
-    'ETH/USD': { base: 'ETH', quote: 'USD', pipSize: 0.1,    price: 3500,    category: 'crypto' },
-    'SOL/USD': { base: 'SOL', quote: 'USD', pipSize: 0.01,   price: 180.00,  category: 'crypto' },
-    'BNB/USD': { base: 'BNB', quote: 'USD', pipSize: 0.01,   price: 620.00,  category: 'crypto' },
-    'XRP/USD': { base: 'XRP', quote: 'USD', pipSize: 0.0001, price: 2.40,    category: 'crypto' },
-    'DOGE/USD':{ base: 'DOGE',quote: 'USD', pipSize: 0.00001,price: 0.18,    category: 'crypto' },
-    'ADA/USD': { base: 'ADA', quote: 'USD', pipSize: 0.0001, price: 0.90,    category: 'crypto' },
-    'AVAX/USD':{ base: 'AVAX',quote: 'USD', pipSize: 0.001,  price: 36.00,   category: 'crypto' }
+    // Forex majors — 1 lot = 100 000 unités base
+    'EUR/USD': { base: 'EUR', quote: 'USD', pipSize: 0.0001, contractSize: 100000, unitLabel: 'EUR',    price: 1.0800, category: 'forex' },
+    'GBP/USD': { base: 'GBP', quote: 'USD', pipSize: 0.0001, contractSize: 100000, unitLabel: 'GBP',    price: 1.2700, category: 'forex' },
+    'USD/JPY': { base: 'USD', quote: 'JPY', pipSize: 0.01,   contractSize: 100000, unitLabel: 'USD',    price: 155.00, category: 'forex' },
+    'USD/CHF': { base: 'USD', quote: 'CHF', pipSize: 0.0001, contractSize: 100000, unitLabel: 'USD',    price: 0.9100, category: 'forex' },
+    'AUD/USD': { base: 'AUD', quote: 'USD', pipSize: 0.0001, contractSize: 100000, unitLabel: 'AUD',    price: 0.6600, category: 'forex' },
+    'NZD/USD': { base: 'NZD', quote: 'USD', pipSize: 0.0001, contractSize: 100000, unitLabel: 'NZD',    price: 0.6000, category: 'forex' },
+    'USD/CAD': { base: 'USD', quote: 'CAD', pipSize: 0.0001, contractSize: 100000, unitLabel: 'USD',    price: 1.3500, category: 'forex' },
+    'EUR/GBP': { base: 'EUR', quote: 'GBP', pipSize: 0.0001, contractSize: 100000, unitLabel: 'EUR',    price: 0.8500, category: 'forex' },
+    'EUR/JPY': { base: 'EUR', quote: 'JPY', pipSize: 0.01,   contractSize: 100000, unitLabel: 'EUR',    price: 167.00, category: 'forex' },
+    'EUR/CHF': { base: 'EUR', quote: 'CHF', pipSize: 0.0001, contractSize: 100000, unitLabel: 'EUR',    price: 0.9800, category: 'forex' },
+    'GBP/JPY': { base: 'GBP', quote: 'JPY', pipSize: 0.01,   contractSize: 100000, unitLabel: 'GBP',    price: 196.00, category: 'forex' },
+    // Exotiques
+    'USD/MXN': { base: 'USD', quote: 'MXN', pipSize: 0.0001, contractSize: 100000, unitLabel: 'USD',    price: 17.00,  category: 'forex_exotic' },
+    'USD/TRY': { base: 'USD', quote: 'TRY', pipSize: 0.0001, contractSize: 100000, unitLabel: 'USD',    price: 32.00,  category: 'forex_exotic' },
+    'USD/ZAR': { base: 'USD', quote: 'ZAR', pipSize: 0.0001, contractSize: 100000, unitLabel: 'USD',    price: 18.50,  category: 'forex_exotic' },
+    // Métaux précieux — conventions spot CFD
+    'XAU/USD': { base: 'XAU', quote: 'USD', pipSize: 0.01,   contractSize: 100,    unitLabel: 'oz',     price: 2400.00, category: 'metal' },
+    'XAG/USD': { base: 'XAG', quote: 'USD', pipSize: 0.001,  contractSize: 5000,   unitLabel: 'oz',     price: 28.00,   category: 'metal' },
+    'XPT/USD': { base: 'XPT', quote: 'USD', pipSize: 0.01,   contractSize: 50,     unitLabel: 'oz',     price: 980.00,  category: 'metal' },
+    // Énergie
+    'WTI':     { base: 'WTI',  quote: 'USD', pipSize: 0.01,  contractSize: 100,    unitLabel: 'barils', price: 72.00,   category: 'commodity' },
+    'BRENT':   { base: 'BRENT',quote: 'USD', pipSize: 0.01,  contractSize: 100,    unitLabel: 'barils', price: 76.00,   category: 'commodity' },
+    'NATGAS':  { base: 'NG',   quote: 'USD', pipSize: 0.001, contractSize: 1000,   unitLabel: 'mmBtu',  price: 2.85,    category: 'commodity' },
+    // Indices CFD — 1 contrat = $1/point
+    'US30':    { base: 'US30',  quote: 'USD', pipSize: 1.0,  contractSize: 1,      unitLabel: 'contrats', price: 39000,  category: 'index' },
+    'NAS100':  { base: 'NAS100',quote: 'USD', pipSize: 1.0,  contractSize: 1,      unitLabel: 'contrats', price: 17500,  category: 'index' },
+    'SPX500':  { base: 'SPX500',quote: 'USD', pipSize: 0.1,  contractSize: 1,      unitLabel: 'contrats', price: 5200,   category: 'index' },
+    'GER40':   { base: 'GER40', quote: 'EUR', pipSize: 1.0,  contractSize: 1,      unitLabel: 'contrats', price: 18200,  category: 'index' },
+    'FRA40':   { base: 'FRA40', quote: 'EUR', pipSize: 1.0,  contractSize: 1,      unitLabel: 'contrats', price: 7500,   category: 'index' },
+    'UK100':   { base: 'UK100', quote: 'GBP', pipSize: 1.0,  contractSize: 1,      unitLabel: 'contrats', price: 8100,   category: 'index' },
+    'JPN225':  { base: 'JPN225',quote: 'JPY', pipSize: 1.0,  contractSize: 1,      unitLabel: 'contrats', price: 38000,  category: 'index' },
+    // Actions US (CFD ou cash)
+    'AAPL':    { base: 'AAPL', quote: 'USD', pipSize: 0.01,  contractSize: 1,      unitLabel: 'actions', price: 190.00,  category: 'stock' },
+    'MSFT':    { base: 'MSFT', quote: 'USD', pipSize: 0.01,  contractSize: 1,      unitLabel: 'actions', price: 420.00,  category: 'stock' },
+    'TSLA':    { base: 'TSLA', quote: 'USD', pipSize: 0.01,  contractSize: 1,      unitLabel: 'actions', price: 250.00,  category: 'stock' },
+    'NVDA':    { base: 'NVDA', quote: 'USD', pipSize: 0.01,  contractSize: 1,      unitLabel: 'actions', price: 130.00,  category: 'stock' },
+    'AMZN':    { base: 'AMZN', quote: 'USD', pipSize: 0.01,  contractSize: 1,      unitLabel: 'actions', price: 185.00,  category: 'stock' },
+    'GOOGL':   { base: 'GOOGL',quote: 'USD', pipSize: 0.01,  contractSize: 1,      unitLabel: 'actions', price: 175.00,  category: 'stock' },
+    // Crypto — 1 lot = 1 unité
+    'BTC/USD': { base: 'BTC', quote: 'USD', pipSize: 1.0,    contractSize: 1,      unitLabel: 'BTC',   price: 95000,   category: 'crypto' },
+    'ETH/USD': { base: 'ETH', quote: 'USD', pipSize: 0.1,    contractSize: 1,      unitLabel: 'ETH',   price: 3500,    category: 'crypto' },
+    'SOL/USD': { base: 'SOL', quote: 'USD', pipSize: 0.01,   contractSize: 1,      unitLabel: 'SOL',   price: 180.00,  category: 'crypto' },
+    'BNB/USD': { base: 'BNB', quote: 'USD', pipSize: 0.01,   contractSize: 1,      unitLabel: 'BNB',   price: 620.00,  category: 'crypto' },
+    'XRP/USD': { base: 'XRP', quote: 'USD', pipSize: 0.0001, contractSize: 1,      unitLabel: 'XRP',   price: 2.40,    category: 'crypto' },
+    'DOGE/USD':{ base: 'DOGE',quote: 'USD', pipSize: 0.00001,contractSize: 1,      unitLabel: 'DOGE',  price: 0.18,    category: 'crypto' },
+    'ADA/USD': { base: 'ADA', quote: 'USD', pipSize: 0.0001, contractSize: 1,      unitLabel: 'ADA',   price: 0.90,    category: 'crypto' },
+    'AVAX/USD':{ base: 'AVAX',quote: 'USD', pipSize: 0.001,  contractSize: 1,      unitLabel: 'AVAX',  price: 36.00,   category: 'crypto' }
   };
 
   // ─── Profils brokers ──────────────────────────────────────
@@ -106,7 +120,10 @@
    *
    * @param {Object} p
    * @param {string} p.pair        Ex: 'EUR/USD'
-   * @param {number} p.lotSize     Taille en unités (ex: 100000 = 1 lot standard)
+   * @param {number} p.lotSize     Taille en UNITÉS BRUTES de l'actif
+   *                                (ex : 100 000 EUR pour 1 lot EUR/USD,
+   *                                       100 oz pour 1 lot XAU/USD,
+   *                                       1 BTC pour 1 lot BTC/USD)
    * @param {string} p.accountCurr Devise du compte: 'EUR' | 'USD'
    * @param {Object} [p.customRates] Taux de change personnalisés {USD: 1.08, ...}
    *
@@ -116,7 +133,8 @@
     const pair = PAIRS[p.pair];
     if (!pair) throw new Error('Paire inconnue : ' + p.pair);
 
-    const lotSize = num(p.lotSize, 100000);
+    // Si non précisé, on prend 1 contrat standard de l'instrument
+    const lotSize = num(p.lotSize, pair.contractSize || 100000);
     const accountCurr = (p.accountCurr || 'EUR').toUpperCase();
     const rates = Object.assign({}, FX_RATES_EUR, p.customRates || {});
 
@@ -184,12 +202,16 @@
       return { error: 'Le capital doit être > 0' };
     }
 
-    const riskAmount = balance * riskPct;
+    const pair = PAIRS[p.pair];
+    if (!pair) return { error: 'Paire inconnue : ' + p.pair };
 
-    // Pip value pour 1 lot standard (100 000 unités)
+    const riskAmount = balance * riskPct;
+    const contractSize = pair.contractSize || 100000;
+
+    // Pip value pour 1 lot standard (contractSize unités)
     const pv = pipValue({
       pair: p.pair,
-      lotSize: 100000,
+      lotSize: contractSize,
       accountCurr: p.accountCurr,
       customRates: p.customRates
     });
@@ -198,19 +220,28 @@
 
     // Taille position = risque / (pips × pip value par lot)
     const lotsNeeded = riskAmount / (stopPips * pipValuePerStandardLot);
-    const units = Math.round(lotsNeeded * 100000);
+    const units = lotsNeeded * contractSize;
+
+    // Helpers pour affichage : pour le forex, on garde mini/micro lots
+    // Pour les autres, mini/micro n'ont pas vraiment de sens (1 lot = 1 BTC,
+    // donc 0.1 BTC = 0.1 lot, c'est tout).
+    const isForex = pair.category === 'forex' || pair.category === 'forex_exotic';
 
     return {
       pair: p.pair,
+      category: pair.category,
       riskAmount: riskAmount,
       stopPips: stopPips,
       pipValuePerLot: pipValuePerStandardLot,
-      pipValuePerUnit: pipValuePerStandardLot / 100000,
-      lotSize: lotsNeeded,
-      standardLots: lotsNeeded,
-      miniLots: lotsNeeded * 10,
-      microLots: lotsNeeded * 100,
-      units: units,
+      pipValuePerUnit: pipValuePerStandardLot / contractSize,
+      contractSize: contractSize,
+      unitLabel: pair.unitLabel || pair.base,
+      lotSize: lotsNeeded,                 // en lots de l'instrument
+      standardLots: lotsNeeded,            // alias
+      miniLots:  isForex ? lotsNeeded * 10  : null,
+      microLots: isForex ? lotsNeeded * 100 : null,
+      units: units,                        // unités brutes (ex: 0.45 BTC, 5.2 oz, 1 200 EUR)
+      isForex: isForex,
       accountCurrency: pv.accountCurrency,
       // Risque ré-évalué avec la taille effective
       effectiveRisk: stopPips * lotsNeeded * pipValuePerStandardLot
@@ -235,7 +266,7 @@
     if (!pair) throw new Error('Paire inconnue : ' + p.pair);
 
     const dir = p.direction === 'short' ? -1 : 1;
-    const lots = num(p.lotSize, 100000);
+    const lots = num(p.lotSize, pair.contractSize || 100000);
     const entry = num(p.entryPrice, pair.price);
     const exit  = num(p.exitPrice, pair.price);
 
