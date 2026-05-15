@@ -105,6 +105,82 @@
         <td class="${l.severity}">−${fmt(l.pct, 2)} %</td>
       </tr>
     `).join('');
+
+    // ─── Trade chart SVG ───
+    renderTradeChart(p, levels);
+  }
+
+  function renderTradeChart(p, levels) {
+    const svg = document.getElementById('mg-trade-chart');
+    if (!svg) return;
+    const isJpy = p.pair.includes('JPY');
+    const dec = isJpy ? 2 : 4;
+    const fmtPrice = (v) => fmt(v, dec);
+
+    // Compute TP at +balance gain target for visual reference (or use 1.5R based on liquidation)
+    const callL  = levels.find(l => /call|50/i.test(l.name + l.threshold))   || levels[0];
+    const stopL  = levels.find(l => /stop|20/i.test(l.name + l.threshold))   || levels[1];
+    const liqL   = levels.find(l => /liquid|0/i.test(l.name + l.threshold))  || levels[levels.length - 1];
+
+    const entry = p.entryPrice;
+    const isLong = p.direction !== 'short';
+    // TP visuel : symétrique de liquidation autour de l'entrée (R/R 1:1 versus liq) — pédagogique uniquement
+    const liqDist = Math.abs(liqL ? liqL.price - entry : entry * 0.03);
+    const tpVisual = isLong ? entry + liqDist : entry - liqDist;
+
+    // Range : du côté perdant (liquidation) au côté gagnant (TP visuel)
+    const lo = Math.min(entry, liqL?.price ?? entry - liqDist, tpVisual);
+    const hi = Math.max(entry, liqL?.price ?? entry + liqDist, tpVisual);
+    const pad = (hi - lo) * 0.05;
+    const xMin = lo - pad, xMax = hi + pad;
+    const W = 800, H = 140, PADL = 40, PADR = 40;
+    const x = (price) => PADL + (price - xMin) / (xMax - xMin) * (W - PADL - PADR);
+
+    const markers = [
+      { price: liqL?.price,  color: '#F87171', label: 'Liq',       y: 80, tooltip: 'Liquidation' },
+      { price: stopL?.price, color: '#FB923C', label: 'Stop Out',  y: 80, tooltip: 'Stop Out 20%' },
+      { price: callL?.price, color: '#FBBF24', label: 'Call',      y: 80, tooltip: 'Margin Call 50%' },
+      { price: entry,        color: 'var(--accent)', label: 'Entry', y: 80, tooltip: 'Entrée', big: true },
+      { price: tpVisual,     color: '#10B981', label: 'TP',        y: 80, tooltip: 'TP visuel (R:R 1:1)' }
+    ].filter(m => Number.isFinite(m.price));
+
+    // Build SVG
+    let svgInner = '';
+
+    // Zone perdante (de entry à liquidation) en rouge léger
+    if (liqL && Number.isFinite(liqL.price)) {
+      const xa = x(entry), xb = x(liqL.price);
+      svgInner += `<rect x="${Math.min(xa,xb)}" y="70" width="${Math.abs(xb-xa)}" height="20" fill="rgba(248,113,113,0.10)" rx="3"/>`;
+    }
+    // Zone gagnante (entry → TP) en vert léger
+    {
+      const xa = x(entry), xb = x(tpVisual);
+      svgInner += `<rect x="${Math.min(xa,xb)}" y="70" width="${Math.abs(xb-xa)}" height="20" fill="rgba(16,185,129,0.10)" rx="3"/>`;
+    }
+
+    // Axis
+    svgInner += `<line x1="${PADL}" y1="80" x2="${W-PADR}" y2="80" stroke="var(--border)" stroke-width="1.5"/>`;
+    // Arrow direction
+    const arrowY = 80;
+    svgInner += `<text x="${PADL-4}" y="${arrowY+4}" text-anchor="end" fill="var(--text-4)" font-size="10">${isLong ? '↓ perte' : '↑ perte'}</text>`;
+    svgInner += `<text x="${W-PADR+4}" y="${arrowY+4}" text-anchor="start" fill="var(--text-4)" font-size="10">${isLong ? '↑ gain' : '↓ gain'}</text>`;
+
+    // Markers + labels (alternate top/bottom to avoid overlap)
+    markers.sort((a,b) => a.price - b.price);
+    markers.forEach((m, i) => {
+      const xp = x(m.price);
+      const above = i % 2 === 0;
+      const lblY = above ? 50 : 118;
+      const lineY1 = above ? 55 : 90;
+      const lineY2 = above ? 75 : 105;
+      const r = m.big ? 7 : 5;
+      svgInner += `<line x1="${xp}" y1="${lineY1}" x2="${xp}" y2="${lineY2}" stroke="${m.color}" stroke-width="1.5" stroke-dasharray="2 2"/>`;
+      svgInner += `<circle cx="${xp}" cy="80" r="${r}" fill="${m.color}" stroke="var(--bg-card)" stroke-width="2"/>`;
+      svgInner += `<text x="${xp}" y="${lblY}" text-anchor="middle" fill="var(--text-2)" font-size="10" font-weight="600">${m.label}</text>`;
+      svgInner += `<text x="${xp}" y="${lblY + (above ? 12 : 12)}" text-anchor="middle" fill="var(--text-4)" font-size="9">${fmtPrice(m.price)}</text>`;
+    });
+
+    svg.innerHTML = svgInner;
   }
 
   // ─── A3 : SL/TP par montant cible ───

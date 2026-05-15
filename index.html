@@ -850,8 +850,84 @@
 
   </section>
 
-  <!-- ─── TÉMOIGNAGES ─── -->
-  <section class="reveal" style="margin-top:96px">
+  <!-- ─── SONDAGE PROCHAIN OUTIL ─── -->
+  <section class="card reveal" id="poll" style="margin:96px auto 0;max-width:880px">
+    <div style="padding:36px 28px;text-align:center">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent);padding:6px 12px;border-radius:999px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="12" height="12"><path d="M3 13V7M8 13V3M13 13v-4"/></svg>
+        Sondage · 30 secondes
+      </div>
+      <h2 style="font-size:26px;font-weight:700;margin:0 0 6px;letter-spacing:-0.02em">Quel sera le <em style="color:var(--accent);font-style:normal">prochain outil</em> ?</h2>
+      <p style="color:var(--text-3);font-size:14px;margin:0 auto 22px;max-width:520px">Aide-moi à prioriser. Le tool qui obtient le plus de votes sortira en premier.</p>
+
+      <div class="poll-options" id="poll-options" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;max-width:760px;margin:0 auto">
+        <button class="poll-opt" data-poll="assurance-vie" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:var(--t-fast);display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+          <span>Simulateur Assurance-Vie</span>
+          <span style="font-size:11px;font-weight:500;color:var(--text-4)">Fonds €, UC, fiscalité 8 ans</span>
+        </button>
+        <button class="poll-opt" data-poll="lmnp" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:var(--t-fast);display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+          <span>Simulateur LMNP</span>
+          <span style="font-size:11px;font-weight:500;color:var(--text-4)">Amortissement, micro-BIC, réel</span>
+        </button>
+        <button class="poll-opt" data-poll="options-bs" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:var(--t-fast);display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+          <span>Options Black-Scholes</span>
+          <span style="font-size:11px;font-weight:500;color:var(--text-4)">Greeks, calls/puts, IV</span>
+        </button>
+        <button class="poll-opt" data-poll="impot-revenu" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:var(--t-fast);display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+          <span>Calculateur Impôt Revenu</span>
+          <span style="font-size:11px;font-weight:500;color:var(--text-4)">Barème IR + tranches 2025</span>
+        </button>
+        <button class="poll-opt" data-poll="emprunt" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:var(--t-fast);display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+          <span>Simulateur de Prêt</span>
+          <span style="font-size:11px;font-weight:500;color:var(--text-4)">Capacité, mensualités, taux</span>
+        </button>
+        <button class="poll-opt" data-poll="dividendes" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:var(--t-fast);display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+          <span>Stratégie Dividendes</span>
+          <span style="font-size:11px;font-weight:500;color:var(--text-4)">Rente passive, yield on cost</span>
+        </button>
+      </div>
+      <div id="poll-msg" style="margin-top:18px;font-size:13px;color:var(--text-4);min-height:18px"></div>
+    </div>
+  </section>
+
+  <script>
+  (function () {
+    const KEY = 'ci_poll_next_tool_v1';
+    const opts = document.querySelectorAll('.poll-opt');
+    const msg = document.getElementById('poll-msg');
+    if (!opts.length) return;
+    let voted = null;
+    try { voted = localStorage.getItem(KEY); } catch {}
+    function paint() {
+      opts.forEach(b => {
+        const isMine = b.dataset.poll === voted;
+        b.style.borderColor = isMine ? 'var(--accent)' : 'var(--border)';
+        b.style.background = isMine ? 'var(--accent-soft)' : 'var(--bg)';
+      });
+      if (voted) msg.innerHTML = '✓ Merci pour ton vote ! Tu peux changer d\'avis à tout moment.';
+    }
+    paint();
+    opts.forEach(b => {
+      b.addEventListener('mouseenter', () => { if (b.dataset.poll !== voted) b.style.borderColor = 'var(--accent)'; });
+      b.addEventListener('mouseleave', () => { if (b.dataset.poll !== voted) b.style.borderColor = 'var(--border)'; });
+      b.addEventListener('click', async () => {
+        voted = b.dataset.poll;
+        try { localStorage.setItem(KEY, voted); } catch {}
+        paint();
+        // Optionnel : POST vers Formspree pour collecter les votes
+        try {
+          await fetch('https://formspree.io/f/myzgwdwa', {
+            method: 'POST', headers: { 'Accept':'application/json', 'Content-Type':'application/json' },
+            body: JSON.stringify({ poll: 'next_tool', vote: voted, source: 'home' })
+          });
+        } catch {}
+      });
+    });
+  })();
+  </script>
+
+  <!-- ─── TÉMOIGNAGES (HIDDEN until real users) ─── -->
+  <section class="reveal" style="margin-top:96px;display:none" data-feature="testimonials-soon">
 
     <div class="v3-section-head">
       <div class="page-eyebrow" style="margin:0 auto 14px">
@@ -860,10 +936,10 @@
             <path d="M3 4h4v4H3zM5 8c0 2-1 3-2 3M9 4h4v4H9zM11 8c0 2-1 3-2 3"/>
           </svg>
         </span>
-        Ils utilisent CalcInvest
+        Bientôt
       </div>
-      <h2>Pourquoi nos utilisateurs <em>reviennent</em>.</h2>
-      <p>Investisseurs particuliers, conseillers patrimoniaux, futurs retraités — voici ce qu'ils en disent.</p>
+      <h2>Ils utilisent <em>CalcInvest</em>.</h2>
+      <p>Les premiers témoignages arrivent — l'app vient d'ouvrir.</p>
     </div>
 
     <div class="testimonials-grid">
