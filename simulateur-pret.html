@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0E9F6E" />
+<title>Simulateur de Prêt Immobilier 2026 — Capacité d'emprunt | CalcInvest</title>
+<meta name="description" content="Calculez votre capacité d'emprunt, vos mensualités, le coût total du crédit, comparez les durées (15/20/25/30 ans), simulez un remboursement anticipé. Taux 2026, frais notaire, assurance." />
+<meta name="keywords" content="simulateur prêt immobilier, capacité emprunt, mensualité crédit, taux usure 2026, frais notaire, amortissement" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<style>
+  .mode-toggle { display:flex; gap:6px; flex-wrap:wrap }
+  .mode-toggle label {
+    flex:1; min-width:160px; padding:12px 16px; background:var(--bg); border:1px solid var(--border);
+    border-radius:var(--r-sm); cursor:pointer; transition:var(--t-fast); font-size:13px; font-weight:600;
+    color:var(--text-3); text-align:center;
+  }
+  .mode-toggle input { display:none }
+  .mode-toggle input:checked + .mode-label,
+  .mode-toggle label:has(input:checked) {
+    background:var(--accent-soft); border-color:var(--accent); color:var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">Simulateur de Prêt</div><div class="logo-text-sub">Immobilier</div></div>
+    </a>
+  </div>
+  <div class="topbar-center">
+    <nav class="segmented">
+      <a class="segmented-btn" href="/simulateur-rendement-locatif"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg>Locatif</a>
+      <a class="segmented-btn" href="/simulateur-scpi"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="3" width="5" height="10"/><rect x="9" y="3" width="5" height="10"/></svg>SCPI</a>
+      <a class="segmented-btn active" aria-current="page" href="/simulateur-pret"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="4" width="12" height="10" rx="1"/><path d="M2 8h12M5 12h2"/></svg>Prêt</a>
+      <a class="segmented-btn" href="/simulateur-dca"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M2 12l4-4 3 3 5-6"/></svg>Bourse</a>
+    </nav>
+  </div>
+  <div class="topbar-right" id="ci-user-zone">
+    <a href="/mes-projets" class="btn-ghost"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><path d="M2 4h5l1 2h6v7H2z"/></svg><span>Projets</span></a>
+  </div>
+</header>
+
+<div class="shell" id="page-loan">
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Simulateur</div>
+      <a class="sidebar-link active" href="#params"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 5h10M3 8h10M3 11h6"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Paramètres</div><div class="sidebar-link-title">Capacité ou prêt</div></div></a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Analyses</div>
+      <a class="sidebar-link" href="#a1"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><circle cx="8" cy="8" r="5"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 01</div><div class="sidebar-link-title">Mensualité & amortissement</div></div></a>
+      <a class="sidebar-link" href="#a2"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="10" width="12" height="4" rx="1"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 02</div><div class="sidebar-link-title">Comparaison durées</div></div></a>
+      <a class="sidebar-link" href="#a3"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 7L8 3l5 4v7H3z"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 03</div><div class="sidebar-link-title">Coût opération + notaire</div></div></a>
+      <a class="sidebar-link" href="#a4"><div class="sidebar-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><polyline points="2 9 6 5 9 8 14 3"/></svg></div><div class="sidebar-link-text"><div class="sidebar-link-label">Analyse 04</div><div class="sidebar-link-title">Remboursement anticipé</div></div></a>
+    </div>
+  </aside>
+
+  <main class="main fade-in">
+
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="4" width="12" height="10" rx="1"/><path d="M2 8h12M5 12h2"/></svg></span>
+        Immobilier · Crédit
+      </div>
+      <h1 class="page-title">Combien puis-je <em>emprunter</em> ?</h1>
+      <p class="page-lede">Capacité d'emprunt selon vos revenus, <strong style="color:var(--text)">mensualité réelle assurance comprise</strong>, comparaison des durées (15 à 30 ans), frais de notaire, et impact d'un <em style="color:var(--accent);font-style:normal;font-weight:600">remboursement anticipé</em>. Taux d'usure 2026 intégré.</p>
+    </div>
+
+    <!-- ═══ PARAMS ═══ -->
+    <section class="accordion open" id="params">
+      <div class="accordion-header">
+        <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+        <div class="accordion-titles">
+          <div class="accordion-title">Vos paramètres</div>
+          <div class="accordion-summary" id="loan-sum-params">—</div>
+        </div>
+        <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="accordion-body"><div class="accordion-body-inner">
+
+        <!-- Mode toggle -->
+        <div class="field" style="margin-bottom:20px">
+          <div class="field-label">Que souhaitez-vous calculer ?</div>
+          <div class="mode-toggle">
+            <label><input type="radio" name="loan-mode" value="capacite" checked><span class="mode-label">📊 Ma capacité d'emprunt</span></label>
+            <label><input type="radio" name="loan-mode" value="mensualite"><span class="mode-label">💶 La mensualité d'un prêt</span></label>
+          </div>
+        </div>
+
+        <!-- Mode CAPACITÉ -->
+        <div data-mode="capacite" class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><circle cx="7" cy="7" r="5"/></svg></div>
+            <div class="subsection-title">Revenus & charges</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Revenus nets mensuels du foyer</div>
+              <div class="stepper" data-min="0" data-max="50000" data-step="100">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-revenus" type="number" value="3500" />
+                <span class="stepper-unit">€/mois</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="loan-revenus">
+                <button class="pill" data-val="2000">2 000</button>
+                <button class="pill" data-val="3500">3 500</button>
+                <button class="pill" data-val="5000">5 000</button>
+                <button class="pill" data-val="8000">8 000</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Charges déjà existantes <span class="field-hint">crédits, pension, etc.</span></div>
+              <div class="stepper" data-min="0" data-max="10000" data-step="50">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-charges" type="number" value="0" />
+                <span class="stepper-unit">€/mois</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Taux d'endettement max</div>
+              <div class="stepper" data-min="20" data-max="40" data-step="1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-endettement" type="number" value="35" />
+                <span class="stepper-unit">%</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="loan-endettement">
+                <button class="pill" data-val="33">33 (prudent)</button>
+                <button class="pill" data-val="35">35 (HCSF)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode MENSUALITÉ -->
+        <div data-mode="mensualite" class="subsection" style="display:none">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><rect x="2" y="3" width="10" height="8" rx="1"/></svg></div>
+            <div class="subsection-title">Capital à emprunter</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Montant emprunté</div>
+              <div class="stepper" data-min="10000" data-max="5000000" data-step="5000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-capital" type="number" value="200000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="loan-capital">
+                <button class="pill" data-val="100000">100 k€</button>
+                <button class="pill" data-val="200000">200 k€</button>
+                <button class="pill" data-val="300000">300 k€</button>
+                <button class="pill" data-val="500000">500 k€</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Commun : durée + taux -->
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1"/></svg></div>
+            <div class="subsection-title">Conditions du prêt</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Durée</div>
+              <div class="stepper" data-min="5" data-max="30" data-step="1">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-duree" type="number" value="25" />
+                <span class="stepper-unit">ans</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="loan-duree">
+                <button class="pill" data-val="15">15</button>
+                <button class="pill" data-val="20">20</button>
+                <button class="pill" data-val="25">25</button>
+                <button class="pill" data-val="30">30</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Taux nominal</div>
+              <div class="stepper" data-min="0.5" data-max="10" data-step="0.05">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-taux" type="number" value="3.5" />
+                <span class="stepper-unit">%/an</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="loan-taux">
+                <button class="pill" data-val="3.0">3.0</button>
+                <button class="pill" data-val="3.5">3.5</button>
+                <button class="pill" data-val="4.0">4.0</button>
+                <button class="pill" data-val="4.5">4.5</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Assurance emprunteur</div>
+              <div class="stepper" data-min="0" data-max="2" data-step="0.01">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-assurance" type="number" value="0.36" step="0.01" />
+                <span class="stepper-unit">%/an</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="loan-assurance">
+                <button class="pill" data-val="0.10">0.10 (jeune)</button>
+                <button class="pill" data-val="0.36">0.36 (moy.)</button>
+                <button class="pill" data-val="0.60">0.60 (senior)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opération immobilière -->
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><path d="M2 6l5-3 5 3v6H2z"/></svg></div>
+            <div class="subsection-title">Opération immobilière <span class="subsection-hint">prix bien, apport, travaux (pour A03)</span></div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Prix du bien</div>
+              <div class="stepper" data-min="0" data-max="5000000" data-step="5000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-prix-bien" type="number" value="250000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Type de bien</div>
+              <div class="mode-toggle">
+                <label><input type="radio" name="loan-neuf" value="ancien" checked><span class="mode-label">Ancien (~7.5% notaire)</span></label>
+                <label><input type="radio" name="loan-neuf" value="neuf"><span class="mode-label">Neuf (~2.5%)</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Travaux</div>
+              <div class="stepper" data-min="0" data-max="500000" data-step="1000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-travaux" type="number" value="0" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Apport personnel</div>
+              <div class="stepper" data-min="0" data-max="2000000" data-step="1000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-apport" type="number" value="30000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remboursement anticipé -->
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" width="11" height="11"><polyline points="2 9 5 6 8 8 12 3"/></svg></div>
+            <div class="subsection-title">Remboursement anticipé <span class="subsection-hint">simulation A04</span></div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Montant remboursé d'un coup</div>
+              <div class="stepper" data-min="0" data-max="500000" data-step="1000">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-anticipe-montant" type="number" value="20000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">À quel mois du prêt ?</div>
+              <div class="stepper" data-min="1" data-max="360" data-step="6">
+                <button class="stepper-btn" data-act="minus">−</button>
+                <input class="stepper-input" id="loan-anticipe-mois" type="number" value="60" />
+                <span class="stepper-unit">mois</span>
+                <button class="stepper-btn" data-act="plus">+</button>
+              </div>
+              <div class="pills" data-target="loan-anticipe-mois">
+                <button class="pill" data-val="24">24 (an 2)</button>
+                <button class="pill" data-val="60">60 (an 5)</button>
+                <button class="pill" data-val="120">120 (an 10)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-row" style="margin-top:18px">
+          <button class="btn btn-primary" id="loan-btn-calc"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>Calculer</button>
+          <button class="btn btn-secondary" id="loan-btn-save"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M3 2h8l2 2v10H3z"/></svg>Sauvegarder</button>
+        </div>
+
+      </div></div>
+    </section>
+
+    <!-- HERO RESULT -->
+    <section class="card" id="result-hero" style="margin-top:32px;border:1px solid #0E9F6E;background:linear-gradient(135deg, rgba(14,159,110,0.10), rgba(14,159,110,0.02))">
+      <div class="card-body" style="padding:28px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#0E9F6E;font-weight:700;margin-bottom:12px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="loan-hero-headline-label">Capital max empruntable</span>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;margin-bottom:14px">
+          <div style="font-size:clamp(36px, 6vw, 56px);font-weight:800;color:#0E9F6E;letter-spacing:-0.02em;line-height:1;font-family:var(--font-mono)" id="loan-hero-headline">—</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-4);font-weight:600;margin-bottom:4px">Mensualité</div>
+            <div style="font-size:16px;font-weight:700;color:var(--text)" id="loan-hero-monthly">—</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-4);font-weight:600;margin-bottom:4px">Durée</div>
+            <div style="font-size:16px;font-weight:700;color:var(--text)" id="loan-hero-duration">—</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-4);font-weight:600;margin-bottom:4px">Taux</div>
+            <div style="font-size:16px;font-weight:700;color:var(--text)" id="loan-hero-rate">—</div>
+          </div>
+        </div>
+
+        <div id="loan-hero-msg" style="margin-top:16px;font-size:13.5px;line-height:1.55;color:var(--text-2)">—</div>
+      </div>
+    </section>
+
+    <!-- A01 -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><circle cx="8" cy="8" r="5"/></svg></span>Analyse 01 · Mensualité & amortissement</div>
+    <section class="card" id="a1">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><circle cx="8" cy="8" r="5"/></svg></div>Détail mensualité & coût total</div>
+      </div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Mensualité prêt</div><div class="stat-value" id="loan-stat-pmt-pret">—</div><div class="stat-sub">capital + intérêts</div></div>
+          <div class="stat"><div class="stat-label">Assurance</div><div class="stat-value" id="loan-stat-pmt-assu">—</div><div class="stat-sub">par mois</div></div>
+          <div class="stat"><div class="stat-label">Mensualité totale</div><div class="stat-value pos" id="loan-stat-pmt-total">—</div><div class="stat-sub">ce que vous payez</div></div>
+          <div class="stat"><div class="stat-label">TAEG approx.</div><div class="stat-value" id="loan-stat-taeg">—</div><div class="stat-sub">coût annuel effectif</div></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Total intérêts</div><div class="stat-value neg" id="loan-stat-interets">—</div><div class="stat-sub">payés à la banque</div></div>
+          <div class="stat"><div class="stat-label">Total assurance</div><div class="stat-value" id="loan-stat-assurance-totale">—</div><div class="stat-sub">cumulée</div></div>
+          <div class="stat"><div class="stat-label">Coût total crédit</div><div class="stat-value neg" id="loan-stat-cout-credit">—</div><div class="stat-sub">intérêts + assurance</div></div>
+          <div class="stat"><div class="stat-label">Coût total à rembourser</div><div class="stat-value" id="loan-stat-cout-total">—</div><div class="stat-sub">capital + tout</div></div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-top:18px">
+          <canvas id="loan-chart-amort" style="width:100%;height:240px;display:block"></canvas>
+        </div>
+        <div class="table-scroll" style="margin-top:18px;max-height:380px">
+          <table class="data-table">
+            <thead><tr><th>Année</th><th>Intérêts</th><th>Capital</th><th>Assurance</th><th>Capital restant</th></tr></thead>
+            <tbody id="loan-table-yearly"></tbody>
+          </table>
+        </div>
+        <div class="insight" id="loan-insight-a01"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/></svg></div><div class="insight-text">—</div></div>
+      </div>
+    </section>
+
+    <!-- A02 -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="2" y="10" width="12" height="4"/></svg></span>Analyse 02 · Comparaison des durées</div>
+    <section class="card" id="a2">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="10" width="12" height="4" rx="1"/></svg></div>15 / 20 / 25 / 27 / 30 ans</div></div>
+      <div class="card-body">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-bottom:18px">
+          <canvas id="loan-chart-durees" style="width:100%;height:220px;display:block"></canvas>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Durée</th><th>Mensualité</th><th>Intérêts totaux</th><th>Coût total</th></tr></thead>
+            <tbody id="loan-table-durees"></tbody>
+          </table>
+        </div>
+        <div class="insight" id="loan-insight-a02"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="2 9 6 5 9 8 14 3"/></svg></div><div class="insight-text">—</div></div>
+      </div>
+    </section>
+
+    <!-- A03 -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M3 7L8 3l5 4v7H3z"/></svg></span>Analyse 03 · Coût opération + frais notaire</div>
+    <section class="card" id="a3">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M3 7L8 3l5 4v7H3z"/></svg></div>Combien me coûte vraiment l'achat</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Prix du bien</div><div class="stat-value" id="loan-stat-op-prix">—</div></div>
+          <div class="stat"><div class="stat-label">Frais notaire</div><div class="stat-value warn" id="loan-stat-op-notaire">—</div></div>
+          <div class="stat"><div class="stat-label">Travaux</div><div class="stat-value" id="loan-stat-op-travaux">—</div></div>
+          <div class="stat"><div class="stat-label">Coût total opération</div><div class="stat-value pos" id="loan-stat-op-total">—</div></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Apport personnel</div><div class="stat-value" id="loan-stat-op-apport">—</div><div class="stat-sub" id="loan-stat-op-ratio">—</div></div>
+          <div class="stat"><div class="stat-label">À emprunter</div><div class="stat-value" id="loan-stat-op-emprunt">—</div><div class="stat-sub">capital net du crédit</div></div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-top:18px">
+          <canvas id="loan-chart-op" style="width:100%;height:220px;display:block"></canvas>
+        </div>
+        <div class="insight" id="loan-insight-a03"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 7L8 3l5 4v7H3z"/></svg></div><div class="insight-text">—</div></div>
+      </div>
+    </section>
+
+    <!-- A04 -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><polyline points="2 9 6 5 9 8 14 3"/></svg></span>Analyse 04 · Remboursement anticipé</div>
+    <section class="card" id="a4">
+      <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 9 6 5 9 8 14 3"/></svg></div>Combien d'années & d'intérêts gagnés ?</div></div>
+      <div class="card-body">
+        <div class="info-box"><div class="info-box-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="8" cy="8" r="6"/></svg> Comment ça marche</div>
+          Le remboursement anticipé partiel garde la même mensualité mais raccourcit la durée. Plus il est précoce, plus on évite d'intérêts (les premières années, ~80% de la mensualité = intérêts). La banque facture une <strong>pénalité</strong> (3% du capital remboursé OU 6 mois d'intérêts, le moindre des deux). Réglementé par le Code de la consommation L313-47.
+        </div>
+        <div class="stats-row" style="margin-top:18px">
+          <div class="stat"><div class="stat-label">Solde avant</div><div class="stat-value" id="loan-stat-ra-solde-avant">—</div></div>
+          <div class="stat"><div class="stat-label">Solde après</div><div class="stat-value" id="loan-stat-ra-solde-apres">—</div></div>
+          <div class="stat"><div class="stat-label">Années gagnées</div><div class="stat-value pos" id="loan-stat-ra-annees-gagnees">—</div></div>
+          <div class="stat"><div class="stat-label">Intérêts économisés</div><div class="stat-value pos" id="loan-stat-ra-interets-economises">—</div></div>
+          <div class="stat"><div class="stat-label">Pénalité</div><div class="stat-value warn" id="loan-stat-ra-penalite">—</div></div>
+        </div>
+        <div class="insight" id="loan-insight-a04"><div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="2 9 6 5 9 8 14 3"/></svg></div><div class="insight-text">—</div></div>
+      </div>
+    </section>
+
+    <!-- Méthodologie -->
+    <div class="page-eyebrow" style="margin-top:32px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="3" y="2" width="10" height="12"/></svg></span>Méthodologie</div>
+    <section class="card">
+      <div class="card-body">
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-2)">
+          <strong>Mensualité</strong> : formule PMT classique <code>K × r / (1 − (1+r)^−n)</code> où <code>r = taux/12</code>, <code>n = mois</code>. Assurance calculée sur le capital initial (convention emprunteur), pas sur le capital restant dû.
+        </p>
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:8px">
+          <strong>Capacité</strong> : <code>capital_max = (revenus × endettement − charges) / (facteur_pmt + assu/12)</code>. Limite HCSF : <strong>35%</strong> de taux d'endettement, durée max <strong>25 ans</strong> (+2 ans avec différé pour neuf).
+        </p>
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:8px">
+          <strong>Frais notaire</strong> : 7-8% dans l'ancien (5.8% droits enregistrement + 1% émoluments + 1% TVA/débours), 2-3% dans le neuf (TVA déjà incluse dans le prix, pas de droits d'enregistrement).
+        </p>
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:8px">
+          <strong>Taux d'usure 2026</strong> (Banque de France T2) : <strong>4.67%</strong> sous 10 ans, <strong>5.24%</strong> de 10 à 20 ans, <strong>5.88%</strong> ≥ 20 ans. La banque ne peut pas dépasser ces TAEG.
+        </p>
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:8px">
+          <strong>Pénalité remboursement anticipé</strong> : Code consommation L313-47, plafonnée à <strong>3%</strong> du capital remboursé OU <strong>6 mois d'intérêts</strong> sur le montant. Souvent supprimée pour résidence principale (vente, mutation, décès, perte d'emploi).
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <div>Simulation à titre informatif · Taux usure 2026 Banque de France · Frais notaire indicatifs</div>
+  <div><a href="/">Accueil</a> · <a href="/methodologie">Méthodologie</a> · <a href="/glossaire">Glossaire</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/paywall.js"></script>
+<script src="/assets/js/core/finance-utils.js"></script>
+<script src="/assets/js/core/calc-loan.js"></script>
+<script src="/assets/js/views/loan.view.js"></script>
+
+</body>
+</html>

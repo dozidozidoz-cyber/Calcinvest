@@ -972,6 +972,7 @@
     '/simulateur-dcf':                  { label: 'Valorisation DCF',   cat: 'Marchés',  color: '#D97706' },
     '/simulateur-rendement-locatif':    { label: 'Rendement Locatif',  cat: 'Immobilier', color: '#059669' },
     '/simulateur-scpi':                 { label: 'SCPI',               cat: 'Immobilier', color: '#0E9F6E' },
+    '/simulateur-pret':                 { label: 'Simulateur de Prêt', cat: 'Immobilier', color: '#0E9F6E' },
     '/calculateur-pips':                { label: 'Calculateur PIPS',   cat: 'Trading',  color: '#7C3AED' },
     '/calculateur-marge-liquidation':   { label: 'Marge & Liquidation',cat: 'Trading',  color: '#8B5CF6' },
     '/calculateur-couts-trading':       { label: 'Coûts du trade',     cat: 'Trading',  color: '#9333EA' },
