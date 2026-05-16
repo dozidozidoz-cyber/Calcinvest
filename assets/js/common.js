@@ -1069,6 +1069,8 @@
       catImmo:     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 7L8 3l5 4v7H3z"/><path d="M6 14V9h4v5"/></svg>',
       catTrading:  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M2 8h12M5 5l3 3-3 3M11 5l-3 3 3 3"/></svg>',
       catEpargne:  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>',
+      catFisca:    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="3" y="2" width="10" height="12" rx="1"/><path d="M5 5h6M5 8h6M5 11h4"/></svg>',
+      impot:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="4" y="3" width="14" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
       chevron:     '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="3 5 6 8 9 5"/></svg>'
     };
 
@@ -1100,6 +1102,12 @@
           { url: '/calculateur-fiscalite-trading',     label: 'Fiscalité Trading FR',     desc: 'PFU vs IR, CTO vs PEA',          icon: ICONS.fisca },
           { url: '/comparateur-brokers',               label: 'Comparateur Brokers',      desc: 'IBKR, Trade Republic, Saxo...',  icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><rect x="2" y="2" width="4" height="4"/><rect x="6" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/></svg>' },
           { url: '/calculateur-volatilite',            label: 'ATR & Kelly',              desc: 'Volatilité + sizing optimal',    icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><path d="M2 10l4-6 4 6 4-3"/></svg>' }
+        ]
+      },
+      {
+        id: 'fisca', label: 'Fiscalité', color: '#DC2626', icon: ICONS.catFisca,
+        tools: [
+          { url: '/calculateur-impot-revenu', label: 'Calculateur Impôt Revenu', desc: 'Barème 2025, parts, TMI, décote', icon: ICONS.impot }
         ]
       },
       {
