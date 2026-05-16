@@ -1084,8 +1084,9 @@
       {
         id: 'immo', label: 'Immobilier', color: '#059669', icon: ICONS.catImmo,
         tools: [
-          { url: '/simulateur-rendement-locatif', label: 'Rendement Locatif', desc: 'Cashflow, TRI, LMNP, SCI IS',     icon: ICONS.locatif },
-          { url: '/simulateur-scpi',              label: 'SCPI · Pierre papier', desc: '4 régimes fiscaux comparés',   icon: ICONS.scpi }
+          { url: '/simulateur-rendement-locatif', label: 'Rendement Locatif',    desc: 'Cashflow, TRI, LMNP, SCI IS',    icon: ICONS.locatif },
+          { url: '/simulateur-scpi',              label: 'SCPI · Pierre papier', desc: '4 régimes fiscaux + rentier',     icon: ICONS.scpi },
+          { url: '/simulateur-pret',              label: 'Simulateur de Prêt',   desc: 'Capacité, mensualités, notaire',  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="6" width="18" height="14" rx="1"/><path d="M3 10h18M7 16h3M14 16h3"/></svg>' }
         ]
       },
       {
