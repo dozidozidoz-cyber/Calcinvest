@@ -217,6 +217,21 @@
     </div>`);
   }
 
+  // ─── EXPORT PDF ────────────────────────────────────────
+  function exportPDF() {
+    if (!window.CI || !CI.exportPDF) { console.warn('CI.exportPDF non chargé'); return; }
+    const p = readParams();
+    const summary = p.mode === 'capacite'
+      ? `Capacité d'emprunt · revenus ${fmtM(p.revenusNets)}/mois · durée ${p.duree} ans · taux ${fmtP(p.tauxNominal)} · assurance ${fmtP(p.assuranceRate)}`
+      : `Prêt ${fmtM(p.capital)} · ${p.duree} ans · taux ${fmtP(p.tauxNominal)} · assurance ${fmtP(p.assuranceRate)}`;
+    CI.exportPDF({
+      title: 'CalcInvest — Simulateur de Prêt Immobilier',
+      summary,
+      sectionIds: ['result-hero', 'a1', 'a2', 'a3', 'a4'],
+      fileName: 'calcinvest-pret'
+    });
+  }
+
   // ─── RUN ──────────────────────────────────────────────
   function run() {
     if (!window.LOAN || !window.FIN) {
@@ -277,6 +292,9 @@
 
       const btn = $('loan-btn-calc');
       if (btn) btn.addEventListener('click', run);
+
+      const btnPdf = $('loan-btn-pdf');
+      if (btnPdf) btnPdf.addEventListener('click', exportPDF);
 
       if (CI && CI.attachSaveButton) {
         CI.attachSaveButton({ btnId: 'loan-btn-save', type: 'pret', getParams: readParams, defaultName: 'Mon prêt immobilier' });
