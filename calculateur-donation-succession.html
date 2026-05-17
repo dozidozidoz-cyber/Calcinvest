@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#D97706" />
+<title>Calculateur Donation & Succession 2025 — Abattements + Barème | CalcInvest</title>
+<meta name="description" content="Calculez les droits de donation et succession avec les abattements 2025 (100k enfant, 31.8k petit-enfant, etc.) et le barème progressif. Démembrement inclus." />
+<meta name="keywords" content="calcul donation 2025, droits succession barème, abattement 100000 enfant, démembrement usufruit, calcul droits mutation" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/calculateur-donation-succession" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Calculateur Donation & Succession 2025 — CalcInvest" />
+<meta property="og:description" content="Abattements + barème + démembrement" />
+<meta property="og:url" content="https://calcinvest.fr/calculateur-donation-succession" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Donation & Succession 2025" />
+<meta name="twitter:description" content="Abattements + barème" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Donation & Succession","description":"Abattements + barème progressif","url":"https://calcinvest.fr/calculateur-donation-succession","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.don-hero { background: linear-gradient(135deg, rgba(217,119,6,.10), rgba(217,119,6,.02)); border:1px solid #D97706; }
+.tab-nav { display:flex; gap:8px; margin-bottom:24px; border-bottom:1px solid var(--border); }
+.tab-btn { padding:12px 20px; background:none; border:none; border-bottom:3px solid transparent; color:var(--text-3); font-weight:600; font-size:14px; cursor:pointer; transition:var(--t-fast); }
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Donation & Succession</div><div class="logo-text-sub">France 2025</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M8 14s5-2 5-7V3l-5-2-5 2v4c0 5 5 7 5 7z"/></svg></span>Fiscalité · Transmission</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Donation & <em>Succession</em>.</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Abattements 2025 (<strong style="color:var(--text)">100 000 € par enfant tous les 15 ans</strong>), barème progressif, démembrement (usufruit/nue-propriété). Toutes les configurations familiales.</p>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="donation">Donation entre vivants</button>
+    <button class="tab-btn" data-tab="succession">Succession au décès</button>
+  </div>
+
+  <!-- TAB DONATION -->
+  <div class="tab-pane active" data-pane="donation">
+    <section class="card" style="margin-bottom:24px">
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field"><label class="field-label">Montant de la donation</label><div class="stepper" data-step="5000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="don-montant" type="number" value="200000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div><div class="pills" data-target="don-montant"><button class="pill" data-val="100000">100k</button><button class="pill" data-val="200000">200k</button><button class="pill" data-val="500000">500k</button></div></div>
+          <div class="field"><label class="field-label">Lien de parenté avec le bénéficiaire</label><select class="select" id="don-lien"><option value="enfant">Enfant (abat. 100 000 €)</option><option value="petitEnfant">Petit-enfant (abat. 31 865 €)</option><option value="arrierePetitEnfant">Arrière-petit-enfant (abat. 5 310 €)</option><option value="epoux">Conjoint / PACSé (abat. 80 724 €)</option><option value="frereSoeur">Frère / sœur (abat. 15 932 €)</option><option value="neveuNiece">Neveu / nièce (abat. 7 967 €)</option><option value="autre">Autre (abat. 1 594 €)</option></select></div>
+          <div class="field"><label class="field-label">Déjà reçu du même donateur (15 ans)</label><div class="stepper" data-step="1000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="don-deja" type="number" value="0" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div><div style="font-size:11px;color:var(--text-4);margin-top:6px">Réduit l'abattement disponible (rappel fiscal 15 ans)</div></div>
+          <div class="field"><label class="field-label">Options</label>
+            <label style="display:flex;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer;margin-bottom:6px"><input type="checkbox" id="don-handicape"> Bénéficiaire handicapé (+ 159 325 €)</label>
+            <label style="display:flex;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer;margin-bottom:6px"><input type="checkbox" id="don-conjoint"> Les 2 parents donnent (abattement × 2)</label>
+            <label style="display:flex;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer"><input type="checkbox" id="don-demembrement"> Donation en nue-propriété (démembrement)</label>
+          </div>
+          <div class="field" id="don-age-wrap" style="display:none"><label class="field-label">Âge du donateur</label><div class="stepper" data-step="1" data-min="20" data-max="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="don-age" type="number" value="60" /><span class="stepper-unit">ans</span><button class="stepper-btn" data-act="plus">+</button></div><div style="font-size:11px;color:var(--text-4);margin-top:6px">Détermine la valeur de la nue-propriété</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card don-hero" style="margin-bottom:24px">
+      <div class="card-body" style="padding:28px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#D97706;font-weight:700;margin-bottom:12px">✓ MONTANT NET REÇU PAR LE BÉNÉFICIAIRE</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Donation</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="don-montant-stat">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Abattement utilisé</div><div style="font-size:24px;font-weight:700;color:#0E9F6E;font-family:var(--font-mono)" id="don-abat">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Droits à payer</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="don-droits">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Net reçu</div><div style="font-size:clamp(26px,3.5vw,32px);font-weight:800;color:#D97706;font-family:var(--font-mono)" id="don-net">—</div></div>
+        </div>
+        <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="don-msg">—</div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-bottom:24px">
+      <div class="card-header"><div class="card-title">Stratégie optimale</div></div>
+      <div class="card-body"><div id="don-strategie" style="font-size:14px;line-height:1.6"></div></div>
+    </section>
+  </div>
+
+  <!-- TAB SUCCESSION -->
+  <div class="tab-pane" data-pane="succession">
+    <section class="card" style="margin-bottom:24px">
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field"><label class="field-label">Part nette héritée</label><div class="stepper" data-step="10000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="suc-part" type="number" value="300000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+          <div class="field"><label class="field-label">Lien avec le défunt</label><select class="select" id="suc-lien"><option value="enfant">Enfant (abat. 100 000 €)</option><option value="petitEnfant">Petit-enfant par représentation</option><option value="epoux">Conjoint / PACSé (exonération totale)</option><option value="frereSoeur">Frère / sœur (abat. 15 932 €)</option><option value="neveuNiece">Neveu / nièce (abat. 7 967 €)</option><option value="autre">Autre (abat. 1 594 €)</option></select></div>
+          <div class="field"><label class="field-label">Options</label><label style="display:flex;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer"><input type="checkbox" id="suc-handicape"> Héritier handicapé (+ 159 325 €)</label></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card don-hero">
+      <div class="card-body" style="padding:28px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#D97706;font-weight:700;margin-bottom:12px">✓ NET HÉRITÉ APRÈS DROITS</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Part nette</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="suc-part-stat">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Abattement</div><div style="font-size:24px;font-weight:700;color:#0E9F6E;font-family:var(--font-mono)" id="suc-abat">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Droits</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="suc-droits">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Net hérité</div><div style="font-size:clamp(26px,3.5vw,32px);font-weight:800;color:#D97706;font-family:var(--font-mono)" id="suc-net">—</div></div>
+        </div>
+        <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="suc-msg">—</div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:24px">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Sources</strong> : art. 777 CGI (barème), art. 779 (abattements), art. 796-0 bis (exonération conjoint), art. 669 (démembrement), BOFiP.
+      <br/><strong>Limitations</strong> : ce simulateur ne traite pas le pacte Dutreil (transmission d'entreprise, abattement 75 %), les donations-partage, l'assurance-vie (régime spécifique — voir <a href="/simulateur-assurance-vie" style="color:var(--accent)">notre simulateur AV</a>), ni les biens situés à l'étranger (conventions fiscales).
+      <br/><strong>Stratégie</strong> : commencer les donations tôt (renouvelables tous les 15 ans), exploiter le démembrement, anticiper avec l'assurance-vie (abattement 152 500 €/bénéficiaire <em>en plus</em>).
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Barème 2025 · CGI / BOFiP</div><div><a href="/">Accueil</a> · <a href="/simulateur-assurance-vie">AV</a> · <a href="/calculateur-impot-revenu">IR</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-donation.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtP = n => CI.fmtPctPlain(n, 1);
+
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      document.querySelector('[data-pane="' + b.dataset.tab + '"]').classList.add('active');
+    });
+  });
+
+  function runDonation() {
+    const demembrement = CI.safeChecked('don-demembrement', false);
+    $('don-age-wrap').style.display = demembrement ? '' : 'none';
+    const p = {
+      montant: CI.safeNum('don-montant', 200000),
+      lienParente: CI.safeStr('don-lien', 'enfant'),
+      handicape: CI.safeChecked('don-handicape', false),
+      deja: CI.safeNum('don-deja', 0),
+      demembrement,
+      ageDonateur: CI.safeNum('don-age', 60)
+    };
+    const r = DONATION.calcDonation(p);
+    $('don-montant-stat').textContent = fmtM(r.montant);
+    $('don-abat').textContent = fmtM(r.abattementRestant);
+    $('don-droits').textContent = fmtM(r.droits);
+    $('don-net').textContent = fmtM(r.netRecu);
+
+    let msg = 'Donation de <strong>' + fmtM(r.montant) + '</strong> à un <strong>' + p.lienParente + '</strong>';
+    if (r.demembrement) msg += ' en <strong>nue-propriété</strong> (valeur retenue : ' + fmtM(r.montantRetenu) + ', usufruit non transmis valorisé ' + fmtM(r.valeurUsufruit) + ')';
+    msg += '. Après abattement <strong style="color:#0E9F6E">' + fmtM(r.abattementRestant) + '</strong>' + (r.abattementUtiliseAuparavant > 0 ? ' (déjà ' + fmtM(r.abattementUtiliseAuparavant) + ' consommé)' : '') + ', base imposable : <strong>' + fmtM(r.baseImposable) + '</strong>. Droits à payer : <strong class="neg">' + fmtM(r.droits) + '</strong> (' + fmtP(r.tauxEffectif) + ' effectif). Net reçu : <strong style="color:#D97706">' + fmtM(r.netRecu) + '</strong>.';
+    $('don-msg').innerHTML = msg;
+
+    const strat = DONATION.strategieOptimale({ lienParente: p.lienParente, handicape: p.handicape, conjointDonateur: CI.safeChecked('don-conjoint', false) });
+    $('don-strategie').innerHTML = '<strong>Sans payer un centime de droits</strong>, vous pouvez donner jusqu\'à <strong style="color:#0E9F6E">' + fmtM(strat.surTous) + '</strong> au bénéficiaire tous les 15 ans. ' + strat.conseil;
+  }
+
+  function runSuccession() {
+    const p = {
+      partNette: CI.safeNum('suc-part', 300000),
+      lienParente: CI.safeStr('suc-lien', 'enfant'),
+      handicape: CI.safeChecked('suc-handicape', false)
+    };
+    const r = DONATION.calcSuccession(p);
+    $('suc-part-stat').textContent = fmtM(r.partNette);
+    $('suc-abat').textContent = fmtM(r.abattementUtilise);
+    $('suc-droits').textContent = fmtM(r.droits);
+    $('suc-net').textContent = fmtM(r.netHerite);
+    if (r.exoneration) {
+      $('suc-msg').innerHTML = '<strong style="color:#0E9F6E">' + r.exoneration + '</strong>';
+    } else {
+      $('suc-msg').innerHTML = 'Part nette de <strong>' + fmtM(r.partNette) + '</strong> en tant que <strong>' + p.lienParente + '</strong>. Abattement <strong style="color:#0E9F6E">' + fmtM(r.abattementUtilise) + '</strong> → base imposable <strong>' + fmtM(r.baseImposable) + '</strong> → droits <strong class="neg">' + fmtM(r.droits) + '</strong> (' + fmtP(r.tauxEffectif) + ' effectif). Net hérité : <strong style="color:#D97706">' + fmtM(r.netHerite) + '</strong>.';
+    }
+  }
+
+  function safeInit() {
+    ['don-montant','don-lien','don-deja','don-handicape','don-conjoint','don-demembrement','don-age'].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', runDonation);
+      if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(runDonation, 200); });
+    });
+    ['suc-part','suc-lien','suc-handicape'].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', runSuccession);
+      if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(runSuccession, 200); });
+    });
+    CI.initAll && CI.initAll();
+    runDonation(); runSuccession();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

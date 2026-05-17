@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0E9F6E" />
+<title>Simulateur LMNP 2025 — Micro-BIC vs Réel + Amortissements | CalcInvest</title>
+<meta name="description" content="Comparez le régime micro-BIC (abattement 50/71%) au régime réel avec amortissements pour votre location meublée. Optimisation fiscale chiffrée." />
+<meta name="keywords" content="simulateur LMNP, micro BIC réel, amortissement location meublée, fiscalité LMNP 2025" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/simulateur-lmnp" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Simulateur LMNP 2025 — CalcInvest" />
+<meta property="og:description" content="Micro-BIC vs Réel avec amortissements" />
+<meta property="og:url" content="https://calcinvest.fr/simulateur-lmnp" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Simulateur LMNP 2025" />
+<meta name="twitter:description" content="Micro-BIC vs Réel" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Simulateur LMNP","description":"Micro-BIC vs Réel avec amortissements","url":"https://calcinvest.fr/simulateur-lmnp","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.lmnp-hero { background: linear-gradient(135deg, rgba(14,159,110,.10), rgba(14,159,110,.02)); border:1px solid #0E9F6E; }
+.regime-card { padding:18px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
+.regime-card.is-best { border-color:#0E9F6E; box-shadow:0 0 0 1px #0E9F6E; }
+.regime-title { font-size:13px; font-weight:700; margin-bottom:6px; }
+.regime-net { font-size:24px; font-weight:800; font-family:var(--font-mono); }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">LMNP</div><div class="logo-text-sub">Location Meublée 2025</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M3 14V7l5-4 5 4v7M6 14v-4h4v4"/></svg></span>Immobilier · LMNP</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Micro-BIC ou <em>Réel</em> ?</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Comparez les 2 régimes fiscaux de la location meublée non professionnelle. L'amortissement du bien et du mobilier peut effacer <strong style="color:var(--text)">10 à 20 ans d'impôts</strong>.</p>
+  </div>
+
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-body">
+      <h3 style="font-size:13px;text-transform:uppercase;color:var(--text-4);letter-spacing:.1em;font-weight:700;margin-bottom:14px">Revenus locatifs</h3>
+      <div class="field-grid">
+        <div class="field"><label class="field-label">Loyers annuels (hors charges récupérables)</label><div class="stepper" data-step="500" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-loyers" type="number" value="18000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Charges déductibles</label><div class="stepper" data-step="100" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-charges" type="number" value="2500" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div><div style="font-size:11px;color:var(--text-4);margin-top:6px">Taxe foncière, copro, assurance PNO, frais gestion, comptable</div></div>
+        <div class="field"><label class="field-label">Intérêts d'emprunt</label><div class="stepper" data-step="500" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-interets" type="number" value="4000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">TMI</label><div class="stepper" data-step="1" data-min="0" data-max="45"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-tmi" type="number" value="30" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div><div class="pills" data-target="lmnp-tmi"><button class="pill" data-val="11">11</button><button class="pill" data-val="30">30</button><button class="pill" data-val="41">41</button></div></div>
+      </div>
+
+      <h3 style="font-size:13px;text-transform:uppercase;color:var(--text-4);letter-spacing:.1em;font-weight:700;margin:24px 0 14px">Amortissements (régime réel)</h3>
+      <div class="field-grid">
+        <div class="field"><label class="field-label">Prix du bien (hors mobilier)</label><div class="stepper" data-step="5000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-prix-bien" type="number" value="200000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Part terrain (non amortissable)</label><div class="stepper" data-step="5" data-min="0" data-max="50"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-terrain" type="number" value="20" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div><div style="font-size:11px;color:var(--text-4);margin-top:6px">15-30 % typique selon localisation</div></div>
+        <div class="field"><label class="field-label">Durée amort. bien</label><div class="stepper" data-step="1" data-min="20" data-max="50"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-duree-bien" type="number" value="30" /><span class="stepper-unit">ans</span><button class="stepper-btn" data-act="plus">+</button></div><div style="font-size:11px;color:var(--text-4);margin-top:6px">25-40 ans standard</div></div>
+        <div class="field"><label class="field-label">Prix mobilier</label><div class="stepper" data-step="500" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-prix-mob" type="number" value="8000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Durée amort. mobilier</label><div class="stepper" data-step="1" data-min="5" data-max="15"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="lmnp-duree-mob" type="number" value="8" /><span class="stepper-unit">ans</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Options</label><label style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer"><input type="checkbox" id="lmnp-tourisme"> Meublé tourisme classé (abat. 71 %)</label></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero comparaison -->
+  <section class="card lmnp-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:28px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#0E9F6E;font-weight:700;margin-bottom:12px">✓ MEILLEUR RÉGIME POUR VOTRE SITUATION</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="regime-card" id="card-micro">
+          <div class="regime-title">Micro-BIC</div>
+          <div style="font-size:11px;color:var(--text-4);margin-bottom:8px" id="micro-meta">Abat. 50 %</div>
+          <div class="regime-net pos" id="micro-net">—</div>
+          <div style="font-size:11px;color:var(--text-4);margin-top:4px">Cashflow net annuel</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:10px" id="micro-detail">—</div>
+        </div>
+        <div class="regime-card" id="card-reel">
+          <div class="regime-title">Réel-BIC + amortissements</div>
+          <div style="font-size:11px;color:var(--text-4);margin-bottom:8px" id="reel-meta">—</div>
+          <div class="regime-net pos" id="reel-net">—</div>
+          <div style="font-size:11px;color:var(--text-4);margin-top:4px">Cashflow net annuel</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:10px" id="reel-detail">—</div>
+        </div>
+      </div>
+      <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="lmnp-msg">—</div>
+    </div>
+  </section>
+
+  <!-- Détail amortissements -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 13l4-4 3 3 5-6"/></svg></div>Détail réel-BIC : où va l'impôt</div></div>
+    <div class="card-body"><div class="table-scroll"><table class="data-table"><thead><tr><th>Poste</th><th>Montant</th><th>Commentaire</th></tr></thead><tbody id="lmnp-table-reel"></tbody></table></div></div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Sources</strong> : article 50-0 (micro-BIC), BOI-BIC-CHAMP-40-20 (location meublée), CGI.
+      <br/><strong>Seuils 2025</strong> : 77 700 € (location meublée standard) — 188 700 € (meublé de tourisme classé).
+      <br/><strong>Limitations</strong> : ce simulateur ne traite pas le statut LMP (loueur professionnel, &gt; 23 000 €/an ET &gt; 50 % revenus foyer), les plus-values de cession (régime des particuliers), ni la CFE (cotisation foncière, ~250-1 500 €/an dès la 2e année).
+      <br/><strong>Bonne pratique</strong> : faites une simulation au réel chez un comptable spécialisé (≈ 500-800 €/an) — l'économie d'impôt couvre largement le coût.
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Barème LMNP 2025 · BOFiP-Impôts</div><div><a href="/">Accueil</a> · <a href="/simulateur-rendement-locatif">Locatif nu</a> · <a href="/simulateur-scpi">SCPI</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-lmnp.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtP = n => CI.fmtPctPlain(n, 1);
+
+  function read() {
+    return {
+      loyersAnnuels: CI.safeNum('lmnp-loyers', 18000),
+      charges: CI.safeNum('lmnp-charges', 2500),
+      interetsEmprunt: CI.safeNum('lmnp-interets', 4000),
+      tmi: CI.safeNum('lmnp-tmi', 30),
+      prixBien: CI.safeNum('lmnp-prix-bien', 200000),
+      partTerrain: CI.safeNum('lmnp-terrain', 20),
+      dureeAmortBien: CI.safeNum('lmnp-duree-bien', 30),
+      prixMobilier: CI.safeNum('lmnp-prix-mob', 8000),
+      dureeAmortMobilier: CI.safeNum('lmnp-duree-mob', 8),
+      tourismeClasse: CI.safeChecked('lmnp-tourisme', false)
+    };
+  }
+
+  function run() {
+    const p = read();
+    const cmp = LMNP.compareRegimes(p);
+    const m = cmp.micro, r = cmp.reel;
+
+    // Update card "best"
+    $('card-micro').classList.toggle('is-best', cmp.meilleur === 'micro');
+    $('card-reel').classList.toggle('is-best', cmp.meilleur === 'réel');
+
+    $('micro-meta').textContent = 'Abat. ' + m.tauxAbattement.toFixed(0) + ' % — impôt ' + fmtM(m.totalImpot);
+    $('micro-net').textContent = fmtM(m.netLoyers);
+    $('micro-detail').innerHTML = 'Revenu imposable ' + fmtM(m.revenuImposable) + ' → impôt total <strong class="neg">' + fmtM(m.totalImpot) + '</strong> (' + fmtP(m.tauxPrelevement) + ' du loyer brut)';
+
+    $('reel-meta').textContent = 'Amort. total ' + fmtM(r.amortTotal) + '/an — déductible ' + fmtM(r.amortDeductible);
+    $('reel-net').textContent = fmtM(r.netLoyers);
+    $('reel-detail').innerHTML = 'Résultat imposable ' + fmtM(r.resultatImposable) + ' → impôt <strong class="neg">' + fmtM(r.totalImpot) + '</strong>' + (r.amortReporte > 0 ? ' · <span class="warn">' + fmtM(r.amortReporte) + ' d\'amort. reporté</span>' : '');
+
+    const ecart = Math.abs(cmp.ecartAnnuel);
+    if (cmp.meilleur === 'réel') {
+      $('lmnp-msg').innerHTML = '<strong style="color:#0E9F6E">Régime réel-BIC + amortissements optimal</strong> — vous économisez <strong>' + fmtM(ecart) + '/an</strong> vs micro-BIC, soit <strong>' + fmtM(ecart * 10) + ' sur 10 ans</strong>. Coût comptable typique ~600-800 €/an (largement couvert).';
+    } else {
+      $('lmnp-msg').innerHTML = '<strong style="color:#0891B2">Régime micro-BIC suffisant</strong> — vous gagnez <strong>' + fmtM(ecart) + '/an</strong> vs réel, et évitez les frais comptables. Simplicité maximale.';
+    }
+
+    // Table détail réel
+    const rows = [
+      ['Loyers bruts annuels', fmtM(r.loyers), ''],
+      ['Charges déductibles', fmtM(-r.charges), 'Taxe foncière, copro, assurance...'],
+      ['Intérêts emprunt', fmtM(-r.interets), 'Déductibles intégralement'],
+      ['Amortissement bien (' + p.dureeAmortBien + ' ans)', fmtM(-r.amortBien), 'Bâti hors terrain (' + (100 - p.partTerrain) + ' %)'],
+      ['Amortissement mobilier (' + p.dureeAmortMobilier + ' ans)', fmtM(-r.amortMobilier), 'Linéaire'],
+      ['Amortissement reporté', fmtM(r.amortReporte), r.amortReporte > 0 ? 'Reportable sans limite' : 'Aucun'],
+      ['<strong>Résultat imposable</strong>', '<strong>' + fmtM(r.resultatImposable) + '</strong>', 'Base IR + PS'],
+      ['IR (TMI ' + p.tmi + ' %)', fmtM(r.ir), ''],
+      ['PS 17.2 %', fmtM(r.ps), ''],
+      ['<strong style="color:#0E9F6E">Cashflow net annuel</strong>', '<strong style="color:#0E9F6E">' + fmtM(r.netLoyers) + '</strong>', 'Après tous coûts + impôts']
+    ];
+    $('lmnp-table-reel').innerHTML = rows.map(x => '<tr><td>' + x[0] + '</td><td>' + x[1] + '</td><td style="font-size:12px;color:var(--text-4)">' + x[2] + '</td></tr>').join('');
+  }
+
+  function safeInit() {
+    ['lmnp-loyers','lmnp-charges','lmnp-interets','lmnp-tmi','lmnp-prix-bien','lmnp-terrain','lmnp-duree-bien','lmnp-prix-mob','lmnp-duree-mob','lmnp-tourisme'].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', run);
+      if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 200); });
+    });
+    CI.initAll && CI.initAll();
+    run();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

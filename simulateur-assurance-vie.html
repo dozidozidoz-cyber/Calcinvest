@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#7C3AED" />
+<title>Simulateur Assurance-Vie 2025 — Capital + Fiscalité 8 ans | CalcInvest</title>
+<meta name="description" content="Simulez votre contrat d'assurance-vie multi-supports : fonds €/UC, frais, fiscalité avant/après 8 ans, succession 152 500 € par bénéficiaire. Barème 2025." />
+<meta name="keywords" content="simulateur assurance vie 2025, fiscalité assurance vie 8 ans, fonds euro UC, succession AV 152500" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/simulateur-assurance-vie" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Simulateur Assurance-Vie 2025 — CalcInvest" />
+<meta property="og:description" content="Capital final + fiscalité après 8 ans + succession" />
+<meta property="og:url" content="https://calcinvest.fr/simulateur-assurance-vie" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Simulateur Assurance-Vie 2025" />
+<meta name="twitter:description" content="Capital + fiscalité + succession" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Simulateur Assurance-Vie","description":"Capital + fiscalité 8 ans + succession","url":"https://calcinvest.fr/simulateur-assurance-vie","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>.av-hero { background: linear-gradient(135deg, rgba(124,58,237,.10), rgba(124,58,237,.02)); border:1px solid #7C3AED; } .alloc-bar { height:36px; border-radius:var(--r-sm); overflow:hidden; display:flex; background:var(--bg-3); margin-top:8px } .alloc-eur { background:#0891B2; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:600 } .alloc-uc { background:#7C3AED; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:600 }</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Assurance-Vie</div><div class="logo-text-sub">France 2025</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M8 14s5-2 5-7V3l-5-2-5 2v4c0 5 5 7 5 7z"/></svg></span>Épargne · Assurance-Vie</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Combien rapportera votre <em>assurance-vie</em> ?</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Multi-supports fonds €/UC, frais réels, <strong style="color:var(--text)">fiscalité après 8 ans</strong> (abattement 4 600/9 200 €) et calcul succession (152 500 € par bénéficiaire).</p>
+  </div>
+
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field"><label class="field-label">Versement initial</label><div class="stepper" data-step="1000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-k0" type="number" value="20000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Versement mensuel</label><div class="stepper" data-step="50" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-monthly" type="number" value="200" /><span class="stepper-unit">€/mois</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Durée</label><div class="stepper" data-step="1" data-min="1" data-max="50"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-years" type="number" value="20" /><span class="stepper-unit">ans</span><button class="stepper-btn" data-act="plus">+</button></div><div class="pills" data-target="av-years"><button class="pill" data-val="8">8 (seuil fisc.)</button><button class="pill" data-val="15">15</button><button class="pill" data-val="20">20</button><button class="pill" data-val="30">30</button></div></div>
+        <div class="field"><label class="field-label">Allocation UC</label><div class="stepper" data-step="5" data-min="0" data-max="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-alloc-uc" type="number" value="50" /><span class="stepper-unit">% UC</span><button class="stepper-btn" data-act="plus">+</button></div><div class="alloc-bar"><div class="alloc-eur" id="av-bar-eur" style="width:50%">Fonds € 50 %</div><div class="alloc-uc" id="av-bar-uc" style="width:50%">UC 50 %</div></div></div>
+        <div class="field"><label class="field-label">Rendement fonds €</label><div class="stepper" data-step="0.1" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-r-eur" type="number" value="2.5" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Rendement UC (actions)</label><div class="stepper" data-step="0.5" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-r-uc" type="number" value="6" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Frais d'entrée</label><div class="stepper" data-step="0.5" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-frais-in" type="number" value="3" step="0.5" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Frais de gestion UC</label><div class="stepper" data-step="0.1" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-frais-uc" type="number" value="0.8" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Foyer</label><label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer"><input type="checkbox" id="av-couple"> Couple marié/PACSé (abattement doublé)</label></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero -->
+  <section class="card av-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:28px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;font-weight:700;margin-bottom:12px">✓ CAPITAL FINAL + IMPÔT À LA SORTIE</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Capital final</div><div style="font-size:clamp(26px,3.5vw,36px);font-weight:800;color:#7C3AED;font-family:var(--font-mono)" id="av-cap">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Plus-value</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="av-pv">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Impôt rachat total</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="av-impot">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">TRI annualisé</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="av-tri">—</div></div>
+      </div>
+      <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="av-msg">—</div>
+    </div>
+  </section>
+
+  <!-- Détail fiscalité -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="3" y="2" width="10" height="12"/></svg></div>Détail fiscalité du rachat</div></div>
+    <div class="card-body">
+      <div class="table-scroll"><table class="data-table"><thead><tr><th>Poste</th><th>Montant</th><th>Commentaire</th></tr></thead><tbody id="av-table-fisc"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- Succession -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 3-5 6-5s6 2 6 5"/></svg></div>Succession (art. 990 I CGI)</div></div>
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field"><label class="field-label">Nombre de bénéficiaires</label><div class="stepper" data-step="1" data-min="1" data-max="10"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-benef" type="number" value="1" /><span class="stepper-unit">pers.</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      </div>
+      <div class="stats-row" style="margin-top:14px">
+        <div class="stat"><div class="stat-label">Abat. par bénéficiaire</div><div class="stat-value pos">152 500 €</div><div class="stat-sub">si versé avant 70 ans</div></div>
+        <div class="stat"><div class="stat-label">Droits succession</div><div class="stat-value neg" id="av-droits-suc">—</div><div class="stat-sub">20 %/31.25 % après abat.</div></div>
+        <div class="stat"><div class="stat-label">Net transmis</div><div class="stat-value pos" id="av-net-suc">—</div><div class="stat-sub">aux bénéficiaires</div></div>
+        <div class="stat"><div class="stat-label">Taux effectif</div><div class="stat-value" id="av-taux-suc">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Sources</strong> : art. 125-0 A (rachat) et 990 I (succession) du CGI, BOFiP-Impôts. Taux 2025.
+      <br/><strong>Limitations</strong> : ce simulateur ne traite pas la rente viagère, les rachats programmés, le mandat de gestion, ni le contrat de capitalisation. Les versements après 70 ans suivent un autre régime (art. 757 B).
+      <br/><strong>Stratégie</strong> : ouvrir un contrat tôt pour <em>prendre la date</em> du 8 ans, même avec 100 € initial. Les versements après l'ouverture bénéficient automatiquement de l'antériorité fiscale.
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Barème AV 2025 · CGI</div><div><a href="/">Accueil</a> · <a href="/simulateur-per">PER</a> · <a href="/simulateur-dca">DCA</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-av.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtP = n => CI.fmtPctPlain(n, 2);
+
+  function read() {
+    return {
+      K0: CI.safeNum('av-k0', 20000),
+      monthly: CI.safeNum('av-monthly', 200),
+      years: CI.safeNum('av-years', 20),
+      allocUC: CI.safeNum('av-alloc-uc', 50),
+      rendFondsEur: CI.safeNum('av-r-eur', 2.5),
+      rendUC: CI.safeNum('av-r-uc', 6),
+      fraisEntree: CI.safeNum('av-frais-in', 3),
+      fraisGestionUC: CI.safeNum('av-frais-uc', 0.8),
+      fraisGestionEur: 0.6,
+      couple: CI.safeChecked('av-couple', false)
+    };
+  }
+
+  function run() {
+    const p = read();
+    const r = AV.simulerAV(p);
+
+    $('av-cap').textContent = fmtM(r.capitalFinal);
+    $('av-pv').textContent = fmtM(r.plusValue);
+    $('av-impot').textContent = fmtM(r.totalImpot);
+    $('av-tri').textContent = fmtP(r.tri);
+
+    $('av-bar-eur').style.width = r.allocEur + '%';
+    $('av-bar-uc').style.width = r.allocUC + '%';
+    $('av-bar-eur').textContent = 'Fonds € ' + r.allocEur.toFixed(0) + ' %';
+    $('av-bar-uc').textContent = 'UC ' + r.allocUC.toFixed(0) + ' %';
+
+    $('av-msg').innerHTML = 'Sur <strong>' + p.years + ' ans</strong> à <strong>' + r.allocUC.toFixed(0) + '% UC / ' + r.allocEur.toFixed(0) + '% fonds €</strong> (rendement mix net <strong>' + r.rendementMixNet.toFixed(2) + ' %/an</strong>), vous versez <strong>' + fmtM(r.verseTotal) + '</strong> et obtenez <strong>' + fmtM(r.capitalFinal) + '</strong>. Plus-value : <strong>' + fmtM(r.plusValue) + '</strong>. Régime : <em>' + r.regimeFiscal + '</em>. Net en main après impôt : <strong style="color:#7C3AED">' + fmtM(r.verseTotal + r.netRecu) + '</strong>.';
+
+    const rows = [
+      ['Versé total', fmtM(r.verseTotal), 'Capital injecté brut'],
+      ['Plus-value', fmtM(r.plusValue), 'Sur ' + p.years + ' ans'],
+      ['Abattement appliqué', fmtM(r.abattementAppliq), p.couple ? 'Couple (9 200 €)' : 'Célib (4 600 €)'],
+      ['IR sur plus-value', fmtM(r.impotIR), r.regimeFiscal],
+      ['Prélèvements sociaux 17.2 %', fmtM(r.impotPS), 'Sur la totalité de la PV'],
+      ['<strong>Total impôt</strong>', '<strong>' + fmtM(r.totalImpot) + '</strong>', ''],
+      ['<strong style="color:#7C3AED">Net reçu (capital + PV après impôt)</strong>', '<strong style="color:#7C3AED">' + fmtM(r.verseTotal + r.netRecu) + '</strong>', '']
+    ];
+    $('av-table-fisc').innerHTML = rows.map(x => '<tr><td>' + x[0] + '</td><td>' + x[1] + '</td><td style="font-size:12px;color:var(--text-4)">' + x[2] + '</td></tr>').join('');
+
+    // Succession
+    const suc = AV.fiscaliteSuccession({ capital: r.capitalFinal, nombreBeneficiaires: CI.safeNum('av-benef', 1), versementsApres70: 0 });
+    $('av-droits-suc').textContent = fmtM(suc.totalDroits);
+    $('av-net-suc').textContent = fmtM(suc.netTransmis);
+    $('av-taux-suc').textContent = fmtP(suc.tauxEffectif);
+  }
+
+  function safeInit() {
+    ['av-k0','av-monthly','av-years','av-alloc-uc','av-r-eur','av-r-uc','av-frais-in','av-frais-uc','av-couple','av-benef'].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', run);
+      if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 200); });
+    });
+    CI.initAll && CI.initAll();
+    run();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

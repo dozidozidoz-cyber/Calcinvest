@@ -1016,6 +1016,9 @@
     '/calculateur-plus-value-immobiliere':{ label: 'Plus-Value Immo',  cat: 'Immobilier',color: '#10B981' },
     '/calculateur-tva-auto-entrepreneur':{ label: 'TVA + Auto-Entrepreneur',cat: 'Fiscalité',color: '#F59E0B' },
     '/convertisseur-devises':           { label: 'Convertisseur Devises',cat: 'Outils',  color: '#0EA5E9' },
+    '/simulateur-assurance-vie':        { label: 'Assurance-Vie',      cat: 'Épargne',  color: '#7C3AED' },
+    '/simulateur-lmnp':                 { label: 'LMNP',               cat: 'Immobilier',color: '#0E9F6E' },
+    '/calculateur-donation-succession': { label: 'Donation / Succession',cat: 'Fiscalité',color: '#D97706' },
     '/comparer':                        { label: 'Comparer simulations',cat: 'Outils',  color: '#34D399' },
     '/glossaire':                       { label: 'Glossaire financier',cat: 'Docs',    color: '#94A3B8' }
   };
@@ -1119,7 +1122,8 @@
           { url: '/simulateur-rendement-locatif', label: 'Rendement Locatif',    desc: 'Cashflow, TRI, LMNP, SCI IS',    icon: ICONS.locatif },
           { url: '/simulateur-scpi',              label: 'SCPI · Pierre papier', desc: '4 régimes fiscaux + rentier',     icon: ICONS.scpi },
           { url: '/simulateur-pret',              label: 'Simulateur de Prêt',   desc: 'Capacité, mensualités, notaire',  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="6" width="18" height="14" rx="1"/><path d="M3 10h18M7 16h3M14 16h3"/></svg>' },
-          { url: '/calculateur-plus-value-immobiliere', label: 'Plus-Value Immobilière', desc: 'Cession, abattements durée, IR + PS', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-7h6v7"/></svg>' }
+          { url: '/calculateur-plus-value-immobiliere', label: 'Plus-Value Immobilière', desc: 'Cession, abattements durée, IR + PS', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-7h6v7"/></svg>' },
+          { url: '/simulateur-lmnp',              label: 'LMNP · Location Meublée', desc: 'Micro-BIC vs Réel + amortissements', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><path d="M5 21V11l7-5 7 5v10"/><rect x="9" y="14" width="6" height="7"/></svg>' }
         ]
       },
       {
@@ -1140,7 +1144,8 @@
           { url: '/calculateur-impot-revenu', label: 'Calculateur Impôt Revenu', desc: 'Barème 2025, parts, TMI, décote', icon: ICONS.impot },
           { url: '/calculateur-salaire-brut-net', label: 'Salaire Brut / Net', desc: 'Cotisations URSSAF, retraite, CSG', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="9" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>' },
           { url: '/calculateur-tva-auto-entrepreneur', label: 'TVA + Auto-Entrepreneur', desc: 'HT/TTC + URSSAF micro', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>' },
-          { url: '/convertisseur-devises', label: 'Convertisseur Devises', desc: 'Taux BCE live, 30+ devises', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12h18M7 7l-4 5 4 5M17 17l4-5-4-5"/></svg>' }
+          { url: '/convertisseur-devises', label: 'Convertisseur Devises', desc: 'Taux BCE live, 30+ devises', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12h18M7 7l-4 5 4 5M17 17l4-5-4-5"/></svg>' },
+          { url: '/calculateur-donation-succession', label: 'Donation & Succession', desc: 'Abattements, barème, démembrement', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' }
         ]
       },
       {
@@ -1149,7 +1154,8 @@
           { url: '/simulateur-interets-composes', label: 'Intérêts Composés',   desc: 'Croissance épargne 40 ans',         icon: ICONS.compound },
           { url: '/calculateur-fire',             label: 'Calculateur FIRE',     desc: 'Indépendance financière, règle 4 %', icon: ICONS.fire },
           { url: '/simulateur-per',               label: 'Simulateur PER',       desc: 'PER vs CTO, économie fiscale',       icon: ICONS.per },
-          { url: '/simulateur-retraite',          label: 'Simulateur Retraite',  desc: 'Régime général + Agirc-Arrco',       icon: ICONS.retraite }
+          { url: '/simulateur-retraite',          label: 'Simulateur Retraite',  desc: 'Régime général + Agirc-Arrco',       icon: ICONS.retraite },
+          { url: '/simulateur-assurance-vie',     label: 'Assurance-Vie',         desc: 'Fonds €/UC, fiscalité 8 ans, succession', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>' }
         ]
       }
     ];
