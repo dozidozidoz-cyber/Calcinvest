@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updatedAt": "2026-04-19",
+  "version": 2,
+  "updatedAt": "2026-05-16",
   "assets": [
     {
       "id": "sp500",
@@ -157,6 +157,78 @@
       "color": "#F87171",
       "desc": "Référence européenne, baril de mer du Nord.",
       "dataSince": "1987-05"
+    },
+    {
+      "id": "oil_wti",
+      "name": "Pétrole WTI",
+      "ticker": "CL=F",
+      "category": "commodity",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#EF4444",
+      "desc": "West Texas Intermediate, référence américaine du pétrole.",
+      "dataSince": "1986-01"
+    },
+    {
+      "id": "btc",
+      "name": "Bitcoin",
+      "ticker": "BTC-USD",
+      "category": "crypto",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#F7931A",
+      "desc": "La première cryptomonnaie, réserve de valeur décentralisée.",
+      "dataSince": "2014-09"
+    },
+    {
+      "id": "eth",
+      "name": "Ethereum",
+      "ticker": "ETH-USD",
+      "category": "crypto",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#627EEA",
+      "desc": "Plateforme de smart contracts. Capitalisation #2.",
+      "dataSince": "2017-11"
+    },
+    {
+      "id": "sol",
+      "name": "Solana",
+      "ticker": "SOL-USD",
+      "category": "crypto",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#14F195",
+      "desc": "Blockchain haute performance, écosystème DeFi/NFT.",
+      "dataSince": "2020-04"
+    },
+    {
+      "id": "bnb",
+      "name": "BNB",
+      "ticker": "BNB-USD",
+      "category": "crypto",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#F3BA2F",
+      "desc": "Token natif de l'écosystème Binance / BNB Chain.",
+      "dataSince": "2017-07"
+    },
+    {
+      "id": "xrp",
+      "name": "XRP",
+      "ticker": "XRP-USD",
+      "category": "crypto",
+      "currency": "USD",
+      "pea": false,
+      "available": true,
+      "color": "#23292F",
+      "desc": "Token de paiement transfrontalier (Ripple).",
+      "dataSince": "2014-08"
     }
   ]
 }

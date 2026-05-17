@@ -41,7 +41,14 @@
   const GROUP_LABELS = {
     'index': 'Indices boursiers',
     'etf': 'ETF UCITS',
-    'commodity': 'Matières premières'
+    'commodity': 'Matières premières',
+    'crypto': 'Cryptomonnaies'
+  };
+  const GROUP_ICONS = {
+    'index':     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><polyline points="2 11 6 6 9 9 14 3"/></svg>',
+    'etf':       '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg>',
+    'commodity': '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 14h10M4 14V8l4-5 4 5v6"/></svg>',
+    'crypto':    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><polygon points="8 2 2 6 8 10 14 6"/><polyline points="2 10 8 14 14 10"/></svg>'
   };
 
   /* ============================================================
@@ -87,13 +94,44 @@
       byCat[a.category].push(a);
     });
 
-    // Grilles actifs standards
-    let html = Object.keys(byCat).map((cat) => `
-      <div>
-        <div class="asset-group-title">${GROUP_LABELS[cat] || cat}</div>
+    const orderedCats = ['index', 'etf', 'commodity', 'crypto'];
+    const totalCount = manifest.assets.length;
+    const peaCount = manifest.assets.filter(a => a.pea).length;
+
+    // Barre de filtres + recherche
+    let html = `
+      <div class="asset-filter-bar">
+        <div class="asset-filter-tabs" id="d-asset-tabs">
+          <button type="button" class="asset-filter-tab is-active" data-filter="all">
+            Tous <span class="asset-filter-count">${totalCount}</span>
+          </button>
+          ${orderedCats.filter(cat => byCat[cat]).map(cat => `
+            <button type="button" class="asset-filter-tab" data-filter="${cat}">
+              ${GROUP_ICONS[cat] || ''} ${GROUP_LABELS[cat] || cat}
+              <span class="asset-filter-count">${byCat[cat].length}</span>
+            </button>
+          `).join('')}
+          <button type="button" class="asset-filter-tab" data-filter="pea">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="13" height="13"><path d="M3 13V8M3 5l5-3 5 3M13 8v5"/><circle cx="8" cy="9" r="3"/></svg>
+            PEA <span class="asset-filter-count">${peaCount}</span>
+          </button>
+        </div>
+        <div class="asset-search-wrap">
+          <svg class="asset-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
+          <input type="text" id="d-asset-search" class="asset-search-input" placeholder="Rechercher un actif (S&P, BTC, Nasdaq…)" autocomplete="off" />
+        </div>
+      </div>
+    `;
+
+    // Grilles par catégorie (avec attribut data-cat-section pour filtre)
+    html += orderedCats.filter(cat => byCat[cat]).map((cat) => `
+      <div class="asset-cat-section" data-cat-section="${cat}">
+        <div class="asset-group-title">
+          <span style="display:inline-flex;align-items:center;gap:6px">${GROUP_ICONS[cat] || ''} ${GROUP_LABELS[cat] || cat}</span>
+        </div>
         <div class="asset-grid">
           ${byCat[cat].map((a) => `
-            <button type="button" class="asset-btn ${a.available ? '' : 'disabled'}" data-id="${a.id}" ${a.available ? '' : 'disabled'}>
+            <button type="button" class="asset-btn ${a.available ? '' : 'disabled'}" data-id="${a.id}" data-cat="${cat}" data-pea="${a.pea ? '1' : '0'}" data-name="${(a.name||'').toLowerCase()}" data-ticker="${(a.ticker||'').toLowerCase()}" ${a.available ? '' : 'disabled'} title="${a.desc || ''}">
               <span class="asset-dot" style="background:${a.color}"></span>
               <span class="asset-name">${a.name}</span>
               ${a.pea ? '<span class="asset-badge badge-pea">PEA</span>' : ''}
@@ -103,6 +141,7 @@
         </div>
       </div>
     `).join('');
+    html += '<div id="d-asset-empty" class="asset-empty" style="display:none">Aucun actif ne correspond à votre recherche.</div>';
 
     // Section recherche ticker custom
     html += `
@@ -141,6 +180,47 @@
     c.querySelectorAll('.asset-btn:not(.disabled)').forEach((btn) => {
       btn.addEventListener('click', () => selectAsset(btn.dataset.id));
     });
+
+    // Bind filter tabs
+    const tabs = c.querySelectorAll('.asset-filter-tab');
+    let currentFilter = 'all';
+    let currentSearch = '';
+    function applyAssetFilter() {
+      const q = currentSearch.trim().toLowerCase();
+      let visibleCount = 0;
+      const sections = c.querySelectorAll('[data-cat-section]');
+      sections.forEach(sec => {
+        const cat = sec.dataset.catSection;
+        let sectionVisible = 0;
+        sec.querySelectorAll('.asset-btn').forEach(b => {
+          const matchCat = currentFilter === 'all'
+            ? true
+            : (currentFilter === 'pea' ? b.dataset.pea === '1' : b.dataset.cat === currentFilter);
+          const matchQ = !q || b.dataset.name.includes(q) || b.dataset.ticker.includes(q);
+          const show = matchCat && matchQ;
+          b.style.display = show ? '' : 'none';
+          if (show) { sectionVisible++; visibleCount++; }
+        });
+        sec.style.display = sectionVisible > 0 ? '' : 'none';
+      });
+      const empty = document.getElementById('d-asset-empty');
+      if (empty) empty.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('is-active'));
+        t.classList.add('is-active');
+        currentFilter = t.dataset.filter;
+        applyAssetFilter();
+      });
+    });
+    const search = document.getElementById('d-asset-search');
+    if (search) {
+      search.addEventListener('input', () => {
+        currentSearch = search.value || '';
+        applyAssetFilter();
+      });
+    }
 
     // Bind ticker search
     const input = document.getElementById('d-ticker-input');

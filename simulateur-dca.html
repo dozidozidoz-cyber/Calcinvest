@@ -173,6 +173,63 @@
 .badge-pea { background: var(--accent-soft); color: var(--accent); }
 .badge-soon { background: var(--bg-3); color: var(--text-4); }
 
+/* === Filter bar + search (refonte 2026-05) === */
+.asset-filter-bar {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.asset-filter-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.asset-filter-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  color: var(--text-3); cursor: pointer;
+  transition: var(--t-fast);
+}
+.asset-filter-tab:hover { border-color: var(--border-strong); color: var(--text); }
+.asset-filter-tab.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.asset-filter-count {
+  font-size: 10px;
+  background: var(--bg-3);
+  color: var(--text-4);
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-family: var(--font-mono);
+}
+.asset-filter-tab.is-active .asset-filter-count { background: var(--accent); color: var(--bg); }
+.asset-search-wrap {
+  position: relative;
+  width: 100%;
+}
+.asset-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-4); pointer-events: none; }
+.asset-search-input {
+  width: 100%;
+  padding: 9px 12px 9px 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 13px; color: var(--text);
+  outline: none; transition: var(--t-fast);
+  font-family: inherit;
+}
+.asset-search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.asset-cat-section { margin-bottom: 18px; }
+.asset-cat-section:last-of-type { margin-bottom: 0; }
+.asset-empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-4);
+  font-size: 13px;
+  background: var(--bg);
+  border-radius: var(--r);
+  border: 1px dashed var(--border);
+}
+
 /* mode-toggle, toggle-row, switch, placeholder-card → globaux dans style.css */
 .hist-bar { fill: var(--accent); }
 .hist-bar.neg { fill: var(--red); }
