@@ -1012,6 +1012,10 @@
     '/simulateur-per':                  { label: 'PER',                cat: 'Épargne',  color: '#DC2626' },
     '/simulateur-retraite':             { label: 'Retraite',           cat: 'Épargne',  color: '#0891B2' },
     '/calculateur-impot-revenu':        { label: 'Impôt Revenu',       cat: 'Fiscalité',color: '#DC2626' },
+    '/calculateur-salaire-brut-net':    { label: 'Salaire Brut/Net',   cat: 'Fiscalité',color: '#3B82F6' },
+    '/calculateur-plus-value-immobiliere':{ label: 'Plus-Value Immo',  cat: 'Immobilier',color: '#10B981' },
+    '/calculateur-tva-auto-entrepreneur':{ label: 'TVA + Auto-Entrepreneur',cat: 'Fiscalité',color: '#F59E0B' },
+    '/convertisseur-devises':           { label: 'Convertisseur Devises',cat: 'Outils',  color: '#0EA5E9' },
     '/comparer':                        { label: 'Comparer simulations',cat: 'Outils',  color: '#34D399' },
     '/glossaire':                       { label: 'Glossaire financier',cat: 'Docs',    color: '#94A3B8' }
   };
@@ -1114,7 +1118,8 @@
         tools: [
           { url: '/simulateur-rendement-locatif', label: 'Rendement Locatif',    desc: 'Cashflow, TRI, LMNP, SCI IS',    icon: ICONS.locatif },
           { url: '/simulateur-scpi',              label: 'SCPI · Pierre papier', desc: '4 régimes fiscaux + rentier',     icon: ICONS.scpi },
-          { url: '/simulateur-pret',              label: 'Simulateur de Prêt',   desc: 'Capacité, mensualités, notaire',  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="6" width="18" height="14" rx="1"/><path d="M3 10h18M7 16h3M14 16h3"/></svg>' }
+          { url: '/simulateur-pret',              label: 'Simulateur de Prêt',   desc: 'Capacité, mensualités, notaire',  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="6" width="18" height="14" rx="1"/><path d="M3 10h18M7 16h3M14 16h3"/></svg>' },
+          { url: '/calculateur-plus-value-immobiliere', label: 'Plus-Value Immobilière', desc: 'Cession, abattements durée, IR + PS', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-7h6v7"/></svg>' }
         ]
       },
       {
@@ -1132,7 +1137,10 @@
       {
         id: 'fisca', label: 'Fiscalité', color: '#DC2626', icon: ICONS.catFisca,
         tools: [
-          { url: '/calculateur-impot-revenu', label: 'Calculateur Impôt Revenu', desc: 'Barème 2025, parts, TMI, décote', icon: ICONS.impot }
+          { url: '/calculateur-impot-revenu', label: 'Calculateur Impôt Revenu', desc: 'Barème 2025, parts, TMI, décote', icon: ICONS.impot },
+          { url: '/calculateur-salaire-brut-net', label: 'Salaire Brut / Net', desc: 'Cotisations URSSAF, retraite, CSG', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="9" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>' },
+          { url: '/calculateur-tva-auto-entrepreneur', label: 'TVA + Auto-Entrepreneur', desc: 'HT/TTC + URSSAF micro', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>' },
+          { url: '/convertisseur-devises', label: 'Convertisseur Devises', desc: 'Taux BCE live, 30+ devises', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12h18M7 7l-4 5 4 5M17 17l4-5-4-5"/></svg>' }
         ]
       },
       {

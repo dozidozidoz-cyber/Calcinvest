@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0EA5E9" />
+<title>Convertisseur de Devises Temps Réel — 30+ devises | CalcInvest</title>
+<meta name="description" content="Convertissez 30+ devises en temps réel (EUR, USD, GBP, JPY, CHF…) — taux officiels BCE actualisés chaque jour ouvré. Grille complète + historique." />
+<meta name="keywords" content="convertisseur euro dollar, taux de change temps réel, EUR USD live, conversion devise BCE 2026" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/convertisseur-devises" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Convertisseur de Devises Temps Réel — CalcInvest" />
+<meta property="og:description" content="30+ devises en temps réel, taux BCE officiels." />
+<meta property="og:url" content="https://calcinvest.fr/convertisseur-devises" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Convertisseur de Devises — CalcInvest" />
+<meta name="twitter:description" content="30+ devises en temps réel" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Convertisseur de Devises","description":"30+ devises en temps réel avec taux BCE officiels","url":"https://calcinvest.fr/convertisseur-devises","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+  .fx-hero { background: linear-gradient(135deg, rgba(14,165,233,.10), rgba(14,165,233,.02)); border:1px solid #0EA5E9; }
+  .fx-swap-btn { width:36px; height:36px; border-radius:50%; background:var(--bg-card); border:1px solid var(--border); cursor:pointer; display:grid; place-items:center; transition:var(--t-fast); }
+  .fx-swap-btn:hover { border-color:var(--accent); transform: rotate(180deg); }
+  .fx-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+  .fx-cell { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm); padding:12px 14px; }
+  .fx-cell-code { font-size:11px; color:var(--text-4); font-family:var(--font-mono); }
+  .fx-cell-val { font-size:18px; font-weight:700; color:var(--text); font-family:var(--font-mono); }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong> pour utiliser ce convertisseur.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">Convertisseur Devises</div><div class="logo-text-sub">Temps réel · BCE</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:980px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px">
+      <span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 8h12M5 5l-3 3 3 3M11 11l3-3-3-3"/></svg></span>
+      Convertisseur de devises
+    </div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">30+ devises en <em>temps réel</em>.</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Taux officiels de la Banque Centrale Européenne, actualisés chaque jour ouvré. <em style="color:var(--accent);font-style:normal;font-weight:600">Aucune marge cachée</em>, contrairement à votre banque.</p>
+  </div>
+
+  <!-- Hero converter -->
+  <section class="card fx-hero" style="margin-bottom:32px">
+    <div class="card-body" style="padding:32px">
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:end">
+        <div>
+          <label class="field-label">Montant à convertir</label>
+          <div class="stepper" data-step="1" data-min="0">
+            <button class="stepper-btn" data-act="minus">−</button>
+            <input class="stepper-input" id="fx-amount" type="number" value="100" step="any" />
+            <select class="select" id="fx-from" style="min-width:90px"></select>
+          </div>
+        </div>
+        <button class="fx-swap-btn" id="fx-swap" title="Inverser les devises" aria-label="Inverser">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M3 5h10M11 3l2 2-2 2M13 11H3M5 9l-2 2 2 2"/></svg>
+        </button>
+        <div>
+          <label class="field-label">Convertir vers</label>
+          <div class="stepper" style="display:flex;align-items:center">
+            <input class="stepper-input" id="fx-result" type="text" readonly value="—" style="font-weight:700;color:var(--accent);font-size:18px" />
+            <select class="select" id="fx-to" style="min-width:90px"></select>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div style="font-size:13px;color:var(--text-3)" id="fx-rate-line">—</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="fx-last-update" style="font-size:11px;color:var(--text-4);font-family:var(--font-mono)">—</span>
+          <button class="btn btn-secondary" id="fx-refresh" style="font-size:12px;padding:6px 12px">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M14 8a6 6 0 1 1-2-4.5M14 2v4h-4"/></svg>
+            Actualiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pills devises rapides -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;justify-content:center">
+    <span style="font-size:11px;color:var(--text-4);align-self:center;margin-right:8px">RAPIDE :</span>
+    <button class="pill" data-fx-preset="EUR-USD">EUR → USD</button>
+    <button class="pill" data-fx-preset="EUR-GBP">EUR → GBP</button>
+    <button class="pill" data-fx-preset="USD-EUR">USD → EUR</button>
+    <button class="pill" data-fx-preset="EUR-CHF">EUR → CHF</button>
+    <button class="pill" data-fx-preset="EUR-JPY">EUR → JPY</button>
+    <button class="pill" data-fx-preset="EUR-CNY">EUR → CNY</button>
+  </div>
+
+  <!-- Grille toutes devises -->
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg></div>
+        Conversion vers toutes les devises
+      </div>
+      <div class="card-meta" id="fx-grid-meta">—</div>
+    </div>
+    <div class="card-body">
+      <div class="fx-grid" id="fx-grid"></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:24px">
+    <div class="card-body" style="font-size:13.5px;line-height:1.6;color:var(--text-2)">
+      <strong>Source</strong> : <a href="https://api.frankfurter.dev/" target="_blank" rel="noopener" style="color:var(--accent)">Frankfurter</a> — proxy des taux officiels publiés par la <a href="https://www.ecb.europa.eu/" target="_blank" rel="noopener" style="color:var(--accent)">BCE</a>. Mise à jour chaque jour ouvré vers 16h CET. Pas de marge cachée, pas de spread broker.
+      <br/><br/>
+      <strong>Limitations</strong> : ces taux sont indicatifs (taux mid-market). Votre banque ou votre broker peut appliquer une marge de 0.5 à 4 % en plus pour les retraits/paiements à l'étranger. Pour les transferts, comparez avec <em>Wise, Revolut</em> ou <em>InstaRem</em>.
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div>Taux BCE actualisés via Frankfurter · Données indicatives</div>
+  <div><a href="/">Accueil</a> · <a href="/methodologie">Méthodologie</a> · <a href="/glossaire">Glossaire</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/api-prices.js"></script>
+<script src="/assets/js/core/calc-fx.js"></script>
+<script>
+(function() {
+  'use strict';
+  let rates = null;
+  let baseRates = 'EUR';
+
+  function $(id) { return document.getElementById(id); }
+  function fmt(n, d) { return Number.isFinite(n) ? n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—'; }
+
+  function populate() {
+    const sel1 = $('fx-from'), sel2 = $('fx-to');
+    const opts = FX.CURRENCIES.map(c => '<option value="' + c.code + '">' + c.flag + ' ' + c.code + ' — ' + c.name + '</option>').join('');
+    sel1.innerHTML = opts; sel2.innerHTML = opts;
+    sel1.value = 'EUR'; sel2.value = 'USD';
+  }
+
+  async function loadRates(forceFresh) {
+    if (forceFresh && window.PRICES && PRICES.clearCache) PRICES.clearCache();
+    const from = $('fx-from').value || 'EUR';
+    const r = await FX.fetchRates(from);
+    if (r) { rates = r; baseRates = from; updateStatus(true); compute(); renderGrid(); }
+    else { updateStatus(false); }
+  }
+
+  function updateStatus(ok) {
+    const el = $('fx-last-update');
+    if (ok) {
+      const age = (PRICES && PRICES.cacheAge && PRICES.cacheAge()) || 0;
+      el.textContent = age < 60 ? '✓ Live · MAJ il y a ' + age + 's' : '✓ Live · cache ' + Math.floor(age/60) + 'min';
+      el.style.color = 'var(--accent)';
+    } else {
+      el.textContent = '✗ API indispo';
+      el.style.color = 'var(--red, #F87171)';
+    }
+  }
+
+  function compute() {
+    if (!rates) return;
+    const amt = parseFloat($('fx-amount').value) || 0;
+    const from = $('fx-from').value;
+    const to = $('fx-to').value;
+    // Si baseRates != from, on doit refetch ; sinon on convertit
+    if (from !== baseRates) { loadRates(); return; }
+    const r = FX.convert({ amount: amt, from, to, rates });
+    if (r.error) { $('fx-result').value = '—'; return; }
+    $('fx-result').value = fmt(r.value, r.value < 10 ? 4 : 2);
+    $('fx-rate-line').innerHTML = '1 ' + from + ' = <strong style="color:var(--accent)">' + fmt(r.rate, 4) + '</strong> ' + to
+      + ' &nbsp;·&nbsp; 1 ' + to + ' = ' + fmt(r.inverse, 4) + ' ' + from;
+  }
+
+  function renderGrid() {
+    if (!rates) return;
+    const amt = parseFloat($('fx-amount').value) || 0;
+    const from = $('fx-from').value;
+    const grid = FX.gridFromAmount(amt, from, rates);
+    const cMap = Object.fromEntries(FX.CURRENCIES.map(c => [c.code, c]));
+    const html = grid.filter(g => !g.error).map(g => {
+      const c = cMap[g.to] || { flag: '', name: g.to };
+      return '<div class="fx-cell">'
+        + '<div class="fx-cell-code">' + c.flag + ' ' + g.to + '</div>'
+        + '<div class="fx-cell-val">' + fmt(g.value, g.value < 10 ? 4 : 2) + '</div>'
+        + '<div style="font-size:10px;color:var(--text-4);font-family:var(--font-mono)">@ ' + fmt(g.rate, 4) + '</div>'
+        + '</div>';
+    }).join('');
+    $('fx-grid').innerHTML = html;
+    $('fx-grid-meta').textContent = fmt(amt, 2) + ' ' + from + ' vers ' + grid.length + ' devises';
+  }
+
+  function safeInit() {
+    populate();
+    $('fx-amount').addEventListener('input', () => { compute(); renderGrid(); });
+    $('fx-from').addEventListener('change', loadRates);
+    $('fx-to').addEventListener('change', compute);
+    $('fx-swap').addEventListener('click', () => {
+      const f = $('fx-from').value, t = $('fx-to').value;
+      $('fx-from').value = t; $('fx-to').value = f;
+      loadRates();
+    });
+    $('fx-refresh').addEventListener('click', () => loadRates(true));
+    document.querySelectorAll('[data-fx-preset]').forEach(b => {
+      b.addEventListener('click', () => {
+        const [a, c] = b.dataset.fxPreset.split('-');
+        $('fx-from').value = a; $('fx-to').value = c;
+        loadRates();
+      });
+    });
+    CI.initAll && CI.initAll();
+    loadRates();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

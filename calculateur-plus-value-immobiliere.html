@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#10B981" />
+<title>Calculateur Plus-Value Immobilière 2025 — IR + PS + Surtaxe | CalcInvest</title>
+<meta name="description" content="Calculez l'impôt sur la plus-value lors de la cession d'un bien immobilier : 19 % IR + 17.2 % PS + surtaxe. Abattements durée de détention complets." />
+<meta name="keywords" content="plus-value immobilière 2025, fiscalité cession bien, abattement durée détention, impôt vente locatif" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/calculateur-plus-value-immobiliere" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Calculateur Plus-Value Immobilière 2025 — CalcInvest" />
+<meta property="og:description" content="IR + PS + surtaxe avec abattements durée de détention" />
+<meta property="og:url" content="https://calcinvest.fr/calculateur-plus-value-immobiliere" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Plus-Value Immobilière 2025" />
+<meta name="twitter:description" content="IR + PS + surtaxe avec abattements" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Plus-Value Immobilière","description":"Impôt cession immobilière 2025","url":"https://calcinvest.fr/calculateur-plus-value-immobiliere","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>.pv-hero { background: linear-gradient(135deg, rgba(16,185,129,.10), rgba(16,185,129,.02)); border:1px solid #10B981; }</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Plus-Value Immobilière</div><div class="logo-text-sub">France 2025</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:980px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 14h12M3 7L8 3l5 4v7H3z"/></svg></span>Immobilier · Cession</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Combien d'<em>impôt</em> sur la vente ?</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto"><strong style="color:var(--text)">19 % IR + 17.2 % PS + surtaxe</strong> sur la plus-value imposable, avec abattements progressifs selon la durée de détention. Résidence principale exonérée à 100 %.</p>
+  </div>
+
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field"><label class="field-label">Prix d'achat initial</label><div class="stepper" data-step="5000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="pv-achat" type="number" value="200000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Prix de vente</label><div class="stepper" data-step="5000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="pv-vente" type="number" value="300000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Durée de détention</label><div class="stepper" data-step="1" data-min="0" data-max="40"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="pv-duree" type="number" value="10" /><span class="stepper-unit">ans</span><button class="stepper-btn" data-act="plus">+</button></div><div class="pills" data-target="pv-duree"><button class="pill" data-val="5">5</button><button class="pill" data-val="10">10</button><button class="pill" data-val="22">22 (exo IR)</button><button class="pill" data-val="30">30 (exo totale)</button></div></div>
+        <div class="field"><label class="field-label">Frais d'acquisition (notaire, agence)</label><div class="stepper" data-step="1000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="pv-frais" type="number" value="0" placeholder="auto 7.5%" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div><label style="font-size:12px;color:var(--text-3);margin-top:6px;display:flex;gap:6px"><input type="checkbox" id="pv-forfait-frais" checked> Utiliser forfait 7.5 %</label></div>
+        <div class="field"><label class="field-label">Travaux justifiables</label><div class="stepper" data-step="1000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="pv-travaux" type="number" value="0" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div><label style="font-size:12px;color:var(--text-3);margin-top:6px;display:flex;gap:6px"><input type="checkbox" id="pv-forfait-travaux"> Forfait 15 % (si détention &gt; 5 ans)</label></div>
+        <div class="field"><label class="field-label">Type de bien</label><label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;padding:10px;background:var(--bg);border-radius:var(--r-sm)"><input type="checkbox" id="pv-residence-principale"> Résidence principale (exonération totale)</label></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero -->
+  <section class="card pv-hero" style="margin-bottom:32px">
+    <div class="card-body" style="padding:28px">
+      <div style="display:flex;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#10B981;font-weight:700;margin-bottom:12px"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8l3 3 7-7"/></svg>Impôt total + net du cédant</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px">
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase">Plus-value brute</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="pv-stat-brute">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase">IR (19 %) + PS (17.2 %)</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="pv-stat-impot">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase">Surtaxe &gt; 50k</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="pv-stat-surtaxe">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase">Net cédant</div><div style="font-size:clamp(24px,3vw,32px);font-weight:800;color:#10B981;font-family:var(--font-mono)" id="pv-stat-net">—</div></div>
+      </div>
+      <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="pv-msg">—</div>
+    </div>
+  </section>
+
+  <!-- Table abattements -->
+  <section class="card">
+    <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 13l4-4 3 3 5-6"/></svg></div>Évolution selon la durée de détention</div></div>
+    <div class="card-body">
+      <div class="table-scroll" style="max-height:400px">
+        <table class="data-table">
+          <thead><tr><th>Année</th><th>Abat. IR</th><th>Abat. PS</th><th>Total impôt</th><th>Net cédant</th></tr></thead>
+          <tbody id="pv-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:24px">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Sources</strong> : article 150 U et VC du CGI, BOFiP-Impôts.
+      <br/><strong>Exonération IR à 22 ans</strong> (abattement 100 %), <strong>exonération PS à 30 ans</strong>.
+      <br/><strong>Cas d'exonération particuliers</strong> : résidence principale, vente &lt; 15 000 €, première cession d'un logement autre que résidence principale (sous conditions), retraités/invalides aux faibles revenus.
+      <br/><strong>Ce simulateur ne traite pas</strong> : cession d'usufruit/nue-propriété, démembrement, SCI à l'IR, SCI à l'IS (régime BIC), terrain à bâtir (régime particulier).
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Barème PV immo 2025 · Sources CGI / BOFiP</div><div><a href="/">Accueil</a> · <a href="/simulateur-rendement-locatif">Rendement locatif</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-pvimmo.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+
+  function read() {
+    return {
+      prixVente: CI.safeNum('pv-vente', 300000),
+      prixAchat: CI.safeNum('pv-achat', 200000),
+      fraisAcquisition: CI.safeNum('pv-frais', 0),
+      travaux: CI.safeNum('pv-travaux', 0),
+      dureeDetention: CI.safeNum('pv-duree', 10),
+      residencePrincipale: CI.safeChecked('pv-residence-principale', false),
+      utiliserForfaitFrais: CI.safeChecked('pv-forfait-frais', true),
+      utiliserForfaitTravaux: CI.safeChecked('pv-forfait-travaux', false)
+    };
+  }
+
+  function run() {
+    const p = read();
+    const r = PVIMMO.calcPV(p);
+
+    $('pv-stat-brute').textContent = fmtM(r.plusValueBrute);
+    $('pv-stat-impot').textContent = fmtM(r.irDu + r.psDu);
+    $('pv-stat-surtaxe').textContent = fmtM(r.surtaxe || 0);
+    $('pv-stat-net').textContent = fmtM(r.netCedant);
+
+    if (r.exoneration) {
+      $('pv-msg').innerHTML = '<strong style="color:#10B981">' + r.exoneration + '</strong> — vous touchez l\'intégralité du prix de vente, soit <strong>' + fmtM(r.netCedant) + '</strong>.';
+    } else if (r.moinsValue) {
+      $('pv-msg').innerHTML = '<strong style="color:var(--yellow)">⚠ Moins-value</strong> — la cession génère une perte de ' + fmtM(Math.abs(r.plusValueBrute)) + '. Pas d\'impôt mais perte sèche.';
+    } else {
+      $('pv-msg').innerHTML = 'Sur une plus-value brute de <strong>' + fmtM(r.plusValueBrute) + '</strong> après ' + p.dureeDetention + ' ans, vous bénéficiez d\'un abattement de <strong>' + r.abattementIR.toFixed(0) + ' %</strong> sur l\'IR et <strong>' + r.abattementPS.toFixed(0) + ' %</strong> sur les PS. Impôt total : <strong style="color:var(--red)">' + fmtM(r.totalImpot) + '</strong> (taux effectif ' + r.tauxImpotEffectif.toFixed(1) + ' % de la PV brute). Net cédant : <strong style="color:#10B981">' + fmtM(r.netCedant) + '</strong>.';
+    }
+
+    // Table by years
+    const rows = PVIMMO.tableByYears(p, 32);
+    $('pv-table').innerHTML = rows.map(row => {
+      const isCurrent = row.year === p.dureeDetention;
+      return '<tr ' + (isCurrent ? 'style="background:rgba(16,185,129,0.08)"' : '') + '>'
+        + '<td><strong>' + row.year + (isCurrent ? ' (votre cas)' : '') + '</strong></td>'
+        + '<td>' + (row.abattementIR || 0).toFixed(0) + ' %</td>'
+        + '<td>' + (row.abattementPS || 0).toFixed(0) + ' %</td>'
+        + '<td class="neg">' + fmtM(row.totalImpot || 0) + '</td>'
+        + '<td class="pos">' + fmtM(row.netCedant) + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  function safeInit() {
+    ['pv-vente','pv-achat','pv-frais','pv-travaux','pv-duree','pv-residence-principale','pv-forfait-frais','pv-forfait-travaux'].forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener('change', run);
+      if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 200); });
+    });
+    CI.initAll && CI.initAll();
+    run();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

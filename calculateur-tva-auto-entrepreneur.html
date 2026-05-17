@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#F59E0B" />
+<title>TVA HT/TTC + Auto-Entrepreneur — Calculateur 2025 | CalcInvest</title>
+<meta name="description" content="Conversion HT/TTC (4 taux TVA) + calcul cotisations URSSAF auto-entrepreneur. Versement libératoire ou IR, seuils 2025 micro-entreprise." />
+<meta name="keywords" content="calculateur TVA, HT TTC 2025, auto-entrepreneur cotisations, URSSAF micro-entreprise, seuil TVA 2025" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/calculateur-tva-auto-entrepreneur" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="TVA + Auto-Entrepreneur 2025 — CalcInvest" />
+<meta property="og:description" content="HT/TTC + cotisations URSSAF" />
+<meta property="og:url" content="https://calcinvest.fr/calculateur-tva-auto-entrepreneur" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TVA + Auto-Entrepreneur 2025" />
+<meta name="twitter:description" content="HT/TTC + cotisations URSSAF" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"TVA + Auto-Entrepreneur","description":"HT/TTC + URSSAF 2025","url":"https://calcinvest.fr/calculateur-tva-auto-entrepreneur","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.tab-nav { display:flex; gap:8px; margin-bottom:24px; border-bottom:1px solid var(--border); }
+.tab-btn { padding:12px 20px; background:none; border:none; border-bottom:3px solid transparent; color:var(--text-3); font-weight:600; font-size:14px; cursor:pointer; transition:var(--t-fast); }
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
+.tva-hero { background: linear-gradient(135deg, rgba(245,158,11,.10), rgba(245,158,11,.02)); border:1px solid #F59E0B; }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">TVA & Auto-Entrepreneur</div><div class="logo-text-sub">Calculs 2025</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:980px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="3" y="2" width="10" height="12"/><path d="M6 5h4M6 8h4M6 11h3"/></svg></span>Fiscalité · TVA & Indépendants</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">TVA + <em>Auto-Entrepreneur</em>.</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Conversion HT/TTC sur les 4 taux français, et calcul détaillé des cotisations URSSAF + IR pour les micro-entrepreneurs.</p>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="tva">Convertisseur TVA HT/TTC</button>
+    <button class="tab-btn" data-tab="ae">Auto-Entrepreneur</button>
+  </div>
+
+  <!-- TAB TVA -->
+  <div class="tab-pane active" data-pane="tva">
+    <section class="card" style="margin-bottom:24px">
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">Sens de conversion</label>
+            <div style="display:flex;gap:6px">
+              <label style="flex:1;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;text-align:center;font-size:13px;font-weight:600"><input type="radio" name="tva-mode" value="htToTtc" checked style="display:none"> HT → TTC</label>
+              <label style="flex:1;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;text-align:center;font-size:13px;font-weight:600"><input type="radio" name="tva-mode" value="ttcToHt" style="display:none"> TTC → HT</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Montant</label>
+            <div class="stepper" data-step="10" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="tva-amount" type="number" value="1000" step="any" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div>
+          </div>
+          <div class="field">
+            <label class="field-label">Taux de TVA</label>
+            <select class="select" id="tva-rate">
+              <option value="normal">20 % — Taux normal (majorité des B&S)</option>
+              <option value="intermed">10 % — Restauration, transport, travaux logement</option>
+              <option value="reduit">5.5 % — Alimentation, livres, culture, énergie</option>
+              <option value="super">2.1 % — Médicaments remboursés, presse</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card tva-hero">
+      <div class="card-body" style="padding:28px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center">
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Montant HT</div><div style="font-size:clamp(22px,3vw,30px);font-weight:800;color:var(--text);font-family:var(--font-mono)" id="tva-ht">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">TVA</div><div style="font-size:clamp(22px,3vw,30px);font-weight:800;color:#F59E0B;font-family:var(--font-mono)" id="tva-amount-out">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Montant TTC</div><div style="font-size:clamp(22px,3vw,30px);font-weight:800;color:var(--text);font-family:var(--font-mono)" id="tva-ttc">—</div></div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:var(--text-4);text-align:center;font-family:var(--font-mono)" id="tva-eq">—</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- TAB AUTO-ENTREPRENEUR -->
+  <div class="tab-pane" data-pane="ae">
+    <section class="card" style="margin-bottom:24px">
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field"><label class="field-label">Chiffre d'affaires annuel</label><div class="stepper" data-step="1000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="ae-ca" type="number" value="50000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div><div class="pills" data-target="ae-ca"><button class="pill" data-val="20000">20k</button><button class="pill" data-val="50000">50k</button><button class="pill" data-val="77700">77.7k (plafond)</button></div></div>
+          <div class="field"><label class="field-label">Activité</label><select class="select" id="ae-activite"><option value="prestaServicesBIC">Prestations de services (BIC) — 21.1 %</option><option value="prestaServicesBNC">Prestations de services (BNC) — 21.1 %</option><option value="venteMarchandises">Vente de marchandises — 12.3 %</option><option value="professionsLibCipav">Profession libérale CIPAV — 23.2 %</option></select></div>
+          <div class="field"><label class="field-label">Options</label><label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer"><input type="checkbox" id="ae-vl"> Versement libératoire de l'IR</label><div style="font-size:11px;color:var(--text-4);margin-top:4px">Disponible si RFR foyer N-2 ≤ 27 478 €/part</div></div>
+          <div class="field" id="ae-tmi-wrap"><label class="field-label">Votre TMI (si pas VL)</label><div class="stepper" data-step="1" data-min="0" data-max="45"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="ae-tmi" type="number" value="30" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card tva-hero">
+      <div class="card-body" style="padding:28px">
+        <div style="display:flex;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#F59E0B;font-weight:700;margin-bottom:12px"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8l3 3 7-7"/></svg>Votre net dans la poche</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Net mensuel</div><div style="font-size:clamp(26px,3.5vw,36px);font-weight:800;color:#F59E0B;font-family:var(--font-mono)" id="ae-stat-net-m">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Net annuel</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="ae-stat-net-y">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">URSSAF / mois</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="ae-stat-urssaf">—</div></div>
+          <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">IR estimé</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="ae-stat-ir">—</div></div>
+        </div>
+        <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="ae-msg">—</div>
+        <div id="ae-warn" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:24px">
+      <div class="card-header"><div class="card-title">Détail des prélèvements</div></div>
+      <div class="card-body">
+        <div class="table-scroll"><table class="data-table"><thead><tr><th>Poste</th><th>Mensuel</th><th>Annuel</th><th>% du CA</th></tr></thead><tbody id="ae-table"></tbody></table></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:24px">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Sources</strong> : URSSAF Indépendants (taux 2025), BOFiP, code général des impôts.
+      <br/><strong>Seuils 2025</strong> : 188 700 € (vente marchandises) / 77 700 € (prestations BIC, BNC, libérales). Franchise TVA : 91 900 € (vente) / 36 800 € (services).
+      <br/><strong>Limitations</strong> : ce simulateur ne traite pas la CFE (Cotisation Foncière des Entreprises, ~250 €/an dès 2e année), ni le RSI/régime indépendant classique (au-delà des seuils micro).
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Barème TVA + URSSAF 2025</div><div><a href="/">Accueil</a> · <a href="/calculateur-impot-revenu">Impôt revenu</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-tva.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, n < 100 ? 2 : 0);
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      document.querySelector('[data-pane="' + b.dataset.tab + '"]').classList.add('active');
+    });
+  });
+
+  // === TVA ===
+  function runTva() {
+    const mode = document.querySelector('input[name="tva-mode"]:checked').value;
+    const amount = CI.safeNum('tva-amount', 1000);
+    const taxCode = CI.safeStr('tva-rate', 'normal');
+    const r = TVA.tva({ mode, amount, taxCode });
+    $('tva-ht').textContent = fmtM(r.ht);
+    $('tva-amount-out').textContent = fmtM(r.tva);
+    $('tva-ttc').textContent = fmtM(r.ttc);
+    $('tva-eq').textContent = fmtM(r.ht) + ' HT × ' + r.rate + ' % = ' + fmtM(r.tva) + ' TVA → ' + fmtM(r.ttc) + ' TTC';
+  }
+
+  // === AUTO-ENTREPRENEUR ===
+  function runAe() {
+    const p = {
+      caAnnuel: CI.safeNum('ae-ca', 50000),
+      activite: CI.safeStr('ae-activite', 'prestaServicesBIC'),
+      versementLiberatoire: CI.safeChecked('ae-vl', false),
+      tmi: CI.safeNum('ae-tmi', 30)
+    };
+    const r = TVA.autoEntrepreneur(p);
+    $('ae-stat-net-m').textContent = fmtM(r.netMensuel);
+    $('ae-stat-net-y').textContent = fmtM(r.netDansLaPoche);
+    $('ae-stat-urssaf').textContent = fmtM(r.cotisMensuelle);
+    $('ae-stat-ir').textContent = fmtM(r.ir);
+
+    $('ae-msg').innerHTML = 'Avec <strong>' + fmtM(p.caAnnuel) + '</strong> de CA annuel, après URSSAF (' + r.tauxUrssaf.toFixed(1) + ' %) et ' + r.natureIR + ', il reste <strong style="color:#F59E0B">' + fmtM(r.netDansLaPoche) + '/an</strong> dans la poche (' + r.tauxNet.toFixed(1) + ' % du CA), soit <strong>' + fmtM(r.netMensuel) + '/mois</strong>.';
+
+    const warns = [];
+    if (r.seuilCADepasse) warns.push('<strong>⚠ Vous dépassez le plafond du régime micro (' + fmtM(r.seuilCA) + ').</strong> Vous devez basculer en BIC/BNC réel.');
+    if (r.seuilTVADepasse && !r.seuilCADepasse) warns.push('<strong>⚠ Vous dépassez le seuil de franchise TVA (' + fmtM(r.seuilTVA) + ').</strong> Vous devez facturer la TVA dès le mois suivant.');
+    $('ae-warn').innerHTML = warns.length ? '<div style="padding:10px 12px;background:rgba(248,113,113,.10);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-size:13px;color:var(--text-2)">' + warns.join('<br/>') + '</div>' : '';
+
+    const rows = [
+      ['Cotisations URSSAF', r.cotisUrssaf / 12, r.cotisUrssaf],
+      ['CFP (formation pro)', r.cfp / 12, r.cfp],
+      ['IR (' + (r.versementLiberatoire ? 'VL' : 'barème') + ')', r.ir / 12, r.ir],
+      ['<strong>TOTAL prélèvements</strong>', r.totalPrelevements / 12, r.totalPrelevements],
+      ['<strong style="color:#F59E0B">NET dans la poche</strong>', r.netMensuel, r.netDansLaPoche]
+    ];
+    $('ae-table').innerHTML = rows.map(x => '<tr><td>' + x[0] + '</td><td>' + fmtM(x[1]) + '</td><td>' + fmtM(x[2]) + '</td><td>' + (p.caAnnuel > 0 ? (x[2] / p.caAnnuel * 100).toFixed(1) : '0') + ' %</td></tr>').join('');
+  }
+
+  function safeInit() {
+    ['tva-amount','tva-rate'].forEach(id => $(id).addEventListener('change', runTva));
+    $('tva-amount').addEventListener('input', () => { clearTimeout($('tva-amount')._t); $('tva-amount')._t = setTimeout(runTva, 200); });
+    document.querySelectorAll('input[name="tva-mode"]').forEach(r => r.addEventListener('change', runTva));
+
+    ['ae-ca','ae-activite','ae-vl','ae-tmi'].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', runAe);
+      if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(runAe, 200); });
+    });
+    CI.initAll && CI.initAll();
+    runTva(); runAe();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

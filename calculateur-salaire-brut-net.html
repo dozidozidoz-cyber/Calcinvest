@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#3B82F6" />
+<title>Calculateur Salaire Brut Net 2025 — Conversion + Cotisations | CalcInvest</title>
+<meta name="description" content="Convertissez votre salaire brut en net mensuel et annuel selon votre statut (cadre/non-cadre). Détail des cotisations URSSAF, retraite, CSG. Barème 2025." />
+<meta name="keywords" content="salaire brut net 2025, conversion brut net, cotisations salariales, smic net, salaire cadre" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/calculateur-salaire-brut-net" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Calculateur Salaire Brut Net 2025 — CalcInvest" />
+<meta property="og:description" content="Conversion brut/net + détail des cotisations" />
+<meta property="og:url" content="https://calcinvest.fr/calculateur-salaire-brut-net" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Salaire Brut Net 2025" />
+<meta name="twitter:description" content="Conversion + cotisations" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculateur Salaire Brut Net","description":"Conversion brut/net avec détail cotisations","url":"https://calcinvest.fr/calculateur-salaire-brut-net","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+  .sal-hero { background: linear-gradient(135deg, rgba(59,130,246,.10), rgba(59,130,246,.02)); border:1px solid #3B82F6; }
+  .mode-toggle label { flex:1; min-width:140px; padding:12px 16px; background:var(--bg); border:1px solid var(--border); border-radius:var(--r-sm); cursor:pointer; font-size:13px; font-weight:600; color:var(--text-3); text-align:center; transition:var(--t-fast) }
+  .mode-toggle input { display:none }
+  .mode-toggle label:has(input:checked) { background:var(--accent-soft); border-color:var(--accent); color:var(--accent) }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">Salaire Brut / Net</div><div class="logo-text-sub">France 2025</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:980px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></span>Salaire · France 2025</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Combien je touche <em>net</em> ?</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Conversion brut ↔ net avec détail des cotisations URSSAF, retraite et CSG. Barème 2025, statut cadre ou non-cadre.</p>
+  </div>
+
+  <!-- Form -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field">
+          <label class="field-label">Mode de calcul</label>
+          <div class="mode-toggle" style="display:flex;gap:6px">
+            <label><input type="radio" name="sal-mode" value="brutToNet" checked>Brut → Net</label>
+            <label><input type="radio" name="sal-mode" value="netToBrut">Net → Brut</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Statut</label>
+          <div class="mode-toggle" style="display:flex;gap:6px">
+            <label><input type="radio" name="sal-statut" value="nonCadre" checked>Non-cadre</label>
+            <label><input type="radio" name="sal-statut" value="cadre">Cadre</label>
+          </div>
+        </div>
+        <div class="field" data-show="brutToNet">
+          <label class="field-label">Salaire brut mensuel</label>
+          <div class="stepper" data-step="100" data-min="0">
+            <button class="stepper-btn" data-act="minus">−</button>
+            <input class="stepper-input" id="sal-brut" type="number" value="3000" />
+            <span class="stepper-unit">€/mois</span>
+            <button class="stepper-btn" data-act="plus">+</button>
+          </div>
+          <div class="pills" data-target="sal-brut">
+            <button class="pill" data-val="1801.80">SMIC</button>
+            <button class="pill" data-val="2500">2 500</button>
+            <button class="pill" data-val="3000">3 000</button>
+            <button class="pill" data-val="4500">4 500</button>
+            <button class="pill" data-val="6000">6 000</button>
+          </div>
+        </div>
+        <div class="field" data-show="netToBrut" style="display:none">
+          <label class="field-label">Salaire net mensuel souhaité</label>
+          <div class="stepper" data-step="100" data-min="0">
+            <button class="stepper-btn" data-act="minus">−</button>
+            <input class="stepper-input" id="sal-net" type="number" value="2500" />
+            <span class="stepper-unit">€/mois</span>
+            <button class="stepper-btn" data-act="plus">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero result -->
+  <section class="card sal-hero" style="margin-bottom:32px">
+    <div class="card-body" style="padding:28px">
+      <div style="display:flex;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#3B82F6;font-weight:700;margin-bottom:12px">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8l3 3 7-7"/></svg>
+        Votre salaire après cotisations
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px">
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase;margin-bottom:6px">Net mensuel</div><div style="font-size:clamp(28px,4vw,40px);font-weight:800;color:#3B82F6;font-family:var(--font-mono);line-height:1" id="sal-stat-net">—</div><div style="font-size:11px;color:var(--text-4);margin-top:4px">avant impôt sur le revenu</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase;margin-bottom:6px">Brut mensuel</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono);line-height:1" id="sal-stat-brut">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase;margin-bottom:6px">Net annuel</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono);line-height:1" id="sal-stat-net-an">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);font-weight:600;text-transform:uppercase;margin-bottom:6px">Taux cotisations</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono);line-height:1" id="sal-stat-taux">—</div></div>
+      </div>
+      <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="sal-msg">—</div>
+    </div>
+  </section>
+
+  <!-- Détail cotisations -->
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M3 4h10M3 8h10M3 12h7"/></svg></div>Détail des cotisations</div>
+    </div>
+    <div class="card-body">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Poste</th><th>Mensuel</th><th>Annuel</th><th>% du brut</th></tr></thead>
+          <tbody id="sal-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:24px">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Méthodologie</strong> : taux 2025 URSSAF / AGIRC-ARRCO. Pour un salarié du secteur privé, métropole. PSS 2025 = 3 925 €/mois.
+      <br/><strong>Limitations</strong> : cette estimation ne prend pas en compte les spécificités Alsace-Moselle (+ 1.30 % maladie), la fonction publique, les conventions collectives, ni les primes/bonus. Marge d'erreur ±2 % par rapport au vrai net.
+      <br/><strong>Prélèvement à la source</strong> : non inclus. Combinez avec <a href="/calculateur-impot-revenu" style="color:var(--accent)">notre calculateur IR</a> pour estimer votre net après impôt.
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Barème 2025 · URSSAF + AGIRC-ARRCO</div><div><a href="/">Accueil</a> · <a href="/calculateur-impot-revenu">Impôt revenu</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-salaire.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtP = n => CI.fmtPctPlain(n, 1);
+
+  function showMode() {
+    const m = document.querySelector('input[name="sal-mode"]:checked').value;
+    document.querySelectorAll('[data-show]').forEach(el => {
+      el.style.display = el.dataset.show === m ? '' : 'none';
+    });
+  }
+
+  function run() {
+    const mode = document.querySelector('input[name="sal-mode"]:checked').value;
+    const statut = document.querySelector('input[name="sal-statut"]:checked').value;
+    const r = mode === 'brutToNet'
+      ? SALAIRE.brutToNet({ brut: CI.safeNum('sal-brut', 3000), statut })
+      : SALAIRE.netToBrut({ net: CI.safeNum('sal-net', 2500), statut });
+
+    $('sal-stat-net').textContent = fmtM(r.netAvantImpot);
+    $('sal-stat-brut').textContent = fmtM(r.brut);
+    $('sal-stat-net-an').textContent = fmtM(r.netAnnuel);
+    $('sal-stat-taux').textContent = fmtP(r.tauxCotis);
+
+    $('sal-msg').innerHTML = '<strong>' + fmtM(r.brut) + '</strong> brut/mois en <strong>' + (statut === 'cadre' ? 'cadre' : 'non-cadre') + '</strong> = <strong style="color:#3B82F6">' + fmtM(r.netAvantImpot) + '</strong> net avant impôt, soit <strong>' + fmtM(r.netAnnuel) + '</strong> nets/an et un revenu imposable de <strong>' + fmtM(r.revenuImposable) + '</strong> à déclarer. Cotisations totales : <strong>' + fmtM(r.totalCotisations) + '/mois</strong> (' + fmtP(r.tauxCotis) + ').';
+
+    const rows = [
+      ['Retraite de base + AGIRC-ARRCO', r.cotisationsRetraite],
+      ['CSG/CRDS', r.csg],
+      ['Complémentaire santé + CEG', r.complementaire],
+      ['Cotisations cadre (CET + APEC)', r.cotisationsCadre],
+      ['<strong>TOTAL cotisations</strong>', r.totalCotisations],
+      ['<strong style="color:#3B82F6">NET avant impôt</strong>', r.netAvantImpot]
+    ].filter(x => x[1] !== 0 || x[0].includes('TOTAL') || x[0].includes('NET'));
+
+    $('sal-table').innerHTML = rows.map(x => '<tr><td>' + x[0] + '</td><td>' + fmtM(x[1]) + '</td><td>' + fmtM(x[1] * 12) + '</td><td>' + fmtP((x[1] / r.brut) * 100) + '</td></tr>').join('');
+  }
+
+  function safeInit() {
+    showMode();
+    document.querySelectorAll('input[name="sal-mode"], input[name="sal-statut"], #sal-brut, #sal-net').forEach(el => {
+      el.addEventListener('change', () => { showMode(); run(); });
+      if (el.tagName === 'INPUT' && el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 200); });
+    });
+    CI.initAll && CI.initAll();
+    run();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>
