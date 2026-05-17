@@ -8,15 +8,26 @@
    ============================================================ */
 
 /* ----------------------------------------------------------
-   🔑  PLACEHOLDER — remplacer par tes vraies clés Stripe
-   Dashboard → Developers → API Keys
+   🔑  Variables d'environnement (Vercel → Settings → Env Vars)
+       Production : Stripe live keys + Supabase prod
+       Preview/Dev : Stripe test keys
+   Configurer :
+     STRIPE_SECRET_KEY        sk_live_xxx ou sk_test_xxx
+     STRIPE_PRICE_ID          price_xxx (4,90 €/mois)
+     STRIPE_PRICE_ID_ANNUAL   price_xxx (49 €/an) — optionnel
+     SUPABASE_URL             https://xxx.supabase.co
+     SUPABASE_SERVICE_KEY     service_role key
    ---------------------------------------------------------- */
-const STRIPE_SECRET_KEY   = 'sk_test_VOTRE_CLE_SECRETE';
-const STRIPE_PRICE_ID     = 'price_VOTRE_PRICE_ID';       // ID du prix mensuel 4,90€
-const SUPABASE_URL        = 'https://VOTRE_PROJECT_ID.supabase.co';
-const SUPABASE_SERVICE_KEY = 'VOTRE_SERVICE_ROLE_KEY';    // Settings → API → service_role
+const STRIPE_SECRET_KEY    = process.env.STRIPE_SECRET_KEY;
+const STRIPE_PRICE_ID      = process.env.STRIPE_PRICE_ID;
+const SUPABASE_URL         = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
-const Stripe = require('stripe')(STRIPE_SECRET_KEY);
+if (!STRIPE_SECRET_KEY || !STRIPE_PRICE_ID) {
+  console.error('[stripe/create-checkout] Missing env vars STRIPE_SECRET_KEY or STRIPE_PRICE_ID');
+}
+
+const Stripe = STRIPE_SECRET_KEY ? require('stripe')(STRIPE_SECRET_KEY) : null;
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,6 +38,10 @@ module.exports = async function handler(req, res) {
 
   if (!user_id || !email) {
     return res.status(400).json({ error: 'user_id et email requis' });
+  }
+
+  if (!Stripe) {
+    return res.status(503).json({ error: 'Service de paiement non configuré (env vars manquantes)' });
   }
 
   try {

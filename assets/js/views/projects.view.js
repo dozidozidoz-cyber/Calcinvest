@@ -23,7 +23,8 @@
     'mctrading':     '/simulateur-monte-carlo-trading',
     'fisca-trading': '/calculateur-fiscalite-trading',
     'impot-revenu':  '/calculateur-impot-revenu',
-    'pret':          '/simulateur-pret'
+    'pret':          '/simulateur-pret',
+    'Retraite':      '/simulateur-retraite'
   };
 
   // Map type → icône SVG path + couleur
@@ -43,7 +44,8 @@
     'mctrading':     { color: '#A78BFA', icon: '<circle cx="6" cy="6" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="9" cy="14" r="2"/>' },
     'fisca-trading': { color: '#C026D3', icon: '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 11h8M8 15h6"/>' },
     'impot-revenu':  { color: '#DC2626', icon: '<rect x="4" y="3" width="14" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/>' },
-    'pret':          { color: '#0E9F6E', icon: '<rect x="3" y="6" width="18" height="14" rx="1"/><path d="M3 10h18M7 16h3"/>' }
+    'pret':          { color: '#0E9F6E', icon: '<rect x="3" y="6" width="18" height="14" rx="1"/><path d="M3 10h18M7 16h3"/>' },
+    'Retraite':      { color: '#0891B2', icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' }
   };
 
   // Compare state

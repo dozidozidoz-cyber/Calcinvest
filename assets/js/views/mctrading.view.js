@@ -79,7 +79,7 @@
       { data: cp.map(c => c.p75), color: 'rgba(5,150,105,0.6)', width: 1.5, dash: [4, 3], label: 'P75' },
       { data: cp.map(c => c.p25), color: 'rgba(220,38,38,0.6)', width: 1.5, dash: [4, 3], label: 'P25' },
       { data: cp.map(c => c.p50), color: '#059669', width: 2.5, label: 'Médiane' }
-    ], { xLabel: 'Trade #', yLabel: '€', yFormat: 'money' });
+    ], { xLabel: 'Trade #', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
   }
 
   // ─── A3 : Drawdowns ───

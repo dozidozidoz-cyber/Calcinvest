@@ -10,21 +10,37 @@
   'use strict';
 
   /* ----------------------------------------------------------
-     🔑  PLACEHOLDER — remplacer par tes vraies clés Supabase
-     Settings → API → Project URL + anon public key
+     🔑  Config Supabase chargée depuis /api/config (Vercel env vars)
+     Fallback : tu peux aussi mettre tes clés ici en dur si tu préfères
+     ne pas dépendre d'un appel API au boot (PWA offline).
      ---------------------------------------------------------- */
-  const SUPABASE_URL  = 'https://VOTRE_PROJECT_ID.supabase.co';
-  const SUPABASE_KEY  = 'VOTRE_ANON_PUBLIC_KEY';
+  let SUPABASE_URL  = 'https://VOTRE_PROJECT_ID.supabase.co';
+  let SUPABASE_KEY  = 'VOTRE_ANON_PUBLIC_KEY';
 
-  /* ----------------------------------------------------------
-     🛠️  MODE DEV — auto-activé tant que Supabase n'est pas configuré.
-     → isPremium() retourne true partout
-     → la paywall ne bloque rien
-     → un badge "Mode dev" s'affiche en bas à droite
-     Bascule manuellement en mode prod en mettant à false (utile pour
-     tester la paywall une fois Supabase configuré) :
-     ---------------------------------------------------------- */
-  const DEV_MODE = SUPABASE_URL.includes('VOTRE_PROJECT_ID');
+  /* DEV_MODE auto-détecté : true tant que les vraies clés ne sont
+     pas chargées (depuis /api/config OU codées en dur).
+     → isPremium() retourne true, la paywall ne bloque rien,
+       un badge "Mode dev" s'affiche en bas à droite. */
+  let DEV_MODE = SUPABASE_URL.includes('VOTRE_PROJECT_ID');
+
+  /* Chargement async des clés publiques depuis /api/config */
+  async function loadRemoteConfig() {
+    if (!DEV_MODE) return; // déjà configuré en dur, rien à faire
+    try {
+      const res = await fetch('/api/config', { cache: 'no-store' });
+      if (!res.ok) return;
+      const cfg = await res.json();
+      if (cfg && cfg.supabase && cfg.supabase.url && cfg.supabase.anonKey) {
+        SUPABASE_URL = cfg.supabase.url;
+        SUPABASE_KEY = cfg.supabase.anonKey;
+        DEV_MODE = false;
+        console.log('[auth] Config Supabase chargée depuis /api/config (env:', cfg.env, ')');
+      }
+    } catch (e) {
+      // Silencieux : si /api/config indispo (PWA offline, dev local sans Vercel),
+      // on reste en DEV_MODE et la paywall est désactivée.
+    }
+  }
 
   /* Clé localStorage pour la session */
   const SESSION_KEY   = 'ci_session_v1';
@@ -270,6 +286,9 @@
      Init global
      ---------------------------------------------------------- */
   async function init() {
+    // Tente de charger la config depuis /api/config (env vars Vercel)
+    await loadRemoteConfig();
+
     // 🛠️ Mode dev : skip Supabase, juste afficher la topbar et le badge
     if (DEV_MODE) {
       renderTopbarUser();

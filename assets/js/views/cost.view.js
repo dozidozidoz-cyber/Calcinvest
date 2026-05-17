@@ -115,7 +115,7 @@
       CI.drawChart('ct-chart-compound', labels, [
         { data: dataBalance, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.18)', width: 2, label: 'Capital' },
         { data: dataWd, color: '#9CA3AF', dash: [4, 3], width: 1.5, label: 'Retraits cumulés + capital initial' }
-      ], { xLabel: 'Mois', yLabel: '€', yFormat: 'money' });
+      ], { xLabel: 'Mois', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
     }
 
     // Reality check

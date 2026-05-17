@@ -10,12 +10,21 @@
    ⚙️  CONFIG — à remplir avec tes clés
    ============================================================ */
 
-const STRIPE_SECRET_KEY    = 'sk_test_VOTRE_CLE_SECRETE';
-const STRIPE_WEBHOOK_SECRET = 'whsec_VOTRE_WEBHOOK_SECRET';  // Stripe → Webhooks → Signing secret
-const SUPABASE_URL          = 'https://VOTRE_PROJECT_ID.supabase.co';
-const SUPABASE_SERVICE_KEY  = 'VOTRE_SERVICE_ROLE_KEY';
+// 🔑 Variables d'environnement (Vercel → Settings → Env Vars)
+//    STRIPE_SECRET_KEY       sk_live_xxx ou sk_test_xxx
+//    STRIPE_WEBHOOK_SECRET   whsec_xxx (Stripe → Webhooks → Signing secret)
+//    SUPABASE_URL            https://xxx.supabase.co
+//    SUPABASE_SERVICE_KEY    service_role key
+const STRIPE_SECRET_KEY     = process.env.STRIPE_SECRET_KEY;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+const SUPABASE_URL          = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;
 
-const Stripe = require('stripe')(STRIPE_SECRET_KEY);
+if (!STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  console.error('[stripe/webhook] Missing required env vars');
+}
+
+const Stripe = STRIPE_SECRET_KEY ? require('stripe')(STRIPE_SECRET_KEY) : null;
 
 /* Met à jour user_metadata dans Supabase via Admin API */
 async function updateUserPlan(userId, plan, premiumUntil) {
@@ -45,6 +54,7 @@ async function updateUserPlan(userId, plan, premiumUntil) {
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
+  if (!Stripe) return res.status(503).json({ error: 'Webhook non configuré' });
 
   // Récupère le body brut pour vérifier la signature Stripe
   const sig  = req.headers['stripe-signature'];
