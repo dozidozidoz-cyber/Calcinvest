@@ -34,6 +34,11 @@
         SUPABASE_URL = cfg.supabase.url;
         SUPABASE_KEY = cfg.supabase.anonKey;
         DEV_MODE = false;
+        // Expose sur CI pour les modules externes (api-journal, etc.)
+        if (global.CI) {
+          global.CI.SUPABASE_URL = SUPABASE_URL;
+          global.CI.SUPABASE_ANON_KEY = SUPABASE_KEY;
+        }
         console.log('[auth] Config Supabase chargée depuis /api/config (env:', cfg.env, ')');
       }
     } catch (e) {

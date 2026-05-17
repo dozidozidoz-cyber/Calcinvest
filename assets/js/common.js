@@ -1019,6 +1019,7 @@
     '/simulateur-assurance-vie':        { label: 'Assurance-Vie',      cat: 'Épargne',  color: '#7C3AED' },
     '/simulateur-lmnp':                 { label: 'LMNP',               cat: 'Immobilier',color: '#0E9F6E' },
     '/calculateur-donation-succession': { label: 'Donation / Succession',cat: 'Fiscalité',color: '#D97706' },
+    '/journal-trading':                 { label: 'Journal de Trade',   cat: 'Trading',  color: '#7C3AED' },
     '/comparer':                        { label: 'Comparer simulations',cat: 'Outils',  color: '#34D399' },
     '/glossaire':                       { label: 'Glossaire financier',cat: 'Docs',    color: '#94A3B8' }
   };
@@ -1135,7 +1136,8 @@
           { url: '/calculateur-risk-management',       label: 'Risk Management',          desc: 'Expectancy, R/R, P(ruine)',      icon: ICONS.risk },
           { url: '/simulateur-monte-carlo-trading',    label: 'Monte Carlo Trading',      desc: '2000 trajectoires de votre système', icon: ICONS.mc },
           { url: '/calculateur-fiscalite-trading',     label: 'Fiscalité Trading FR',     desc: 'PFU vs IR, CTO vs PEA',          icon: ICONS.fisca },
-          { url: '/calculateur-volatilite',            label: 'ATR & Kelly',              desc: 'Volatilité + sizing optimal',    icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><path d="M2 10l4-6 4 6 4-3"/></svg>' }
+          { url: '/calculateur-volatilite',            label: 'ATR & Kelly',              desc: 'Volatilité + sizing optimal',    icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><path d="M2 10l4-6 4 6 4-3"/></svg>' },
+          { url: '/journal-trading',                   label: 'Journal de Trade',         desc: 'Stats, equity curve, persistant',icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M5 11h4"/></svg>' }
         ]
       },
       {
