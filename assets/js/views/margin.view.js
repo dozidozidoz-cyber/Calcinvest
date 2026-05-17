@@ -12,23 +12,23 @@
   };
 
   function readParams() {
-    const pairKey = $('mg-pair').value || 'EUR/USD';
+    const pairKey = CI.safeStr('mg-pair', 'EUR/USD');
     const info = (window.PIPS && PIPS.PAIRS[pairKey]) || { contractSize: 100000 };
     return {
       pair:        pairKey,
       direction:   document.querySelector('input[name="mg-dir"]:checked')?.value || 'long',
-      lotSize:     parseFloat($('mg-lotsize').value) || info.contractSize || 100000,
-      entryPrice:  parseFloat($('mg-entry').value)   || 0,
-      leverage:    parseFloat($('mg-leverage').value)|| 30,
-      balance:     parseFloat($('mg-balance').value) || 10000,
-      accountCurr: $('mg-currency').value || 'EUR',
+      lotSize:     CI.safeNum('mg-lotsize', info.contractSize || 100000),
+      entryPrice:  CI.safeNum('mg-entry', 0),
+      leverage:    CI.safeNum('mg-leverage', 30),
+      balance:     CI.safeNum('mg-balance', 10000),
+      accountCurr: CI.safeStr('mg-currency', 'EUR'),
       // SL/TP
-      targetGain:  parseFloat($('mg-target-gain').value)|| 500,
-      targetLoss:  parseFloat($('mg-target-loss').value)|| 100,
+      targetGain:  CI.safeNum('mg-target-gain', 500),
+      targetLoss:  CI.safeNum('mg-target-loss', 100),
       // Pip converter
-      pipsConv:    parseFloat($('mg-pips-conv').value) || 30,
-      priceA:      parseFloat($('mg-price-a').value)   || 0,
-      priceB:      parseFloat($('mg-price-b').value)   || 0
+      pipsConv:    CI.safeNum('mg-pips-conv', 30),
+      priceA:      CI.safeNum('mg-price-a', 0),
+      priceB:      CI.safeNum('mg-price-b', 0)
     };
   }
 

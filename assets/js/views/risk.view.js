@@ -18,12 +18,12 @@
 
   function readParams() {
     return {
-      balance:        parseFloat($('rk-balance').value) || 10000,
-      riskPct:        parseFloat($('rk-risk').value)    || 1,
-      stopPct:        parseFloat($('rk-stop').value)    || 5,
-      winRate:        parseFloat($('rk-wr').value)      || 50,
-      rrRatio:        parseFloat($('rk-rr').value)      || 2,
-      numTrades:      parseFloat($('rk-n').value)       || 200,
+      balance:        CI.safeNum('rk-balance', 10000),
+      riskPct:        CI.safeNum('rk-risk', 1),
+      stopPct:        CI.safeNum('rk-stop', 5),
+      winRate:        CI.safeNum('rk-wr', 50),
+      rrRatio:        CI.safeNum('rk-rr', 2),
+      numTrades:      CI.safeNum('rk-n', 200),
       streakLosses:   parseInt($('rk-streak').value)    || 10
     };
   }

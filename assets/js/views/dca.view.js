@@ -602,7 +602,7 @@
       { label: r.inflationAdjusted ? 'Réel (inflation)' : 'Portfolio', data: pick(r.inflationAdjusted ? monthly.real : monthly.portfolio), color: '#34D399', fill: true, width: 2.5 }
     ];
 
-    requestAnimationFrame(() => CI.drawChart('d-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) }));
+    requestAnimationFrame(() => CI.safeChart('d-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) }));
 
     // Insight A01
     const gainCls = r.finalGain >= 0 ? 'pos' : 'neg';
@@ -724,7 +724,7 @@
     for (let i = 0; i < n; i += stride) idxs.push(i);
     if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
     const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
-    CI.drawChart('da3-chart', labels, [
+    CI.safeChart('da3-chart', labels, [
       // Lignes capital investi (arrière-plan, mono dashées)
       { label: 'Versé DCA / Lump', data: idxs.map((i) => rDca.series.invested[i]), color: '#94A3B8', width: 1, dash: [3, 3] },
       { label: 'Versé VA',         data: idxs.map((i) => rVa.series.invested[i]),  color: '#FBBF24', width: 1, dash: [3, 3] },
@@ -1058,7 +1058,7 @@
     const canvas = document.getElementById('da5-chart');
     if (!canvas || !sampled.length) return;
     // Use CI.drawChart pour avoir le tooltip + cursor au hover
-    CI.drawChart(canvas, labels, [
+    CI.safeChart(canvas, labels, [
       {
         label: 'Drawdown',
         data: sampled,
@@ -1158,13 +1158,13 @@
   }
 
   function drawVolatilityChart(labels, volData) {
-    CI.drawChart('da6-vol-chart', labels, [
+    CI.safeChart('da6-vol-chart', labels, [
       { label: 'Volatilité 12m', data: volData, color: '#7C3AED', fill: true, fillColor: 'rgba(124, 58, 237, 0.15)', width: 2 }
     ], { yFormat: (v) => v.toFixed(0) + ' %' });
   }
 
   function drawCAPEChart(labels, capeData, avgLine) {
-    CI.drawChart('da6-cape-chart', labels, [
+    CI.safeChart('da6-cape-chart', labels, [
       { label: 'Moyenne hist.', data: avgLine,  color: '#D97706', width: 1.5, dash: [5, 4] },
       { label: 'CAPE actuel',   data: capeData, color: '#2563EB', fill: true, fillColor: 'rgba(37, 99, 235, 0.12)', width: 2 }
     ], { yFormat: (v) => v.toFixed(0) + 'x' });
@@ -1240,7 +1240,7 @@
     const allInv = [mc.investedLine[0], ...mc.investedLine];
     const labels = allYears.map((y) => 'an ' + y);
 
-    CI.drawChart('da7-chart', labels, [
+    CI.safeChart('da7-chart', labels, [
       { label: 'P10 pessimiste', data: allP10, color: 'rgba(5, 150, 105, 0.45)', width: 1, dash: [3, 3] },
       { label: 'P25',            data: allP25, color: 'rgba(5, 150, 105, 0.65)', width: 1.2 },
       { label: 'P75',            data: allP75, color: 'rgba(5, 150, 105, 0.65)', width: 1.2 },
@@ -1405,7 +1405,7 @@
     for (let i = 0; i < n; i += stride) idxs.push(i);
     if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
     const labels = idxs.map((i) => addMonths(form.startDate, i).slice(0, 4));
-    CI.drawChart('da8-chart', labels, [
+    CI.safeChart('da8-chart', labels, [
       { data: idxs.map((i) => r1.series.invested[i] / base1 * 100), color: '#FBBF24', width: 1.5, dash: [4, 3] },
       { data: idxs.map((i) => r2.series.portfolio[i] / base2 * 100), color: '#60A5FA', width: 2 },
       { data: idxs.map((i) => r1.series.portfolio[i] / base1 * 100), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 }
@@ -1588,7 +1588,7 @@
       };
     });
 
-    CI.drawChart('da10-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) });
+    CI.safeChart('da10-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) });
   }
 
   /* ============================================================

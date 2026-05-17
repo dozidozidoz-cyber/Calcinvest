@@ -11,6 +11,33 @@
   const STORAGE_KEY = 'calcinvest_projects_v1';
 
   /* ===========================================================
+     DEFENSIVE READERS — évitent les TypeError sur ID HTML inexistant
+     =========================================================== */
+  CI.safeNum = function (id, fallback) {
+    const el = document.getElementById(id);
+    if (!el) return fallback;
+    const v = parseFloat(el.value);
+    return Number.isFinite(v) ? v : fallback;
+  };
+  CI.safeStr = function (id, fallback) {
+    const el = document.getElementById(id);
+    if (!el) return fallback;
+    return (el.value || '').trim() || fallback;
+  };
+  CI.safeChecked = function (id, fallback) {
+    const el = document.getElementById(id);
+    return el ? !!el.checked : !!fallback;
+  };
+  /* Wrapper sécurisé pour drawChart : never throws */
+  CI.safeChart = function (canvasId, labels, datasets, opts) {
+    try {
+      if (CI.drawChart) CI.drawChart(canvasId, labels, datasets, opts);
+    } catch (e) {
+      console.warn('[safeChart ' + canvasId + ']', e.message);
+    }
+  };
+
+  /* ===========================================================
      FORMAT
      =========================================================== */
   CI.fmtNum = function (n, dec) {

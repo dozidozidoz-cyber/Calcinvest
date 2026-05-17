@@ -197,7 +197,7 @@
     const dataTaxSav  = r.yearly.map((y) => y.cumTaxSaving);
 
     requestAnimationFrame(() => {
-      CI.drawChart('pa2-chart', labels, [
+      CI.safeChart('pa2-chart', labels, [
         { label: 'Économie fiscale cumulée', data: dataTaxSav, color: '#D97706', width: 1.5, dash: [4, 3] },
         { label: 'Total versé',              data: dataContrib, color: '#2563EB', width: 1.8 },
         { label: 'Capital PER',              data: dataCapital, color: '#059669', fill: true, fillColor: 'rgba(5, 150, 105, 0.10)', width: 2.5 }

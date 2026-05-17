@@ -141,7 +141,7 @@
     // Chart
     requestAnimationFrame(() => {
       const labels = r.yearly.map((y) => 'An ' + y.year);
-      CI.drawChart('ca1-chart', labels, [
+      CI.safeChart('ca1-chart', labels, [
         { label: 'Versé',  data: r.yearly.map((y) => y.invested), color: '#60A5FA', fill: true, width: 1.5 },
         { label: 'Valeur', data: r.yearly.map((y) => y.value),    color: '#34D399', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
@@ -192,7 +192,7 @@
 
     // Chart
     requestAnimationFrame(() => {
-      CI.drawChart('ca2-chart', labels,
+      CI.safeChart('ca2-chart', labels,
         comps.map((c) => ({
           data:  c.yearly.map((y) => y.value),
           color: RATE_COLORS[c.rate] || '#888',
@@ -341,7 +341,7 @@
     const labels   = Array.from({ length: maxYears }, (_, i) => 'An ' + (i + 1));
     requestAnimationFrame(() => {
       const colors = ['#888', '#60A5FA', '#FBBF24', '#F97316', '#34D399'];
-      CI.drawChart('ca4-chart', labels,
+      CI.safeChart('ca4-chart', labels,
         scenarios.map((s, idx) => ({
           data:  s.yearly.slice(0, maxYears).map((y) => y.value),
           color: s.extra === 0 ? '#60A5FA' : colors[idx] || '#888',
@@ -430,7 +430,7 @@
     }
 
     requestAnimationFrame(() => {
-      CI.drawChart('ca5-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) });
+      CI.safeChart('ca5-chart', labels, datasets, { yFormat: (v) => CI.fmtCompact(v) });
     });
 
     // Insight A05
@@ -500,7 +500,7 @@
     // Chart barres horizontales (barres verticales ici via CI.drawChart)
     requestAnimationFrame(() => {
       const labels = envelopes.map((e) => e.label);
-      CI.drawChart('ca6-chart', labels, [
+      CI.safeChart('ca6-chart', labels, [
         {
           data:  envelopes.map((e) => e.netValue),
           color: envelopes.map((e) => ENVELOPE_COLORS[e.id] || '#888')
@@ -582,7 +582,7 @@
     requestAnimationFrame(() => {
       const labels = data.scenarios.map((s) => s.startAge + ' ans');
       const reqMonthly = data.scenarios.map((s) => s.monthlyToReach || 0);
-      CI.drawChart('ca7-chart', labels, [
+      CI.safeChart('ca7-chart', labels, [
         { label: 'Versement requis', data: reqMonthly, color: '#34D399', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) + '/mois' });
     });

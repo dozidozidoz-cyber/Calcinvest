@@ -146,7 +146,7 @@
 
   function renderChart(r) {
     const labels = r.yearly.map((y) => 'An ' + y.year);
-    CI.drawChart('l-chart', labels, [
+    CI.safeChart('l-chart', labels, [
       {
         label: 'Valeur du bien',
         data: r.yearly.map((y) => y.propertyValue),
@@ -229,7 +229,7 @@
       cumPrincipal.push(cumP); cumInterest.push(cumI); balances.push(yr.balance);
     });
     requestAnimationFrame(() => {
-      CI.drawChart('la5-chart', r.amortSchedule.map(yr => 'An ' + yr.year), [
+      CI.safeChart('la5-chart', r.amortSchedule.map(yr => 'An ' + yr.year), [
         { data: balances,     color: '#FBBF24', width: 2,   dash: [4, 4] },
         { data: cumPrincipal, color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 },
         { data: cumInterest,  color: '#F87171', width: 2 }
@@ -313,7 +313,7 @@
     if (metaEl) metaEl.textContent = la7Indexation > 0 ? 'Indexation loyers ' + la7Indexation + ' %/an' : 'Loyer fixe';
 
     requestAnimationFrame(() => {
-      CI.drawChart('la7-chart', r.yearly.map(yr => 'An ' + yr.year), [
+      CI.safeChart('la7-chart', r.yearly.map(yr => 'An ' + yr.year), [
         { data: r.yearly.map(yr => yr.cashflow / 12), color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.08)', width: 2.5 },
         { data: cumulArr,                              color: '#60A5FA', width: 2 }
       ], { yFormat: v => CI.fmtCompact(v) });
@@ -353,7 +353,7 @@
     const netArr   = r.yearly.map((yr, i) => calcPV(p.price, yr.propertyValue, i + 1, agPct, yr.balance).netVendeur);
     const brutArr  = r.yearly.map(yr => yr.equity);
     requestAnimationFrame(() => {
-      CI.drawChart('la8-chart', labels, [
+      CI.safeChart('la8-chart', labels, [
         { data: brutArr, color: '#FBBF24', width: 1.8, dash: [4, 4] },
         { data: netArr,  color: '#34D399', fill: true, fillColor: 'rgba(52,211,153,0.1)', width: 2.5 }
       ], { yFormat: v => CI.fmtCompact(v) });
@@ -430,7 +430,7 @@
       const realData = r.yearly.map((y) => y.equity);
       // Stocks yearly : on a cmp.stocksYearly avec value par année
       const stocksData = cmp.stocksYearly ? cmp.stocksYearly.map((y) => y.value) : [];
-      CI.drawChart('la9-chart', labels, [
+      CI.safeChart('la9-chart', labels, [
         { label: 'Équité immo',   data: realData,   color: '#34D399', fill: true,  width: 2.5 },
         { label: 'Bourse (brut)', data: stocksData, color: '#60A5FA', fill: false, width: 2, dash: [4, 3] }
       ], { yFormat: (v) => CI.fmtCompact(v) });
@@ -488,7 +488,7 @@
     // Histogramme : line chart fill (CI.drawChart ne supporte pas bar natif)
     requestAnimationFrame(() => {
       const labels = r.histogram.bins.map((b) => CI.fmtCompact(b));
-      CI.drawChart('la10-chart', labels, [
+      CI.safeChart('la10-chart', labels, [
         { label: 'Fréquence', data: r.histogram.counts, color: '#34D399', fill: true, width: 2 }
       ], { yFormat: (v) => v + ' sims' });
     });
@@ -571,7 +571,7 @@
     requestAnimationFrame(() => {
       const labels = data.map((d) => d.rate.toFixed(1) + ' %');
       const triData = data.map((d) => d.tri != null ? d.tri : 0);
-      CI.drawChart('la12-chart', labels, [
+      CI.safeChart('la12-chart', labels, [
         { label: 'TRI', data: triData, color: '#34D399', fill: true, width: 2.5 }
       ], { yFormat: (v) => v.toFixed(1) + ' %' });
     });
@@ -743,7 +743,7 @@
     // Chart consolidé
     requestAnimationFrame(() => {
       const labels = agg.yearly.map((y) => 'An ' + y.year);
-      CI.drawChart('lp-chart', labels, [
+      CI.safeChart('lp-chart', labels, [
         { label: 'Équité',  data: agg.yearly.map((y) => y.equity),        color: '#34D399', fill: true,  width: 2.5 },
         { label: 'Valeur',  data: agg.yearly.map((y) => y.propertyValue), color: '#60A5FA', fill: false, width: 2 },
         { label: 'Dette',   data: agg.yearly.map((y) => y.balance),       color: '#F87171', fill: false, width: 1.5, dash: [4, 3] }

@@ -101,7 +101,7 @@
 
       try {
         if (window.CI && CI.drawChart) {
-          CI.drawChart('sc-chart-a01', labels, [
+          CI.safeChart('sc-chart-a01', labels, [
             { data: dataValue,  color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.18)', width: 2,   label: 'Valeur parts' },
             { data: dataVerse,  color: '#9CA3AF', dash: [4, 3], width: 1.5,                       label: 'Versé cumulé' },
             { data: dataDivCum, color: '#2563EB', width: 1.8,                                     label: 'Dividendes nets cum.' }
@@ -155,7 +155,7 @@
 
     try {
       if (window.CI && CI.drawChart) {
-        CI.drawChart('sc-chart-a02', labels, [
+        CI.safeChart('sc-chart-a02', labels, [
           { data: dataNet, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.20)', width: 2,   label: 'Net' },
           { data: dataTax, color: '#DC2626', width: 1.5, dash: [3, 3],                       label: 'Impôts' }
         ], { xLabel: 'Année', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
@@ -195,7 +195,7 @@
 
     try {
       if (window.CI && CI.drawChart) {
-        CI.drawChart('sc-chart-a03', labels, [
+        CI.safeChart('sc-chart-a03', labels, [
           { data: dataTotal, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.25)', width: 2.5, label: 'Total net' }
         ], { xLabel: 'Régime', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
       }
@@ -266,7 +266,7 @@
 
     try {
       if (window.CI && CI.drawChart) {
-        CI.drawChart('sc-chart-a05', labels, [
+        CI.safeChart('sc-chart-a05', labels, [
           { data: dataTotal, color: '#2563EB', fill: true, fillColor: 'rgba(37,99,235,0.20)', width: 2 }
         ], { xLabel: 'Placement', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
       }

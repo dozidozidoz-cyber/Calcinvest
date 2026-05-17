@@ -13,21 +13,21 @@
 
   function readParams() {
     return {
-      pair:           $('ct-pair').value || 'EUR/USD',
-      lotSize:        parseFloat($('ct-lotsize').value) || 100000,
-      accountCurr:    $('ct-currency').value || 'EUR',
-      spreadPips:     parseFloat($('ct-spread').value) || 1.5,
-      commissionType: $('ct-comm-type').value || 'perlot',
-      commissionValue:parseFloat($('ct-comm-value').value) || 7,
-      swapPipsPerNight: parseFloat($('ct-swap').value) || -0.5,
-      nightsHeld:     parseFloat($('ct-nights').value) || 1,
-      expectedMovePips: parseFloat($('ct-move').value) || 30,
+      pair:           CI.safeStr('ct-pair', 'EUR/USD'),
+      lotSize:        CI.safeNum('ct-lotsize', 100000),
+      accountCurr:    CI.safeStr('ct-currency', 'EUR'),
+      spreadPips:     CI.safeNum('ct-spread', 1.5),
+      commissionType: CI.safeStr('ct-comm-type', 'perlot'),
+      commissionValue:CI.safeNum('ct-comm-value', 7),
+      swapPipsPerNight: CI.safeNum('ct-swap', -0.5),
+      nightsHeld:     CI.safeNum('ct-nights', 1),
+      expectedMovePips: CI.safeNum('ct-move', 30),
       // Compound
-      startCapital:   parseFloat($('ct-start').value) || 10000,
-      monthlyReturnPct: parseFloat($('ct-ret').value) || 2,
-      months:         parseFloat($('ct-months').value) || 12,
-      monthlyWithdrawal: parseFloat($('ct-wd').value) || 0,
-      taxRate:        parseFloat($('ct-tax').value) || 30
+      startCapital:   CI.safeNum('ct-start', 10000),
+      monthlyReturnPct: CI.safeNum('ct-ret', 2),
+      months:         CI.safeNum('ct-months', 12),
+      monthlyWithdrawal: CI.safeNum('ct-wd', 0),
+      taxRate:        CI.safeNum('ct-tax', 30)
     };
   }
 
@@ -112,7 +112,7 @@
     const dataWd = cp.series.map(s => p.startCapital + s.withdrawn);
 
     if (CI && CI.drawChart) {
-      CI.drawChart('ct-chart-compound', labels, [
+      CI.safeChart('ct-chart-compound', labels, [
         { data: dataBalance, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.18)', width: 2, label: 'Capital' },
         { data: dataWd, color: '#9CA3AF', dash: [4, 3], width: 1.5, label: 'Retraits cumulés + capital initial' }
       ], { xLabel: 'Mois', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });

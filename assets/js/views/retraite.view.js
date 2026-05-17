@@ -158,7 +158,7 @@
     requestAnimationFrame(() => {
       const labels = cmp.map((c) => c.age + ' ans');
       const data   = cmp.map((c) => c.pensionMensuelleBrute);
-      CI.drawChart('ra2-chart', labels, [
+      CI.safeChart('ra2-chart', labels, [
         { label: 'Pension brute mensuelle', data, color: '#34D399', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
@@ -293,7 +293,7 @@
     requestAnimationFrame(() => {
       const labels = arr.map((s) => s.croissance.toFixed(1) + ' %');
       const data = arr.map((s) => s.pensionMensuelleBrute);
-      CI.drawChart('ra5-chart', labels, [
+      CI.safeChart('ra5-chart', labels, [
         { label: 'Pension brute', data, color: '#FBBF24', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });

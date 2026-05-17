@@ -110,7 +110,7 @@
         const dataBal = sim.yearly.map(y => y.balance);
         let cumInt = 0;
         const dataInt = sim.yearly.map(y => { cumInt += y.interest; return cumInt; });
-        CI.drawChart('loan-chart-amort', labels, [
+        CI.safeChart('loan-chart-amort', labels, [
           { data: dataBal, color: '#059669', fill: true, fillColor: 'rgba(5,150,105,0.18)', width: 2, label: 'Capital restant dû' },
           { data: dataInt, color: '#DC2626', width: 1.8, dash: [4,3],                              label: 'Intérêts cumulés' }
         ], { xLabel: 'Année', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
@@ -149,7 +149,7 @@
         const labels = data.map(d => d.duree + ' ans');
         const dataInter = data.map(d => d.totalInterets);
         const dataMens = data.map(d => d.mensualite * 100); // scale pour visibilité
-        CI.drawChart('loan-chart-durees', labels, [
+        CI.safeChart('loan-chart-durees', labels, [
           { data: dataInter, color: '#DC2626', fill: true, fillColor: 'rgba(220,38,38,0.20)', width: 2.5, label: 'Intérêts totaux' }
         ], { xLabel: 'Durée', yLabel: '€', yFormat: (v) => CI.fmtCompact(v) });
       }
@@ -178,7 +178,7 @@
       if (window.CI && CI.drawChart) {
         const labels = ['Prix bien', 'Frais notaire', 'Travaux', 'Frais garantie+dossier'];
         const data1 = [op.prixBien, op.fraisNotaire, op.travaux, op.fraisGarantie + op.fraisDossier];
-        CI.drawChart('loan-chart-op', labels, [
+        CI.safeChart('loan-chart-op', labels, [
           { data: data1, color: '#0E9F6E', fill: true, fillColor: 'rgba(14,159,110,0.18)', width: 2 }
         ], { yFormat: (v) => CI.fmtCompact(v) });
       }

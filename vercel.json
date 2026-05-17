@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "buildCommand": "npm run vercel-build",
   "functions": {
     "api/stripe/webhook.js": {
       "maxDuration": 10

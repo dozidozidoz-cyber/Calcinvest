@@ -14,13 +14,13 @@
 
   function readParams() {
     return {
-      startBalance: parseFloat($('mc-balance').value) || 10000,
-      winRate:      parseFloat($('mc-wr').value)      || 55,
-      rrRatio:      parseFloat($('mc-rr').value)      || 2,
-      riskPct:      parseFloat($('mc-risk').value)    || 1,
+      startBalance: CI.safeNum('mc-balance', 10000),
+      winRate:      CI.safeNum('mc-wr', 55),
+      rrRatio:      CI.safeNum('mc-rr', 2),
+      riskPct:      CI.safeNum('mc-risk', 1),
       numTrades:    parseInt($('mc-n').value)         || 200,
       numSims:      parseInt($('mc-sims').value)      || 2000,
-      targetBalance:parseFloat($('mc-target').value)  || 20000
+      targetBalance:CI.safeNum('mc-target', 20000)
     };
   }
 
@@ -73,7 +73,7 @@
     const cp = r.checkpoints;
     const labels = cp.map(c => '#' + c.trade);
 
-    CI.drawChart('mc-chart-equity', labels, [
+    CI.safeChart('mc-chart-equity', labels, [
       { data: cp.map(c => c.p95), color: 'rgba(5,150,105,0.0)', fill: true, fillColor: 'rgba(5,150,105,0.18)', width: 0, label: 'P95' },
       { data: cp.map(c => c.p5),  color: 'rgba(255,255,255,1.0)', fill: true, fillColor: 'rgba(255,255,255,1.0)', width: 0, label: 'P5' },
       { data: cp.map(c => c.p75), color: 'rgba(5,150,105,0.6)', width: 1.5, dash: [4, 3], label: 'P75' },

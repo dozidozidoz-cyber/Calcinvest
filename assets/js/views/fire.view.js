@@ -143,7 +143,7 @@
     const dataTarget = traj.map(() => r.fireTarget);
     const dataLean   = traj.map(() => r.leanTarget);
 
-    CI.drawChart('fia2-chart', labels, [
+    CI.safeChart('fia2-chart', labels, [
       { data: dataTarget, color: '#F87171',  width: 1.5, dash: [6, 3], label: 'Cible FIRE' },
       { data: dataLean,   color: '#FBBF24',  width: 1,   dash: [4, 4], label: 'Cible Lean' },
       { data: dataPort,   color: '#34D399',  fill: true,  label: 'Capital accumulé' },
@@ -250,7 +250,7 @@
     const dataVal = ws.pts.map((pt) => pt.value);
     const dataExp = ws.pts.map((pt) => pt.expenses);
 
-    CI.drawChart('fia4-chart', labels, [
+    CI.safeChart('fia4-chart', labels, [
       { data: dataVal, color: '#34D399', fill: true, label: 'Capital restant' },
       { data: dataExp, color: '#F87171', width: 1.5, dash: [4, 3], label: 'Dépenses annuelles (inflation)' }
     ], { yLabel: '€' });
@@ -293,13 +293,13 @@
 
     // Chart by return
     const retLabels = sens.byReturn.map((x) => x.return + ' %');
-    CI.drawChart('fia5-chart-return', retLabels, [
+    CI.safeChart('fia5-chart-return', retLabels, [
       { data: sens.byReturn.map((x) => x.years), color: '#34D399', fill: true, label: 'Années vers FIRE' }
     ], { yLabel: 'années' });
 
     // Chart by withdrawal rate
     const wrLabels = sens.byWithdrawal.map((x) => x.rate + ' %');
-    CI.drawChart('fia5-chart-wr', wrLabels, [
+    CI.safeChart('fia5-chart-wr', wrLabels, [
       { data: sens.byWithdrawal.map((x) => x.target / 1e6), color: '#60A5FA', fill: true, label: 'Capital cible (M€)' }
     ], { yLabel: 'M€' });
 
@@ -390,7 +390,7 @@
 
     // Chart percentiles
     const labels = mc.percentiles.map((pt) => 'Année ' + pt.year);
-    CI.drawChart('fia6-chart', labels, [
+    CI.safeChart('fia6-chart', labels, [
       { data: mc.percentiles.map((pt) => pt.p90), color: '#34D399', width: 1.5, label: 'P90 (optimiste)' },
       { data: mc.percentiles.map((pt) => pt.p50), color: '#60A5FA', width: 2,   label: 'P50 (médian)' },
       { data: mc.percentiles.map((pt) => pt.p10), color: '#F87171', width: 1.5, label: 'P10 (pessimiste)' }

@@ -158,7 +158,7 @@
     // Chart
     requestAnimationFrame(() => {
       const labels = r.monthly_data.map((pt) => pt.date);
-      CI.drawChart('cra1-chart', labels, [
+      CI.safeChart('cra1-chart', labels, [
         { label: 'Investi',    data: r.monthly_data.map((pt) => pt.invested), color: '#94A3B8', fill: false, width: 1.5, dash: [4, 3] },
         { label: 'Portfolio',  data: r.monthly_data.map((pt) => pt.value),    color: meta.color || '#F7931A', fill: true, width: 2.5 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
@@ -237,7 +237,7 @@
       const posData = yearly.map((y) => y.ret >= 0 ? y.ret : 0);
       const negData = yearly.map((y) => y.ret <  0 ? y.ret : 0);
 
-      CI.drawChart('cra2-chart', labels, [
+      CI.safeChart('cra2-chart', labels, [
         { data: negData, color: '#F87171', fill: true, width: 0 },
         { data: posData, color: '#34D399', fill: true, width: 0 }
       ], {
@@ -296,7 +296,7 @@
     requestAnimationFrame(() => {
       const labels  = dd.series.map((pt) => pt.date);
       const ddData  = dd.series.map((pt) => pt.drawdown);
-      CI.drawChart('cra3-chart', labels, [
+      CI.safeChart('cra3-chart', labels, [
         { data: ddData, color: '#F87171', fill: true, width: 1.5 }
       ], { yFormat: (v) => v.toFixed(0) + ' %' });
     });
@@ -406,7 +406,7 @@
       for (let i = 0; i < n; i += stride) idxs.push(i);
       if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
       const labels = idxs.map((i) => dcaPts[i].date);
-      CI.drawChart('cra4-chart', labels, [
+      CI.safeChart('cra4-chart', labels, [
         { label: 'Versé DCA / Lump', data: idxs.map((i) => dcaPts[i].invested), color: '#94A3B8', width: 1, dash: [3, 3] },
         { label: 'Versé VA',         data: idxs.map((i) => vaSeries.invested[i]), color: '#FBBF24', width: 1, dash: [3, 3] },
         { label: 'Lump Sum',         data: idxs.map((i) => lumpPts[i].value),     color: '#F7931A', width: 2.5 },
@@ -449,7 +449,7 @@
 
       if (series12.length === 0) return;
 
-      CI.drawChart('cra5-chart', series12.map((pt) => pt.date), [
+      CI.safeChart('cra5-chart', series12.map((pt) => pt.date), [
         { data: series12.map((pt) => pt.vol), color: '#F7931A', fill: true, width: 2 },
         { data: series3.length > 0
             ? series12.map((pt) => {
@@ -530,7 +530,7 @@
         labels.push(d);
         prices.push(data.prices[i]);
       }
-      CI.drawChart('cra6-chart', labels, [
+      CI.safeChart('cra6-chart', labels, [
         { data: prices, color: '#60A5FA', fill: false, width: 2 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
@@ -618,7 +618,7 @@
           results.forEach((c) => c.result.monthly_data.forEach((pt) => allDates.add(pt.date)));
           const labels = [...allDates].sort();
 
-          CI.drawChart('cra7-chart', labels,
+          CI.safeChart('cra7-chart', labels,
             results.map((c) => {
               const dateMap = {};
               c.result.monthly_data.forEach((pt) => { dateMap[pt.date] = pt.value; });
@@ -702,7 +702,7 @@
     // ── Chart 4 courbes ───────────────────────────────────────────────
     requestAnimationFrame(() => {
       const labels  = scens[0].yearly.map((y) => 'An ' + y.year);
-      CI.drawChart('cra8-chart', labels,
+      CI.safeChart('cra8-chart', labels,
         scens.map((s) => ({
           data:  s.yearly.map((y) => y.value),
           color: s.color,
@@ -990,7 +990,7 @@
 
       requestAnimationFrame(() => {
         const labels = r.histogram.bins.map((b) => CI.fmtCompact(b));
-        CI.drawChart('cra8-depeg-chart', labels, [
+        CI.safeChart('cra8-depeg-chart', labels, [
           { label: 'Fréquence', data: r.histogram.counts, color: permanent ? '#F87171' : '#FBBF24', fill: true, width: 2 }
         ], { yFormat: (v) => v + ' sims' });
       });

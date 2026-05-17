@@ -479,7 +479,7 @@
         series.forEach((s) => {
           while (s.data.length < maxLen) s.data.push(s.data[s.data.length - 1]);
         });
-        CI.drawChart('cmp-chart', labels, series, { yFormat: (v) => CI.fmtCompact(v) });
+        CI.safeChart('cmp-chart', labels, series, { yFormat: (v) => CI.fmtCompact(v) });
       });
     }
 

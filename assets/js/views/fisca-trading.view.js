@@ -13,21 +13,21 @@
 
   function readParams() {
     return {
-      plusValue:    parseFloat($('fs-pv').value)        || 10000,
-      otherRevenue: parseFloat($('fs-other').value)     || 40000,
-      qf:           parseFloat($('fs-qf').value)        || 1,
+      plusValue:    CI.safeNum('fs-pv', 10000),
+      otherRevenue: CI.safeNum('fs-other', 40000),
+      qf:           CI.safeNum('fs-qf', 1),
       // CTO vs PEA
-      yearsHeld:    parseFloat($('fs-years').value)     || 6,
+      yearsHeld:    CI.safeNum('fs-years', 6),
       // Statut
-      nbTrades:     parseFloat($('fs-trades').value)    || 50,
-      turnover:     parseFloat($('fs-turnover').value)  || 50000,
-      profit:       parseFloat($('fs-profit').value)    || 5000,
+      nbTrades:     CI.safeNum('fs-trades', 50),
+      turnover:     CI.safeNum('fs-turnover', 50000),
+      profit:       CI.safeNum('fs-profit', 5000),
       isPrincipal:  $('fs-principal').checked,
       // Imputation MV
-      loss2025:     parseFloat($('fs-loss-2025').value) || 0,
-      loss2024:     parseFloat($('fs-loss-2024').value) || 0,
-      loss2023:     parseFloat($('fs-loss-2023').value) || 0,
-      currentGain:  parseFloat($('fs-current-gain').value) || 0
+      loss2025:     CI.safeNum('fs-loss-2025', 0),
+      loss2024:     CI.safeNum('fs-loss-2024', 0),
+      loss2023:     CI.safeNum('fs-loss-2023', 0),
+      currentGain:  CI.safeNum('fs-current-gain', 0)
     };
   }
 
