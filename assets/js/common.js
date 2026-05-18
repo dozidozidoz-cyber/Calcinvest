@@ -1083,11 +1083,18 @@
      Hover sur desktop, click-toggle sur touch.
      =========================================================== */
   CI.initMegaMenu = function () {
-    const container = document.querySelector('.topbar-center');
-    if (!container) return;
-    // Skip si pas de .segmented (= pages non-simulateur, ou déjà géré)
-    const oldNav = container.querySelector('.segmented');
-    if (!oldNav) return;
+    let container = document.querySelector('.topbar-center');
+    let oldNav = container ? container.querySelector('.segmented') : null;
+
+    // Fallback : pages qui ont .topbar-nav (sans .topbar-center) → on crée le container et on remplace la nav
+    if (!container || !oldNav) {
+      const topbarNav = document.querySelector('.topbar > .topbar-nav');
+      if (!topbarNav) return;
+      container = document.createElement('div');
+      container.className = 'topbar-center';
+      topbarNav.parentNode.insertBefore(container, topbarNav);
+      topbarNav.remove();
+    }
 
     const ICONS = {
       // Outils — réutilisés depuis le site
@@ -1136,7 +1143,8 @@
           { url: '/simulateur-scpi',              label: 'SCPI · Pierre papier', desc: '4 régimes fiscaux + rentier',     icon: ICONS.scpi },
           { url: '/simulateur-pret',              label: 'Simulateur de Prêt',   desc: 'Capacité, mensualités, notaire',  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="6" width="18" height="14" rx="1"/><path d="M3 10h18M7 16h3M14 16h3"/></svg>' },
           { url: '/calculateur-plus-value-immobiliere', label: 'Plus-Value Immobilière', desc: 'Cession, abattements durée, IR + PS', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-7h6v7"/></svg>' },
-          { url: '/simulateur-lmnp',              label: 'LMNP · Location Meublée', desc: 'Micro-BIC vs Réel + amortissements', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><path d="M5 21V11l7-5 7 5v10"/><rect x="9" y="14" width="6" height="7"/></svg>' }
+          { url: '/simulateur-lmnp',              label: 'LMNP · Location Meublée', desc: 'Micro-BIC vs Réel + amortissements', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><path d="M5 21V11l7-5 7 5v10"/><rect x="9" y="14" width="6" height="7"/></svg>' },
+          { url: '/portefeuille-locatif',         label: 'Portefeuille Locatif', desc: 'Agrégé multi-biens, cashflow consolidé', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18M5 21V10l4-3 4 3v11M13 21V13l4-3 4 3v8"/></svg>' }
         ]
       },
       {
@@ -1159,7 +1167,8 @@
           { url: '/calculateur-salaire-brut-net', label: 'Salaire Brut / Net', desc: 'Cotisations URSSAF, retraite, CSG', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="9" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>' },
           { url: '/calculateur-tva-auto-entrepreneur', label: 'TVA + Auto-Entrepreneur', desc: 'HT/TTC + URSSAF micro', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>' },
           { url: '/convertisseur-devises', label: 'Convertisseur Devises', desc: 'Taux BCE live, 30+ devises', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12h18M7 7l-4 5 4 5M17 17l4-5-4-5"/></svg>' },
-          { url: '/calculateur-donation-succession', label: 'Donation & Succession', desc: 'Abattements, barème, démembrement', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' }
+          { url: '/calculateur-donation-succession', label: 'Donation & Succession', desc: 'Abattements, barème, démembrement', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' },
+          { url: '/mon-foyer-fiscal',             label: 'Foyer fiscal global',    desc: 'Vue consolidée multi-membres', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M13 20c0-2.5 1.8-4 4-4s4 1.5 4 4"/></svg>' }
         ]
       },
       {
@@ -1169,7 +1178,17 @@
           { url: '/calculateur-fire',             label: 'Calculateur FIRE',     desc: 'Indépendance financière, règle 4 %', icon: ICONS.fire },
           { url: '/simulateur-per',               label: 'Simulateur PER',       desc: 'PER vs CTO, économie fiscale',       icon: ICONS.per },
           { url: '/simulateur-retraite',          label: 'Simulateur Retraite',  desc: 'Régime général + Agirc-Arrco',       icon: ICONS.retraite },
-          { url: '/simulateur-assurance-vie',     label: 'Assurance-Vie',         desc: 'Fonds €/UC, fiscalité 8 ans, succession', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>' }
+          { url: '/simulateur-assurance-vie',     label: 'Assurance-Vie',         desc: 'Fonds €/UC, fiscalité 8 ans, succession', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>' },
+          { url: '/simulateur-decumulation',      label: 'Décumulation',          desc: 'SWR + 3 buckets pour la retraite', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 21h18"/><polyline points="3 17 9 12 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>' }
+        ]
+      },
+      {
+        id: 'outils', label: 'Outils', color: '#34D399', icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 7h6M5 10h4"/></svg>',
+        tools: [
+          { url: '/calculatrices-express',        label: 'Calculatrices Express',  desc: '4 mini-outils 1-clic : TMI, SMIC, prêt, devise', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>' },
+          { url: '/comparer',                     label: 'Comparer Simulations',   desc: 'Jusqu\'à 3 projets côte-à-côte', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="7" height="16"/><rect x="14" y="4" width="7" height="16"/><path d="M10 12h4"/></svg>' },
+          { url: '/mes-projets',                  label: 'Mes Projets',            desc: 'Sauvegardes + sync cloud', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 7h6l2 2h10v11H3z"/></svg>' },
+          { url: '/glossaire',                    label: 'Glossaire financier',    desc: 'Définitions, acronymes', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M4 4h14a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M4 18a2 2 0 0 1 2-2h14"/></svg>' }
         ]
       }
     ];
