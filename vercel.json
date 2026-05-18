@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "outputDirectory": ".",
+  "buildCommand": null,
+  "framework": null,
   "redirects": [
     { "source": "/comparateur-brokers", "destination": "/blog/comparateur-brokers", "permanent": true }
   ],
