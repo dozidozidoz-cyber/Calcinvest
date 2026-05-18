@@ -4,49 +4,62 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#7C3AED" />
-<title>Journal de Trading — Suivi P&L, Winrate, Expectancy | CalcInvest</title>
-<meta name="description" content="Journal de trading persistant : enregistrez vos trades, calculez winrate, expectancy, profit factor, equity curve, drawdown. Sync compte ou localStorage." />
-<meta name="keywords" content="journal trading, suivi trades, winrate calcul, expectancy, equity curve, drawdown trading" />
+<title>Journal de Trading — Suivi P&L, Winrate, Expectancy, R-Multiple | CalcInvest</title>
+<meta name="description" content="Journal de trading persistant : enregistrez vos trades, calculez winrate, expectancy, profit factor, R-multiple, equity curve, drawdown, heatmap mensuelle. Export CSV." />
+<meta name="keywords" content="journal trading, suivi trades, winrate calcul, expectancy, R-multiple, equity curve, drawdown trading, import MT4 MT5 IBKR" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="canonical" href="https://calcinvest.fr/journal-trading" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Journal de Trading — CalcInvest" />
-<meta property="og:description" content="Suivi P&L, stats avancées, equity curve" />
+<meta property="og:description" content="Suivi P&L, stats avancées, R-multiple, heatmap mensuelle, import CSV" />
 <meta property="og:url" content="https://calcinvest.fr/journal-trading" />
 <meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
 <meta property="og:site_name" content="CalcInvest" />
 <meta property="og:locale" content="fr_FR" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Journal de Trading" />
-<meta name="twitter:description" content="Stats winrate, expectancy, equity curve" />
+<meta name="twitter:description" content="Stats winrate, expectancy, R-multiple, equity curve" />
 <meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
 <link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/css/style.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Journal de Trading","description":"Suivi P&L, stats winrate/expectancy/equity curve","url":"https://calcinvest.fr/journal-trading","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Journal de Trading","description":"Suivi P&L, stats winrate/expectancy/R-multiple/equity curve avec heatmap mensuelle","url":"https://calcinvest.fr/journal-trading","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
 <style>
 .j-hero { background: linear-gradient(135deg, rgba(124,58,237,.10), rgba(124,58,237,.02)); border:1px solid #7C3AED; }
-.kpi-card { padding:16px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
+.kpi-card { padding:14px 16px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
 .kpi-label { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-4); font-weight:600; margin-bottom:6px; }
-.kpi-value { font-size:24px; font-weight:800; font-family:var(--font-mono); line-height:1.1; }
+.kpi-value { font-size:22px; font-weight:800; font-family:var(--font-mono); line-height:1.1; }
 .kpi-sub { font-size:11px; color:var(--text-4); margin-top:4px; }
-.trade-row.is-win td:nth-child(7) { color:var(--accent); font-weight:600; }
-.trade-row.is-loss td:nth-child(7) { color:var(--red); font-weight:600; }
-.trade-row.is-open td:nth-child(7) { color:var(--text-4); font-style:italic; }
-.j-form { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; }
+.trade-row.is-win td.pnl-cell { color:#10B981; font-weight:600; }
+.trade-row.is-loss td.pnl-cell { color:var(--red); font-weight:600; }
+.trade-row.is-open td.pnl-cell { color:var(--text-4); font-style:italic; }
+.trade-row { cursor:pointer; }
+.trade-row:hover { background:rgba(124,58,237,0.04); }
 .j-banner { padding:10px 14px; border-radius:var(--r-sm); font-size:13px; }
 .j-banner-local { background:rgba(217,119,6,.10); border:1px solid rgba(217,119,6,.30); color:var(--text-2); }
 .j-banner-sync { background:rgba(52,211,153,.10); border:1px solid rgba(52,211,153,.30); color:var(--text-2); }
-.eq-svg { width:100%; height:240px; display:block; background:var(--bg); border-radius:var(--r-sm); }
+.breakdown-card { padding:14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
+.breakdown-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.breakdown-row:last-child { border-bottom:0 }
+.heatmap-cell { width:42px; height:32px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:10px; font-weight:600; cursor:default; }
+.heatmap-row { display:flex; gap:3px; align-items:center; margin-bottom:3px }
+.heatmap-label { width:42px; font-size:11px; color:var(--text-4); font-family:var(--font-mono); }
+.heatmap-month-axis { display:flex; gap:3px; margin-left:46px; font-size:10px; color:var(--text-4); font-family:var(--font-mono); }
+.heatmap-month-axis span { width:42px; text-align:center }
+.insight-mini { padding:10px 12px; background:rgba(124,58,237,0.05); border-left:3px solid #7C3AED; border-radius:6px; font-size:13px; color:var(--text-2); margin-top:10px }
+.modal-edit { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9000; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-edit.is-open { display:flex }
+.modal-edit-card { background:var(--bg-card); border-radius:var(--r); max-width:680px; width:100%; max-height:90vh; overflow:auto; box-shadow:0 30px 80px rgba(0,0,0,0.3) }
+.tag-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; background:rgba(124,58,237,0.1); color:#7C3AED; border-radius:99px; font-size:11px; font-weight:600; margin:2px }
 </style>
 </head>
 <body>
 <noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
 
 <header class="topbar">
-  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Journal de Trading</div><div class="logo-text-sub">Suivi P&amp;L + Stats</div></div></a></div>
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Journal de Trading</div><div class="logo-text-sub">Suivi P&amp;L + Stats avancées</div></div></a></div>
   <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
   <div class="topbar-right" id="ci-user-zone"></div>
 </header>
@@ -55,15 +68,15 @@
   <div class="page-header" style="margin-bottom:24px">
     <div class="page-eyebrow"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 13l4-4 3 3 5-6"/></svg></span>Trading · Journal</div>
     <h1 class="page-title">Votre journal de trading.</h1>
-    <p class="page-lede">Enregistrez chaque trade, suivez votre <strong style="color:var(--text)">winrate, expectancy, equity curve</strong> et drawdown. <em style="color:var(--accent);font-style:normal;font-weight:600">Persistant via votre compte</em>, ou en local sans inscription.</p>
+    <p class="page-lede">Enregistrez chaque trade, suivez votre <strong style="color:var(--text)">winrate, expectancy, R-multiple, equity curve, heatmap mensuelle</strong>. <em style="color:var(--accent);font-style:normal;font-weight:600">Persistant via votre compte</em>, ou en local sans inscription.</p>
   </div>
 
   <div id="j-status-banner" class="j-banner j-banner-local" style="margin-bottom:20px"></div>
 
   <!-- KPI Hero -->
   <section class="card j-hero" style="margin-bottom:24px">
-    <div class="card-body" style="padding:24px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:14px">
+    <div class="card-body" style="padding:20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:12px">
         <div class="kpi-card"><div class="kpi-label">P&L total</div><div class="kpi-value" id="kpi-total" style="color:#7C3AED">—</div><div class="kpi-sub" id="kpi-total-sub">—</div></div>
         <div class="kpi-card"><div class="kpi-label">Winrate</div><div class="kpi-value" id="kpi-wr">—</div><div class="kpi-sub" id="kpi-wr-sub">— / — trades</div></div>
         <div class="kpi-card"><div class="kpi-label">Expectancy</div><div class="kpi-value" id="kpi-exp">—</div><div class="kpi-sub">€ moyen par trade</div></div>
@@ -74,79 +87,223 @@
     </div>
   </section>
 
-  <!-- Equity curve -->
+  <!-- Stats avancées -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 14h12M4 14V8M8 14V4M12 14v-3"/></svg></div>Stats avancées</div>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px">
+        <div class="kpi-card"><div class="kpi-label">Avg R-multiple</div><div class="kpi-value" id="kpi-avgr">—</div><div class="kpi-sub" id="kpi-avgr-sub">— trades avec SL</div></div>
+        <div class="kpi-card"><div class="kpi-label">Payoff ratio</div><div class="kpi-value" id="kpi-payoff">—</div><div class="kpi-sub">avg win ÷ |avg loss|</div></div>
+        <div class="kpi-card"><div class="kpi-label">Recovery factor</div><div class="kpi-value" id="kpi-recovery">—</div><div class="kpi-sub">profit ÷ max DD</div></div>
+        <div class="kpi-card"><div class="kpi-label">Ulcer Index</div><div class="kpi-value" id="kpi-ulcer">—</div><div class="kpi-sub">douleur DD moy.</div></div>
+        <div class="kpi-card"><div class="kpi-label">Série max W / L</div><div class="kpi-value" id="kpi-streak">—</div><div class="kpi-sub">gagnante / perdante</div></div>
+        <div class="kpi-card"><div class="kpi-label">Hold time moyen</div><div class="kpi-value" id="kpi-hold">—</div><div class="kpi-sub" id="kpi-hold-sub">— en moyenne</div></div>
+      </div>
+      <div id="kpi-insight" class="insight-mini" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- Equity curve + R cumulés -->
   <section class="card" style="margin-bottom:24px">
     <div class="card-header">
       <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div>Equity curve + Drawdown</div>
+      <div class="card-meta">P&L cumulé · drawdown depuis ATH</div>
     </div>
     <div class="card-body">
-      <svg class="eq-svg" id="j-equity-svg" viewBox="0 0 800 240"></svg>
+      <div class="chart-wrap" style="position:relative;height:280px"><canvas id="j-equity-canvas"></canvas></div>
+      <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;font-size:12px;justify-content:center">
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:#7C3AED;border-radius:2px"></span>Equity</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:#F87171;border-radius:2px"></span>Drawdown</span>
+      </div>
     </div>
   </section>
 
-  <!-- Form ajout trade -->
+  <!-- Histogramme P&L + R cumulés en grille 2 cols -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:24px;margin-bottom:24px">
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 14h12M4 14V9M8 14V5M12 14V8"/></svg></div>Distribution P&L</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="position:relative;height:240px"><canvas id="j-histo-canvas"></canvas></div>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 12 6 8 10 10 14 4"/></svg></div>R-multiples cumulés</div>
+        <div class="card-meta" id="j-rcurve-meta">—</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="position:relative;height:240px"><canvas id="j-rcurve-canvas"></canvas></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Heatmap mensuelle -->
   <section class="card" style="margin-bottom:24px">
     <div class="card-header">
-      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M8 3v10M3 8h10"/></svg></div>Ajouter un trade</div>
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M6 3v10M10 3v10"/></svg></div>Heatmap performance mensuelle</div>
+      <div class="card-meta" id="j-heatmap-meta">—</div>
     </div>
-    <div class="card-body">
-      <div class="j-form">
-        <div class="field"><label class="field-label">Instrument</label><input type="text" id="j-instrument" class="select" placeholder="EUR/USD, BTC, AAPL..." value="EUR/USD" /></div>
-        <div class="field"><label class="field-label">Sens</label><select class="select" id="j-side"><option value="long">Long (achat)</option><option value="short">Short (vente)</option></select></div>
-        <div class="field"><label class="field-label">Prix entrée</label><input type="number" id="j-entry" class="select" step="any" value="1.0850" /></div>
-        <div class="field"><label class="field-label">Prix sortie <span style="font-size:10px;color:var(--text-4)">(vide = ouvert)</span></label><input type="number" id="j-exit" class="select" step="any" placeholder="1.0900" /></div>
-        <div class="field"><label class="field-label">Taille (units)</label><input type="number" id="j-size" class="select" step="any" value="10000" /></div>
-        <div class="field"><label class="field-label">Stop loss</label><input type="number" id="j-stop" class="select" step="any" placeholder="optionnel" /></div>
-        <div class="field"><label class="field-label">Take profit</label><input type="number" id="j-tp" class="select" step="any" placeholder="optionnel" /></div>
-        <div class="field"><label class="field-label">Frais (€)</label><input type="number" id="j-fees" class="select" step="0.01" value="0" /></div>
-        <div class="field"><label class="field-label">Date entrée</label><input type="datetime-local" id="j-entry-date" class="select" /></div>
-        <div class="field"><label class="field-label">Stratégie</label><input type="text" id="j-strategy" class="select" placeholder="breakout, pullback, news..." /></div>
-        <div class="field" style="grid-column:span 2"><label class="field-label">Notes</label><input type="text" id="j-notes" class="select" placeholder="Trade idea, ce qui a marché ou non..." /></div>
-        <div class="field"><label class="field-label">A suivi le plan ?</label><select class="select" id="j-plan"><option value="">—</option><option value="true">Oui</option><option value="false">Non</option></select></div>
+    <div class="card-body" style="position:relative">
+      <div id="j-heatmap-wrap" style="overflow-x:auto"></div>
+      <div id="j-heatmap-tip" style="position:absolute;display:none;background:rgba(255,255,255,0.96);color:#0F172A;border:1px solid #E5E9EE;border-radius:8px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:50;box-shadow:0 4px 12px rgba(15,23,42,0.06), 0 12px 32px rgba(15,23,42,0.08);backdrop-filter:blur(8px) saturate(180%);-webkit-backdrop-filter:blur(8px) saturate(180%);white-space:nowrap"></div>
+    </div>
+  </section>
+
+  <!-- Breakdowns -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:24px">
+    <div class="breakdown-card">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-4);font-weight:700;margin-bottom:10px">Long vs Short</div>
+      <div id="bd-side"></div>
+    </div>
+    <div class="breakdown-card">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-4);font-weight:700;margin-bottom:10px">Plan suivi ?</div>
+      <div id="bd-plan"></div>
+    </div>
+    <div class="breakdown-card">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-4);font-weight:700;margin-bottom:10px">Par jour de semaine</div>
+      <div id="bd-dow"></div>
+    </div>
+  </div>
+
+  <!-- Form ajout trade en accordion -->
+  <section class="accordion open" id="form-trade" style="margin-bottom:24px">
+    <div class="accordion-header">
+      <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4v12M4 10h12" stroke-linecap="round"/></svg></div>
+      <div class="accordion-titles">
+        <div class="accordion-title">Ajouter / modifier un trade</div>
+        <div class="accordion-summary">Saisie rapide ou complète</div>
       </div>
-      <div style="margin-top:16px;display:flex;gap:10px">
-        <button class="btn btn-primary" id="j-btn-add"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 8h10M8 3v10"/></svg>Ajouter le trade</button>
-        <button class="btn btn-secondary" id="j-btn-reset" type="button">Réinitialiser</button>
+      <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 4l4 4-4 4"/></svg></div>
+            <div class="subsection-title">Identité du trade</div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label class="field-label">Instrument</label><input type="text" id="j-instrument" class="select" placeholder="EUR/USD, BTC, AAPL..." value="EUR/USD" /></div>
+            <div class="field"><label class="field-label">Sens</label>
+              <div class="pills" id="j-side-pills">
+                <button class="pill active" data-value="long" type="button">▲ Long</button>
+                <button class="pill" data-value="short" type="button">▼ Short</button>
+              </div>
+              <input type="hidden" id="j-side" value="long" />
+            </div>
+            <div class="field"><label class="field-label">Stratégie</label><input type="text" id="j-strategy" class="select" placeholder="breakout, pullback, news..." /></div>
+            <div class="field"><label class="field-label">Tags (séparés par virgule)</label><input type="text" id="j-tags" class="select" placeholder="A-setup, range, london-session" /></div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg></div>
+            <div class="subsection-title">Prix &amp; taille</div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label class="field-label">Prix entrée</label><input type="number" id="j-entry" class="select" step="any" value="1.0850" /></div>
+            <div class="field"><label class="field-label">Prix sortie <span style="font-size:10px;color:var(--text-4)">(vide = ouvert)</span></label><input type="number" id="j-exit" class="select" step="any" placeholder="1.0900" /></div>
+            <div class="field"><label class="field-label">Taille (units)</label><input type="number" id="j-size" class="select" step="any" value="10000" /></div>
+            <div class="field"><label class="field-label">Stop loss</label><input type="number" id="j-stop" class="select" step="any" placeholder="optionnel" /></div>
+            <div class="field"><label class="field-label">Take profit</label><input type="number" id="j-tp" class="select" step="any" placeholder="optionnel" /></div>
+            <div class="field"><label class="field-label">Frais (€)</label><input type="number" id="j-fees" class="select" step="0.01" value="0" /></div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M2 6h12M5 1v3M11 1v3"/></svg></div>
+            <div class="subsection-title">Contexte</div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label class="field-label">Date entrée</label><input type="datetime-local" id="j-entry-date" class="select" /></div>
+            <div class="field"><label class="field-label">Date sortie <span style="font-size:10px;color:var(--text-4)">(si clos)</span></label><input type="datetime-local" id="j-exit-date" class="select" /></div>
+            <div class="field"><label class="field-label">Plan respecté ?</label>
+              <div class="pills" id="j-plan-pills">
+                <button class="pill" data-value="" type="button">—</button>
+                <button class="pill" data-value="true" type="button">✓ Oui</button>
+                <button class="pill" data-value="false" type="button">✕ Non</button>
+              </div>
+              <input type="hidden" id="j-plan" value="" />
+            </div>
+            <div class="field field-full"><label class="field-label">Notes</label><input type="text" id="j-notes" class="select" placeholder="Trade idea, ce qui a marché ou non..." /></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" id="j-btn-add"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 8h10M8 3v10"/></svg>Ajouter le trade</button>
+          <button class="btn btn-primary" id="j-btn-save" type="button" style="display:none;background:#10B981">Sauvegarder modifs</button>
+          <button class="btn btn-secondary" id="j-btn-reset" type="button">Réinitialiser</button>
+          <button class="btn btn-secondary" id="j-btn-cancel" type="button" style="display:none">Annuler l'édition</button>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Tableau trades -->
-  <section class="card">
+  <!-- Tableau trades + filtres + export -->
+  <section class="card" style="margin-bottom:24px">
     <div class="card-header">
       <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 4h12M2 8h12M2 12h12"/></svg></div>Liste des trades</div>
       <div class="card-meta" id="j-count">0 trade</div>
     </div>
     <div class="card-body">
-      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-        <input type="search" id="j-filter" placeholder="Filtrer par instrument…" class="select" style="flex:1;min-width:200px" />
-        <select class="select" id="j-filter-status"><option value="all">Tous</option><option value="closed">Clos</option><option value="open">Ouverts</option><option value="win">Gagnants</option><option value="loss">Perdants</option></select>
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+        <input type="search" id="j-filter" placeholder="Filtrer par instrument, stratégie, tag…" class="select" style="flex:1;min-width:200px" />
+        <select class="select" id="j-filter-status" style="flex:0 0 auto"><option value="all">Tous statuts</option><option value="closed">Clos</option><option value="open">Ouverts</option><option value="win">Gagnants</option><option value="loss">Perdants</option></select>
+        <input type="month" id="j-filter-month" class="select" style="flex:0 0 auto" />
+        <button class="btn btn-secondary" id="j-btn-export" type="button" style="flex:0 0 auto">⬇ Export CSV</button>
+        <button class="btn btn-secondary" id="j-btn-import" type="button" style="flex:0 0 auto">⬆ Import CSV</button>
+        <input type="file" id="j-import-file" accept=".csv" style="display:none" />
       </div>
-      <div class="table-scroll" style="max-height:480px">
+      <div class="table-scroll" style="max-height:520px">
         <table class="data-table">
-          <thead><tr><th>Date</th><th>Instrument</th><th>Sens</th><th>Entrée</th><th>Sortie</th><th>Taille</th><th>P&amp;L</th><th>Stratégie</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>Instrument</th><th>Sens</th><th>Entrée</th><th>Sortie</th><th>Taille</th><th>R</th><th>P&amp;L</th><th>Stratégie</th><th></th></tr></thead>
           <tbody id="j-tbody"></tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- Breakdown par instrument -->
-  <section class="card" style="margin-top:24px">
-    <div class="card-header"><div class="card-title">Performance par instrument</div></div>
-    <div class="card-body"><div class="table-scroll"><table class="data-table"><thead><tr><th>Instrument</th><th>Trades</th><th>Winrate</th><th>P&amp;L total</th><th>P&amp;L moyen</th></tr></thead><tbody id="j-tbody-by-instr"></tbody></table></div></div>
-  </section>
+  <!-- Breakdown par instrument + stratégie -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px;margin-bottom:24px">
+    <section class="card">
+      <div class="card-header"><div class="card-title">Performance par instrument</div></div>
+      <div class="card-body"><div class="table-scroll" style="max-height:300px"><table class="data-table"><thead><tr><th>Instrument</th><th>N</th><th>WR</th><th>P&amp;L</th><th>Avg</th></tr></thead><tbody id="j-tbody-by-instr"></tbody></table></div></div>
+    </section>
+    <section class="card">
+      <div class="card-header"><div class="card-title">Performance par stratégie</div></div>
+      <div class="card-body"><div class="table-scroll" style="max-height:300px"><table class="data-table"><thead><tr><th>Stratégie</th><th>N</th><th>WR</th><th>P&amp;L</th><th>Avg</th></tr></thead><tbody id="j-tbody-by-strat"></tbody></table></div></div>
+    </section>
+  </div>
 
   <section class="card" style="margin-top:24px">
     <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
-      <strong>Persistance</strong> : si vous êtes connecté avec un compte CalcInvest, vos trades sont synchronisés via Supabase (chiffrement TLS, RLS row-level activé — chaque user ne voit que ses trades). Sans compte, le journal vit en localStorage du navigateur (limité, pas de sync inter-appareils).
-      <br/><strong>Calculs</strong> : Expectancy = (winrate × avg_win) − (lossrate × |avg_loss|). Profit Factor = gains totaux / pertes totales. Sharpe annualisé approximé en supposant 252 jours de trading/an.
-      <br/><strong>Schema Supabase</strong> : à exécuter dans le SQL Editor du projet → <code>scripts/supabase_migrations/001_trades.sql</code>
+      <strong>Persistance</strong> : si vous êtes connecté avec un compte CalcInvest, vos trades sont synchronisés via Supabase (TLS + RLS row-level — chaque user ne voit que ses trades). Sans compte, le journal vit en localStorage du navigateur.
+      <br/><br/>
+      <strong>Stats expliquées</strong> :
+      <ul style="margin:8px 0 0 18px">
+        <li><strong>R-multiple</strong> : ratio P&L / risque initial (stop loss). 2R = vous avez gagné 2× ce que vous risquiez. Avg R > 0.3 = solide.</li>
+        <li><strong>Profit factor</strong> : gains totaux / pertes totales. PF > 1.5 = bon, > 2 = excellent.</li>
+        <li><strong>Payoff ratio</strong> : avg win ÷ |avg loss|. Combien vous gagnez vs perdez en moyenne. > 1.5 = R/R favorable.</li>
+        <li><strong>Recovery factor</strong> : profit total ÷ max drawdown. > 2 = solide.</li>
+        <li><strong>Ulcer Index</strong> : mesure la "douleur" moyenne du drawdown. Plus c'est bas, plus l'equity est lisse.</li>
+        <li><strong>Expectancy</strong> : (winrate × avg_win) − (lossrate × |avg_loss|). Le gain attendu par trade.</li>
+        <li><strong>Sharpe annualisé</strong> : approximation pour 252 jours/an de trading. > 1 = bon.</li>
+      </ul>
+      <br/>
+      <strong>Import CSV</strong> : format minimal attendu — colonnes <code>instrument,side,entry_price,exit_price,size,stop_loss,fees,entry_date,exit_date,strategy,notes</code>. Compatible export brut MT4/MT5/IBKR après ajustement des en-têtes.
+      <br/><strong>Schema Supabase</strong> : à exécuter dans le SQL Editor → <code>scripts/supabase_migrations/001_trades.sql</code>
     </div>
   </section>
 </main>
 
-<footer class="footer"><div>Journal persistant + stats avancées</div><div><a href="/">Accueil</a> · <a href="/calculateur-risk-management">Risk Mgmt</a> · <a href="/calculateur-pips">PIPS</a></div></footer>
+<footer class="footer"><div>Journal persistant + stats avancées · Export CSV</div><div><a href="/">Accueil</a> · <a href="/calculateur-risk-management">Risk Mgmt</a> · <a href="/calculateur-pips">PIPS</a></div></footer>
 
 <script src="/assets/js/common.js"></script>
 <script src="/assets/js/auth.js"></script>

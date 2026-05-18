@@ -11,6 +11,45 @@
     return Number.isFinite(n) ? n : (fb || 0);
   }
 
+  function emptyGroup() {
+    return { count: 0, wins: 0, pnl: 0, winrate: 0, avgPnl: 0 };
+  }
+
+  function addToGroup(g, t) {
+    g.count++;
+    g.pnl += t.pnl;
+    if (t.pnl > 0) g.wins++;
+  }
+
+  function finalizeGroup(g) {
+    g.winrate = g.count > 0 ? (g.wins / g.count) * 100 : 0;
+    g.avgPnl = g.count > 0 ? g.pnl / g.count : 0;
+    return g;
+  }
+
+  /**
+   * Calcule le R-multiple d'un trade : (pnl - 0) / risk_initial
+   * où risk_initial = |entry - stop_loss| × size
+   */
+  function rMultipleOf(t) {
+    if (t.stop_loss == null || t.entry_price == null || t.size == null) return null;
+    const riskPerUnit = Math.abs(t.entry_price - t.stop_loss);
+    const risk = riskPerUnit * t.size;
+    if (risk <= 0) return null;
+    return t.pnl / risk;
+  }
+
+  /**
+   * Durée de hold en heures.
+   */
+  function holdHoursOf(t) {
+    if (!t.entry_date || !t.exit_date) return null;
+    const a = new Date(t.entry_date).getTime();
+    const b = new Date(t.exit_date).getTime();
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+    return Math.max(0, (b - a) / 36e5);
+  }
+
   /**
    * Calcule le P&L d'un trade clôturé.
    * Renvoie aussi le P&L en % si stopLoss fourni (R-multiple).
@@ -35,14 +74,18 @@
     const closed = trades.filter(t => t.exit_price != null && t.pnl != null);
     if (closed.length === 0) {
       return {
-        nbTrades: 0, nbClosed: 0, nbWins: 0, nbLosses: 0,
+        nbTrades: trades.length || 0, nbClosed: 0, nbOpen: trades.length || 0, nbWins: 0, nbLosses: 0,
         winrate: 0, totalPnl: 0, avgWin: 0, avgLoss: 0,
-        expectancy: 0, profitFactor: 0,
+        expectancy: 0, profitFactor: 0, payoffRatio: 0, recoveryFactor: 0, ulcerIndex: 0,
         biggestWin: 0, biggestLoss: 0,
         maxDrawdown: 0, maxDrawdownPct: 0,
-        equityCurve: [],
+        equityCurve: [], rCurve: [],
         consecutiveWins: 0, consecutiveLosses: 0,
-        sharpe: 0
+        sharpe: 0,
+        avgRMultiple: null, nbWithR: 0,
+        avgHoldTime: null,
+        bySide: { long: emptyGroup(), short: emptyGroup() },
+        byPlan: { yes: emptyGroup(), no: emptyGroup(), unknown: emptyGroup() }
       };
     }
 
@@ -105,6 +148,48 @@
     const std = Math.sqrt(variance);
     const sharpe = std > 0 ? (mean / std) * Math.sqrt(252) : 0;
 
+    // Payoff ratio = avgWin / |avgLoss| (différent du profit factor)
+    const payoffRatio = avgLoss !== 0 ? avgWin / Math.abs(avgLoss) : (avgWin > 0 ? Infinity : 0);
+
+    // Recovery factor = totalPnl / maxDD
+    const recoveryFactor = maxDD > 0 ? totalPnl / maxDD : (totalPnl > 0 ? Infinity : 0);
+
+    // Ulcer Index (Peter Martin) : sqrt(mean(drawdown_pct²))
+    const ddPcts = equityCurve.map(p => p.peak > 0 ? (p.drawdown / p.peak * 100) : 0);
+    const ulcerIndex = ddPcts.length > 0
+      ? Math.sqrt(ddPcts.reduce((s, x) => s + x*x, 0) / ddPcts.length)
+      : 0;
+
+    // R-multiples (filtre trades avec stop loss)
+    const rValues = closed.map(t => rMultipleOf(t)).filter(r => r != null && Number.isFinite(r));
+    const avgR = rValues.length > 0 ? rValues.reduce((s, x) => s + x, 0) / rValues.length : null;
+
+    // R cumulative curve
+    let rCum = 0;
+    const rCurve = closed.map((t, i) => {
+      const r = rMultipleOf(t);
+      if (r != null && Number.isFinite(r)) rCum += r;
+      return { i: i + 1, r: r, cumulative: rCum, date: t.exit_date || t.entry_date };
+    });
+
+    // Hold time moyen
+    const holds = closed.map(t => holdHoursOf(t)).filter(h => h != null);
+    const avgHoldTime = holds.length ? holds.reduce((s, x) => s + x, 0) / holds.length : null;
+
+    // Breakdowns
+    const bySide = { long: emptyGroup(), short: emptyGroup() };
+    const byPlan = { yes: emptyGroup(), no: emptyGroup(), unknown: emptyGroup() };
+    closed.forEach(t => {
+      const side = t.side === 'short' ? 'short' : 'long';
+      addToGroup(bySide[side], t);
+      let planKey = 'unknown';
+      if (t.followed_plan === true || t.followed_plan === 'true') planKey = 'yes';
+      else if (t.followed_plan === false || t.followed_plan === 'false') planKey = 'no';
+      addToGroup(byPlan[planKey], t);
+    });
+    finalizeGroup(bySide.long); finalizeGroup(bySide.short);
+    finalizeGroup(byPlan.yes); finalizeGroup(byPlan.no); finalizeGroup(byPlan.unknown);
+
     return {
       nbTrades: trades.length,
       nbClosed: closed.length,
@@ -112,14 +197,55 @@
       nbWins: wins.length, nbLosses: losses.length,
       winrate, totalPnl,
       avgWin, avgLoss,
-      expectancy, profitFactor,
+      expectancy, profitFactor, payoffRatio, recoveryFactor, ulcerIndex,
       biggestWin, biggestLoss,
       maxDrawdown: maxDD, maxDrawdownPct: maxDDPct,
-      equityCurve,
+      equityCurve, rCurve,
       consecutiveWins: maxWinStreak,
       consecutiveLosses: maxLossStreak,
-      sharpe
+      sharpe,
+      avgRMultiple: avgR, nbWithR: rValues.length,
+      avgHoldTime,
+      bySide, byPlan
     };
+  }
+
+  /**
+   * Heatmap performance : agrégation P&L par mois × année.
+   * Renvoie une matrice { years: [...], months: [0..11], cells: { 'YYYY-MM': { pnl, count } } }
+   */
+  function monthlyHeatmap(trades) {
+    const closed = trades.filter(t => t.exit_price != null && t.pnl != null);
+    const cells = {};
+    const yearsSet = new Set();
+    closed.forEach(t => {
+      const d = new Date(t.exit_date || t.entry_date);
+      if (isNaN(d)) return;
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const key = y + '-' + String(m+1).padStart(2,'0');
+      yearsSet.add(y);
+      if (!cells[key]) cells[key] = { pnl: 0, count: 0, wins: 0 };
+      cells[key].pnl += t.pnl;
+      cells[key].count++;
+      if (t.pnl > 0) cells[key].wins++;
+    });
+    const years = Array.from(yearsSet).sort();
+    return { years, cells, totalMonths: Object.keys(cells).length };
+  }
+
+  /**
+   * Stats par jour de semaine (lun=1, dim=0).
+   */
+  function byDayOfWeek(trades) {
+    const closed = trades.filter(t => t.exit_price != null && t.pnl != null);
+    const groups = [0,1,2,3,4,5,6].map(() => emptyGroup());
+    closed.forEach(t => {
+      const d = new Date(t.entry_date);
+      if (isNaN(d)) return;
+      addToGroup(groups[d.getDay()], t);
+    });
+    return groups.map(finalizeGroup);
   }
 
   /**
@@ -170,7 +296,7 @@
     })).sort((a, b) => b.pnl - a.pnl);
   }
 
-  const api = { tradePnl, stats, pnlDistribution, breakdown };
+  const api = { tradePnl, stats, pnlDistribution, breakdown, monthlyHeatmap, byDayOfWeek, rMultipleOf, holdHoursOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.JOURNAL = api;
 })(typeof window !== 'undefined' ? window : globalThis);
