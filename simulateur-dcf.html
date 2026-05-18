@@ -378,19 +378,34 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Marge FCF <span class="field-hint">FCF / CA</span></div>
-                <div class="stepper" data-min="0" data-max="80" data-step="1">
+                <div class="field-label">Marge FCF <span class="field-hint">FCF / CA actuel — peut être négatif</span></div>
+                <div class="stepper" data-min="-50" data-max="80" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-fcf-margin" type="number" value="20" />
                   <span class="stepper-unit">%</span>
                   <button class="stepper-btn" data-act="plus">+</button>
                 </div>
                 <div class="pills" data-target="dcf-fcf-margin">
+                  <button class="pill" data-val="-10">-10 (perte)</button>
                   <button class="pill" data-val="10">10</button>
-                  <button class="pill" data-val="15">15</button>
                   <button class="pill" data-val="20">20</button>
-                  <button class="pill" data-val="25">25</button>
                   <button class="pill" data-val="30">30</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">Marge FCF cible (an 10) <span class="field-hint">convergence à long terme</span></div>
+                <div class="stepper" data-min="1" data-max="80" data-step="1">
+                  <button class="stepper-btn" data-act="minus">−</button>
+                  <input class="stepper-input" id="dcf-fcf-margin-target" type="number" value="20" />
+                  <span class="stepper-unit">%</span>
+                  <button class="stepper-btn" data-act="plus">+</button>
+                </div>
+                <div class="pills" data-target="dcf-fcf-margin-target">
+                  <button class="pill" data-val="10">10 (industrie)</button>
+                  <button class="pill" data-val="15">15</button>
+                  <button class="pill" data-val="20">20 (SaaS)</button>
+                  <button class="pill" data-val="30">30 (tech mature)</button>
                 </div>
               </div>
 

@@ -29,24 +29,37 @@
     const g1   = p.growthPhase1 / 100;
     const g2   = p.growthPhase2 / 100;
     const fcfM = p.fcfMargin / 100;
+    // Marge FCF cible (an 10). Si non précisée ou identique → marge constante.
+    // Permet de modéliser la convergence d'une entreprise non rentable vers la rentabilité.
+    const fcfMTarget = (p.fcfMarginTarget != null && !isNaN(p.fcfMarginTarget))
+      ? p.fcfMarginTarget / 100
+      : fcfM;
 
     // Validation
     if (wacc <= tg)     return { error: 'Le WACC doit être supérieur au taux de croissance terminal.' };
     if (p.revenue <= 0) return { error: 'Les revenus doivent être positifs.' };
     if (p.shares  <= 0) return { error: 'Le nombre d\'actions doit être positif.' };
-    if (fcfM < 0)       return { error: 'La marge FCF ne peut pas être négative.' };
     if (wacc <= 0)      return { error: 'Le WACC doit être positif.' };
+    // NB : marge FCF peut être NÉGATIVE pour entreprises non rentables.
+    // On valide juste la convergence terminale.
+    if (fcfMTarget <= 0) {
+      return { error: 'La marge FCF cible (an 10) doit être positive pour générer une valeur terminale exploitable. Augmentez-la ou ne calculez pas le DCF pour cette société.' };
+    }
 
     const fcfYears     = [];   // FCF brut par an (M€)
     const pvFcfYears   = [];   // PV de chaque FCF (M€)
     const revenueYears = [];   // Revenus projetés par an (M€)
+    const marginYears  = [];   // Marge FCF projetée par an (utile pour debug/insight)
     let   revenue      = p.revenue;
 
     // Phase 1 : années 1-5
     for (let y = 1; y <= 5; y++) {
       revenue = revenue * (1 + g1);
       revenueYears.push(revenue);
-      const fcf = revenue * fcfM;
+      // Interpolation linéaire fcfM → fcfMTarget sur 10 ans
+      const margin = fcfM + (fcfMTarget - fcfM) * (y / 10);
+      marginYears.push(margin);
+      const fcf = revenue * margin;
       fcfYears.push(fcf);
       pvFcfYears.push(fcf / Math.pow(1 + wacc, y));
     }
@@ -55,7 +68,9 @@
     for (let y = 6; y <= 10; y++) {
       revenue = revenue * (1 + g2);
       revenueYears.push(revenue);
-      const fcf = revenue * fcfM;
+      const margin = fcfM + (fcfMTarget - fcfM) * (y / 10);
+      marginYears.push(margin);
+      const fcf = revenue * margin;
       fcfYears.push(fcf);
       pvFcfYears.push(fcf / Math.pow(1 + wacc, y));
     }
@@ -99,6 +114,7 @@
 
     return {
       revenueYears,
+      marginYears,
       fcfYears,
       pvFcfYears,
       terminalValue:    Math.round(terminalValue),
@@ -205,7 +221,7 @@
     const bear = Object.assign({}, p, {
       growthPhase1:   Math.max(-30, p.growthPhase1 - 5),
       growthPhase2:   Math.max(-15, p.growthPhase2 - 3),
-      fcfMargin:      Math.max(0,   p.fcfMargin    - 5),
+      fcfMargin:      p.fcfMargin - 5,
       wacc:           Math.min(25,  p.wacc         + 2),
       terminalGrowth: Math.max(0,   p.terminalGrowth - 0.5)
     });

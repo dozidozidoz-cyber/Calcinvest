@@ -51,6 +51,7 @@
       growthPhase1:   val('dcf-g1'),
       growthPhase2:   val('dcf-g2'),
       fcfMargin:      val('dcf-fcf-margin'),
+      fcfMarginTarget: (function(){ const el = $('dcf-fcf-margin-target'); if (!el) return null; const v = parseFloat(el.value); return Number.isFinite(v) ? v : null; })(),
       wacc:           val('dcf-wacc'),
       terminalGrowth: val('dcf-tg'),
       netDebt:        val('dcf-net-debt'),
@@ -515,7 +516,13 @@
     if (d.revenueTTM) setN('dcf-revenue', d.revenueTTM / M, 0);
 
     // FCF margin %
-    if (d.fcfMargin != null) setN('dcf-fcf-margin', d.fcfMargin, 1);
+    if (d.fcfMargin != null) {
+      setN('dcf-fcf-margin', d.fcfMargin, 1);
+      // Marge cible an 10 : si la marge actuelle est négative ou faible (<5%),
+      // on propose 15% (moyenne tech mature). Sinon on garde la marge actuelle.
+      const target = d.fcfMargin < 5 ? 15 : Math.max(d.fcfMargin, 10);
+      setN('dcf-fcf-margin-target', target, 1);
+    }
 
     // Croissance phase 1 : on prend l'estimate à 1-5 ans si dispo, sinon CAGR historique
     const g1 = d.growth5yEstimate != null ? d.growth5yEstimate
@@ -582,7 +589,7 @@
     }
 
     // Re-run sur tous les steppers + selects + champs texte (company, ticker)
-    ['dcf-company','dcf-ticker','dcf-revenue','dcf-g1','dcf-g2','dcf-fcf-margin','dcf-wacc','dcf-tg',
+    ['dcf-company','dcf-ticker','dcf-revenue','dcf-g1','dcf-g2','dcf-fcf-margin','dcf-fcf-margin-target','dcf-wacc','dcf-tg',
      'dcf-net-debt','dcf-shares','dcf-price'].forEach(id => {
       const el = $(id);
       if (!el) return;
