@@ -1,7 +1,6 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "buildCommand": "npm run vercel-build",
   "redirects": [
     { "source": "/comparateur-brokers", "destination": "/blog/comparateur-brokers", "permanent": true }
   ],
