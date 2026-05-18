@@ -447,6 +447,101 @@
   }
 
   // ─── INIT ───────────────────────────────────────────────
+  // ─── AUTO-FILL depuis Yahoo Finance via /api/fundamentals ─────
+  async function autoFill() {
+    const tickerEl = $('dcf-ticker');
+    const statusEl = $('dcf-autofill-status');
+    const btn = $('dcf-autofill');
+    if (!tickerEl) return;
+    const ticker = (tickerEl.value || '').trim().toUpperCase();
+    if (!ticker) {
+      if (statusEl) { statusEl.textContent = '⚠ Entrez un ticker'; statusEl.style.color = 'var(--red)'; }
+      tickerEl.focus();
+      return;
+    }
+    if (statusEl) { statusEl.textContent = '⏳ Récupération…'; statusEl.style.color = 'var(--text-3)'; }
+    if (btn) btn.disabled = true;
+    try {
+      const r = await fetch('/api/fundamentals?ticker=' + encodeURIComponent(ticker), {
+        headers: { 'Accept': 'application/json' }
+      });
+      const data = await r.json();
+      if (!r.ok || data.error) {
+        throw new Error(data.error || 'Erreur ' + r.status);
+      }
+      applyFundamentals(data);
+      if (statusEl) {
+        statusEl.style.color = 'var(--accent)';
+        const asOf = new Date(data.asOf * 1000).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+        statusEl.textContent = '✓ Rempli auto depuis ' + (data.exchange || 'Yahoo') + ' · ' + asOf;
+      }
+      if (window.CI && window.CI.toast) {
+        window.CI.toast('Données récupérées : ' + (data.name || ticker), 'success', 2500);
+      }
+    } catch (e) {
+      console.error('[dcf autofill]', e);
+      if (statusEl) {
+        statusEl.style.color = 'var(--red)';
+        statusEl.textContent = '✗ ' + (e.message || 'Échec');
+      }
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function applyFundamentals(d) {
+    // Conversion : tous les revenus/dette en M€ (la UI attend des millions)
+    // Yahoo donne en unités brutes (1B€ = 1e9). On divise par 1e6 → millions.
+    const M = 1_000_000;
+    const setN = (id, v, decimals) => {
+      const el = $(id);
+      if (!el || v == null || !Number.isFinite(v)) return;
+      el.value = decimals != null ? Number(v).toFixed(decimals) : Math.round(v);
+      el.dataset.auto = '1';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    const setS = (id, v) => {
+      const el = $(id);
+      if (!el || !v) return;
+      el.value = v;
+      el.dataset.auto = '1';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
+    // Identité
+    setS('dcf-company', d.name);
+
+    // Revenus TTM en M€
+    if (d.revenueTTM) setN('dcf-revenue', d.revenueTTM / M, 0);
+
+    // FCF margin %
+    if (d.fcfMargin != null) setN('dcf-fcf-margin', d.fcfMargin, 1);
+
+    // Croissance phase 1 : on prend l'estimate à 1-5 ans si dispo, sinon CAGR historique
+    const g1 = d.growth5yEstimate != null ? d.growth5yEstimate
+              : (d.growth1yEstimate != null ? d.growth1yEstimate
+              : (d.cagrRevenue5y != null ? d.cagrRevenue5y : null));
+    if (g1 != null) setN('dcf-g1', Math.min(40, Math.max(-20, g1)), 1);
+
+    // Croissance phase 2 : moyenne entre g1 et terminal (2.5%)
+    if (g1 != null) setN('dcf-g2', Math.max(3, g1 * 0.5), 1);
+
+    // Net debt en M€
+    if (Number.isFinite(d.netDebt)) setN('dcf-net-debt', d.netDebt / M, 0);
+
+    // Shares outstanding en millions
+    if (d.sharesOutstanding) setN('dcf-shares', d.sharesOutstanding / M, 0);
+
+    // Prix actuel
+    if (d.price) setN('dcf-price', d.price, 2);
+
+    // WACC : on laisse la valeur courante (utilisateur ajustera selon beta)
+    // Si beta dispo, on peut suggérer dans le tooltip plus tard
+
+    // Trigger run
+    if (typeof run === 'function') run();
+  }
+
   function init() {
     if (window.CI && window.CI.initAll) window.CI.initAll();
 
@@ -475,6 +570,15 @@
         if (!lastParams) run();
         window.CI.copyShareUrl();
       });
+    }
+
+    // Auto-fill button → fetch /api/fundamentals
+    const autoBtn = $('dcf-autofill');
+    if (autoBtn) {
+      autoBtn.addEventListener('click', autoFill);
+      // Aussi sur Enter dans le champ ticker
+      const tk = $('dcf-ticker');
+      if (tk) tk.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); autoFill(); } });
     }
 
     // Re-run sur tous les steppers + selects + champs texte (company, ticker)

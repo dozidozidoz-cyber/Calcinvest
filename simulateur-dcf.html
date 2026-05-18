@@ -337,9 +337,17 @@
                   style="width:100%;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);box-shadow:var(--shadow-sm)" />
               </div>
               <div class="field">
-                <div class="field-label">Ticker</div>
-                <input id="dcf-ticker" type="text" placeholder="ex : AXON" autocomplete="off"
-                  style="width:100%;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);text-transform:uppercase;font-family:var(--font-mono);box-shadow:var(--shadow-sm)" />
+                <div class="field-label">Ticker <span class="field-hint">ex : AAPL · AIR.PA · NESN.SW</span></div>
+                <div style="display:flex;gap:8px">
+                  <input id="dcf-ticker" type="text" placeholder="AAPL, AIR.PA, MSFT…" autocomplete="off"
+                    style="flex:1;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);text-transform:uppercase;font-family:var(--font-mono);box-shadow:var(--shadow-sm)" />
+                  <button type="button" id="dcf-autofill" title="Remplir auto depuis Yahoo Finance"
+                    style="padding:11px 16px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--r);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-family:inherit">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M14 8A6 6 0 1 1 8 2"/><polyline points="14 2 14 6 10 6"/></svg>
+                    Auto
+                  </button>
+                </div>
+                <div id="dcf-autofill-status" style="margin-top:6px;font-size:11px;font-family:var(--font-mono);color:var(--text-4);min-height:14px"></div>
               </div>
             </div>
           </div>
