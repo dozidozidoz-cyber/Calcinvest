@@ -89,17 +89,33 @@
     </div>
   </section>
 
+  <!-- Chart prix + MA10 -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div>Prix vs MM 10 mois</div>
+      <div class="card-meta" id="reg-chart-meta">—</div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap" style="position:relative;height:280px"><canvas id="reg-chart"></canvas></div>
+      <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;font-size:12px;justify-content:center">
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:var(--text);border-radius:2px"></span>Prix</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:#A855F7;border-radius:2px"></span>MM 10 mois (≈ MA200 jours)</span>
+      </div>
+    </div>
+  </section>
+
   <!-- Timeline historique -->
   <section class="card" style="margin-bottom:24px">
     <div class="card-header">
       <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg></div>Carte historique des régimes</div>
       <div class="card-meta" id="reg-timeline-meta">—</div>
     </div>
-    <div class="card-body">
-      <div class="timeline-bar" id="reg-timeline" style="margin-bottom:8px"></div>
+    <div class="card-body" style="position:relative">
+      <div class="timeline-bar" id="reg-timeline" style="margin-bottom:8px;cursor:crosshair"></div>
       <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-4);font-family:var(--font-mono)" id="reg-timeline-axis">
         <span>—</span><span>—</span>
       </div>
+      <div id="reg-timeline-tip" style="position:absolute;display:none;background:rgba(255,255,255,0.96);color:#0F172A;border:1px solid #E5E9EE;border-radius:8px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:50;box-shadow:0 4px 12px rgba(15,23,42,0.06), 0 12px 32px rgba(15,23,42,0.08);backdrop-filter:blur(8px) saturate(180%);-webkit-backdrop-filter:blur(8px) saturate(180%);white-space:nowrap"></div>
       <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:12px">
         <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#10B981;border-radius:3px"></span>Bull</span>
         <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#DC2626;border-radius:3px"></span>Bear</span>
@@ -172,6 +188,11 @@
     return `<div class="regime-badge regime-${regime}"><span class="regime-pulse"></span>${meta.label}</div>`;
   }
 
+  function fmtMonthYear(date) {
+    const months = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+    return months[date.getMonth()] + ' ' + date.getFullYear();
+  }
+
   function renderTimeline(history, startDate) {
     if (!history.length) return;
     const tl = $('reg-timeline');
@@ -180,28 +201,87 @@
     let curStart = 0;
     for (let i = 1; i < history.length; i++) {
       if (history[i].regime !== curReg) {
-        segs.push({ regime: curReg, length: i - curStart });
+        segs.push({ regime: curReg, startIdx: curStart, length: i - curStart });
         curReg = history[i].regime;
         curStart = i;
       }
     }
-    segs.push({ regime: curReg, length: history.length - curStart });
+    segs.push({ regime: curReg, startIdx: curStart, length: history.length - curStart });
     const total = history.length;
-    tl.innerHTML = segs.map(s => {
+    const baseDate = startDate ? new Date(startDate + '-01') : null;
+    tl.innerHTML = segs.map((s, i) => {
       const meta = REGIME.REGIME_META[s.regime] || REGIME.REGIME_META.unknown;
       const pct = (s.length / total * 100).toFixed(2);
-      return `<div title="${meta.label} · ${s.length} mois" style="background:${meta.color};width:${pct}%;height:100%"></div>`;
+      let segLabel = meta.label;
+      if (baseDate) {
+        const ds = new Date(baseDate); ds.setMonth(ds.getMonth() + s.startIdx);
+        const de = new Date(baseDate); de.setMonth(de.getMonth() + s.startIdx + s.length - 1);
+        segLabel = `${meta.label} · ${fmtMonthYear(ds)} → ${fmtMonthYear(de)} · ${s.length} mois`;
+      } else {
+        segLabel = `${meta.label} · ${s.length} mois`;
+      }
+      return `<div data-seg="${i}" data-label="${segLabel}" data-color="${meta.color}" style="background:${meta.color};width:${pct}%;height:100%"></div>`;
     }).join('');
+
+    // Hover tooltip enrichi (au-dessus du title natif)
+    const tip = $('reg-timeline-tip');
+    tl.onmousemove = function(e) {
+      const target = e.target.closest('[data-seg]');
+      if (!target) { tip.style.display = 'none'; return; }
+      const label = target.dataset.label;
+      const color = target.dataset.color;
+      tip.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:2px;background:${color}"></span><span style="font-weight:600">${label}</span></div>`;
+      tip.style.display = 'block';
+      const tlRect = tl.getBoundingClientRect();
+      const wrapRect = tl.parentElement.getBoundingClientRect();
+      const x = e.clientX - wrapRect.left;
+      const y = e.clientY - wrapRect.top;
+      const tipW = tip.offsetWidth;
+      let left = x + 14;
+      if (left + tipW > wrapRect.width - 8) left = x - tipW - 14;
+      tip.style.left = Math.max(4, left) + 'px';
+      tip.style.top = (y - tip.offsetHeight - 10) + 'px';
+    };
+    tl.onmouseleave = function() { tip.style.display = 'none'; };
+
     // Axis labels
-    if (startDate) {
-      const start = new Date(startDate + '-01');
-      const endIdx = total - 1;
-      const end = new Date(start);
-      end.setMonth(end.getMonth() + endIdx);
+    if (baseDate) {
+      const end = new Date(baseDate); end.setMonth(end.getMonth() + total - 1);
       $('reg-timeline-axis').innerHTML =
-        `<span>${start.getFullYear()}</span><span>${end.getFullYear()}</span>`;
+        `<span>${baseDate.getFullYear()}</span><span>${end.getFullYear()}</span>`;
     }
     $('reg-timeline-meta').textContent = total + ' mois analysés';
+  }
+
+  function buildMA(prices, period) {
+    const out = [];
+    for (let i = 0; i < prices.length; i++) {
+      if (i < period - 1) { out.push(null); continue; }
+      let sum = 0;
+      for (let k = 0; k < period; k++) sum += prices[i-k];
+      out.push(sum / period);
+    }
+    return out;
+  }
+
+  function renderPriceChart(prices, startDate) {
+    const n = prices.length;
+    const labels = new Array(n);
+    if (startDate) {
+      const start = new Date(startDate + '-01');
+      for (let i = 0; i < n; i++) {
+        const d = new Date(start); d.setMonth(d.getMonth() + i);
+        labels[i] = d.getFullYear().toString();
+      }
+    } else {
+      for (let i = 0; i < n; i++) labels[i] = 'M' + i;
+    }
+    const ma10 = buildMA(prices, 10);
+    CI.drawChart('reg-chart', labels, [
+      { label: 'Prix', data: prices, color: '#0F172A', width: 1.8 },
+      { label: 'MM 10m', data: ma10, color: '#A855F7', width: 1.6 }
+    ], { yFormat: v => CI.fmtCompact(v) });
+    $('reg-chart-meta').textContent = `${n} mois · ${startDate || '—'} → présent`;
   }
 
   function renderStats(stats) {
@@ -268,6 +348,7 @@
       $('reg-vol').textContent = fmtPa(s.annualVol);
       $('reg-vol').style.color = s.annualVol > 25 ? '#A855F7' : (s.annualVol > 18 ? '#FBBF24' : '#10B981');
 
+      renderPriceChart(prices, startDate);
       renderTimeline(res.history, startDate);
       renderStats(res.aggregateStats);
       renderTransitions(res.recentTransitions);

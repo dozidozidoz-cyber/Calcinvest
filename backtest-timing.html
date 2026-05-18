@@ -56,37 +56,87 @@
   </div>
 
   <!-- Paramètres -->
-  <section class="card" style="margin-bottom:24px">
-    <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
-      <div>
-        <label class="field-label">Indice</label>
-        <select id="bt-asset" class="input" style="width:100%">
-          <option value="sp500" selected>S&P 500</option>
-          <option value="cac40">CAC 40</option>
-          <option value="nasdaq">NASDAQ</option>
-          <option value="msci_world">MSCI World</option>
-          <option value="nikkei">Nikkei 225</option>
-        </select>
+  <section class="accordion open" id="params" style="margin-bottom:24px">
+    <div class="accordion-header">
+      <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+      <div class="accordion-titles">
+        <div class="accordion-title">Paramètres du backtest</div>
+        <div class="accordion-summary" id="bt-sum-params">—</div>
       </div>
-      <div>
-        <label class="field-label">Capital initial (€)</label>
-        <input id="bt-k0" type="number" class="input" value="10000" min="0" step="1000" />
+      <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+            <div class="subsection-title">Indice</div>
+          </div>
+          <div class="pills" id="bt-asset-pills">
+            <button class="pill active" data-value="sp500" type="button">S&P 500</button>
+            <button class="pill" data-value="cac40" type="button">CAC 40</button>
+            <button class="pill" data-value="nasdaq" type="button">NASDAQ</button>
+            <button class="pill" data-value="msci_world" type="button">MSCI World</button>
+            <button class="pill" data-value="nikkei" type="button">Nikkei 225</button>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg></div>
+            <div class="subsection-title">Combien ?</div>
+            <div class="subsection-hint">Capital initial et versements</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">Capital initial</label>
+              <div class="stepper" data-step="1000" data-min="0">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" type="number" id="bt-k0" value="10000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="bt-k0">
+                <button class="pill" data-value="0" type="button">0</button>
+                <button class="pill" data-value="5000" type="button">5k</button>
+                <button class="pill active" data-value="10000" type="button">10k</button>
+                <button class="pill" data-value="50000" type="button">50k</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Versement mensuel</label>
+              <div class="stepper" data-step="50" data-min="0">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" type="number" id="bt-monthly" value="200" />
+                <span class="stepper-unit">€/mois</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="bt-monthly">
+                <button class="pill" data-value="0" type="button">0</button>
+                <button class="pill" data-value="100" type="button">100</button>
+                <button class="pill active" data-value="200" type="button">200</button>
+                <button class="pill" data-value="500" type="button">500</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M2 6h12M5 1v3M11 1v3"/></svg></div>
+            <div class="subsection-title">Période de backtest</div>
+          </div>
+          <div class="pills" id="bt-period-pills">
+            <button class="pill" data-value="10" type="button">10 ans</button>
+            <button class="pill" data-value="20" type="button">20 ans</button>
+            <button class="pill active" data-value="30" type="button">30 ans</button>
+            <button class="pill" data-value="40" type="button">40 ans</button>
+            <button class="pill" data-value="0" type="button">Toute la période</button>
+          </div>
+        </div>
+
       </div>
-      <div>
-        <label class="field-label">Versement mensuel (€)</label>
-        <input id="bt-monthly" type="number" class="input" value="200" min="0" step="50" />
-      </div>
-      <div>
-        <label class="field-label">Période</label>
-        <select id="bt-period" class="input" style="width:100%">
-          <option value="10">10 dernières années</option>
-          <option value="20">20 dernières années</option>
-          <option value="30" selected>30 dernières années</option>
-          <option value="40">40 dernières années</option>
-          <option value="0">Toute la période</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" id="bt-run">Lancer le backtest</button>
     </div>
   </section>
 
@@ -106,7 +156,7 @@
       <div class="card-meta" id="bt-chart-meta">—</div>
     </div>
     <div class="card-body">
-      <svg id="bt-chart" viewBox="0 0 800 320" style="width:100%;height:auto;display:block;background:var(--bg);border-radius:var(--r-sm)"></svg>
+      <div class="chart-wrap" style="position:relative;height:340px"><canvas id="bt-chart"></canvas></div>
       <div id="bt-legend" style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:12px"></div>
     </div>
   </section>
@@ -158,35 +208,34 @@
     return await r.json();
   }
 
-  function renderChart(results) {
-    const svg = $('bt-chart');
-    const W=800, H=320, padL=60, padR=16, padT=14, padB=30;
-    const w=W-padL-padR, h=H-padT-padB;
+  let chartLabels = null; // mois → label "M+N"
+  function renderChart(results, startDate) {
     const keys = Object.keys(results);
-    if (!keys.length) { svg.innerHTML = ''; return; }
+    if (!keys.length) return;
     const n = results[keys[0]].equityCurve.length;
-    let allVals = [];
-    keys.forEach(k => results[k].equityCurve.forEach(p => allVals.push(p.value)));
-    const yMax = Math.max(...allVals);
-    const yMin = Math.min(...allVals);
-    const span = yMax - yMin || 1;
-    const xAt = i => padL + (i/(n-1))*w;
-    const yAt = v => padT + h - ((v - yMin)/span)*h;
-    let s = '';
-    for (let i=0;i<=4;i++){
-      const v = yMin + span*i/4, y = yAt(v);
-      s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
-      s += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${(v/1000).toFixed(0)}k€</text>`;
+    // Labels = années (YYYY) calculés depuis startDate ou "M+N"
+    chartLabels = new Array(n);
+    if (startDate) {
+      const start = new Date(startDate + '-01');
+      for (let i = 0; i < n; i++) {
+        const d = new Date(start); d.setMonth(d.getMonth() + i);
+        chartLabels[i] = d.getFullYear().toString();
+      }
+    } else {
+      for (let i = 0; i < n; i++) chartLabels[i] = 'M' + i;
     }
-    keys.forEach(k => {
+    const datasets = keys.map(k => {
       const meta = TIMING.STRATEGY_META[k];
-      const data = results[k].equityCurve;
-      let line = '';
-      data.forEach((p, i) => { line += (i?' L ':'M ') + xAt(i) + ' ' + yAt(p.value); });
-      const isBuyhold = k === 'buyhold';
-      s += `<path d="${line}" fill="none" stroke="${meta.color}" stroke-width="${isBuyhold?'2':'1.5'}" stroke-dasharray="${isBuyhold?'0':'0'}" opacity="${isBuyhold?'1':'0.85'}"/>`;
+      return {
+        label: meta.name,
+        data: results[k].equityCurve.map(p => p.value),
+        color: meta.color,
+        width: k === 'buyhold' ? 2.5 : 1.6
+      };
     });
-    svg.innerHTML = s;
+    CI.drawChart('bt-chart', chartLabels, datasets, {
+      yFormat: v => CI.fmtCompact(v)
+    });
     // Legend
     $('bt-legend').innerHTML = keys.map(k => {
       const meta = TIMING.STRATEGY_META[k];
@@ -235,25 +284,41 @@
     }
   }
 
+  const ASSET_NAMES = {
+    sp500: 'S&P 500', cac40: 'CAC 40', nasdaq: 'NASDAQ',
+    msci_world: 'MSCI World', nikkei: 'Nikkei 225'
+  };
+  let currentAsset = 'sp500';
+  let currentPeriod = 30;
+
   async function run() {
-    const assetId = $('bt-asset').value;
     const K0 = +$('bt-k0').value || 10000;
     const monthly = +$('bt-monthly').value || 0;
-    const years = +$('bt-period').value;
 
     try {
-      const data = await loadAsset(assetId);
+      const data = await loadAsset(currentAsset);
       let prices = data.prices;
-      if (years > 0) {
-        prices = prices.slice(-years * 12);
+      let startDate = data.start;
+      if (currentPeriod > 0 && prices.length > currentPeriod * 12) {
+        const offset = prices.length - currentPeriod * 12;
+        prices = prices.slice(-currentPeriod * 12);
+        // Décaler startDate
+        if (startDate) {
+          const d = new Date(startDate + '-01');
+          d.setMonth(d.getMonth() + offset);
+          startDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+        }
       }
       const results = TIMING.compareAll({ prices, K0, monthly });
       if (results.error) {
         $('bt-chart-meta').textContent = results.error;
         return;
       }
-      $('bt-chart-meta').textContent = `${prices.length} mois · ${(prices.length/12).toFixed(0)} ans`;
-      renderChart(results);
+      $('bt-chart-meta').textContent = `${prices.length} mois · ${(prices.length/12).toFixed(0)} ans · ${ASSET_NAMES[currentAsset]}`;
+      // Summary accordion
+      const periodLbl = currentPeriod === 0 ? 'toute la période' : currentPeriod + ' ans';
+      $('bt-sum-params').textContent = `${ASSET_NAMES[currentAsset]} · ${periodLbl} · ${K0.toLocaleString('fr-FR')} € + ${monthly} €/mois`;
+      renderChart(results, startDate);
       renderCards(results);
     } catch (e) {
       console.error(e);
@@ -261,12 +326,35 @@
     }
   }
 
-  $('bt-run').addEventListener('click', run);
-  ['bt-asset','bt-k0','bt-monthly','bt-period'].forEach(id => {
-    $(id).addEventListener('change', run);
+  // Pills asset
+  document.querySelectorAll('#bt-asset-pills .pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#bt-asset-pills .pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentAsset = btn.dataset.value;
+      run();
+    });
+  });
+  // Pills période
+  document.querySelectorAll('#bt-period-pills .pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#bt-period-pills .pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPeriod = +btn.dataset.value;
+      run();
+    });
+  });
+  // Steppers (auto-init via CI.initAll) + listeners
+  ['bt-k0','bt-monthly'].forEach(id => {
+    $(id).addEventListener('input', () => {
+      clearTimeout(window._btTimer);
+      window._btTimer = setTimeout(run, 300);
+    });
   });
 
-  run();
+  // Initial run après init des steppers
+  document.addEventListener('DOMContentLoaded', run);
+  if (document.readyState !== 'loading') run();
 })();
 </script>
 </body>

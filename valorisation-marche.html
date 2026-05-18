@@ -137,7 +137,12 @@
       <div class="card-meta" id="val-chart-meta">—</div>
     </div>
     <div class="card-body">
-      <svg id="val-chart" viewBox="0 0 800 280" style="width:100%;height:auto;display:block;background:var(--bg);border-radius:var(--r-sm)"></svg>
+      <div class="chart-wrap" style="position:relative;height:300px"><canvas id="val-chart"></canvas></div>
+      <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;font-size:12px;justify-content:center">
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:var(--text);border-radius:2px"></span>Prix</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:#F97316;border-radius:2px"></span>MM 10 mois (≈ MA200 jours)</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:#94A3B8;border-radius:2px;border-top:2px dashed #94A3B8"></span>MM 60 mois (≈ 5 ans)</span>
+      </div>
     </div>
   </section>
 
@@ -187,41 +192,24 @@
     return await r.json();
   }
 
-  function renderChart(prices, ma10, ma60) {
-    const svg = $('val-chart');
-    const W=800, H=280, padL=50, padR=16, padT=14, padB=30;
-    const w=W-padL-padR, h=H-padT-padB;
-    const yMax = Math.max(...prices, ...ma10.filter(v=>v!=null), ...ma60.filter(v=>v!=null));
-    const yMin = Math.min(...prices);
-    const span = yMax - yMin || 1;
+  function renderChart(prices, ma10, ma60, startDate) {
     const n = prices.length;
-    const xAt = i => padL + (i/(n-1))*w;
-    const yAt = v => padT + h - ((v - yMin)/span)*h;
-    let s = '';
-    // Grid
-    for (let i=0;i<=4;i++){
-      const v = yMin + span*i/4, y = yAt(v);
-      s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
-      s += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${(v/1000).toFixed(1)}k</text>`;
+    // Labels = années (depuis startDate)
+    const labels = new Array(n);
+    if (startDate) {
+      const start = new Date(startDate + '-01');
+      for (let i = 0; i < n; i++) {
+        const d = new Date(start); d.setMonth(d.getMonth() + i);
+        labels[i] = d.getFullYear().toString();
+      }
+    } else {
+      for (let i = 0; i < n; i++) labels[i] = 'M' + i;
     }
-    // MA60
-    const ma60Pts = ma60.map((v,i)=>v!=null ? `${i?'L':'M'} ${xAt(i)} ${yAt(v)}` : '').filter(Boolean).join(' ');
-    if (ma60Pts) s += `<path d="${ma60Pts}" fill="none" stroke="#94A3B8" stroke-width="1" stroke-dasharray="4 3"/>`;
-    // MA10
-    const ma10Pts = ma10.map((v,i)=>v!=null ? `${i?'L':'M'} ${xAt(i)} ${yAt(v)}` : '').filter(Boolean).join(' ');
-    if (ma10Pts) s += `<path d="${ma10Pts}" fill="none" stroke="#F97316" stroke-width="1.5"/>`;
-    // Prices
-    let line='';
-    prices.forEach((p,i)=>{ line += (i?' L ':'M ') + xAt(i) + ' ' + yAt(p); });
-    s += `<path d="${line}" fill="none" stroke="var(--text)" stroke-width="1.5"/>`;
-    // Légende
-    s += `<rect x="${padL+10}" y="${padT+8}" width="14" height="2" fill="var(--text)"/>`;
-    s += `<text x="${padL+28}" y="${padT+12}" font-size="11" fill="var(--text-3)">Prix</text>`;
-    s += `<rect x="${padL+70}" y="${padT+8}" width="14" height="2" fill="#F97316"/>`;
-    s += `<text x="${padL+88}" y="${padT+12}" font-size="11" fill="var(--text-3)">MM 10m</text>`;
-    s += `<rect x="${padL+140}" y="${padT+8}" width="14" height="2" fill="#94A3B8"/>`;
-    s += `<text x="${padL+158}" y="${padT+12}" font-size="11" fill="var(--text-3)">MM 60m</text>`;
-    svg.innerHTML = s;
+    CI.drawChart('val-chart', labels, [
+      { label: 'Prix', data: prices, color: '#0F172A', width: 1.8 },
+      { label: 'MM 10m', data: ma10, color: '#F97316', width: 1.6 },
+      { label: 'MM 60m', data: ma60, color: '#94A3B8', width: 1.2, dash: [4, 3] }
+    ], { yFormat: v => CI.fmtCompact(v) });
   }
 
   function buildMA(prices, period) {
@@ -270,7 +258,7 @@
       // Chart
       const ma10 = buildMA(prices, 10);
       const ma60 = buildMA(prices, 60);
-      renderChart(prices, ma10, ma60);
+      renderChart(prices, ma10, ma60, data.start);
       $('val-chart-meta').textContent = data.start + ' → ' + data.end + ' · ' + data.points + ' points';
     } catch (e) {
       $('val-msg').innerHTML = '<span style="color:var(--red)">Erreur chargement données : ' + e.message + '</span>';

@@ -61,35 +61,71 @@
   </div>
 
   <!-- Paramètres -->
-  <section class="card" style="margin-bottom:24px">
-    <div class="card-body">
-      <div class="field-grid">
-        <div class="field">
-          <label class="field-label">Capital initial</label>
-          <div class="stepper" data-step="1000" data-min="0">
-            <button class="stepper-btn" data-act="minus">−</button>
-            <input class="stepper-input" id="al-k0" type="number" value="10000" />
-            <span class="stepper-unit">€</span>
-            <button class="stepper-btn" data-act="plus">+</button>
+  <section class="accordion open" id="params" style="margin-bottom:24px">
+    <div class="accordion-header">
+      <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+      <div class="accordion-titles">
+        <div class="accordion-title">Paramètres du backtest</div>
+        <div class="accordion-summary" id="al-sum-params">—</div>
+      </div>
+      <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg></div>
+            <div class="subsection-title">Combien ?</div>
+            <div class="subsection-hint">Capital initial et versements</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">Capital initial</label>
+              <div class="stepper" data-step="1000" data-min="0">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" id="al-k0" type="number" value="10000" />
+                <span class="stepper-unit">€</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="al-k0">
+                <button class="pill" data-value="0" type="button">0</button>
+                <button class="pill" data-value="5000" type="button">5k</button>
+                <button class="pill active" data-value="10000" type="button">10k</button>
+                <button class="pill" data-value="50000" type="button">50k</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Versement mensuel</label>
+              <div class="stepper" data-step="50" data-min="0">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" id="al-monthly" type="number" value="200" />
+                <span class="stepper-unit">€/mois</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="al-monthly">
+                <button class="pill" data-value="0" type="button">0</button>
+                <button class="pill" data-value="100" type="button">100</button>
+                <button class="pill active" data-value="200" type="button">200</button>
+                <button class="pill" data-value="500" type="button">500</button>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="field">
-          <label class="field-label">Versement mensuel</label>
-          <div class="stepper" data-step="50" data-min="0">
-            <button class="stepper-btn" data-act="minus">−</button>
-            <input class="stepper-input" id="al-monthly" type="number" value="200" />
-            <span class="stepper-unit">€/mois</span>
-            <button class="stepper-btn" data-act="plus">+</button>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10c0-3 2-5 5-5s5 2 5 5"/><path d="M3 10l-1-2M3 10l2-1M13 10l1-2M13 10l-2-1"/></svg></div>
+            <div class="subsection-title">Rebalancing</div>
+            <div class="subsection-hint">Fréquence de réajustement des poids cibles</div>
+          </div>
+          <div class="pills" id="al-rebal-pills">
+            <button class="pill active" data-value="annual" type="button">Annuel</button>
+            <button class="pill" data-value="quarterly" type="button">Trimestriel</button>
+            <button class="pill" data-value="never" type="button">Jamais (drift)</button>
           </div>
         </div>
-        <div class="field">
-          <label class="field-label">Fréquence de rebalancing</label>
-          <select class="select" id="al-rebal">
-            <option value="annual" selected>Annuel (recommandé)</option>
-            <option value="quarterly">Trimestriel</option>
-            <option value="never">Jamais (laisser dériver)</option>
-          </select>
-        </div>
+
       </div>
     </div>
   </section>
@@ -123,7 +159,7 @@
   <section class="card" style="margin-bottom:24px">
     <div class="card-header"><div class="card-title">Courbes d'équité — Capital cumulé</div></div>
     <div class="card-body">
-      <svg id="al-chart" viewBox="0 0 800 320" style="width:100%;height:auto;display:block;background:var(--bg);border-radius:var(--r-sm)"></svg>
+      <div class="chart-wrap" style="position:relative;height:340px"><canvas id="al-chart"></canvas></div>
       <div id="al-legend" style="display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;justify-content:center"></div>
     </div>
   </section>
@@ -222,50 +258,37 @@
   }
 
   function renderChart(results) {
-    const svg = $('al-chart');
-    const W=800, H=320, padL=60, padR=16, padT=14, padB=30;
-    const w=W-padL-padR, h=H-padT-padB;
-    const allValues = Object.values(results).flatMap(r => r.equityCurve.map(p => p.value));
-    const yMax = Math.max(...allValues);
-    const yMin = Math.min(...allValues);
-    const span = yMax - yMin || 1;
-    const refCurve = Object.values(results)[0].equityCurve;
-    const n = refCurve.length;
-    const xAt = i => padL + (i/(n-1))*w;
-    const yAt = v => padT + h - ((v - yMin)/span)*h;
-    let s = '';
-    // Grid
-    for (let i=0;i<=4;i++){
-      const v = yMin + span*i/4, y = yAt(v);
-      s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
-      s += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${fmtC(v)}</text>`;
+    const entries = Object.entries(results);
+    if (!entries.length) return;
+    const n = entries[0][1].equityCurve.length;
+    // Labels = "Année N"
+    const labels = new Array(n);
+    for (let i = 0; i < n; i++) {
+      const yr = Math.floor(i / 12);
+      labels[i] = 'A' + yr;
     }
-    // X labels (années)
-    [0, n/4, n/2, 3*n/4, n-1].forEach(i => {
-      i = Math.round(i); if (i >= n) return;
-      const y = Math.round(i/12) + 'a';
-      s += `<text x="${xAt(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${y}</text>`;
-    });
-    // Lines
-    Object.entries(results).forEach(([k, r]) => {
-      const color = COLORS[k];
-      let line = '';
-      r.equityCurve.forEach((p, i) => { line += (i?' L ':'M ') + xAt(i) + ' ' + yAt(p.value); });
-      s += `<path d="${line}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round"/>`;
-    });
-    svg.innerHTML = s;
+    const datasets = entries.map(([k, r]) => ({
+      label: r.name,
+      data: r.equityCurve.map(p => p.value),
+      color: COLORS[k],
+      width: 1.6
+    }));
+    CI.drawChart('al-chart', labels, datasets, { yFormat: v => CI.fmtCompact(v) });
 
     // Legend
-    $('al-legend').innerHTML = Object.entries(results).map(([k, r]) =>
+    $('al-legend').innerHTML = entries.map(([k, r]) =>
       `<span><span class="legend-dot" style="background:${COLORS[k]}"></span>${r.name}</span>`
     ).join('');
   }
 
+  let currentRebal = 'annual';
+  const REBAL_LBL = { annual: 'Annuel', quarterly: 'Trimestriel', never: 'Jamais (drift)' };
+
   function read() {
     return {
-      K0: CI.safeNum('al-k0', 10000),
-      monthly: CI.safeNum('al-monthly', 200),
-      rebalancing: $('al-rebal').value || 'annual'
+      K0: +$('al-k0').value || 10000,
+      monthly: +$('al-monthly').value || 0,
+      rebalancing: currentRebal
     };
   }
 
@@ -281,16 +304,27 @@
     });
     renderStrategies(results);
     renderChart(results);
+    $('al-sum-params').textContent =
+      `${p.K0.toLocaleString('fr-FR')} € + ${p.monthly} €/mois · rebal ${REBAL_LBL[currentRebal]}`;
   }
 
   async function safeInit() {
     await loadData();
-    ['al-k0','al-monthly','al-rebal'].forEach(id => {
+    ['al-k0','al-monthly'].forEach(id => {
       const el = $(id);
       if (el) {
         el.addEventListener('change', run);
         if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 300); });
       }
+    });
+    // Pills rebalancing
+    document.querySelectorAll('#al-rebal-pills .pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#al-rebal-pills .pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRebal = btn.dataset.value;
+        run();
+      });
     });
     CI.initAll && CI.initAll();
     run();
