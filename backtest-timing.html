@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0EA5E9" />
+<title>Backtest stratégies de timing — Golden Cross, Faber GTAA, RSI | CalcInvest</title>
+<meta name="description" content="Comparez 6 stratégies de timing vs Buy & Hold : Golden Cross MA50/MA200, Faber GTAA, Momentum 12m, RSI mensuel, Volatility Target. CAGR, drawdown, Sharpe." />
+<meta name="keywords" content="backtest stratégie timing, golden cross MA50 MA200, Faber GTAA, market timing, momentum, RSI mensuel" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/backtest-timing" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Backtest stratégies timing — Golden Cross, Faber GTAA, Momentum" />
+<meta property="og:description" content="Le market timing vaut-il vraiment le coup ?" />
+<meta property="og:url" content="https://calcinvest.fr/backtest-timing" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Backtest stratégies de timing" />
+<meta name="twitter:description" content="Golden Cross, Faber GTAA, Momentum, RSI" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Backtest stratégies de timing","description":"Compare Golden Cross, Faber GTAA, Momentum 12m vs Buy & Hold","url":"https://calcinvest.fr/backtest-timing","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.bt-hero { background: linear-gradient(135deg, rgba(14,165,233,.10), rgba(14,165,233,.02)); border:1px solid #0EA5E9; }
+.strat-card { padding:16px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); transition:transform .15s; }
+.strat-card:hover { transform:translateY(-2px) }
+.strat-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.strat-name { font-weight:700; font-size:14px }
+.strat-color { width:10px; height:10px; border-radius:50%; }
+.strat-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; font-size:12px; }
+.strat-stats .lbl { color:var(--text-4); font-size:10px; text-transform:uppercase; letter-spacing:.05em }
+.strat-stats .val { font-weight:700; font-family:var(--font-mono); font-size:14px }
+.winner { border:1px solid #0EA5E9; background:rgba(14,165,233,.05); }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Backtest Timing</div><div class="logo-text-sub">6 stratégies vs Buy & Hold</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:24px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 12l4-4 3 3 5-6"/></svg></span>Analyse & Timing</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Le market timing <em>vaut-il le coup</em> ?</h1>
+    <p class="page-lede" style="max-width:640px;margin:0 auto">Backtest historique de <strong style="color:var(--text)">6 stratégies vs Buy & Hold</strong> : Golden Cross, Faber GTAA, Momentum 12m, RSI mensuel, Volatility Target. Capital hors marché rémunéré 2 %/an (Livret A).</p>
+  </div>
+
+  <!-- Paramètres -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
+      <div>
+        <label class="field-label">Indice</label>
+        <select id="bt-asset" class="input" style="width:100%">
+          <option value="sp500" selected>S&P 500</option>
+          <option value="cac40">CAC 40</option>
+          <option value="nasdaq">NASDAQ</option>
+          <option value="msci_world">MSCI World</option>
+          <option value="nikkei">Nikkei 225</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Capital initial (€)</label>
+        <input id="bt-k0" type="number" class="input" value="10000" min="0" step="1000" />
+      </div>
+      <div>
+        <label class="field-label">Versement mensuel (€)</label>
+        <input id="bt-monthly" type="number" class="input" value="200" min="0" step="50" />
+      </div>
+      <div>
+        <label class="field-label">Période</label>
+        <select id="bt-period" class="input" style="width:100%">
+          <option value="10">10 dernières années</option>
+          <option value="20">20 dernières années</option>
+          <option value="30" selected>30 dernières années</option>
+          <option value="40">40 dernières années</option>
+          <option value="0">Toute la période</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="bt-run">Lancer le backtest</button>
+    </div>
+  </section>
+
+  <!-- Hero gagnant -->
+  <section class="card bt-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:28px;text-align:center">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#0EA5E9;font-weight:700;margin-bottom:10px">✓ Meilleur Sharpe (rendement ajusté du risque)</div>
+      <div id="bt-winner-name" style="font-size:28px;font-weight:800;margin-bottom:6px">—</div>
+      <div id="bt-winner-stats" style="color:var(--text-3);font-size:13px">—</div>
+    </div>
+  </section>
+
+  <!-- Equity curve -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div>Courbes d'équité comparées</div>
+      <div class="card-meta" id="bt-chart-meta">—</div>
+    </div>
+    <div class="card-body">
+      <svg id="bt-chart" viewBox="0 0 800 320" style="width:100%;height:auto;display:block;background:var(--bg);border-radius:var(--r-sm)"></svg>
+      <div id="bt-legend" style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:12px"></div>
+    </div>
+  </section>
+
+  <!-- Cards par stratégie -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg></div>Détails par stratégie</div></div>
+    <div class="card-body">
+      <div id="bt-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Les 6 stratégies testées</strong> (chacune part du même capital + versement mensuel) :
+      <ul style="margin:10px 0 14px 18px;padding:0">
+        <li><strong>Buy & Hold</strong> — référence, investi 100 % du temps</li>
+        <li><strong>Golden Cross</strong> — long si MA3m (≈ 50j bourse) > MA10m (≈ 200j), cash sinon</li>
+        <li><strong>Faber GTAA</strong> — long si prix > MA10m, cash sinon. Le classique de Mebane Faber</li>
+        <li><strong>Momentum 12m</strong> — long si return 12 derniers mois > 0, cash sinon</li>
+        <li><strong>RSI mensuel</strong> — réduit l'exposition (50 %) si RSI mensuel > 75 (suracheté)</li>
+        <li><strong>Volatility Target</strong> — réduit l'exposition si volatilité 12m > 20 %</li>
+      </ul>
+      <strong>Lecture du Sharpe</strong> : rendement excédentaire (au-dessus de 2 % cash) divisé par la volatilité. Plus c'est haut, plus la stratégie est efficace pour le risque pris. Au-dessus de 1, c'est solide.
+      <br/><br/>
+      <strong>Conclusion typique</strong> : Faber GTAA et Momentum 12m donnent souvent un CAGR similaire à Buy & Hold mais avec un drawdown 2× plus faible → Sharpe nettement supérieur. <em>Mais</em> elles génèrent du churn fiscal (chaque sortie/rentrée = imposition des plus-values en compte titre).
+      <br/><br/>
+      <em style="color:var(--text-4)">Backtest pédagogique. Performance passée ≠ performance future. Frais de transaction et fiscalité non modélisés.</em>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Sources : data historique mensuelle 1985-2026</div><div><a href="/">Accueil</a> · <a href="/valorisation-marche">Valorisation</a> · <a href="/regime-marche">Régime</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-timing.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => Number.isFinite(n) ? n.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' €' : '—';
+  const fmtP = n => Number.isFinite(n) ? (n>=0?'+':'') + n.toFixed(1) + '%' : '—';
+  const fmtPa = n => Number.isFinite(n) ? n.toFixed(2) : '—';
+
+  async function loadAsset(id) {
+    const r = await fetch('/assets/data/' + id + '.json', { cache: 'force-cache' });
+    if (!r.ok) throw new Error('Asset not found');
+    return await r.json();
+  }
+
+  function renderChart(results) {
+    const svg = $('bt-chart');
+    const W=800, H=320, padL=60, padR=16, padT=14, padB=30;
+    const w=W-padL-padR, h=H-padT-padB;
+    const keys = Object.keys(results);
+    if (!keys.length) { svg.innerHTML = ''; return; }
+    const n = results[keys[0]].equityCurve.length;
+    let allVals = [];
+    keys.forEach(k => results[k].equityCurve.forEach(p => allVals.push(p.value)));
+    const yMax = Math.max(...allVals);
+    const yMin = Math.min(...allVals);
+    const span = yMax - yMin || 1;
+    const xAt = i => padL + (i/(n-1))*w;
+    const yAt = v => padT + h - ((v - yMin)/span)*h;
+    let s = '';
+    for (let i=0;i<=4;i++){
+      const v = yMin + span*i/4, y = yAt(v);
+      s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
+      s += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${(v/1000).toFixed(0)}k€</text>`;
+    }
+    keys.forEach(k => {
+      const meta = TIMING.STRATEGY_META[k];
+      const data = results[k].equityCurve;
+      let line = '';
+      data.forEach((p, i) => { line += (i?' L ':'M ') + xAt(i) + ' ' + yAt(p.value); });
+      const isBuyhold = k === 'buyhold';
+      s += `<path d="${line}" fill="none" stroke="${meta.color}" stroke-width="${isBuyhold?'2':'1.5'}" stroke-dasharray="${isBuyhold?'0':'0'}" opacity="${isBuyhold?'1':'0.85'}"/>`;
+    });
+    svg.innerHTML = s;
+    // Legend
+    $('bt-legend').innerHTML = keys.map(k => {
+      const meta = TIMING.STRATEGY_META[k];
+      return `<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:3px;background:${meta.color};border-radius:2px"></span>${meta.name}</span>`;
+    }).join('');
+  }
+
+  function renderCards(results) {
+    // Trouver gagnant Sharpe
+    let bestKey = null, bestSharpe = -Infinity;
+    Object.entries(results).forEach(([k, r]) => {
+      if (r.sharpe > bestSharpe) { bestSharpe = r.sharpe; bestKey = k; }
+    });
+
+    const html = Object.entries(results).map(([k, r]) => {
+      const meta = TIMING.STRATEGY_META[k];
+      const isWinner = k === bestKey;
+      return `<div class="strat-card${isWinner?' winner':''}">
+        <div class="strat-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="strat-color" style="background:${meta.color}"></span>
+            <span class="strat-name">${meta.name}</span>
+          </div>
+          ${isWinner ? '<span style="font-size:10px;font-weight:700;color:#0EA5E9;text-transform:uppercase;letter-spacing:.05em">★ Best Sharpe</span>' : ''}
+        </div>
+        <div style="font-size:11px;color:var(--text-4);margin-bottom:10px;line-height:1.4">${meta.desc}</div>
+        <div class="strat-stats">
+          <div><div class="lbl">Capital final</div><div class="val">${fmtM(r.finalValue)}</div></div>
+          <div><div class="lbl">CAGR</div><div class="val" style="color:${r.cagr>=0?'#10B981':'#DC2626'}">${fmtP(r.cagr)}</div></div>
+          <div><div class="lbl">Max DD</div><div class="val" style="color:#DC2626">${fmtP(r.maxDrawdown)}</div></div>
+          <div><div class="lbl">Vol annuelle</div><div class="val">${fmtP(r.annualVol)}</div></div>
+          <div><div class="lbl">Sharpe</div><div class="val" style="color:${r.sharpe>1?'#10B981':r.sharpe>0.5?'#FBBF24':'#DC2626'}">${fmtPa(r.sharpe)}</div></div>
+          <div><div class="lbl">% hors marché</div><div class="val">${r.pctOutOfMarket.toFixed(0)}%</div></div>
+        </div>
+      </div>`;
+    }).join('');
+    $('bt-cards').innerHTML = html;
+
+    // Winner hero
+    if (bestKey) {
+      const w = results[bestKey];
+      const meta = TIMING.STRATEGY_META[bestKey];
+      $('bt-winner-name').innerHTML = `<span style="color:${meta.color}">${meta.name}</span>`;
+      $('bt-winner-stats').innerHTML =
+        `CAGR <strong style="color:${w.cagr>=0?'#10B981':'#DC2626'}">${fmtP(w.cagr)}</strong> · Max DD <strong style="color:#DC2626">${fmtP(w.maxDrawdown)}</strong> · Sharpe <strong>${fmtPa(w.sharpe)}</strong> · ${w.nbTrades} trades · ${w.pctOutOfMarket.toFixed(0)}% du temps hors marché`;
+    }
+  }
+
+  async function run() {
+    const assetId = $('bt-asset').value;
+    const K0 = +$('bt-k0').value || 10000;
+    const monthly = +$('bt-monthly').value || 0;
+    const years = +$('bt-period').value;
+
+    try {
+      const data = await loadAsset(assetId);
+      let prices = data.prices;
+      if (years > 0) {
+        prices = prices.slice(-years * 12);
+      }
+      const results = TIMING.compareAll({ prices, K0, monthly });
+      if (results.error) {
+        $('bt-chart-meta').textContent = results.error;
+        return;
+      }
+      $('bt-chart-meta').textContent = `${prices.length} mois · ${(prices.length/12).toFixed(0)} ans`;
+      renderChart(results);
+      renderCards(results);
+    } catch (e) {
+      console.error(e);
+      $('bt-chart-meta').textContent = 'Erreur de chargement';
+    }
+  }
+
+  $('bt-run').addEventListener('click', run);
+  ['bt-asset','bt-k0','bt-monthly','bt-period'].forEach(id => {
+    $(id).addEventListener('change', run);
+  });
+
+  run();
+})();
+</script>
+</body>
+</html>

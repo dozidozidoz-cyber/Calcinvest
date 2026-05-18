@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#A855F7" />
+<title>Détecteur de régime de marché — Bull / Bear / Range / Volatile | CalcInvest</title>
+<meta name="description" content="Classifie le régime de marché actuel : Bull, Bear, Range, ou Volatile. Basé sur MA200, momentum 12m, drawdown et volatilité. S&P 500, CAC 40, Nasdaq." />
+<meta name="keywords" content="régime de marché, bull market, bear market, MA200, détection trend, volatilité, drawdown" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/regime-marche" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Détecteur de régime de marché — CalcInvest" />
+<meta property="og:description" content="Bull / Bear / Range / Volatile sur S&P 500, CAC 40, Nasdaq, MSCI World, Nikkei" />
+<meta property="og:url" content="https://calcinvest.fr/regime-marche" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Régime de marché — Bull / Bear / Range / Volatile" />
+<meta name="twitter:description" content="Classification automatique du régime de marché" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Détecteur de régime de marché","description":"Classifie le régime Bull/Bear/Range/Volatile","url":"https://calcinvest.fr/regime-marche","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.reg-hero { background: linear-gradient(135deg, rgba(168,85,247,.10), rgba(168,85,247,.02)); border:1px solid #A855F7; }
+.regime-badge { display:inline-flex; align-items:center; gap:8px; padding:8px 18px; border-radius:99px; font-weight:800; letter-spacing:.1em; font-size:14px; text-transform:uppercase; }
+.regime-bull { background:rgba(16,185,129,.15); color:#10B981; border:1px solid #10B981; }
+.regime-bear { background:rgba(220,38,38,.15); color:#DC2626; border:1px solid #DC2626; }
+.regime-range { background:rgba(251,191,36,.15); color:#FBBF24; border:1px solid #FBBF24; }
+.regime-volatile { background:rgba(168,85,247,.15); color:#A855F7; border:1px solid #A855F7; }
+.regime-unknown { background:rgba(100,116,139,.15); color:#64748B; border:1px solid #64748B; }
+.regime-pulse { width:10px; height:10px; border-radius:50%; background:currentColor; box-shadow:0 0 0 0 currentColor; animation:pulse 2s infinite; }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 currentColor} 70%{box-shadow:0 0 0 8px transparent} 100%{box-shadow:0 0 0 0 transparent} }
+.timeline-row { display:grid; grid-template-columns:1fr; gap:2px; padding:0; }
+.timeline-bar { display:flex; height:32px; border-radius:6px; overflow:hidden; }
+.kpi { padding:14px 16px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
+.kpi-name { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-4); font-weight:600 }
+.kpi-val { font-size:22px; font-weight:800; font-family:var(--font-mono); margin-top:4px }
+.kpi-sub { font-size:11px; color:var(--text-4); margin-top:2px }
+.regime-card { padding:14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
+.regime-card-label { font-size:11px; text-transform:uppercase; letter-spacing:.08em; font-weight:700 }
+.transition-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.transition-row:last-child { border-bottom:0 }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Régime de marché</div><div class="logo-text-sub">Bull / Bear / Range / Volatile</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:24px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 12l4-4 3 3 5-6"/></svg></span>Analyse & Timing</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Dans quel <em>régime</em> sommes-nous ?</h1>
+    <p class="page-lede" style="max-width:620px;margin:0 auto">Classification automatique <strong style="color:var(--text)">Bull / Bear / Range / Volatile</strong>. Basée sur position vs MA200, momentum 12m, drawdown récent et volatilité réalisée.</p>
+  </div>
+
+  <!-- Sélecteur indice -->
+  <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">
+    <button class="pill is-active" data-asset="sp500" style="font-weight:600">S&P 500</button>
+    <button class="pill" data-asset="cac40">CAC 40</button>
+    <button class="pill" data-asset="nasdaq">NASDAQ</button>
+    <button class="pill" data-asset="msci_world">MSCI World</button>
+    <button class="pill" data-asset="nikkei">Nikkei 225</button>
+    <button class="pill" data-asset="gold">Or</button>
+  </div>
+
+  <!-- Hero régime -->
+  <section class="card reg-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:32px;text-align:center">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#A855F7;font-weight:700;margin-bottom:16px">✓ Régime actuel détecté</div>
+      <div id="reg-badge-container" style="margin-bottom:16px"></div>
+      <div id="reg-desc" style="font-size:14px;color:var(--text-2);max-width:520px;margin:0 auto 18px">—</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:740px;margin:0 auto">
+        <div class="kpi"><div class="kpi-name">Position MA200</div><div class="kpi-val" id="reg-ma">—</div><div class="kpi-sub" id="reg-ma-sub">vs moyenne 10m</div></div>
+        <div class="kpi"><div class="kpi-name">Momentum 12m</div><div class="kpi-val" id="reg-mom">—</div><div class="kpi-sub">return 12 derniers mois</div></div>
+        <div class="kpi"><div class="kpi-name">Drawdown</div><div class="kpi-val" id="reg-dd">—</div><div class="kpi-sub">depuis ATH 3 ans</div></div>
+        <div class="kpi"><div class="kpi-name">Volatilité 12m</div><div class="kpi-val" id="reg-vol">—</div><div class="kpi-sub">annualisée</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline historique -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg></div>Carte historique des régimes</div>
+      <div class="card-meta" id="reg-timeline-meta">—</div>
+    </div>
+    <div class="card-body">
+      <div class="timeline-bar" id="reg-timeline" style="margin-bottom:8px"></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-4);font-family:var(--font-mono)" id="reg-timeline-axis">
+        <span>—</span><span>—</span>
+      </div>
+      <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:12px">
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#10B981;border-radius:3px"></span>Bull</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#DC2626;border-radius:3px"></span>Bear</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#FBBF24;border-radius:3px"></span>Range</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#A855F7;border-radius:3px"></span>Volatile</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats par régime -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 14h12M4 14V8M8 14V4M12 14v-3"/></svg></div>Statistiques par régime</div>
+    </div>
+    <div class="card-body">
+      <div class="grid-2" id="reg-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"></div>
+    </div>
+  </section>
+
+  <!-- Transitions récentes -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div>5 dernières transitions</div>
+    </div>
+    <div class="card-body">
+      <div id="reg-transitions">—</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Méthodologie</strong> : classification basée sur 4 signaux mensuels.
+      <br/><strong>BULL</strong> : prix > MA10 (≈ MA200 jours bourse, Faber GTAA) <em>ET</em> momentum 12m > 5% <em>ET</em> drawdown récent &lt; 10%.
+      <br/><strong>BEAR</strong> : prix &lt; MA10 <em>ET</em> (momentum 12m &lt; -5% <em>OU</em> drawdown > 15%).
+      <br/><strong>VOLATILE</strong> : volatilité annualisée > 25% (prioritaire — détecte les crises type COVID 2020).
+      <br/><strong>RANGE</strong> : tout le reste. Marché latéral sans direction claire.
+      <br/><br/>
+      <strong>Utilité</strong> : adapter sa stratégie (DCA classique en Bull, achats échelonnés ou pause en Bear, prudence Volatile). Voir l'outil <a href="/backtest-timing" style="color:var(--accent)">Backtest stratégies timing</a> pour mesurer l'impact réel sur la performance.
+      <br/><br/>
+      <em style="color:var(--text-4)">Indicateur lagging : confirme une tendance déjà en place. Pas un signal d'entrée/sortie à court terme.</em>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Sources : data historique 1985-2026</div><div><a href="/">Accueil</a> · <a href="/valorisation-marche">Valorisation</a> · <a href="/backtest-timing">Timing</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-regime.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtP = n => Number.isFinite(n) ? (n>=0?'+':'') + n.toFixed(1) + '%' : '—';
+  const fmtPa = n => Number.isFinite(n) ? n.toFixed(1) + '%' : '—';
+
+  const ASSET_NAMES = {
+    sp500: 'S&P 500', cac40: 'CAC 40', nasdaq: 'NASDAQ',
+    msci_world: 'MSCI World', nikkei: 'Nikkei 225', gold: 'Or'
+  };
+
+  async function loadAsset(id) {
+    const r = await fetch('/assets/data/' + id + '.json', { cache: 'force-cache' });
+    if (!r.ok) throw new Error('Asset not found');
+    return await r.json();
+  }
+
+  function renderBadge(regime) {
+    const meta = REGIME.REGIME_META[regime] || REGIME.REGIME_META.unknown;
+    return `<div class="regime-badge regime-${regime}"><span class="regime-pulse"></span>${meta.label}</div>`;
+  }
+
+  function renderTimeline(history, startDate) {
+    if (!history.length) return;
+    const tl = $('reg-timeline');
+    const segs = [];
+    let curReg = history[0].regime;
+    let curStart = 0;
+    for (let i = 1; i < history.length; i++) {
+      if (history[i].regime !== curReg) {
+        segs.push({ regime: curReg, length: i - curStart });
+        curReg = history[i].regime;
+        curStart = i;
+      }
+    }
+    segs.push({ regime: curReg, length: history.length - curStart });
+    const total = history.length;
+    tl.innerHTML = segs.map(s => {
+      const meta = REGIME.REGIME_META[s.regime] || REGIME.REGIME_META.unknown;
+      const pct = (s.length / total * 100).toFixed(2);
+      return `<div title="${meta.label} · ${s.length} mois" style="background:${meta.color};width:${pct}%;height:100%"></div>`;
+    }).join('');
+    // Axis labels
+    if (startDate) {
+      const start = new Date(startDate + '-01');
+      const endIdx = total - 1;
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + endIdx);
+      $('reg-timeline-axis').innerHTML =
+        `<span>${start.getFullYear()}</span><span>${end.getFullYear()}</span>`;
+    }
+    $('reg-timeline-meta').textContent = total + ' mois analysés';
+  }
+
+  function renderStats(stats) {
+    const html = ['bull','bear','range','volatile'].map(k => {
+      const s = stats[k];
+      const meta = REGIME.REGIME_META[k];
+      return `<div class="regime-card" style="border-left:3px solid ${meta.color}">
+        <div class="regime-card-label" style="color:${meta.color}">${meta.label}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:8px;font-size:12px">
+          <div><span style="color:var(--text-4)">Temps:</span> <strong>${s.pctOfTime.toFixed(1)}%</strong></div>
+          <div><span style="color:var(--text-4)">Épisodes:</span> <strong>${s.episodes}</strong></div>
+          <div><span style="color:var(--text-4)">Durée moy:</span> <strong>${s.avgDuration.toFixed(1)} m</strong></div>
+          <div><span style="color:var(--text-4)">Perf moy:</span> <strong style="color:${s.avgReturn>=0?'#10B981':'#DC2626'}">${fmtP(s.avgReturn)}</strong></div>
+        </div>
+      </div>`;
+    }).join('');
+    $('reg-stats').innerHTML = html;
+  }
+
+  function renderTransitions(transitions) {
+    if (!transitions.length) {
+      $('reg-transitions').innerHTML = '<div style="color:var(--text-4);text-align:center;padding:20px">Aucune transition détectée.</div>';
+      return;
+    }
+    const html = transitions.reverse().map(t => {
+      const fromMeta = REGIME.REGIME_META[t.from];
+      const toMeta = REGIME.REGIME_META[t.to];
+      const monthsAgo = transitions.length > 0 ? null : null;
+      return `<div class="transition-row">
+        <span style="padding:3px 8px;border-radius:4px;background:${fromMeta.color}22;color:${fromMeta.color};font-weight:700;font-size:11px;text-transform:uppercase">${fromMeta.label}</span>
+        <span style="color:var(--text-3);text-align:center">→ <strong style="color:${toMeta.color}">${toMeta.label}</strong> · mois #${t.monthIndex}</span>
+        <span style="color:var(--text-4);font-size:11px;font-family:var(--font-mono)">DD ${fmtPa(t.signals.drawdown)} · mom ${fmtP(t.signals.momentum)}</span>
+      </div>`;
+    }).join('');
+    $('reg-transitions').innerHTML = html;
+  }
+
+  async function run(assetId) {
+    try {
+      const data = await loadAsset(assetId);
+      const prices = data.prices;
+      const startDate = data.start;
+      if (!prices || prices.length < 24) {
+        $('reg-badge-container').innerHTML = '<div style="color:var(--text-4)">Données insuffisantes</div>';
+        return;
+      }
+      const res = REGIME.analyze(prices);
+      if (res.error) {
+        $('reg-badge-container').innerHTML = '<div style="color:#DC2626">' + res.error + '</div>';
+        return;
+      }
+
+      // Hero
+      $('reg-badge-container').innerHTML = renderBadge(res.currentRegime);
+      const meta = REGIME.REGIME_META[res.currentRegime];
+      $('reg-desc').textContent = meta.desc;
+      const s = res.currentSignals;
+      $('reg-ma').textContent = fmtP(s.maPct);
+      $('reg-ma').style.color = s.maPct >= 0 ? '#10B981' : '#DC2626';
+      $('reg-mom').textContent = fmtP(s.momentum);
+      $('reg-mom').style.color = s.momentum >= 0 ? '#10B981' : '#DC2626';
+      $('reg-dd').textContent = fmtPa(s.drawdown);
+      $('reg-dd').style.color = s.drawdown < -15 ? '#DC2626' : (s.drawdown < -5 ? '#FBBF24' : '#10B981');
+      $('reg-vol').textContent = fmtPa(s.annualVol);
+      $('reg-vol').style.color = s.annualVol > 25 ? '#A855F7' : (s.annualVol > 18 ? '#FBBF24' : '#10B981');
+
+      renderTimeline(res.history, startDate);
+      renderStats(res.aggregateStats);
+      renderTransitions(res.recentTransitions);
+    } catch (e) {
+      console.error(e);
+      $('reg-badge-container').innerHTML = '<div style="color:#DC2626">Erreur de chargement</div>';
+    }
+  }
+
+  // Pills
+  document.querySelectorAll('[data-asset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-asset]').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      run(btn.dataset.asset);
+    });
+  });
+
+  run('sp500');
+})();
+</script>
+</body>
+</html>
