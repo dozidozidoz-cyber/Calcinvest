@@ -232,6 +232,26 @@
     });
   }
 
+  // ─── A05 Prêt in fine ───────────────────────────────
+  function renderA05(p) {
+    if (!LOAN.pretInFine) return;
+    const capital = p.mode === 'capacite' ? LOAN.capaciteEmprunt(p).capitalMax : p.capital;
+    if (!capital || capital <= 0) return;
+    const r = LOAN.pretInFine({ capital, duree: p.duree, tauxNominal: p.tauxNominal, assuranceRate: p.assuranceRate });
+    safeText('loan-inf-mens', fmtM(r.mensualite));
+    safeText('loan-inf-cap', fmtM(r.capitalRembourseFinal));
+    safeText('loan-inf-int', fmtM(r.totalInterets));
+    const ecart = r.vsAmortissable.ecartMensualite;
+    safeText('loan-inf-vs', (ecart >= 0 ? '+' : '') + fmtM(ecart) + '/mois');
+    safeHtml('loan-insight-a5', '<div class="insight-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M2 13l4-4 3 3 5-6"/></svg></div><div class="insight-text">' +
+      'Prêt in fine de <strong>' + fmtM(capital) + '</strong> sur ' + p.duree + ' ans : mensualité <strong>' + fmtM(r.mensualite) + '</strong> ' +
+      '(' + (ecart < 0 ? '<span class="pos">' + fmtM(Math.abs(ecart)) + ' /mois économisés</span>' : '<span class="warn">' + fmtM(ecart) + ' /mois de plus</span>') + ' vs amortissable). ' +
+      'Capital total à rembourser à l\'échéance : <strong class="warn">' + fmtM(r.capitalRembourseFinal) + '</strong>. ' +
+      'Intérêts totaux : <strong>' + fmtM(r.totalInterets) + '</strong> (vs ' + fmtM(r.vsAmortissable.amort.totalInterets) + ' en amortissable, soit ' + (r.vsAmortissable.ecartCoutTotal > 0 ? '+' : '') + fmtM(r.vsAmortissable.ecartCoutTotal) + ' d\'écart). ' +
+      '<br/><strong>Stratégie locatif</strong> : intérêts déductibles à 100 % des revenus fonciers + capital placé en AV/PEA pour faire travailler l\'argent.' +
+      '</div>');
+  }
+
   // ─── RUN ──────────────────────────────────────────────
   function run() {
     if (!window.LOAN || !window.FIN) {
@@ -251,6 +271,7 @@
     try { renderA02(p); }  catch (e) { console.error('[a02]', e); }
     try { renderA03(p); }  catch (e) { console.error('[a03]', e); }
     try { renderA04(p); }  catch (e) { console.error('[a04]', e); }
+    try { renderA05(p); }  catch (e) { console.error('[a05]', e); }
 
     if (window.CI && CI.setUrlParams) {
       CI.setUrlParams({

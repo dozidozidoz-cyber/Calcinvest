@@ -1020,6 +1020,7 @@
     '/simulateur-lmnp':                 { label: 'LMNP',               cat: 'Immobilier',color: '#0E9F6E' },
     '/calculateur-donation-succession': { label: 'Donation / Succession',cat: 'Fiscalité',color: '#D97706' },
     '/journal-trading':                 { label: 'Journal de Trade',   cat: 'Trading',  color: '#7C3AED' },
+    '/calculatrices-express':           { label: 'Calculatrices Express',cat: 'Outils', color: '#34D399' },
     '/comparer':                        { label: 'Comparer simulations',cat: 'Outils',  color: '#34D399' },
     '/glossaire':                       { label: 'Glossaire financier',cat: 'Docs',    color: '#94A3B8' }
   };

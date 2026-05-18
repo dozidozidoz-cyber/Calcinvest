@@ -198,8 +198,53 @@
     };
   }
 
+  /**
+   * Optimiseur PER : trouve le versement qui fait passer en tranche inférieure
+   * (ou minimise l'IR).
+   */
+  function perOptimizer(scenario) {
+    const base = calcIR(scenario);
+    const currentTMI = base.tmi / 100;
+    const idx = BRACKETS.findIndex(b => b.rate === currentTMI);
+    if (idx <= 0) {
+      return {
+        deja: true,
+        currentTMI: base.tmi,
+        message: 'Déjà dans la tranche la plus basse — pas d\'optimisation PER possible'
+      };
+    }
+    const lowerBracket = BRACKETS[idx - 1];
+    const seuilParPart = lowerBracket.to;
+    const baisseNecessaireParPart = Math.max(0, base.perPart - seuilParPart);
+    const versementMin = baisseNecessaireParPart * base.parts;
+
+    const newScenario = { ...scenario, deductions: (scenario.deductions || 0) + versementMin };
+    const after = calcIR(newScenario);
+    const gainFiscal = base.irNet - after.irNet;
+    const coutNet = versementMin - gainFiscal;
+
+    // Plafond PER 2025 : 10 % des revenus pro N-1, plancher = PASS × 10 % (4 710 €),
+    // plafond = PASS × 8 × 10 % (35 194 €)
+    const PASS_2025 = 47100;
+    const plafond = Math.max(PASS_2025 * 0.10, Math.min((scenario.salaireNet || 0) * 0.10, PASS_2025 * 0.80));
+
+    return {
+      deja: false,
+      versementPourTrancheInferieure: versementMin,
+      currentTMI: base.tmi,
+      newTMI: after.tmi,
+      irAvant: base.irNet,
+      irApres: after.irNet,
+      gainFiscal,
+      coutNetReel: coutNet,
+      tauxEconomieEffectif: versementMin > 0 ? (gainFiscal / versementMin) * 100 : 0,
+      plafondPER: plafond,
+      depassePlafond: versementMin > plafond
+    };
+  }
+
   const api = {
-    calcIR, compareScenarios, marginalCost,
+    calcIR, compareScenarios, marginalCost, perOptimizer,
     BRACKETS, QF_CAP_PER_HALFPART,
     DECOTE_THRESHOLD_SINGLE, DECOTE_THRESHOLD_COUPLE,
     abattementSalaire, tmiFromPart, irOnPart

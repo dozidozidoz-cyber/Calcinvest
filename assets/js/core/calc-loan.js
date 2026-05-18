@@ -224,8 +224,95 @@
     remboursementAnticipe,
     fraisNotaire,
     tauxUsureFor,
+    pretInFine,
+    modulationMensualite,
     TAUX_USURE
   };
+
+  /**
+   * Prêt IN FINE : on rembourse uniquement les intérêts pendant la durée,
+   * puis le capital total à l'échéance.
+   * Typique en investissement locatif pour optimiser fiscalement
+   * (intérêts déductibles maximaux, capital placé en assurance-vie nantie).
+   *
+   * @param {Object} p
+   * @param {number} p.capital
+   * @param {number} p.duree
+   * @param {number} p.tauxNominal (% annuel)
+   * @param {number} p.assuranceRate (% capital/an)
+   */
+  function pretInFine(p) {
+    const capital = num(p.capital, 200000);
+    const duree = Math.max(1, num(p.duree, 15));
+    const taux = num(p.tauxNominal, 4) / 100;
+    const tauxAssu = num(p.assuranceRate, 0.36) / 100;
+
+    // Intérêts mensuels constants pendant toute la durée
+    const interetsMensuels = capital * taux / 12;
+    const assuranceMensuelle = capital * tauxAssu / 12;
+    const mensualite = interetsMensuels + assuranceMensuelle;
+    const totalInterets = interetsMensuels * duree * 12;
+    const totalAssurance = assuranceMensuelle * duree * 12;
+    const coutTotalCredit = totalInterets + totalAssurance;
+
+    // Comparaison vs prêt amortissable classique
+    const amort = simulerPret({ ...p, capital, duree, tauxNominal: p.tauxNominal, assuranceRate: p.assuranceRate });
+
+    return {
+      type: 'in-fine',
+      capital,
+      duree,
+      mensualite,
+      mensualiteInterets: interetsMensuels,
+      mensualiteAssurance: assuranceMensuelle,
+      capitalRembourseFinal: capital,
+      totalInterets,
+      totalAssurance,
+      coutTotalCredit,
+      coutTotalRemboursement: capital + coutTotalCredit,
+      // Comparaison amortissable
+      vsAmortissable: {
+        ecartMensualite: mensualite - amort.mensualiteTotale,
+        ecartCoutTotal: coutTotalCredit - amort.coutTotalCredit,
+        amort
+      }
+    };
+  }
+
+  /**
+   * Modulation de mensualité : permet de hausser ou baisser la mensualité
+   * (typiquement ±30 % de la mensualité d'origine, dans la limite des plafonds).
+   */
+  function modulationMensualite(p) {
+    const base = simulerPret(p);
+    const moduPct = num(p.modulationPct, 20) / 100; // +20 % typique
+    const newMensualite = base.mensualitePret * (1 + moduPct);
+
+    // Recalcule la durée nécessaire pour solder avec cette nouvelle mensualité
+    const r = num(p.tauxNominal, 4) / 100 / 12;
+    const C = num(p.capital, 200000);
+    // n = -log(1 - C*r/PMT) / log(1+r)
+    let newDurationMonths;
+    if (newMensualite <= C * r) {
+      newDurationMonths = Infinity; // mensualité trop faible
+    } else {
+      newDurationMonths = -Math.log(1 - (C * r) / newMensualite) / Math.log(1 + r);
+    }
+    const newDurationYears = newDurationMonths / 12;
+    const gainAnnees = base.duree - newDurationYears;
+    const gainInterets = base.totalInterets - (newMensualite * newDurationMonths - C);
+
+    return {
+      modulationPct: moduPct * 100,
+      ancienneMensualite: base.mensualitePret,
+      nouvelleMensualite: newMensualite,
+      ancienneDuree: base.duree,
+      nouvelleDuree: newDurationYears,
+      gainAnnees,
+      gainInterets,
+      base
+    };
+  }
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.LOAN = api;

@@ -152,18 +152,52 @@
     renderA01(p, r);
     renderA02(p, r);
     renderA03(p, r);
+    renderA04(p, r);
 
-    // Summary stepper
     const sum = $('ir-sum-params');
     if (sum) {
       sum.textContent = `${p.adultes === 2 ? 'Couple' : 'Célibataire'} · ${p.enfants} enfant${p.enfants > 1 ? 's' : ''} · ${fmtMoney(p.salaireNet)}/an`;
     }
+    if (CI.setUrlParams) {
+      CI.setUrlParams({
+        s: p.salaireNet, a: p.autresRevenus, d: p.deductions,
+        f: p.adultes, e: p.enfants
+      });
+    }
+  }
 
-    // URL state
-    CI.setUrlParams && CI.setUrlParams({
-      s: p.salaireNet, a: p.autresRevenus, d: p.deductions,
-      f: p.adultes, e: p.enfants
-    });
+  function renderA04(p, r) {
+    if (!IR.perOptimizer) return;
+    const opt = IR.perOptimizer(p);
+    if (opt.deja) {
+      txt('ir-per-versement', '—');
+      txt('ir-per-gain', '—');
+      txt('ir-per-cout', '—');
+      txt('ir-per-plafond', '—');
+      const ins = $('ir-insight-a04');
+      if (ins) ins.querySelector('.insight-text').innerHTML = '<strong>' + opt.message + '</strong>';
+      return;
+    }
+    txt('ir-per-versement', fmtMoney(opt.versementPourTrancheInferieure));
+    txt('ir-per-gain', '−' + fmtMoney(opt.gainFiscal));
+    txt('ir-per-cout', fmtMoney(opt.coutNetReel));
+    txt('ir-per-plafond', fmtMoney(opt.plafondPER));
+
+    const ins = $('ir-insight-a04');
+    if (ins) {
+      const insTxt = ins.querySelector('.insight-text');
+      if (opt.depassePlafond) {
+        const ratio = (opt.plafondPER / opt.versementPourTrancheInferieure) * 100;
+        const gainPossible = opt.plafondPER * (opt.currentTMI / 100);
+        insTxt.innerHTML = '<strong class="warn">⚠ Le versement nécessaire (' + fmtMoney(opt.versementPourTrancheInferieure) + ') dépasse votre plafond PER 2025 (' + fmtMoney(opt.plafondPER) + ').</strong> ' +
+          'En versant le plafond complet (<strong>' + fmtMoney(opt.plafondPER) + '</strong>), vous économiserez <strong class="pos">' + fmtMoney(gainPossible) + '</strong> d\'IR cette année — sans changer de tranche. ' +
+          'Pour passer en tranche ' + (opt.currentTMI - 11) + ' %, il faudrait étaler sur ' + Math.ceil(opt.versementPourTrancheInferieure / opt.plafondPER) + ' ans (en cumulant les plafonds non utilisés).';
+      } else {
+        insTxt.innerHTML = 'En versant <strong>' + fmtMoney(opt.versementPourTrancheInferieure) + '</strong> sur votre PER cette année, vous passez de la tranche <strong>' + opt.currentTMI + ' %</strong> à <strong class="pos">' + opt.newTMI + ' %</strong>. ' +
+          'Économie fiscale directe : <strong class="pos">' + fmtMoney(opt.gainFiscal) + '</strong>. Le versement vous coûte réellement <strong>' + fmtMoney(opt.coutNetReel) + '</strong> net (le reste retourne dans votre PER, capital placé). ' +
+          'Sortie : taxée TMI + PS 17.2 % à la retraite (souvent plus bas qu\'aujourd\'hui).';
+      }
+    }
   }
 
   function safeInit() {
