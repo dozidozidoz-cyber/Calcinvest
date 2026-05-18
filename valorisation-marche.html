@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#F97316" />
+<title>Valorisation du marché 2026 — CAPE, Drawdown, Score | CalcInvest</title>
+<meta name="description" content="Score de valorisation du marché : CAPE Shiller, drawdown depuis ATH, momentum, position vs MA200. S&P 500, CAC 40, Nasdaq. Le marché est-il cher en 2026 ?" />
+<meta name="keywords" content="CAPE Shiller 2026, marché surévalué, bear market, valorisation S&P 500, Buffett indicator" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/valorisation-marche" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Le marché est-il cher en 2026 ? — CalcInvest" />
+<meta property="og:description" content="Score composite CAPE + Drawdown + Momentum sur S&P 500, CAC 40, Nasdaq" />
+<meta property="og:url" content="https://calcinvest.fr/valorisation-marche" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Valorisation du marché 2026" />
+<meta name="twitter:description" content="CAPE + Drawdown + Score composite" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Valorisation du marché","description":"Score composite CAPE + drawdown + momentum","url":"https://calcinvest.fr/valorisation-marche","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.val-hero { background: linear-gradient(135deg, rgba(249,115,22,.10), rgba(249,115,22,.02)); border:1px solid #F97316; }
+.gauge { position:relative; width:100%; height:120px; }
+.gauge-arc { stroke-linecap:round; }
+.gauge-value { font-family:var(--font-mono); font-weight:800; }
+.score-bar {
+  height:14px; border-radius:99px; background:linear-gradient(90deg,
+    #10B981 0%, #34D399 20%, #FBBF24 45%, #F97316 70%, #DC2626 100%);
+  position:relative; overflow:visible; margin:18px 0;
+}
+.score-cursor {
+  position:absolute; top:-3px; width:20px; height:20px; border-radius:50%;
+  background:var(--bg-card); border:3px solid var(--text); transform:translateX(-50%);
+}
+.score-zones { display:flex; justify-content:space-between; font-size:10px; color:var(--text-4); font-family:var(--font-mono); margin-top:4px }
+.kpi { padding:14px 16px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
+.kpi-name { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-4); font-weight:600 }
+.kpi-val { font-size:22px; font-weight:800; font-family:var(--font-mono); margin-top:4px }
+.kpi-sub { font-size:11px; color:var(--text-4); margin-top:2px }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Valorisation Marché</div><div class="logo-text-sub">Analyse macro</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:24px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 12l4-4 3 3 5-6"/></svg></span>Analyse & Timing</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Le marché est-il <em>cher</em> ?</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Score composite <strong style="color:var(--text)">CAPE Shiller + Drawdown depuis ATH + Position vs MM + Momentum</strong>. Combien d'années sommes-nous au-dessus de la moyenne historique ?</p>
+  </div>
+
+  <!-- Sélecteur indice -->
+  <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">
+    <button class="pill is-active" data-asset="sp500" style="font-weight:600">S&P 500</button>
+    <button class="pill" data-asset="cac40">CAC 40</button>
+    <button class="pill" data-asset="nasdaq">NASDAQ</button>
+    <button class="pill" data-asset="msci_world">MSCI World</button>
+    <button class="pill" data-asset="nikkei">Nikkei 225</button>
+  </div>
+
+  <!-- Hero score -->
+  <section class="card val-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:32px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#F97316;font-weight:700;margin-bottom:12px;text-align:center">✓ Score composite de valorisation</div>
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:clamp(56px,8vw,84px);font-weight:900;color:#F97316;font-family:var(--font-mono);line-height:1" id="val-score">—</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);margin-top:4px" id="val-verdict">—</div>
+        <div style="font-size:13px;color:var(--text-4);margin-top:4px">sur l'indice <span id="val-asset-name" style="font-weight:600;color:var(--text-3)">S&P 500</span></div>
+      </div>
+      <div class="score-bar">
+        <div class="score-cursor" id="val-cursor" style="left:50%"></div>
+      </div>
+      <div class="score-zones">
+        <span>0 · Opportunité</span><span>25</span><span>50 · Normal</span><span>75</span><span>100 · Bulle</span>
+      </div>
+      <div id="val-msg" style="margin-top:18px;padding:14px 16px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)">Chargement…</div>
+    </div>
+  </section>
+
+  <!-- KPI grid -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title">Détail des indicateurs</div></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+        <div class="kpi">
+          <div class="kpi-name">CAPE Shiller</div>
+          <div class="kpi-val" id="kpi-cape" style="color:#F97316">—</div>
+          <div class="kpi-sub" id="kpi-cape-class">— (médiane historique 16)</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-name">Drawdown depuis ATH</div>
+          <div class="kpi-val" id="kpi-dd">—</div>
+          <div class="kpi-sub" id="kpi-dd-sub">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-name">Position vs MM10 mois</div>
+          <div class="kpi-val" id="kpi-ma">—</div>
+          <div class="kpi-sub">≈ MM200 jours (Faber)</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-name">Momentum 12 mois</div>
+          <div class="kpi-val" id="kpi-mom">—</div>
+          <div class="kpi-sub">variation prix YoY</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-name">Rendement 10Y observé</div>
+          <div class="kpi-val" id="kpi-ret10">—</div>
+          <div class="kpi-sub">historique annualisé</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-name">Rendement 10Y attendu</div>
+          <div class="kpi-val" id="kpi-exp10" style="color:#10B981">—</div>
+          <div class="kpi-sub">selon CAPE actuel (modèle Shiller)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chart prix -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div>Historique des prix</div>
+      <div class="card-meta" id="val-chart-meta">—</div>
+    </div>
+    <div class="card-body">
+      <svg id="val-chart" viewBox="0 0 800 280" style="width:100%;height:auto;display:block;background:var(--bg);border-radius:var(--r-sm)"></svg>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Méthodologie</strong> : score composite pondéré CAPE 50 % + Position MM 25 % + Momentum 15 % + Drawdown 10 %.
+      <br/><strong>CAPE Shiller</strong> (Cyclically Adjusted P/E) : ratio P/E lissé sur 10 ans pour gommer le cycle économique. Médiane historique S&P 500 (1881-2024) = 16. Au-dessus de 22 = cher, au-dessus de 30 = bulle (1929 / 2000 / 2021).
+      <br/><strong>Rendement 10Y attendu</strong> : modèle régressionnel Hussman/Shiller simplifié. À CAPE 32, le rendement réel annualisé moyen historique sur 10 ans = ~3.7 %. À CAPE 12, ~9 %.
+      <br/><strong>Limites</strong> : indicateur de timing à long terme uniquement (5-10 ans). Inutile pour prédire le prochain trimestre. Le marché peut rester surévalué longtemps (Japon 1989, US 1999).
+      <br/><br/>
+      <em style="color:var(--text-4)">Ce simulateur est <strong>pédagogique</strong> et ne constitue pas un conseil en investissement.</em>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Sources : data historique 1985-2026, CAPE Shiller (Yale)</div><div><a href="/">Accueil</a> · <a href="/simulateur-dca">DCA</a> · <a href="/simulateur-dcf">DCF</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-valuation.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtN = (n, d) => Number.isFinite(n) ? n.toLocaleString('fr-FR', { minimumFractionDigits: d||0, maximumFractionDigits: d||0 }) : '—';
+
+  // CAPE actuel des principaux indices (approximé mai 2026, source multpl.com / Shiller)
+  // À mettre à jour trimestriellement ou via API à terme
+  const CAPE_BY_ASSET = {
+    sp500: 32.1,
+    cac40: 21.5,
+    nasdaq: 38.8,
+    msci_world: 25.2,
+    nikkei: 22.8
+  };
+  const ASSET_NAMES = {
+    sp500: 'S&P 500',
+    cac40: 'CAC 40',
+    nasdaq: 'NASDAQ',
+    msci_world: 'MSCI World',
+    nikkei: 'Nikkei 225'
+  };
+
+  async function loadAsset(id) {
+    const r = await fetch('/assets/data/' + id + '.json', { cache: 'force-cache' });
+    if (!r.ok) throw new Error('Asset not found');
+    return await r.json();
+  }
+
+  function renderChart(prices, ma10, ma60) {
+    const svg = $('val-chart');
+    const W=800, H=280, padL=50, padR=16, padT=14, padB=30;
+    const w=W-padL-padR, h=H-padT-padB;
+    const yMax = Math.max(...prices, ...ma10.filter(v=>v!=null), ...ma60.filter(v=>v!=null));
+    const yMin = Math.min(...prices);
+    const span = yMax - yMin || 1;
+    const n = prices.length;
+    const xAt = i => padL + (i/(n-1))*w;
+    const yAt = v => padT + h - ((v - yMin)/span)*h;
+    let s = '';
+    // Grid
+    for (let i=0;i<=4;i++){
+      const v = yMin + span*i/4, y = yAt(v);
+      s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
+      s += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${(v/1000).toFixed(1)}k</text>`;
+    }
+    // MA60
+    const ma60Pts = ma60.map((v,i)=>v!=null ? `${i?'L':'M'} ${xAt(i)} ${yAt(v)}` : '').filter(Boolean).join(' ');
+    if (ma60Pts) s += `<path d="${ma60Pts}" fill="none" stroke="#94A3B8" stroke-width="1" stroke-dasharray="4 3"/>`;
+    // MA10
+    const ma10Pts = ma10.map((v,i)=>v!=null ? `${i?'L':'M'} ${xAt(i)} ${yAt(v)}` : '').filter(Boolean).join(' ');
+    if (ma10Pts) s += `<path d="${ma10Pts}" fill="none" stroke="#F97316" stroke-width="1.5"/>`;
+    // Prices
+    let line='';
+    prices.forEach((p,i)=>{ line += (i?' L ':'M ') + xAt(i) + ' ' + yAt(p); });
+    s += `<path d="${line}" fill="none" stroke="var(--text)" stroke-width="1.5"/>`;
+    // Légende
+    s += `<rect x="${padL+10}" y="${padT+8}" width="14" height="2" fill="var(--text)"/>`;
+    s += `<text x="${padL+28}" y="${padT+12}" font-size="11" fill="var(--text-3)">Prix</text>`;
+    s += `<rect x="${padL+70}" y="${padT+8}" width="14" height="2" fill="#F97316"/>`;
+    s += `<text x="${padL+88}" y="${padT+12}" font-size="11" fill="var(--text-3)">MM 10m</text>`;
+    s += `<rect x="${padL+140}" y="${padT+8}" width="14" height="2" fill="#94A3B8"/>`;
+    s += `<text x="${padL+158}" y="${padT+12}" font-size="11" fill="var(--text-3)">MM 60m</text>`;
+    svg.innerHTML = s;
+  }
+
+  function buildMA(prices, period) {
+    const out = [];
+    for (let i = 0; i < prices.length; i++) {
+      if (i < period - 1) { out.push(null); continue; }
+      let sum = 0;
+      for (let k = 0; k < period; k++) sum += prices[i-k];
+      out.push(sum/period);
+    }
+    return out;
+  }
+
+  async function render(assetId) {
+    document.querySelectorAll('[data-asset]').forEach(b => b.classList.toggle('is-active', b.dataset.asset === assetId));
+    $('val-asset-name').textContent = ASSET_NAMES[assetId] || assetId;
+    try {
+      const data = await loadAsset(assetId);
+      const prices = data.prices;
+      const cape = CAPE_BY_ASSET[assetId];
+      const r = VALUATION.analyzeValuation({ prices, cape });
+
+      // Hero
+      $('val-score').textContent = r.compositeScore.score;
+      $('val-score').style.color = r.compositeScore.color;
+      $('val-verdict').textContent = r.compositeScore.verdict;
+      $('val-cursor').style.left = r.compositeScore.score + '%';
+      $('val-cursor').style.borderColor = r.compositeScore.color;
+      $('val-msg').innerHTML = 'Score composite <strong style="color:' + r.compositeScore.color + '">' + r.compositeScore.score + '/100</strong> = <strong>' + r.compositeScore.verdict + '</strong>. Le CAPE de <strong>' + cape.toFixed(1) + '</strong> est en <strong style="color:' + r.capeClassification.color + '">' + r.capeClassification.label.toLowerCase() + '</strong> (médiane historique ≈ 16). Selon la régression de Shiller, le rendement réel annualisé moyen sur 10 ans à ce niveau est de <strong>' + (r.expectedReturn10Y?.toFixed(1) || '—') + ' %</strong>.';
+
+      // KPIs
+      $('kpi-cape').textContent = cape.toFixed(1);
+      $('kpi-cape-class').textContent = r.capeClassification.label + ' · P' + r.capeClassification.percentile;
+      $('kpi-cape-class').style.color = r.capeClassification.color;
+      $('kpi-dd').textContent = r.drawdown.currentDD.toFixed(1) + ' %';
+      $('kpi-dd').style.color = r.drawdown.currentDD < -10 ? '#F97316' : 'var(--text)';
+      $('kpi-dd-sub').textContent = r.drawdown.monthsFromATH === 0 ? 'ATH ce mois-ci' : 'ATH il y a ' + r.drawdown.monthsFromATH + ' mois';
+      $('kpi-ma').textContent = (r.ma200.pct >= 0 ? '+' : '') + r.ma200.pct.toFixed(1) + ' %';
+      $('kpi-ma').style.color = r.ma200.pct < 0 ? '#F97316' : '#10B981';
+      $('kpi-mom').textContent = (r.momentum12m >= 0 ? '+' : '') + r.momentum12m.toFixed(1) + ' %';
+      $('kpi-mom').style.color = r.momentum12m < 0 ? '#F97316' : '#10B981';
+      $('kpi-ret10').textContent = r.annualReturn10Y != null ? r.annualReturn10Y.toFixed(1) + ' %' : '—';
+      $('kpi-exp10').textContent = r.expectedReturn10Y != null ? r.expectedReturn10Y.toFixed(1) + ' %' : '—';
+      $('kpi-exp10').style.color = r.expectedReturn10Y < 4 ? '#F97316' : (r.expectedReturn10Y > 7 ? '#10B981' : 'var(--text)');
+
+      // Chart
+      const ma10 = buildMA(prices, 10);
+      const ma60 = buildMA(prices, 60);
+      renderChart(prices, ma10, ma60);
+      $('val-chart-meta').textContent = data.start + ' → ' + data.end + ' · ' + data.points + ' points';
+    } catch (e) {
+      $('val-msg').innerHTML = '<span style="color:var(--red)">Erreur chargement données : ' + e.message + '</span>';
+    }
+  }
+
+  function safeInit() {
+    document.querySelectorAll('[data-asset]').forEach(b => {
+      b.addEventListener('click', () => render(b.dataset.asset));
+    });
+    CI.initAll && CI.initAll();
+    render('sp500');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

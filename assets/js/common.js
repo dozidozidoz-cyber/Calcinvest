@@ -997,6 +997,8 @@
     '/simulateur-dca':                  { label: 'DCA Bourse',         cat: 'Marchés',  color: '#2563EB' },
     '/simulateur-dca-crypto':           { label: 'DCA Crypto',         cat: 'Marchés',  color: '#F7931A' },
     '/simulateur-dcf':                  { label: 'Valorisation DCF',   cat: 'Marchés',  color: '#D97706' },
+    '/valorisation-marche':             { label: 'Valorisation Marché',cat: 'Marchés',  color: '#F97316' },
+    '/allocation-portefeuille':         { label: 'Allocation Portefeuille',cat: 'Marchés',color: '#10B981' },
     '/simulateur-rendement-locatif':    { label: 'Rendement Locatif',  cat: 'Immobilier', color: '#059669' },
     '/simulateur-scpi':                 { label: 'SCPI',               cat: 'Immobilier', color: '#0E9F6E' },
     '/simulateur-pret':                 { label: 'Simulateur de Prêt', cat: 'Immobilier', color: '#0E9F6E' },
@@ -1118,7 +1120,9 @@
         tools: [
           { url: '/simulateur-dca',        label: 'DCA Bourse',          desc: 'Backtest 1871-2026, 13 actifs',  icon: ICONS.dca },
           { url: '/simulateur-dca-crypto', label: 'DCA Crypto',          desc: 'BTC, ETH, SOL, BNB, XRP',         icon: ICONS.crypto },
-          { url: '/simulateur-dcf',        label: 'Valorisation DCF',    desc: 'Valeur intrinsèque d\'une action', icon: ICONS.dcf }
+          { url: '/simulateur-dcf',        label: 'Valorisation DCF',    desc: 'Valeur intrinsèque d\'une action', icon: ICONS.dcf },
+          { url: '/valorisation-marche',   label: 'Valorisation Marché', desc: 'CAPE, drawdown, score composite', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg>' },
+          { url: '/allocation-portefeuille', label: 'Allocation Portefeuille', desc: '60/40, All-Weather, Permanent', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 4"/></svg>' }
         ]
       },
       {

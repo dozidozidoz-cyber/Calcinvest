@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#2563EB" />
+<title>Allocation Portefeuille — 60/40, All-Weather, Golden Butterfly | CalcInvest</title>
+<meta name="description" content="Comparez les stratégies d'allocation classiques : Buy & Hold, 60/40, All-Weather Dalio, Golden Butterfly, Permanent Portfolio Browne. Backtest historique." />
+<meta name="keywords" content="allocation portefeuille, 60/40, all weather Dalio, golden butterfly, permanent portfolio Browne, rebalancing" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/allocation-portefeuille" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Allocation Portefeuille — CalcInvest" />
+<meta property="og:description" content="Backtest 60/40, All-Weather, Golden Butterfly et Permanent" />
+<meta property="og:url" content="https://calcinvest.fr/allocation-portefeuille" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Allocation Portefeuille" />
+<meta name="twitter:description" content="Backtest des stratégies classiques" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Allocation Portefeuille","description":"Backtest comparatif des stratégies d'allocation","url":"https://calcinvest.fr/allocation-portefeuille","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.al-hero { background: linear-gradient(135deg, rgba(37,99,235,.10), rgba(37,99,235,.02)); border:1px solid #2563EB; }
+.strategy-card { padding:14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); position:relative; transition:var(--t-fast) }
+.strategy-card.is-best { border-color:#10B981; box-shadow:0 0 0 1px #10B981 }
+.strategy-card.is-best::before {
+  content:'★ MEILLEUR SHARPE'; position:absolute; top:-10px; left:14px;
+  background:#10B981; color:#fff; font-size:10px; padding:2px 8px; border-radius:99px;
+  font-weight:700; letter-spacing:.08em;
+}
+.strat-name { font-size:13px; font-weight:700; color:var(--text); margin-bottom:6px }
+.strat-cagr { font-size:22px; font-weight:800; font-family:var(--font-mono); line-height:1 }
+.strat-row { display:flex; gap:10px; margin-top:8px; font-size:11px; color:var(--text-3) }
+.strat-row span { display:inline-flex; align-items:center; gap:4px }
+.strat-weights { display:flex; height:6px; border-radius:99px; overflow:hidden; margin-top:10px; background:var(--bg-3) }
+.strat-weight { display:block; height:100% }
+.legend-dot { display:inline-block; width:8px; height:8px; border-radius:50%; vertical-align:middle; margin-right:4px }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Allocation Portefeuille</div><div class="logo-text-sub">Backtest stratégies</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1180px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:24px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><circle cx="8" cy="8" r="6"/><path d="M8 2v6l4 2"/></svg></span>Analyse & Timing</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Quelle <em>allocation</em> de portefeuille ?</h1>
+    <p class="page-lede" style="max-width:640px;margin:0 auto">Backtest comparatif des 5 stratégies classiques : Buy & Hold, 60/40, <strong style="color:var(--text)">All-Weather (Dalio)</strong>, Golden Butterfly et Permanent Portfolio. CAGR, drawdown, Sharpe sur 22 ans.</p>
+  </div>
+
+  <!-- Paramètres -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field">
+          <label class="field-label">Capital initial</label>
+          <div class="stepper" data-step="1000" data-min="0">
+            <button class="stepper-btn" data-act="minus">−</button>
+            <input class="stepper-input" id="al-k0" type="number" value="10000" />
+            <span class="stepper-unit">€</span>
+            <button class="stepper-btn" data-act="plus">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Versement mensuel</label>
+          <div class="stepper" data-step="50" data-min="0">
+            <button class="stepper-btn" data-act="minus">−</button>
+            <input class="stepper-input" id="al-monthly" type="number" value="200" />
+            <span class="stepper-unit">€/mois</span>
+            <button class="stepper-btn" data-act="plus">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Fréquence de rebalancing</label>
+          <select class="select" id="al-rebal">
+            <option value="annual" selected>Annuel (recommandé)</option>
+            <option value="quarterly">Trimestriel</option>
+            <option value="never">Jamais (laisser dériver)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero meilleure stratégie -->
+  <section class="card al-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:24px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;font-weight:700;margin-bottom:12px">✓ Stratégie au meilleur ratio rendement/risque</div>
+      <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div style="font-size:clamp(28px,4vw,38px);font-weight:800;color:#2563EB" id="al-best-name">—</div>
+        <div style="font-size:14px;color:var(--text-3)" id="al-best-desc">—</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px">
+        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Capital final</div><div style="font-size:20px;font-weight:700;font-family:var(--font-mono)" id="al-best-final">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">CAGR</div><div style="font-size:20px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="al-best-cagr">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Max DD</div><div style="font-size:20px;font-weight:700;color:#F97316;font-family:var(--font-mono)" id="al-best-dd">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Sharpe</div><div style="font-size:20px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="al-best-sharpe">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cards par stratégie -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title">Toutes les stratégies — résultats comparés</div></div>
+    <div class="card-body">
+      <div id="al-strategies" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px"></div>
+    </div>
+  </section>
+
+  <!-- Equity curve -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title">Courbes d'équité — Capital cumulé</div></div>
+    <div class="card-body">
+      <svg id="al-chart" viewBox="0 0 800 320" style="width:100%;height:auto;display:block;background:var(--bg);border-radius:var(--r-sm)"></svg>
+      <div id="al-legend" style="display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;justify-content:center"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Méthodologie</strong> : backtest depuis les données disponibles (S&P 500 + or). Pour les obligations / cash / commodities (pas de série historique chez nous), on utilise un proxy avec rendements annualisés moyens historiques + volatilité (LT bonds 4.5 %, IT 3.5 %, ST 2.5 %, cash 2 %, commodities 2.5 %).
+      <br/><strong>Rebalancing</strong> : remet les poids cibles à la date prévue (annuel = en janvier, trimestriel = tous les 3 mois).
+      <br/><strong>Sharpe ratio</strong> : (CAGR − 2 %) / volatilité annuelle. > 1 = bon, > 2 = excellent.
+      <br/><br/>
+      <strong>Stratégies expliquées :</strong>
+      <ul style="margin-top:8px">
+        <li><strong>60/40</strong> — Le classique Bogle : 60 % actions, 40 % obligations longues. Réduit le DD de moitié vs Buy & Hold.</li>
+        <li><strong>All-Weather (Dalio)</strong> — 30 % actions, 40 % LT bonds, 15 % IT bonds, 7.5 % or, 7.5 % commodities. Conçu pour résister à tous les régimes économiques.</li>
+        <li><strong>Golden Butterfly</strong> — Cinq buckets égaux. Excellent compromis sur le long terme.</li>
+        <li><strong>Permanent Portfolio (Browne)</strong> — 25/25/25/25 actions/LT bonds/or/cash. Robustesse maximale, performance modeste.</li>
+      </ul>
+      <br/>
+      <em style="color:var(--text-4)">Simulateur pédagogique. Les rendements obligations/cash/commodities sont des proxies historiques — pas une garantie de résultats futurs.</em>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Backtest stratégies classiques · Proxy bonds/cash/commodities</div><div><a href="/">Accueil</a> · <a href="/simulateur-dca">DCA</a> · <a href="/valorisation-marche">Valorisation marché</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-allocation.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtC = n => CI.fmtCompact ? CI.fmtCompact(n) : Math.round(n/1000) + 'k';
+
+  let spPrices = null, goldPrices = null;
+
+  const COLORS = {
+    'buyhold': '#3B82F6',
+    '60_40':   '#10B981',
+    'all_weather': '#F97316',
+    'golden_butterfly': '#D97706',
+    'permanent': '#A855F7'
+  };
+  const ASSET_COLORS = {
+    stocks: '#3B82F6', bondsLT: '#10B981', bondsIT: '#34D399', bondsST: '#A7F3D0',
+    gold: '#F59E0B', commodities: '#EA580C', cash: '#94A3B8'
+  };
+  const ASSET_NAMES = {
+    stocks: 'Actions', bondsLT: 'Oblig. long terme', bondsIT: 'Oblig. moyen terme',
+    bondsST: 'Oblig. court terme', gold: 'Or', commodities: 'Matières premières', cash: 'Cash'
+  };
+
+  async function loadData() {
+    const [sp, gold] = await Promise.all([
+      fetch('/assets/data/sp500.json').then(r => r.json()),
+      fetch('/assets/data/gold.json').then(r => r.json())
+    ]);
+    const n = Math.min(sp.prices.length, gold.prices.length);
+    spPrices = sp.prices.slice(-n);
+    goldPrices = gold.prices.slice(-n);
+  }
+
+  function renderStrategies(results) {
+    const c = $('al-strategies');
+    // Trouve meilleur Sharpe
+    const bestKey = Object.keys(results).reduce((a, b) =>
+      (results[b].sharpe || 0) > (results[a].sharpe || 0) ? b : a
+    );
+    c.innerHTML = Object.entries(results).map(([key, r]) => {
+      const totalW = Object.values(r.weights).reduce((s, v) => s + v, 0);
+      const weightBar = Object.entries(r.weights).map(([k, w]) =>
+        `<span class="strat-weight" style="width:${w/totalW*100}%;background:${ASSET_COLORS[k] || '#777'}"></span>`
+      ).join('');
+      const isBest = key === bestKey;
+      return `<div class="strategy-card ${isBest ? 'is-best' : ''}" style="border-left:3px solid ${COLORS[key]}">
+        <div class="strat-name">${r.name}</div>
+        <div class="strat-cagr" style="color:${COLORS[key]}">${r.cagr.toFixed(2)}%<span style="font-size:11px;color:var(--text-4);font-weight:500;margin-left:4px">/an</span></div>
+        <div class="strat-row">
+          <span>📈 ${fmtC(r.finalValue)} €</span>
+          <span style="color:#F97316">↓${r.maxDrawdown.toFixed(1)}%</span>
+          <span>S ${r.sharpe.toFixed(2)}</span>
+        </div>
+        <div class="strat-weights">${weightBar}</div>
+      </div>`;
+    }).join('');
+
+    // Hero best
+    const b = results[bestKey];
+    $('al-best-name').textContent = b.name;
+    $('al-best-desc').textContent = b.desc;
+    $('al-best-final').textContent = fmtM(b.finalValue);
+    $('al-best-cagr').textContent = b.cagr.toFixed(2) + ' %';
+    $('al-best-dd').textContent = b.maxDrawdown.toFixed(1) + ' %';
+    $('al-best-sharpe').textContent = b.sharpe.toFixed(2);
+  }
+
+  function renderChart(results) {
+    const svg = $('al-chart');
+    const W=800, H=320, padL=60, padR=16, padT=14, padB=30;
+    const w=W-padL-padR, h=H-padT-padB;
+    const allValues = Object.values(results).flatMap(r => r.equityCurve.map(p => p.value));
+    const yMax = Math.max(...allValues);
+    const yMin = Math.min(...allValues);
+    const span = yMax - yMin || 1;
+    const refCurve = Object.values(results)[0].equityCurve;
+    const n = refCurve.length;
+    const xAt = i => padL + (i/(n-1))*w;
+    const yAt = v => padT + h - ((v - yMin)/span)*h;
+    let s = '';
+    // Grid
+    for (let i=0;i<=4;i++){
+      const v = yMin + span*i/4, y = yAt(v);
+      s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
+      s += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${fmtC(v)}</text>`;
+    }
+    // X labels (années)
+    [0, n/4, n/2, 3*n/4, n-1].forEach(i => {
+      i = Math.round(i); if (i >= n) return;
+      const y = Math.round(i/12) + 'a';
+      s += `<text x="${xAt(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${y}</text>`;
+    });
+    // Lines
+    Object.entries(results).forEach(([k, r]) => {
+      const color = COLORS[k];
+      let line = '';
+      r.equityCurve.forEach((p, i) => { line += (i?' L ':'M ') + xAt(i) + ' ' + yAt(p.value); });
+      s += `<path d="${line}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round"/>`;
+    });
+    svg.innerHTML = s;
+
+    // Legend
+    $('al-legend').innerHTML = Object.entries(results).map(([k, r]) =>
+      `<span><span class="legend-dot" style="background:${COLORS[k]}"></span>${r.name}</span>`
+    ).join('');
+  }
+
+  function read() {
+    return {
+      K0: CI.safeNum('al-k0', 10000),
+      monthly: CI.safeNum('al-monthly', 200),
+      rebalancing: $('al-rebal').value || 'annual'
+    };
+  }
+
+  function run() {
+    if (!spPrices || !goldPrices) return;
+    const p = read();
+    const results = ALLOC.compareStrategies({
+      pricesStocks: spPrices,
+      pricesGold: goldPrices,
+      K0: p.K0,
+      monthly: p.monthly,
+      rebalancing: p.rebalancing
+    });
+    renderStrategies(results);
+    renderChart(results);
+  }
+
+  async function safeInit() {
+    await loadData();
+    ['al-k0','al-monthly','al-rebal'].forEach(id => {
+      const el = $(id);
+      if (el) {
+        el.addEventListener('change', run);
+        if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 300); });
+      }
+    });
+    CI.initAll && CI.initAll();
+    run();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>
