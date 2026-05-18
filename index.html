@@ -26,6 +26,78 @@
 <link rel="stylesheet" href="/assets/css/style.css" />
 
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "CalcInvest", "description": "Suite de simulateurs financiers : DCA bourse & crypto, rendement locatif, FIRE, PER, retraite, intérêts composés. Backtestez sur données réelles depuis 1871.", "url": "https://calcinvest.fr/", "publisher": {"@type": "Organization", "name": "CalcInvest", "url": "https://calcinvest.fr"}, "potentialAction": {"@type": "SearchAction", "target": "https://calcinvest.fr/#outils?q={search_term_string}", "query-input": "required name=search_term_string"}}</script>
+<style>
+/* === Spotlight hero search === */
+.hero-search-wrap { margin: 24px 0 8px; position: relative; max-width: 640px }
+.hero-search-box {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--t-fast);
+}
+.hero-search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.hero-search-icon { color: var(--text-3); flex-shrink: 0 }
+.hero-search-box:focus-within .hero-search-icon { color: var(--accent) }
+.hero-search-input {
+  flex: 1; border: 0; outline: none; background: transparent;
+  font-family: inherit; font-size: 16px; font-weight: 500;
+  color: var(--text);
+}
+.hero-search-input::placeholder { color: var(--text-4) }
+.hero-search-kbd {
+  font-size: 10px; font-family: var(--font-mono);
+  background: var(--bg-3); color: var(--text-3);
+  padding: 4px 8px; border-radius: 6px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+@media (max-width: 560px) { .hero-search-kbd { display: none } }
+
+.hero-search-suggestions {
+  position: absolute; top: 64px; left: 0; right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15,23,42,0.10);
+  max-height: 360px; overflow-y: auto;
+  z-index: 100;
+  display: none;
+}
+.hero-search-suggestions.is-open { display: block }
+.hero-suggestion {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-soft);
+  transition: var(--t-fast);
+}
+.hero-suggestion:last-child { border-bottom: 0 }
+.hero-suggestion:hover, .hero-suggestion.is-focused { background: var(--bg-hover) }
+.hero-suggestion-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0 }
+.hero-suggestion-text { flex: 1; min-width: 0 }
+.hero-suggestion-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px }
+.hero-suggestion-desc { font-size: 12px; color: var(--text-4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.hero-suggestion-cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-4); font-weight: 600; padding: 4px 8px; background: var(--bg); border-radius: 999px; flex-shrink: 0 }
+.hero-suggestions-empty { padding: 20px; text-align: center; color: var(--text-4); font-size: 13px }
+
+.hero-search-hints {
+  margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.hero-search-hint-label { font-size: 11px; color: var(--text-4); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600 }
+.hero-search-hint {
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-2); padding: 6px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: var(--t-fast); font-family: inherit;
+}
+.hero-search-hint:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent) }
+</style>
 </head>
 <body>
 <noscript>
@@ -109,22 +181,43 @@
       </h1>
 
       <p class="v3-hero-lede">
-        CalcInvest transforme vos hypothèses en projections rigoureuses. <strong>19 outils</strong> couvrent investissement, immobilier, SCPI, retraite, FIRE et trading (risk management, sizing). Fiscalité française intégrée, 100 % local.
+        CalcInvest transforme vos hypothèses en projections rigoureuses. <strong>30 outils</strong> couvrent investissement, immobilier, SCPI, retraite, FIRE et trading. Fiscalité française intégrée, 100 % local.
       </p>
 
-      <div class="v3-hero-actions">
-        <a href="/simulateur-dca" class="v3-hero-btn-primary">
-          Démarrer gratuitement
+      <!-- Spotlight search -->
+      <div class="hero-search-wrap">
+        <div class="hero-search-box">
+          <svg class="hero-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/>
+          </svg>
+          <input type="text" id="hero-search-input" class="hero-search-input" placeholder='Que cherchez-vous ? ex : "salaire net", "PER", "DCA bitcoin"…' autocomplete="off" />
+          <kbd class="hero-search-kbd">Tab pour explorer</kbd>
+        </div>
+        <div class="hero-search-suggestions" id="hero-search-suggestions"></div>
+        <div class="hero-search-hints">
+          <span class="hero-search-hint-label">Populaires :</span>
+          <button class="hero-search-hint" data-q="salaire">Salaire brut/net</button>
+          <button class="hero-search-hint" data-q="impot">Impôt revenu</button>
+          <button class="hero-search-hint" data-q="dca">DCA bourse</button>
+          <button class="hero-search-hint" data-q="pret">Prêt immobilier</button>
+          <button class="hero-search-hint" data-q="scpi">SCPI</button>
+          <button class="hero-search-hint" data-q="fire">FIRE</button>
+        </div>
+      </div>
+
+      <div class="v3-hero-actions" style="margin-top:24px">
+        <a href="#outils" class="v3-hero-btn-primary">
+          Parcourir les 30 outils
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
         </a>
-        <a href="#outils" class="v3-hero-btn-secondary">
-          Parcourir les outils
+        <a href="/methodologie" class="v3-hero-btn-secondary">
+          Comprendre la méthode
         </a>
       </div>
 
       <div class="v3-hero-stats">
         <div class="v3-hero-stat-mini">
-          <div class="v3-hero-stat-mini-num"><em data-countup="19">0</em> outils</div>
+          <div class="v3-hero-stat-mini-num"><em data-countup="30">0</em> outils</div>
           <div class="v3-hero-stat-mini-label">Simulateurs complets</div>
         </div>
         <div class="v3-hero-stat-mini">
@@ -353,7 +446,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Simulateur Décumulation</div>
-          <div class="tool-card-desc">Phase de retrait : combien d'années votre capital tient-il ? SWR via Monte Carlo Trinity. Stratégie 3 buckets.</div>
+          <div class="tool-card-desc">Pour préparer la retraite : combien de temps tient votre capital ? Taux de retrait sûr (SWR) + stratégie 3 buckets</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · FIRE phase 2</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -465,7 +558,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Simulateur DCA Bourse</div>
-          <div class="tool-card-desc">Backtest sur 13 actifs (S&P 500 depuis 1871, ETF UCITS PEA, or). Monte Carlo, drawdowns, rendements glissants.</div>
+          <div class="tool-card-desc">Pour investir progressivement en bourse : backtest sur 20 actifs (S&P 500 depuis 1871, ETF UCITS PEA, crypto, or)</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 11 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -497,7 +590,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Valorisation DCF</div>
-          <div class="tool-card-desc">Valeur intrinsèque d'une action en 2 minutes. Flux actualisés, Gordon Growth, matrice WACC × croissance.</div>
+          <div class="tool-card-desc">Pour stock-pickers : valorisation d'une action par actualisation des flux (DCF), Gordon Growth, sensibilité WACC × croissance</div>
           <span class="tool-card-tag"><span class="dot"></span>Live</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -636,7 +729,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Calculateur PIPS</div>
-          <div class="tool-card-desc">Valeur d'un pip + taille de position optimale + P&L attendu sur 20 instruments (Forex, métaux, indices, crypto CFD).</div>
+          <div class="tool-card-desc">Pour traders forex/CFD : valeur d'un pip + taille de position optimale selon votre risque, P&L théorique sur 20 instruments</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 3 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -650,7 +743,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Marge &amp; Liquidation</div>
-          <div class="tool-card-desc">Marge requise, prix de liquidation, niveaux margin call broker, SL/TP par montant cible, convertisseur pip ↔ prix.</div>
+          <div class="tool-card-desc">Pour traders à effet de levier : marge requise, prix de liquidation, distance au margin call broker, SL/TP par montant</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 4 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -665,7 +758,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Coûts réels du trade</div>
-          <div class="tool-card-desc">Spread, commission, swap overnight — break-even en pips. Projection compound trading avec fiscalité. Les frais qui tuent.</div>
+          <div class="tool-card-desc">Pour traders réguliers : décomposition spread + commission + swap, break-even en pips, vrais frais cumulés sur l'année</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 3 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -680,7 +773,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Risk Management</div>
-          <div class="tool-card-desc">Position sizing, expectancy, R/R, breakeven win rate, drawdown sur streak, probabilité de ruine — la base que 95 % des traders ignorent.</div>
+          <div class="tool-card-desc">Pour valider votre edge : expectancy, ratio R/R, breakeven winrate, probabilité de ruine — fondamentaux qui décident de la survie</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 5 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -694,7 +787,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Monte Carlo Trading</div>
-          <div class="tool-card-desc">2 000 trajectoires de votre système. Distribution drawdowns, courbes équité percentiles 5/95, probabilité d'atteindre votre objectif.</div>
+          <div class="tool-card-desc">Pour traders avancés : 2 000 trajectoires simulées de votre système, distribution drawdowns, percentiles 5/95</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 5 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -708,7 +801,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">ATR &amp; Kelly</div>
-          <div class="tool-card-desc">Stop loss basé sur l'ATR (volatilité réelle), Kelly Criterion pour le sizing optimal, risque multi-positions corrélées.</div>
+          <div class="tool-card-desc">Pour traders quanti : stop loss adaptatif à la volatilité (ATR), taille optimale (Kelly), risque corrélé multi-positions</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · trading quanti</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -722,7 +815,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Fiscalité Trading FR</div>
-          <div class="tool-card-desc">PFU 30 % vs option IR au barème · CTO vs PEA · statut occasionnel/habituel · imputation MV reportables 10 ans.</div>
+          <div class="tool-card-desc">Pour traders actifs en France : PFU 30 % vs option IR, CTO vs PEA, statut occasionnel vs habituel, report moins-values 10 ans</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 4 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -737,7 +830,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Journal de Trading</div>
-          <div class="tool-card-desc">Suivi de vos trades persistant : winrate, expectancy, profit factor, equity curve, drawdown. Cloud + RLS Supabase.</div>
+          <div class="tool-card-desc">Pour traders qui veulent progresser : journal persistant de chaque trade, stats avancées (winrate, expectancy, drawdown)</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · stats avancées</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -887,7 +980,7 @@
         </div>
         <div class="tool-card-body">
           <div class="tool-card-title">Calculateur FIRE</div>
-          <div class="tool-card-desc">Indépendance financière : règle des 4 %, coast-FIRE, lean/fat FIRE, Monte Carlo survie capital.</div>
+          <div class="tool-card-desc">Pour viser l'indépendance financière : âge FIRE, règle des 4 %, scénarios lean/fat-FIRE + Monte Carlo</div>
           <span class="tool-card-tag"><span class="dot"></span>Live · 7 analyses</span>
         </div>
         <svg class="tool-card-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -1606,6 +1699,131 @@
 <script src="/assets/js/paywall.js"></script>
 <script>
   CI.initAll && CI.initAll();
+
+  /* === Spotlight hero search === */
+  (function() {
+    const input = document.getElementById('hero-search-input');
+    const sugBox = document.getElementById('hero-search-suggestions');
+    if (!input || !sugBox) return;
+
+    // Index : reprend TOOL_CATALOG + métadonnées additionnelles pour matching keyword
+    const TOOLS = [
+      // Marchés
+      { url:'/simulateur-dca',                     label:'DCA Bourse', cat:'Marchés', color:'#2563EB', kw:'dca bourse etf bourse sp500 nasdaq cac msci action ucits investir programmé regulier' },
+      { url:'/simulateur-dca-crypto',              label:'DCA Crypto', cat:'Marchés', color:'#F7931A', kw:'crypto bitcoin btc ethereum eth solana sol dca crypto investir' },
+      { url:'/simulateur-dcf',                     label:'Valorisation DCF', cat:'Marchés', color:'#D97706', kw:'dcf valorisation action stock picking intrinsèque wacc gordon' },
+      // Immobilier
+      { url:'/simulateur-rendement-locatif',       label:'Rendement Locatif', cat:'Immobilier', color:'#059669', kw:'rendement locatif location immo cashflow TRI nu meublé déficit foncier sci' },
+      { url:'/simulateur-scpi',                    label:'SCPI Pierre Papier', cat:'Immobilier', color:'#0E9F6E', kw:'scpi pierre papier dividende européenne assurance vie démembrement' },
+      { url:'/simulateur-pret',                    label:'Simulateur de Prêt', cat:'Immobilier', color:'#0E9F6E', kw:'prêt immobilier crédit mensualité capacité emprunt taux usure notaire amortissement in fine' },
+      { url:'/calculateur-plus-value-immobiliere', label:'Plus-Value Immobilière', cat:'Immobilier', color:'#10B981', kw:'plus value immobilière cession vente bien abattement résidence' },
+      { url:'/simulateur-lmnp',                    label:'Simulateur LMNP', cat:'Immobilier', color:'#0E9F6E', kw:'lmnp meublé bic micro réel amortissement location meublée' },
+      { url:'/portefeuille-locatif',               label:'Portefeuille Locatif', cat:'Immobilier', color:'#10B981', kw:'portefeuille locatif multi biens dashboard agrégé' },
+      // Trading
+      { url:'/calculateur-pips',                   label:'Calculateur PIPS', cat:'Trading', color:'#7C3AED', kw:'pips pip forex position sizing taille trade fx' },
+      { url:'/calculateur-marge-liquidation',      label:'Marge & Liquidation', cat:'Trading', color:'#8B5CF6', kw:'marge liquidation effet de levier margin call sl tp' },
+      { url:'/calculateur-couts-trading',          label:'Coûts du trade', cat:'Trading', color:'#9333EA', kw:'coût trading spread commission swap break even' },
+      { url:'/calculateur-risk-management',        label:'Risk Management', cat:'Trading', color:'#A855F7', kw:'risk management expectancy r/r winrate probabilité ruine kelly' },
+      { url:'/simulateur-monte-carlo-trading',     label:'Monte Carlo Trading', cat:'Trading', color:'#A78BFA', kw:'monte carlo trading trajectoire stratégie variance' },
+      { url:'/calculateur-volatilite',             label:'ATR & Kelly', cat:'Trading', color:'#9D174D', kw:'atr volatilité kelly criterion sizing trader quanti' },
+      { url:'/calculateur-fiscalite-trading',      label:'Fiscalité Trading', cat:'Trading', color:'#C026D3', kw:'fiscalité trading pfu ir cto pea statut trader' },
+      { url:'/journal-trading',                    label:'Journal de Trading', cat:'Trading', color:'#7C3AED', kw:'journal trade suivi winrate equity curve persistant' },
+      // Fiscalité
+      { url:'/calculateur-impot-revenu',           label:'Calculateur Impôt Revenu', cat:'Fiscalité', color:'#DC2626', kw:'impôt revenu ir tmi barème tranche fiscal foyer parts décote' },
+      { url:'/calculateur-salaire-brut-net',       label:'Salaire Brut/Net', cat:'Fiscalité', color:'#3B82F6', kw:'salaire brut net smic cadre cotisation urssaf csg' },
+      { url:'/calculateur-tva-auto-entrepreneur',  label:'TVA + Auto-Entrepreneur', cat:'Fiscalité', color:'#F59E0B', kw:'tva ht ttc auto entrepreneur micro entreprise urssaf indépendant freelance' },
+      { url:'/convertisseur-devises',              label:'Convertisseur Devises', cat:'Fiscalité', color:'#0EA5E9', kw:'change devise euro dollar yen change bce taux conversion' },
+      { url:'/calculateur-donation-succession',    label:'Donation & Succession', cat:'Fiscalité', color:'#D97706', kw:'donation succession héritage abattement enfant démembrement transmission' },
+      { url:'/mon-foyer-fiscal',                   label:'Foyer Fiscal Global', cat:'Fiscalité', color:'#DC2626', kw:'foyer fiscal global agrégé total optimisation' },
+      // Épargne
+      { url:'/simulateur-interets-composes',       label:'Intérêts Composés', cat:'Épargne', color:'#7C3AED', kw:'intérêts composés capitalisation épargne projection rendement' },
+      { url:'/calculateur-fire',                   label:'Calculateur FIRE', cat:'Épargne', color:'#EA580C', kw:'fire indépendance financière retraite anticipée règle 4% lean fat' },
+      { url:'/simulateur-per',                     label:'Simulateur PER', cat:'Épargne', color:'#DC2626', kw:'per plan épargne retraite déduction fiscale optimisation' },
+      { url:'/simulateur-retraite',                label:'Simulateur Retraite', cat:'Épargne', color:'#0891B2', kw:'retraite cnav agirc arrco pension trimestre' },
+      { url:'/simulateur-assurance-vie',           label:'Assurance-Vie', cat:'Épargne', color:'#7C3AED', kw:'assurance vie av fonds euro uc 8 ans succession 152500' },
+      { url:'/simulateur-decumulation',            label:'Décumulation', cat:'Épargne', color:'#0891B2', kw:'décumulation retrait capital swr withdrawal rate trinity bucket' },
+      // Outils
+      { url:'/calculatrices-express',              label:'Calculatrices Express', cat:'Outils', color:'#34D399', kw:'express rapide quick calc tmi mensualité smic devise' },
+      { url:'/comparer',                           label:'Comparer Simulations', cat:'Outils', color:'#34D399', kw:'comparer comparaison côté projets' },
+      { url:'/glossaire',                          label:'Glossaire Financier', cat:'Outils', color:'#94A3B8', kw:'glossaire définition terme financier vocabulaire' }
+    ];
+
+    let focusedIdx = -1;
+
+    function searchTools(q) {
+      q = q.trim().toLowerCase();
+      if (!q) return [];
+      const tokens = q.split(/\s+/);
+      const scored = TOOLS.map(t => {
+        const hay = (t.label + ' ' + t.kw + ' ' + t.cat).toLowerCase();
+        let score = 0;
+        tokens.forEach(tok => {
+          if (t.label.toLowerCase().includes(tok)) score += 10;
+          if (hay.includes(tok)) score += 1;
+        });
+        return { ...t, score };
+      }).filter(t => t.score > 0).sort((a, b) => b.score - a.score);
+      return scored.slice(0, 6);
+    }
+
+    function render(results) {
+      if (results.length === 0) {
+        sugBox.innerHTML = '<div class="hero-suggestions-empty">Aucun outil ne correspond. Essayez : <code>impôt</code>, <code>dca</code>, <code>prêt</code>…</div>';
+      } else {
+        sugBox.innerHTML = results.map((r, i) => `
+          <a href="${r.url}" class="hero-suggestion ${i === focusedIdx ? 'is-focused' : ''}" data-idx="${i}">
+            <span class="hero-suggestion-dot" style="background:${r.color}"></span>
+            <span class="hero-suggestion-text">
+              <div class="hero-suggestion-title">${r.label}</div>
+              <div class="hero-suggestion-desc">${r.kw.split(' ').slice(0, 6).join(' · ')}</div>
+            </span>
+            <span class="hero-suggestion-cat">${r.cat}</span>
+          </a>
+        `).join('');
+      }
+      sugBox.classList.add('is-open');
+    }
+
+    let lastResults = [];
+    input.addEventListener('input', () => {
+      focusedIdx = -1;
+      lastResults = searchTools(input.value);
+      if (input.value.trim()) render(lastResults);
+      else sugBox.classList.remove('is-open');
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (!sugBox.classList.contains('is-open')) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); focusedIdx = Math.min(lastResults.length - 1, focusedIdx + 1); render(lastResults); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); focusedIdx = Math.max(-1, focusedIdx - 1); render(lastResults); }
+      else if (e.key === 'Enter' && focusedIdx >= 0 && lastResults[focusedIdx]) {
+        e.preventDefault(); window.location.href = lastResults[focusedIdx].url;
+      } else if (e.key === 'Escape') {
+        input.blur(); sugBox.classList.remove('is-open');
+      } else if (e.key === 'Tab' && lastResults.length > 0) {
+        e.preventDefault(); window.location.href = lastResults[0].url;
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.hero-search-wrap')) sugBox.classList.remove('is-open');
+    });
+
+    document.querySelectorAll('.hero-search-hint').forEach(b => {
+      b.addEventListener('click', () => {
+        input.value = b.dataset.q;
+        input.focus();
+        input.dispatchEvent(new Event('input'));
+      });
+    });
+
+    // Shortcut: focus avec "/"
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault(); input.focus();
+      }
+    });
+  })();
 </script>
 
 </body>
