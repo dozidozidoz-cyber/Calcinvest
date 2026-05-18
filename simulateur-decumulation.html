@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0891B2" />
+<title>Simulateur Décumulation 2025 — Mon capital tient-il X années ? | CalcInvest</title>
+<meta name="description" content="Simulez la phase de retrait de votre capital : combien d'années survit-il avec un retrait mensuel donné, taux de retrait sûr (SWR), stratégie 3 buckets." />
+<meta name="keywords" content="décumulation, retrait capital retraite, safe withdrawal rate, règle 4%, 3 buckets" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/simulateur-decumulation" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Simulateur Décumulation — CalcInvest" />
+<meta property="og:description" content="Survie capital retraite + SWR" />
+<meta property="og:url" content="https://calcinvest.fr/simulateur-decumulation" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Simulateur Décumulation" />
+<meta name="twitter:description" content="Survie capital retraite + SWR" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Simulateur Décumulation","description":"Phase de retrait capital retraite","url":"https://calcinvest.fr/simulateur-decumulation","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>.dc-hero { background: linear-gradient(135deg, rgba(8,145,178,.10), rgba(8,145,178,.02)); border:1px solid #0891B2; } .dc-chart { width:100%; height:240px; display:block; background:var(--bg); border-radius:var(--r-sm); }</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Décumulation</div><div class="logo-text-sub">Phase de retrait</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 12c2 0 4-2 6-2s4 2 6 2"/></svg></span>FIRE · Phase de retrait</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Mon capital tient-il <em>30 ans</em> ?</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Simulez la <strong style="color:var(--text)">phase de décumulation</strong> de votre capital. Indexation inflation, taux de retrait sûr (SWR), stratégie 3 buckets. L'opposé du DCA.</p>
+  </div>
+
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field"><label class="field-label">Capital de départ</label><div class="stepper" data-step="10000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="dc-capital" type="number" value="500000" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Retrait mensuel souhaité</label><div class="stepper" data-step="100" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="dc-retrait" type="number" value="2000" /><span class="stepper-unit">€/mois</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Rendement annuel net</label><div class="stepper" data-step="0.5" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="dc-rendement" type="number" value="5" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Inflation prévue</label><div class="stepper" data-step="0.5" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="dc-inflation" type="number" value="2" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Options</label><label style="display:flex;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer"><input type="checkbox" id="dc-index" checked> Indexer le retrait à l'inflation</label></div>
+        <div class="field"><label class="field-label">Allocation actions (pour SWR)</label><div class="stepper" data-step="10" data-min="0" data-max="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="dc-alloc" type="number" value="60" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card dc-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:28px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#0891B2;font-weight:700;margin-bottom:12px">✓ DURÉE DE VIE DE VOTRE CAPITAL</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Survie capital</div><div style="font-size:clamp(28px,4vw,38px);font-weight:800;color:#0891B2;font-family:var(--font-mono)" id="dc-stat-survie">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Total retiré</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="dc-stat-retire">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Capital final (40 ans)</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="dc-stat-final">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">SWR sûr 30 ans</div><div style="font-size:24px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="dc-stat-swr">—</div></div>
+      </div>
+      <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="dc-msg">—</div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div>Évolution du capital sur 40 ans</div></div>
+    <div class="card-body"><svg class="dc-chart" id="dc-chart" viewBox="0 0 800 240"></svg></div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Méthodologie</strong> : simulation déterministe pour le scénario principal (rendement constant). Le <strong>SWR (Safe Withdrawal Rate)</strong> utilise un Monte Carlo de 1 000 trajectoires avec rendements normaux (stocks μ=7 % σ=18 %, bonds μ=2 % σ=7 %, hypothèses Trinity Study).
+      <br/><strong>Limitations</strong> : ne modélise pas le séquence-of-returns risk en détail, ni les taxes (PFU 30 % sur les retraits CTO/AV après 8 ans). Pour un plan personnalisé : <a href="/calculateur-fire" style="color:var(--accent)">calculateur FIRE</a>.
+      <br/><strong>Règle des 4 %</strong> (Trinity Study 1998) : retrait 4 % du capital initial indexé inflation permet de tenir 30 ans à 95 % de probabilité (portefeuille 60/40). Très conservateur — ce simulateur calcule votre SWR personnalisé.
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Sources Trinity Study + Bengen · Hypothèses 2025</div><div><a href="/">Accueil</a> · <a href="/calculateur-fire">FIRE</a> · <a href="/simulateur-dca">DCA</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-decumulation.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtMc = n => CI.fmtCompact ? CI.fmtCompact(n) : fmtM(n);
+
+  function read() {
+    return {
+      capital: CI.safeNum('dc-capital', 500000),
+      retraitMensuel: CI.safeNum('dc-retrait', 2000),
+      rendementAnnuel: CI.safeNum('dc-rendement', 5),
+      inflation: CI.safeNum('dc-inflation', 2),
+      indexeInflation: CI.safeChecked('dc-index', true),
+      allocStocks: CI.safeNum('dc-alloc', 60),
+      dureeMax: 40
+    };
+  }
+
+  function renderChart(serie) {
+    const svg = $('dc-chart');
+    if (!svg || !serie.length) return;
+    const W=800, H=240, padL=60, padR=16, padT=14, padB=30;
+    const w=W-padL-padR, h=H-padT-padB;
+    const values = serie.map(p=>p.capital);
+    const yMax = Math.max(...values, 1);
+    const n = serie.length;
+    const xAt = i => padL + (i/(n-1))*w;
+    const yAt = v => padT + h - (v/yMax)*h;
+    let s = '';
+    for (let i=0;i<=4;i++) { const v=yMax*i/4, y=yAt(v); s+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`; s+=`<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${fmtMc(v)}</text>`; }
+    // Area
+    let path = `M ${xAt(0)} ${yAt(0)}`;
+    serie.forEach((p,i)=>{path += ` L ${xAt(i)} ${yAt(Math.max(0,p.capital))}`;});
+    path += ` L ${xAt(n-1)} ${yAt(0)} Z`;
+    s += `<path d="${path}" fill="rgba(8,145,178,0.20)"/>`;
+    let line=''; serie.forEach((p,i)=>{line += (i?' L ':'M ') + xAt(i) + ' ' + yAt(Math.max(0,p.capital));});
+    s += `<path d="${line}" fill="none" stroke="#0891B2" stroke-width="2"/>`;
+    // X labels years
+    [0, n/4, n/2, 3*n/4, n-1].forEach(i=>{ i=Math.round(i); if (i<n) { const y = serie[i].month/12; s+=`<text x="${xAt(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--text-4)" font-family="var(--font-mono)">${y.toFixed(0)} ans</text>`; }});
+    svg.innerHTML = s;
+  }
+
+  function run() {
+    const p = read();
+    const r = DECUM.decumulationDeterministe(p);
+    $('dc-stat-survie').textContent = r.survie;
+    $('dc-stat-retire').textContent = fmtM(r.totalRetire);
+    $('dc-stat-final').textContent = r.finalCapital > 0 ? fmtM(r.finalCapital) : '0 €';
+
+    const swr = DECUM.safeWithdrawalRate({ capital: p.capital, annees: 30, allocStocks: p.allocStocks, inflation: p.inflation });
+    $('dc-stat-swr').textContent = swr.swr.toFixed(2) + ' %';
+
+    const verdict = r.epuise
+      ? '<strong style="color:var(--red)">⚠ Capital épuisé en ' + r.yearsToZero.toFixed(1) + ' ans.</strong> Réduisez le retrait ou augmentez l\'allocation actions.'
+      : '<strong style="color:#10B981">✓ Capital intact après 40 ans</strong> — vos retraits sont soutenables au rendement projeté.';
+    const swrTxt = 'Selon Monte Carlo Trinity (1 000 trajectoires, allocation ' + p.allocStocks + '/' + (100-p.allocStocks) + ' actions/obligations), votre SWR sur 30 ans est de <strong style="color:#10B981">' + swr.swr.toFixed(2) + ' %</strong>, soit <strong>' + fmtM(swr.retraitMensuel) + '/mois</strong> initialement indexés inflation.';
+    $('dc-msg').innerHTML = verdict + '<br/><br/>' + swrTxt;
+
+    renderChart(r.serie);
+  }
+
+  function safeInit() {
+    ['dc-capital','dc-retrait','dc-rendement','dc-inflation','dc-index','dc-alloc'].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', run);
+      if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 300); });
+    });
+    CI.initAll && CI.initAll();
+    run();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

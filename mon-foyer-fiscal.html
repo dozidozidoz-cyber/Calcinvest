@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#DC2626" />
+<title>Mon Foyer Fiscal — Vue 360° revenus + impôts | CalcInvest</title>
+<meta name="description" content="Dashboard fiscal complet : agrège revenus salariés, fonciers, trading, AV. Calcule votre IR total, taux moyen, et recommandations d'optimisation." />
+<meta name="keywords" content="foyer fiscal complet, IR total agrégé, optimisation fiscale 360, dashboard fiscal" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/mon-foyer-fiscal" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Mon Foyer Fiscal — CalcInvest" />
+<meta property="og:description" content="Vue 360° revenus + impôts du foyer" />
+<meta property="og:url" content="https://calcinvest.fr/mon-foyer-fiscal" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Mon Foyer Fiscal" />
+<meta name="twitter:description" content="Dashboard fiscal complet" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Mon Foyer Fiscal","description":"Dashboard fiscal complet","url":"https://calcinvest.fr/mon-foyer-fiscal","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.fy-hero { background: linear-gradient(135deg, rgba(220,38,38,.08), rgba(220,38,38,.02)); border:1px solid #DC2626; }
+.fy-section { padding:18px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); margin-bottom:14px; }
+.fy-section-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); margin-bottom:14px; }
+.fy-reco { padding:14px 16px; background:var(--accent-soft); border-left:3px solid var(--accent); border-radius:var(--r-sm); font-size:13.5px; line-height:1.5; color:var(--text-2); margin-bottom:10px; }
+.fy-warn { background:rgba(217,119,6,.10); border-left-color:#D97706 !important; }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Mon Foyer Fiscal</div><div class="logo-text-sub">Vue 360°</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:36px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><rect x="3" y="2" width="10" height="12"/></svg></span>Fiscalité · Vue d'ensemble</div>
+    <h1 class="page-title" style="font-size:clamp(32px,4vw,42px)">Tout votre <em>foyer fiscal</em>.</h1>
+    <p class="page-lede" style="max-width:600px;margin:0 auto">Agrégez vos revenus (salaires, fonciers, trading, AV) en un seul écran. <strong style="color:var(--text)">IR total + taux effectif + recommandations</strong> d'optimisation chiffrées.</p>
+  </div>
+
+  <!-- INPUTS -->
+  <section class="fy-section">
+    <div class="fy-section-title">👤 Foyer</div>
+    <div class="field-grid">
+      <div class="field"><label class="field-label">Composition</label><select class="select" id="fy-foyer"><option value="1">Célibataire</option><option value="2">Couple marié/PACSé</option></select></div>
+      <div class="field"><label class="field-label">Enfants à charge</label><div class="stepper" data-min="0" data-max="8" data-step="1"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-enfants" type="number" value="0" /><span class="stepper-unit">enfants</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+    </div>
+  </section>
+
+  <section class="fy-section">
+    <div class="fy-section-title">💼 Revenus du travail</div>
+    <div class="field-grid">
+      <div class="field"><label class="field-label">Salaire net annuel (foyer total)</label><div class="stepper" data-min="0" data-step="1000"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-salaire" type="number" value="45000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label">Revenus indépendants / BIC (si AE)</label><div class="stepper" data-min="0" data-step="1000"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-bic" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+    </div>
+  </section>
+
+  <section class="fy-section">
+    <div class="fy-section-title">🏠 Revenus immobiliers (net)</div>
+    <div class="field-grid">
+      <div class="field"><label class="field-label">Revenus fonciers nets (locatif nu)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-fonciers" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label">Revenus LMNP (BIC, après amortissements)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-lmnp" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label">Dividendes SCPI (net)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-scpi" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+    </div>
+  </section>
+
+  <section class="fy-section">
+    <div class="fy-section-title">📈 Revenus de capitaux mobiliers</div>
+    <div class="field-grid">
+      <div class="field"><label class="field-label">Plus-values trading / CTO réalisées</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-trading" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label">Dividendes / intérêts (CTO, livrets)</label><div class="stepper" data-min="0" data-step="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-dividendes" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label">Rachat AV (PV après abat.)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-av" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+    </div>
+  </section>
+
+  <section class="fy-section">
+    <div class="fy-section-title">📉 Déductions / abattements</div>
+    <div class="field-grid">
+      <div class="field"><label class="field-label">Versement PER déductible</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-per" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label">Dons éligibles 66%</label><div class="stepper" data-min="0" data-step="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-dons" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+    </div>
+  </section>
+
+  <!-- HERO RESULT -->
+  <section class="card fy-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:28px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#DC2626;font-weight:700;margin-bottom:12px">✓ VOTRE SITUATION FISCALE GLOBALE</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Revenus bruts totaux</div><div style="font-size:24px;font-weight:800;font-family:var(--font-mono)" id="fy-revenus">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">IR + PS total</div><div style="font-size:clamp(26px,3.5vw,34px);font-weight:800;color:#DC2626;font-family:var(--font-mono)" id="fy-impot">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">TMI</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="fy-tmi">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Net après tout</div><div style="font-size:24px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="fy-net">—</div></div>
+      </div>
+      <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="fy-msg">Renseignez vos revenus pour voir votre situation fiscale globale.</div>
+    </div>
+  </section>
+
+  <!-- Breakdown -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title">Détail par poste</div></div>
+    <div class="card-body">
+      <div class="table-scroll"><table class="data-table"><thead><tr><th>Poste</th><th>Revenu brut</th><th>Imposition</th><th>Impôt + PS</th><th>Net</th></tr></thead><tbody id="fy-table"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- Recommandations -->
+  <section class="card">
+    <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M8 1l2 4 5 1-3.5 3 1 5L8 12l-4.5 2 1-5L1 6l5-1z"/></svg></div>Recommandations d'optimisation</div></div>
+    <div class="card-body" id="fy-reco">—</div>
+  </section>
+
+  <section class="card" style="margin-top:24px">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Méthodologie</strong> : agrège les calculs des modules <a href="/calculateur-impot-revenu" style="color:var(--accent)">IR</a>, <a href="/simulateur-rendement-locatif" style="color:var(--accent)">Locatif</a>, <a href="/simulateur-lmnp" style="color:var(--accent)">LMNP</a>, <a href="/calculateur-fiscalite-trading" style="color:var(--accent)">Fiscalité Trading</a> et <a href="/simulateur-assurance-vie" style="color:var(--accent)">AV</a>. Pour des cas complexes (BNC, IFI, BIC pro), consultez chaque simulateur dédié.
+      <br/><strong>Sauvegarde</strong> : les valeurs sont conservées en localStorage de votre navigateur (clé <code>ci_foyer_v1</code>). Aucune donnée ne sort de votre navigateur sauf si vous êtes connecté.
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Aggregation cross-tools · Barème 2025</div><div><a href="/">Accueil</a> · <a href="/calculateur-impot-revenu">IR</a> · <a href="/abonnement">Premium</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/core/calc-impot.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtP = n => CI.fmtPctPlain(n, 1);
+  const LS_KEY = 'ci_foyer_v1';
+  const FIELDS = ['fy-foyer','fy-enfants','fy-salaire','fy-bic','fy-fonciers','fy-lmnp','fy-scpi','fy-trading','fy-dividendes','fy-av','fy-per','fy-dons'];
+
+  function read() {
+    return {
+      adultes: parseInt($('fy-foyer').value) || 1,
+      enfants: parseInt($('fy-enfants').value) || 0,
+      salaire: CI.safeNum('fy-salaire', 45000),
+      bic: CI.safeNum('fy-bic', 0),
+      fonciers: CI.safeNum('fy-fonciers', 0),
+      lmnp: CI.safeNum('fy-lmnp', 0),
+      scpi: CI.safeNum('fy-scpi', 0),
+      trading: CI.safeNum('fy-trading', 0),
+      dividendes: CI.safeNum('fy-dividendes', 0),
+      av: CI.safeNum('fy-av', 0),
+      per: CI.safeNum('fy-per', 0),
+      dons: CI.safeNum('fy-dons', 0)
+    };
+  }
+
+  function save(p) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(p)); } catch {}
+  }
+
+  function load() {
+    try {
+      const p = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      Object.keys(p).forEach(k => {
+        const mapping = { adultes:'fy-foyer', enfants:'fy-enfants', salaire:'fy-salaire', bic:'fy-bic', fonciers:'fy-fonciers', lmnp:'fy-lmnp', scpi:'fy-scpi', trading:'fy-trading', dividendes:'fy-dividendes', av:'fy-av', per:'fy-per', dons:'fy-dons' };
+        const id = mapping[k]; if (id && $(id) && p[k] != null) $(id).value = p[k];
+      });
+    } catch {}
+  }
+
+  function run() {
+    const p = read();
+    save(p);
+
+    // Revenus soumis à l'IR au barème : salaire + BIC + fonciers + LMNP + SCPI PP
+    const revenusBareme = p.salaire + p.bic + p.fonciers + p.lmnp + p.scpi;
+    const totalBruts = revenusBareme + p.trading + p.dividendes + p.av;
+    const deductions = p.per + p.dons * 0.66; // approximation
+
+    // Calc IR sur revenus barème
+    const irRes = window.IR.calcIR({
+      salaireNet: p.salaire,
+      autresRevenus: p.bic + p.fonciers + p.lmnp + p.scpi,
+      adultes: p.adultes,
+      enfants: p.enfants,
+      deductions: deductions
+    });
+
+    // Trading + dividendes + AV : PFU 30 % (simplification)
+    const pfuTrading = p.trading * 0.30;
+    const pfuDiv = p.dividendes * 0.30;
+    const pfuAV = p.av * 0.30; // simplifié, suppose < 8 ans pour la fenêtre
+
+    const totalImpot = irRes.irNet + pfuTrading + pfuDiv + pfuAV;
+    const netGlobal = totalBruts - totalImpot;
+
+    $('fy-revenus').textContent = fmtM(totalBruts);
+    $('fy-impot').textContent = fmtM(totalImpot);
+    $('fy-tmi').textContent = irRes.tmi + ' %';
+    $('fy-net').textContent = fmtM(netGlobal);
+
+    $('fy-msg').innerHTML = 'Votre foyer génère <strong>' + fmtM(totalBruts) + '</strong> de revenus annuels. Après IR au barème (sur ' + fmtM(revenusBareme) + ') et PFU 30 % sur les revenus mobiliers, vous payez <strong style="color:#DC2626">' + fmtM(totalImpot) + '</strong> d\'impôts (' + fmtP((totalImpot/totalBruts)*100) + ' du brut). TMI <strong>' + irRes.tmi + ' %</strong> · Net : <strong style="color:#10B981">' + fmtM(netGlobal) + '</strong>.';
+
+    const rows = [
+      ['Salaires', p.salaire, 'Barème IR', irRes.irNet * (p.salaire / Math.max(1, revenusBareme)), p.salaire - irRes.irNet * (p.salaire / Math.max(1, revenusBareme))],
+      ['BIC (auto-entrepreneur)', p.bic, 'Barème IR', irRes.irNet * (p.bic / Math.max(1, revenusBareme)), p.bic],
+      ['Fonciers nets', p.fonciers, 'Barème + PS 17.2 %', p.fonciers * 0.172 + irRes.irNet * (p.fonciers / Math.max(1, revenusBareme)), p.fonciers],
+      ['LMNP (réel)', p.lmnp, 'BIC, taxé au barème', irRes.irNet * (p.lmnp / Math.max(1, revenusBareme)), p.lmnp],
+      ['Dividendes SCPI', p.scpi, 'Barème + PS', p.scpi * 0.172, p.scpi],
+      ['Trading / CTO', p.trading, 'PFU 30 %', pfuTrading, p.trading - pfuTrading],
+      ['Dividendes CTO', p.dividendes, 'PFU 30 %', pfuDiv, p.dividendes - pfuDiv],
+      ['AV (PV imposable)', p.av, 'PFU / 7.5 % + PS', pfuAV, p.av - pfuAV]
+    ].filter(r => r[1] > 0);
+
+    $('fy-table').innerHTML = rows.map(r => `<tr><td><strong>${r[0]}</strong></td><td>${fmtM(r[1])}</td><td style="font-size:12px;color:var(--text-3)">${r[2]}</td><td class="neg">${fmtM(r[3])}</td><td class="pos">${fmtM(r[4])}</td></tr>`).join('');
+
+    // Recos
+    const recos = [];
+    if (p.per === 0 && irRes.tmi >= 30) {
+      const opt = window.IR.perOptimizer ? window.IR.perOptimizer({ salaireNet: p.salaire, autresRevenus: p.bic + p.fonciers + p.lmnp + p.scpi, adultes: p.adultes, enfants: p.enfants }) : null;
+      if (opt && !opt.deja) {
+        const gain = Math.min(opt.gainFiscal, opt.plafondPER * irRes.tmi / 100);
+        recos.push({ type: 'pos', text: `<strong>Versez ${fmtM(opt.plafondPER)} sur un PER</strong> cette année → économie d\'IR <strong>${fmtM(gain)}</strong> immédiatement. <a href="/simulateur-per" style="color:var(--accent);font-weight:600">Voir le PER →</a>` });
+      }
+    }
+    if (p.av === 0 && (p.dividendes > 5000 || p.trading > 5000)) {
+      recos.push({ type: 'pos', text: '<strong>Ouvrez une assurance-vie</strong> avant la prochaine année fiscale pour bénéficier de l\'abattement 4 600/9 200 € après 8 ans. <a href="/simulateur-assurance-vie" style="color:var(--accent);font-weight:600">Simuler →</a>' });
+    }
+    if (p.fonciers > 0 && p.lmnp === 0) {
+      recos.push({ type: 'warn', text: '<strong>Vos revenus fonciers sont taxés au barème + 17.2 % PS</strong>. Si vous pouvez basculer en LMNP (location meublée), les amortissements peuvent effacer 10-20 ans d\'impôt. <a href="/simulateur-lmnp" style="color:var(--accent);font-weight:600">Comparer →</a>' });
+    }
+    if (p.scpi > 0 && irRes.tmi >= 30) {
+      recos.push({ type: 'warn', text: '<strong>Vos SCPI en pleine propriété sont fiscalement défavorables à votre TMI</strong>. Les SCPI européennes (crédit d\'impôt) ou la détention en AV économisent typiquement 5-10 pts. <a href="/simulateur-scpi" style="color:var(--accent);font-weight:600">Comparer régimes →</a>' });
+    }
+    if (irRes.tmi >= 41) {
+      recos.push({ type: 'pos', text: '<strong>TMI ≥ 41 %</strong> : explorez le démembrement (donation nue-propriété aux enfants), le pacte Dutreil (entreprise), ou la nue-propriété SCPI pour transmettre/optimiser. <a href="/calculateur-donation-succession" style="color:var(--accent);font-weight:600">Donation →</a>' });
+    }
+    if (recos.length === 0) {
+      recos.push({ type: 'pos', text: 'Votre situation fiscale est bien optimisée pour les leviers courants. Continuez !' });
+    }
+
+    $('fy-reco').innerHTML = recos.map(r => `<div class="fy-reco ${r.type === 'warn' ? 'fy-warn' : ''}">${r.text}</div>`).join('');
+  }
+
+  function safeInit() {
+    load();
+    FIELDS.forEach(id => {
+      const el = $(id); if (!el) return;
+      el.addEventListener('change', run);
+      if (el.tagName === 'INPUT') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 300); });
+    });
+    CI.initAll && CI.initAll();
+    run();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

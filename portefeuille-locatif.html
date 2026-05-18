@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#10B981" />
+<title>Portefeuille Locatif Multi-biens — Vue agrégée | CalcInvest</title>
+<meta name="description" content="Gérez votre portefeuille de biens locatifs en un seul écran : cashflow agrégé, rendement global, endettement total, calendrier de fin de prêts." />
+<meta name="keywords" content="portefeuille immobilier locatif, gestion multi-biens, cashflow agrégé, dashboard locatif" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/portefeuille-locatif" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Portefeuille Locatif — CalcInvest" />
+<meta property="og:description" content="Multi-biens, cashflow agrégé, rendement global" />
+<meta property="og:url" content="https://calcinvest.fr/portefeuille-locatif" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Portefeuille Locatif" />
+<meta name="twitter:description" content="Multi-biens agrégés" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Portefeuille Locatif","description":"Multi-biens, dashboard","url":"https://calcinvest.fr/portefeuille-locatif","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<style>
+.pf-hero { background: linear-gradient(135deg, rgba(16,185,129,.10), rgba(16,185,129,.02)); border:1px solid #10B981; }
+.pf-bien-row { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr 80px; gap:8px; align-items:center; padding:12px 14px; border-bottom:1px solid var(--border); }
+.pf-bien-row:nth-child(odd) { background:var(--bg); }
+.pf-bien-row input { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm); padding:6px 8px; font-size:12px; color:var(--text); width:100%; outline:none }
+.pf-bien-row input:focus { border-color:var(--accent) }
+.pf-header { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr 80px; gap:8px; padding:10px 14px; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-4); font-weight:600; }
+</style>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="logo-text"><div class="logo-text-main">Portefeuille Locatif</div><div class="logo-text-sub">Multi-biens</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1280px;margin:0 auto;padding:40px 24px 80px">
+  <div class="page-header" style="margin-bottom:32px">
+    <div class="page-eyebrow"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M3 14V7l5-4 5 4v7"/></svg></span>Immobilier · Portefeuille</div>
+    <h1 class="page-title">Votre portefeuille <em>locatif</em> en 1 écran.</h1>
+    <p class="page-lede">Ajoutez tous vos biens : cashflow agrégé, endettement global, rendement moyen pondéré, calendrier des fins de prêts. <strong style="color:var(--text)">Persistant en localStorage</strong>.</p>
+  </div>
+
+  <!-- Hero -->
+  <section class="card pf-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:28px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#10B981;font-weight:700;margin-bottom:12px">✓ VISION GLOBALE DU PORTEFEUILLE</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:18px">
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Valeur portefeuille</div><div style="font-size:24px;font-weight:800;font-family:var(--font-mono)" id="pf-valeur">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Loyers bruts/an</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="pf-loyers">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Mensualités prêts</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="pf-mens">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Cashflow net/mois</div><div style="font-size:clamp(24px,3vw,32px);font-weight:800;color:#10B981;font-family:var(--font-mono)" id="pf-cash">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Rendement brut</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="pf-yield">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Endettement total</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="pf-debt">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Liste biens -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M3 14V7l5-4 5 4v7"/></svg></div>Vos biens</div>
+      <div class="card-meta">
+        <button class="btn btn-primary" id="pf-btn-add" style="font-size:12px;padding:6px 12px"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M3 8h10M8 3v10"/></svg>Ajouter un bien</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="pf-header">
+        <div>Nom</div><div>Prix d'achat</div><div>Loyer/mois</div><div>Mensualité prêt</div><div>Capital restant dû</div><div>Charges/an</div><div></div>
+      </div>
+      <div id="pf-biens"></div>
+    </div>
+  </section>
+
+  <!-- Détail par bien -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header"><div class="card-title">Performance par bien</div></div>
+    <div class="card-body"><div class="table-scroll"><table class="data-table"><thead><tr><th>Bien</th><th>Valeur</th><th>Loyer/an</th><th>Mensualité</th><th>Cashflow net/mois</th><th>Yield brut</th><th>Cashflow yield</th></tr></thead><tbody id="pf-table"></tbody></table></div></div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Note</strong> : ce dashboard agrège vos biens en un seul écran. Pour chaque bien, utilisez le <a href="/simulateur-rendement-locatif" style="color:var(--accent)">simulateur locatif complet</a> pour calculer TRI, fiscalité, scénarios. Les données sont stockées en localStorage (clé <code>ci_portefeuille_v1</code>).
+      <br/><strong>Calcul</strong> : cashflow net = loyer mensuel - mensualité prêt - charges/12. Rendement brut = (loyers annuels / prix d'achat) × 100. Pas de modélisation fiscale détaillée ici — voir simulateurs dédiés.
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div>Dashboard multi-biens · Calcul brut</div><div><a href="/">Accueil</a> · <a href="/simulateur-rendement-locatif">Locatif détaillé</a> · <a href="/simulateur-lmnp">LMNP</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmtM = n => CI.fmtMoney(n, 0);
+  const fmtP = n => CI.fmtPctPlain(n, 2);
+  const LS_KEY = 'ci_portefeuille_v1';
+  let biens = [];
+
+  function load() {
+    try { biens = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { biens = []; }
+    if (biens.length === 0) {
+      biens = [{ id: 1, nom: 'Bien #1', prix: 200000, loyer: 800, mensualite: 750, capitalRestant: 180000, charges: 1500 }];
+    }
+  }
+  function save() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(biens)); } catch {}
+  }
+
+  function render() {
+    const c = $('pf-biens');
+    c.innerHTML = biens.map((b, idx) => `
+      <div class="pf-bien-row" data-idx="${idx}">
+        <input type="text" data-k="nom" value="${b.nom || ''}" />
+        <input type="number" data-k="prix" value="${b.prix || 0}" />
+        <input type="number" data-k="loyer" value="${b.loyer || 0}" />
+        <input type="number" data-k="mensualite" value="${b.mensualite || 0}" />
+        <input type="number" data-k="capitalRestant" value="${b.capitalRestant || 0}" />
+        <input type="number" data-k="charges" value="${b.charges || 0}" />
+        <button class="btn-ghost" data-del="${idx}" style="padding:4px 10px;color:var(--red);font-size:12px">✕</button>
+      </div>
+    `).join('');
+    c.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const row = e.target.closest('.pf-bien-row');
+        const idx = parseInt(row.dataset.idx);
+        const k = e.target.dataset.k;
+        biens[idx][k] = k === 'nom' ? e.target.value : (parseFloat(e.target.value) || 0);
+        clearTimeout(window._pft); window._pft = setTimeout(() => { save(); compute(); }, 200);
+      });
+    });
+    c.querySelectorAll('[data-del]').forEach(b => {
+      b.addEventListener('click', () => {
+        if (biens.length === 1) { alert('Au moins 1 bien dans le portefeuille'); return; }
+        if (!confirm('Supprimer ce bien ?')) return;
+        biens.splice(parseInt(b.dataset.del), 1);
+        save(); render(); compute();
+      });
+    });
+  }
+
+  function compute() {
+    const totalValeur = biens.reduce((s, b) => s + (b.prix || 0), 0);
+    const totalLoyerAn = biens.reduce((s, b) => s + (b.loyer || 0) * 12, 0);
+    const totalMens = biens.reduce((s, b) => s + (b.mensualite || 0), 0);
+    const totalCharges = biens.reduce((s, b) => s + (b.charges || 0), 0);
+    const totalDebt = biens.reduce((s, b) => s + (b.capitalRestant || 0), 0);
+    const cashflowMois = (totalLoyerAn - totalCharges) / 12 - totalMens;
+    const yieldBrut = totalValeur > 0 ? (totalLoyerAn / totalValeur) * 100 : 0;
+
+    $('pf-valeur').textContent = fmtM(totalValeur);
+    $('pf-loyers').textContent = fmtM(totalLoyerAn);
+    $('pf-mens').textContent = fmtM(totalMens) + '/mois';
+    $('pf-cash').textContent = (cashflowMois >= 0 ? '+' : '') + fmtM(cashflowMois);
+    $('pf-cash').style.color = cashflowMois >= 0 ? '#10B981' : 'var(--red)';
+    $('pf-yield').textContent = fmtP(yieldBrut);
+    $('pf-debt').textContent = fmtM(totalDebt) + ' (' + (totalValeur > 0 ? Math.round((totalDebt/totalValeur)*100) : 0) + ' %)';
+
+    $('pf-table').innerHTML = biens.map(b => {
+      const loyerAn = (b.loyer || 0) * 12;
+      const cf = (b.loyer || 0) - (b.mensualite || 0) - (b.charges || 0) / 12;
+      const y = b.prix > 0 ? (loyerAn / b.prix) * 100 : 0;
+      const cfy = b.prix > 0 ? (cf * 12 / b.prix) * 100 : 0;
+      return `<tr><td><strong>${b.nom || '—'}</strong></td><td>${fmtM(b.prix || 0)}</td><td>${fmtM(loyerAn)}</td><td class="neg">${fmtM(b.mensualite || 0)}</td><td class="${cf >= 0 ? 'pos' : 'neg'}">${cf >= 0 ? '+' : ''}${fmtM(cf)}</td><td>${fmtP(y)}</td><td>${fmtP(cfy)}</td></tr>`;
+    }).join('');
+  }
+
+  function safeInit() {
+    load(); render(); compute();
+    $('pf-btn-add').addEventListener('click', () => {
+      biens.push({ id: Date.now(), nom: 'Bien #' + (biens.length + 1), prix: 200000, loyer: 800, mensualite: 750, capitalRestant: 180000, charges: 1500 });
+      save(); render(); compute();
+    });
+    CI.initAll && CI.initAll();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
+})();
+</script>
+</body>
+</html>

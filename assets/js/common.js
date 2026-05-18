@@ -1021,6 +1021,9 @@
     '/calculateur-donation-succession': { label: 'Donation / Succession',cat: 'Fiscalité',color: '#D97706' },
     '/journal-trading':                 { label: 'Journal de Trade',   cat: 'Trading',  color: '#7C3AED' },
     '/calculatrices-express':           { label: 'Calculatrices Express',cat: 'Outils', color: '#34D399' },
+    '/simulateur-decumulation':         { label: 'Décumulation',       cat: 'Épargne',  color: '#0891B2' },
+    '/mon-foyer-fiscal':                { label: 'Foyer fiscal global', cat: 'Fiscalité',color: '#DC2626' },
+    '/portefeuille-locatif':            { label: 'Portefeuille Locatif',cat: 'Immobilier',color: '#10B981' },
     '/comparer':                        { label: 'Comparer simulations',cat: 'Outils',  color: '#34D399' },
     '/glossaire':                       { label: 'Glossaire financier',cat: 'Docs',    color: '#94A3B8' }
   };
