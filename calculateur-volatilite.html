@@ -361,7 +361,7 @@
     $('vol-stat-hk').textContent = fmt(k.halfKelly, 2) + ' %';
     $('vol-stat-qk').textContent = fmt(k.quarterKelly, 2) + ' %';
 
-    $('vol-insight-kelly').innerHTML = `
+    ($('vol-insight-kelly').querySelector('.insight-text') || $('vol-insight-kelly')).innerHTML = `
       Avec WR ${p.winRate}% et R/R 1:${p.rrRatio}, votre Kelly est <strong>${fmt(k.fullKelly, 2)} %</strong>.
       Recommandation : <strong class="pos">Half Kelly = ${fmt(k.halfKelly, 2)} %</strong> par trade.
       <br/><strong>${k.verdict}</strong>
@@ -374,7 +374,7 @@
     $('vol-stat-worst').textContent = fmt(m.worstCaseLoss, 0) + ' € (' + fmt(m.worstCaseLossPct, 1) + '%)';
     $('vol-stat-div').textContent = '×' + fmt(m.diversificationRatio, 2);
 
-    $('vol-insight-multi').innerHTML = `
+    ($('vol-insight-multi').querySelector('.insight-text') || $('vol-insight-multi')).innerHTML = `
       ${p.nbPositions} positions à ${p.riskPctPer}% chacune avec corrélation ${p.correlation.toFixed(1)} :
       risque combiné réel <strong class="warn">${fmt(m.totalRiskPct, 2)} %</strong>
       (au lieu de ${fmt(p.nbPositions * p.riskPctPer, 1)} % naïf).

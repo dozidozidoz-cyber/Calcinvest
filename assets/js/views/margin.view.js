@@ -82,7 +82,7 @@
     });
 
     if (m.error) {
-      $('mg-insight-a01').innerHTML = `<span class="neg">⚠ ${m.error}</span>`;
+      ($('mg-insight-a01').querySelector('.insight-text') || $('mg-insight-a01')).innerHTML = `<span class="neg">⚠ ${m.error}</span>`;
       return;
     }
 
@@ -99,7 +99,7 @@
     // Insight
     const isViable = m.freeMargin > 0;
     const dangerLevel = m.marginLevel < 200 ? 'élevé' : m.marginLevel < 500 ? 'modéré' : 'faible';
-    $('mg-insight-a01').innerHTML = `
+    ($('mg-insight-a01').querySelector('.insight-text') || $('mg-insight-a01')).innerHTML = `
       Position <strong>${p.direction === 'short' ? 'SHORT' : 'LONG'} ${(() => {
         const info2 = (window.PIPS && PIPS.PAIRS[p.pair]) || { contractSize: 100000 };
         const cs2 = info2.contractSize || 100000;
@@ -222,7 +222,7 @@
       pair: p.pair, direction: p.direction, lotSize: p.lotSize,
       entryPrice: p.entryPrice, targetAmount: Math.abs(p.targetGain), accountCurr
     });
-    if (tp.error) { $('mg-insight-a03').innerHTML = `<span class="neg">${tp.error}</span>`; return; }
+    if (tp.error) { ($('mg-insight-a03').querySelector('.insight-text') || $('mg-insight-a03')).innerHTML = `<span class="neg">${tp.error}</span>`; return; }
 
     // SL : perte limite (négative)
     const sl = MARGIN.priceForTarget({
@@ -242,7 +242,7 @@
     $('mg-stat-rr').textContent = '1:' + rr;
     $('mg-stat-rr').className = 'stat-value ' + (parseFloat(rr) >= 2 ? 'pos' : parseFloat(rr) >= 1 ? 'warn' : 'neg');
 
-    $('mg-insight-a03').innerHTML = `
+    ($('mg-insight-a03').querySelector('.insight-text') || $('mg-insight-a03')).innerHTML = `
       Pour gagner <strong class="pos">+${fmt(p.targetGain, 0)} ${accountCurr}</strong>, place ton TP à
       <strong>${fmtPrice(tp.newPrice)}</strong> (${fmt(tp.distancePips, 0)} pips depuis l'entrée).
       Pour limiter la perte à <strong class="neg">−${fmt(p.targetLoss, 0)} ${accountCurr}</strong>, place ton SL à

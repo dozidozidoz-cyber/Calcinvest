@@ -477,8 +477,8 @@
       });
     }
 
-    // Re-run sur tous les steppers + selects
-    ['dcf-revenue','dcf-g1','dcf-g2','dcf-fcf-margin','dcf-wacc','dcf-tg',
+    // Re-run sur tous les steppers + selects + champs texte (company, ticker)
+    ['dcf-company','dcf-ticker','dcf-revenue','dcf-g1','dcf-g2','dcf-fcf-margin','dcf-wacc','dcf-tg',
      'dcf-net-debt','dcf-shares','dcf-price'].forEach(id => {
       const el = $(id);
       if (!el) return;

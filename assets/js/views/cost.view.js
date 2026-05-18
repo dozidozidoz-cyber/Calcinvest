@@ -40,7 +40,7 @@
   // ─── A1 : Coûts du trade ───
   function renderA01(p) {
     const r = COST.realProfitVsCost(p);
-    if (r.error) { $('ct-insight-a01').innerHTML = `<span class="neg">${r.error}</span>`; return; }
+    if (r.error) { ($('ct-insight-a01').querySelector('.insight-text') || $('ct-insight-a01')).innerHTML = `<span class="neg">${r.error}</span>`; return; }
 
     const cur = r.accountCurrency;
     $('ct-stat-spread').textContent = fmt(r.spreadCost, 2) + ' ' + cur;
@@ -61,7 +61,7 @@
                   : r.costPctOfGross < 50 ? '<span class="warn">significatif</span>'
                   : '<span class="neg">prohibitif</span>';
 
-    $('ct-insight-a01').innerHTML = `
+    ($('ct-insight-a01').querySelector('.insight-text') || $('ct-insight-a01')).innerHTML = `
       Coût total du trade : <strong>${fmt(r.totalCost, 2)} ${cur}</strong>
       (${fmt(r.breakEvenPips, 1)} pips de break-even). Pour gagner <strong>${fmt(p.expectedMovePips, 0)} pips</strong>,
       vous obtenez en net <strong class="${r.netPnl >= 0 ? 'pos' : 'neg'}">${r.netPnl >= 0 ? '+' : ''}${fmt(r.netPnl, 2)} ${cur}</strong>
@@ -126,7 +126,7 @@
       realityCheck = `<br/><span class="warn">5 %+/mois sur la durée est ambitieux. Réaliste pour les meilleurs traders ; rare en pratique sur 24 mois.</span>`;
     }
 
-    $('ct-insight-a03').innerHTML = `
+    ($('ct-insight-a03').querySelector('.insight-text') || $('ct-insight-a03')).innerHTML = `
       Sur <strong>${p.months} mois</strong> à ${p.monthlyReturnPct} %/mois${p.monthlyWithdrawal > 0 ? ` avec ${fmt(p.monthlyWithdrawal, 0)} €/mois de retraits` : ''} :
       capital final <strong class="pos">${fmt(cp.finalBalance, 0)} €</strong>, gain net après fiscalité
       <strong class="${cp.netProfit >= 0 ? 'pos' : 'neg'}">${cp.netProfit >= 0 ? '+' : ''}${fmt(cp.netProfit, 0)} €</strong>.

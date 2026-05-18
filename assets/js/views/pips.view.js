@@ -181,7 +181,7 @@
     });
 
     if (ps.error) {
-      $('pp-insight-a02').innerHTML = `<span class="neg">⚠ ${ps.error}</span>`;
+      ($('pp-insight-a02').querySelector('.insight-text') || $('pp-insight-a02')).innerHTML = `<span class="neg">⚠ ${ps.error}</span>`;
       return;
     }
 
@@ -244,7 +244,7 @@
       posDesc = `<strong>${fmtM(ps.units, unitDec)} ${unitLabel}</strong>`;
     }
 
-    $('pp-insight-a02').innerHTML = `
+    ($('pp-insight-a02').querySelector('.insight-text') || $('pp-insight-a02')).innerHTML = `
       <div>Pour risquer <strong>${fmtM(ps.riskAmount, 0)} ${p.accountCurr}</strong> (${p.riskPct}% du capital)
       avec un stop à <strong>${p.stopPips} pips</strong> sur <em>${p.pair}</em>,
       prends une position de ${posDesc}.
@@ -262,7 +262,7 @@
   // ─── Analyse 03 : Calculateur P&L de trade ────────────
   function renderA03(p) {
     if (!p.entryPrice || p.entryPrice <= 0) {
-      $('pp-insight-a03').innerHTML = '<span class="muted">Entrez un prix d\'entrée pour voir le P&L</span>';
+      ($('pp-insight-a03').querySelector('.insight-text') || $('pp-insight-a03')).innerHTML = '<span class="muted">Entrez un prix d\'entrée pour voir le P&L</span>';
       return;
     }
 
@@ -302,7 +302,7 @@
       : `${fmtM(ps.units, ps.units < 10 ? 4 : 2)} ${unitLabel}`;
     const priceDec = info.pipSize < 0.01 ? 4 : 2;
 
-    $('pp-insight-a03').innerHTML = `
+    ($('pp-insight-a03').querySelector('.insight-text') || $('pp-insight-a03')).innerHTML = `
       Position <strong>${p.direction === 'short' ? 'SHORT' : 'LONG'} ${sizeStr}</strong>
       sur <em>${p.pair}</em> à <strong>${fmtM(p.entryPrice, priceDec)}</strong>.
       Stop : <strong class="neg">${fmtM(stopPrice, priceDec)}</strong> (−${p.stopPips} pips, perte ${fmtM(Math.abs(pnlStop.profitAccount), 0)} ${p.accountCurr}).

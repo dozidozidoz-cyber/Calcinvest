@@ -58,7 +58,7 @@
       verdict = '<strong class="pos">Système très profitable</strong> — mais attention : médiane élevée peut cacher des trajectoires catastrophiques.';
     }
 
-    $('mc-insight-a01').innerHTML = `
+    ($('mc-insight-a01').querySelector('.insight-text') || $('mc-insight-a01')).innerHTML = `
       Sur ${fmt(p.numSims)} trajectoires de ${p.numTrades} trades :
       la <strong>médiane</strong> finit à ${fmt(r.finalP50)} € (${medGainPct >= 0 ? '+' : ''}${fmt(medGainPct, 1)} %),
       le <strong>pire scénario</strong> (P5) à ${fmt(r.finalP5)} €,
@@ -91,7 +91,7 @@
     $('mc-stat-dd-max').textContent = fmt(r.maxDDMax, 1) + ' %';
     $('mc-stat-streak').textContent = fmt(r.avgMaxConsecLosses, 1);
 
-    $('mc-insight-a03').innerHTML = `
+    ($('mc-insight-a03').querySelector('.insight-text') || $('mc-insight-a03')).innerHTML = `
       <strong>Drawdown médian</strong> : ${fmt(r.maxDDP50, 1)} %. Dans 25 % des trajectoires, vous dépassez ${fmt(r.maxDDP75, 1)} % de DD.
       Le scénario pire (P95) atteint ${fmt(r.maxDDP95, 1)} %. <strong>Streak max de pertes consécutives</strong> (moyenne) : ${fmt(r.avgMaxConsecLosses, 1)} trades.
       Mental check : vous tiendriez la stratégie ?

@@ -37,7 +37,7 @@
   // ─── A1 : Position sizing ─────────────────────────────
   function renderA01(p) {
     const ps = RISK.positionSizing({ balance: p.balance, riskPct: p.riskPct, stopPct: p.stopPct });
-    if (ps.error) { $('rk-insight-a01').innerHTML = `<span class="neg">⚠ ${ps.error}</span>`; return; }
+    if (ps.error) { ($('rk-insight-a01').querySelector('.insight-text') || $('rk-insight-a01')).innerHTML = `<span class="neg">⚠ ${ps.error}</span>`; return; }
 
     $('rk-stat-risk').textContent = fmtM(ps.riskAmount, 0) + ' €';
     $('rk-stat-position').textContent = fmtM(ps.positionSize, 0) + ' €';
@@ -46,7 +46,7 @@
 
     // Insight
     const isLeveraged = ps.leverage > 1;
-    $('rk-insight-a01').innerHTML = `
+    ($('rk-insight-a01').querySelector('.insight-text') || $('rk-insight-a01')).innerHTML = `
       Pour risquer <strong>${fmtM(ps.riskAmount, 0)} €</strong> (${p.riskPct}% de ${fmtM(p.balance, 0)} €)
       avec un stop à <strong>${p.stopPct}%</strong>, votre position doit valoir <strong>${fmtM(ps.positionSize, 0)} €</strong>
       ${isLeveraged ? `— soit ${ps.leverage.toFixed(2)}x de levier <span class="warn">(au-delà de votre capital)</span>` : `(${fmtP(ps.positionPct, 0)} de votre capital, sans levier)`}.
@@ -89,7 +89,7 @@
     else if (edge < 8)    verdict = '<span class="pos">edge correct</span> — système viable avec discipline';
     else                  verdict = '<strong class="pos">edge solide</strong> — paramètres très favorables (vérifiez vos hypothèses)';
 
-    $('rk-insight-a02').innerHTML = `
+    ($('rk-insight-a02').querySelector('.insight-text') || $('rk-insight-a02')).innerHTML = `
       Votre système : <strong>${edge.toFixed(1)} pts d'edge</strong> au-dessus du breakeven → ${verdict}.
       Espérance par trade : <strong>${ex.expectancyPerTrade >= 0 ? '+' : ''}${fmtM(ex.expectancyPerTrade, 1)} €</strong>.
       Sur ${p.numTrades} trades, gain attendu : <strong>${totalProfit >= 0 ? '+' : ''}${fmtM(totalProfit, 0)} €</strong>.
@@ -144,7 +144,7 @@
       }).join('');
     }
 
-    $('rk-insight-a04').innerHTML = `
+    ($('rk-insight-a04').querySelector('.insight-text') || $('rk-insight-a04')).innerHTML = `
       Après <strong>${p.streakLosses} pertes consécutives</strong> à ${p.riskPct}% du capital chaque fois,
       votre compte serait à <strong>${fmtM(final.balanceAfter, 0)} €</strong>
       (<strong class="neg">−${fmtP(final.cumDDPct)}</strong>). Pour récupérer, il faut un gain de
@@ -178,7 +178,7 @@
       interpretation = `<span class="neg">Risque élevé</span> (${pr.probabilityRuin.toFixed(1)}%). Ce système est dangereux.`;
     }
 
-    $('rk-insight-a05').innerHTML = `
+    ($('rk-insight-a05').querySelector('.insight-text') || $('rk-insight-a05')).innerHTML = `
       Avec WR=${p.winRate}%, R/R=1:${p.rrRatio}, risque ${p.riskPct}%/trade sur ${p.numTrades} trades :
       ${interpretation}
       <br/><br/>

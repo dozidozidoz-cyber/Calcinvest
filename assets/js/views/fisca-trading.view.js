@@ -40,7 +40,7 @@
   // ─── A1 : PFU vs IR ───
   function renderA01(p) {
     const r = FISCAT.pfuVsIR(p);
-    if (r.error) { $('fs-insight-a01').innerHTML = `<span class="warn">${r.error}</span>`; return; }
+    if (r.error) { ($('fs-insight-a01').querySelector('.insight-text') || $('fs-insight-a01')).innerHTML = `<span class="warn">${r.error}</span>`; return; }
 
     $('fs-stat-pfu').textContent = fmt(r.pfu.total) + ' €';
     $('fs-stat-pfu-rate').textContent = fmt(r.pfu.effectiveRate, 1) + ' %';
@@ -55,7 +55,7 @@
     $('fs-stat-savings').textContent = fmt(r.savings) + ' €';
     $('fs-stat-tmi').textContent = r.tmiBefore + ' % → ' + r.tmiAfter + ' %';
 
-    $('fs-insight-a01').innerHTML = `
+    ($('fs-insight-a01').querySelector('.insight-text') || $('fs-insight-a01')).innerHTML = `
       Sur <strong>${fmt(p.plusValue)} €</strong> de plus-value avec <strong>${fmt(p.otherRevenue)} €</strong> d'autres revenus :
       <strong class="pos">${r.winner === 'PFU' ? 'PFU 30 % (flat tax)' : 'option IR au barème'}</strong> est plus avantageux.
       Vous économisez <strong>${fmt(r.savings)} €</strong> par rapport à l'autre option.
@@ -75,7 +75,7 @@
     $('fs-stat-pea-status').textContent = r.pea.eligible ? '✓ Éligible (≥ 5 ans)' : '✗ Trop tôt (< 5 ans)';
     $('fs-stat-pea-status').className = 'stat-value ' + (r.pea.eligible ? 'pos' : 'warn');
 
-    $('fs-insight-a02').innerHTML = `
+    ($('fs-insight-a02').querySelector('.insight-text') || $('fs-insight-a02')).innerHTML = `
       Sur <strong>${fmt(p.plusValue)} €</strong> de plus-value avec <strong>${p.yearsHeld} ans</strong> de détention :
       <strong class="pos">${r.winner}</strong> gagne, économie de <strong>${fmt(r.savings)} €</strong>.
       ${r.pea.eligible
@@ -110,7 +110,7 @@
       regimeInfo = `<strong class="neg">Régime BIC professionnel</strong> probable — bénéfices imposés au barème IR + cotisations URSSAF (~22 % en micro-BIC, jusqu'à 45 % total). Vous devez vous immatriculer (SIRET) et tenir une comptabilité.`;
     }
 
-    $('fs-insight-a03').innerHTML = `
+    ($('fs-insight-a03').querySelector('.insight-text') || $('fs-insight-a03')).innerHTML = `
       ${regimeInfo}
       <br/><br/>
       ${flagsHtml}
@@ -136,11 +136,11 @@
     $('fs-stat-savings-imp').textContent = fmt(r.taxSavingsApprox) + ' €';
 
     if (r.totalLossesAvailable === 0 && p.currentGain === 0) {
-      $('fs-insight-a04').innerHTML = '<span class="muted">Renseignez vos pertes des années passées et le gain de l\'année en cours pour voir l\'imputation.</span>';
+      ($('fs-insight-a04').querySelector('.insight-text') || $('fs-insight-a04')).innerHTML = '<span class="muted">Renseignez vos pertes des années passées et le gain de l\'année en cours pour voir l\'imputation.</span>';
       return;
     }
 
-    $('fs-insight-a04').innerHTML = `
+    ($('fs-insight-a04').querySelector('.insight-text') || $('fs-insight-a04')).innerHTML = `
       Avec <strong>${fmt(r.totalLossesAvailable)} €</strong> de moins-values reportables et
       <strong>${fmt(p.currentGain)} €</strong> de gain cette année :
       vous imputez <strong class="pos">${fmt(r.offsetUsed)} €</strong>,
