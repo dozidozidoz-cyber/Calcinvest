@@ -144,29 +144,34 @@ Module testé : `node -e "const FIN = require('./assets/js/core/finance-utils.js
 
 ---
 
-## 📈 État des outils
+## 📈 État des outils (36 LIVE)
 
-| Outil | Fichier | Statut |
-|---|---|---|
-| **Rendement locatif** | `simulateur-rendement-locatif.html` | ✅ LIVE complet |
-| **DCA / Placement bourse** | `simulateur-dca.html` | ✅ LIVE (3/7 analyses implémentées) |
-| **Mes projets** | `mes-projets.html` | ✅ LIVE |
-| Intérêts composés | — | 🔜 À faire (Session 4+) |
-| FIRE | — | 🔜 À faire |
-| PER | — | 🔜 À faire |
-| DCA Crypto | — | 🔜 À faire |
+Tous les outils ci-dessous sont accessibles via le megamenu sur les 40 pages.
 
-### État du simulateur DCA (7 analyses)
+**Marchés (7)** : DCA Bourse, DCA Crypto, Valorisation DCF, Valorisation Marché (CAPE/DD/composite), Allocation Portefeuille (60/40/Dalio/Browne), Régime de marché (Bull/Bear/Range/Volatile), Backtest Timing (Golden Cross/Faber GTAA/Momentum)
+
+**Immobilier (6)** : Rendement Locatif, SCPI, Prêt, Plus-Value, LMNP, Portefeuille Locatif
+
+**Trading (8)** : PIPS, Marge & Liquidation, Coûts du trade, Risk Mgmt, Monte Carlo Trading, Fiscalité Trading, ATR & Kelly, **Journal de Trade (v2 — stats avancées, charts canvas, heatmap mensuelle, import/export CSV)**
+
+**Fiscalité (6)** : Impôt Revenu, Salaire B/N, TVA Auto-Entrepreneur, Convertisseur Devises, Donation/Succession, Foyer Fiscal Global
+
+**Épargne (6)** : Intérêts Composés, FIRE, PER, Retraite, Assurance-Vie, Décumulation
+
+**Outils (4)** : Calculatrices Express, Comparer simulations, Mes Projets, Glossaire
+
+### État du simulateur DCA (11 analyses LIVE)
 
 | # | Analyse | Statut |
 |---|---|---|
-| 01 | Vue d'ensemble (stats + chart 4 séries) | ✅ Implémenté |
-| 02 | Rendements glissants (heatmap année × durée) | 🔜 Placeholder |
-| 03 | Lump sum vs DCA étalé | 🔜 Placeholder |
-| 04 | Histogramme rendements annuels | ✅ Implémenté |
-| 05 | Drawdown historique (underwater chart) | ✅ Implémenté |
-| 06 | Volatilité glissante + CAPE | 🔜 Placeholder (data CAPE déjà dans sp500.json via `pe10`) |
-| 07 | Prévisions Monte Carlo (bootstrap 2000 trajectoires) | 🔜 Placeholder |
+| 01 | Vue d'ensemble (stats + chart 4 séries) | ✅ |
+| 02 | Rendements glissants (heatmap année × durée) | ✅ |
+| 03 | Lump sum vs DCA étalé vs Value Averaging | ✅ |
+| 04 | Histogramme rendements annuels | ✅ |
+| 05 | Drawdown historique (underwater chart) | ✅ |
+| 06 | Volatilité glissante + CAPE | ✅ |
+| 07 | Prévisions Monte Carlo (1000 trajectoires bootstrap) | ✅ |
+| 08-11 | Comparaisons multi-actifs, stress tests, etc. | ✅ |
 
 ### Features du DCA déjà codées
 

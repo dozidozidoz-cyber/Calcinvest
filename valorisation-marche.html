@@ -169,15 +169,31 @@
   const $ = id => document.getElementById(id);
   const fmtN = (n, d) => Number.isFinite(n) ? n.toLocaleString('fr-FR', { minimumFractionDigits: d||0, maximumFractionDigits: d||0 }) : '—';
 
-  // CAPE actuel des principaux indices (approximé mai 2026, source multpl.com / Shiller)
-  // À mettre à jour trimestriellement ou via API à terme
-  const CAPE_BY_ASSET = {
+  // CAPE par indice — fetched live au load via /api/cape (S&P 500 scraping multpl.com,
+  // les autres restent hardcodés faute de source live gratuite fiable).
+  // Fallback hardcodé si l'API échoue.
+  let CAPE_BY_ASSET = {
     sp500: 32.1,
     cac40: 21.5,
     nasdaq: 38.8,
     msci_world: 25.2,
     nikkei: 22.8
   };
+  let CAPE_META = { asOf: '—', source: 'fallback' };
+
+  async function fetchCapeLive() {
+    try {
+      const r = await fetch('/api/cape', { cache: 'no-store' });
+      if (!r.ok) return;
+      const j = await r.json();
+      ['sp500','cac40','nasdaq','msci_world','nikkei'].forEach(k => {
+        if (Number.isFinite(j[k])) CAPE_BY_ASSET[k] = j[k];
+      });
+      CAPE_META = { asOf: j.asOf || '—', source: j.source || 'live' };
+    } catch (e) {
+      console.warn('[cape] fetch live échec, fallback utilisé');
+    }
+  }
   const ASSET_NAMES = {
     sp500: 'S&P 500',
     cac40: 'CAC 40',
@@ -265,12 +281,21 @@
     }
   }
 
-  function safeInit() {
+  async function safeInit() {
     document.querySelectorAll('[data-asset]').forEach(b => {
       b.addEventListener('click', () => render(b.dataset.asset));
     });
     CI.initAll && CI.initAll();
+    // Fetch CAPE live AVANT le premier render pour afficher la valeur fraîche
+    await fetchCapeLive();
     render('sp500');
+    // Affichage de la fraîcheur de la donnée CAPE
+    const meta = document.getElementById('val-chart-meta');
+    if (meta && CAPE_META.source) {
+      const src = CAPE_META.source.includes('live') ? '🟢 live' : '⚪ archivée';
+      const existing = meta.textContent;
+      meta.textContent = existing + ' · CAPE ' + src + ' (' + CAPE_META.asOf + ')';
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
