@@ -366,6 +366,16 @@
                   <button class="pill" data-value="25" type="button">+25 %</button>
                 </div>
               </div>
+              <div class="field field-full">
+                <label class="field-label">Enveloppe fiscale à la sortie</label>
+                <select class="select" id="fi-envelope" style="width:100%">
+                  <option value="cto" selected>CTO — flat tax 30 % sur les plus-values</option>
+                  <option value="pea-5">PEA après 5 ans — 17.2 % PS seulement</option>
+                  <option value="av-8">Assurance-vie après 8 ans — 24.7 % effectif</option>
+                  <option value="none">Brut (aucune fiscalité — version US classique)</option>
+                </select>
+                <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="fi-envelope-hint">⚠️ La règle des 4 % US est <strong>brute</strong>. En France, l'imposition à la sortie augmente le SWR brut nécessaire (et donc le capital cible). Cf. KPI ci-dessous.</div>
+              </div>
             </div>
           </div>
 
@@ -414,9 +424,14 @@
           <div class="stat-sub" id="fia1-years">—</div>
         </div>
         <div class="stat">
-          <div class="stat-label">Capital cible</div>
+          <div class="stat-label">Capital cible <span style="font-size:10px;color:var(--text-4);font-weight:500">net d'impôts</span></div>
           <div class="stat-value info stat-value-sm" id="fia1-target">—</div>
           <div class="stat-sub">Règle des <span id="fia1-wr">4 %</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Capital cible <span style="font-size:10px;color:var(--text-4);font-weight:500" id="fia1-real-tag">CTO</span></div>
+          <div class="stat-value pos stat-value-sm" id="fia1-target-real">—</div>
+          <div class="stat-sub" id="fia1-target-real-sub">SWR brut effectif</div>
         </div>
         <div class="stat">
           <div class="stat-label">Capital atteint</div>

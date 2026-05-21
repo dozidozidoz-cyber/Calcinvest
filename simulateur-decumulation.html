@@ -53,6 +53,17 @@
         <div class="field"><label class="field-label">Inflation prévue</label><div class="stepper" data-step="0.5" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="dc-inflation" type="number" value="2" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
         <div class="field"><label class="field-label">Options</label><label style="display:flex;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer"><input type="checkbox" id="dc-index" checked> Indexer le retrait à l'inflation</label></div>
         <div class="field"><label class="field-label">Allocation actions (pour SWR)</label><div class="stepper" data-step="10" data-min="0" data-max="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="dc-alloc" type="number" value="60" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field" style="grid-column:span 2">
+          <label class="field-label">Enveloppe fiscale de retrait</label>
+          <select class="select" id="dc-envelope" style="width:100%">
+            <option value="cto" selected>CTO — flat tax 30 % sur les plus-values</option>
+            <option value="pea-5">PEA après 5 ans — 17.2 % PS seulement</option>
+            <option value="av-8">Assurance-vie après 8 ans — 24.7 % effectif</option>
+            <option value="livret">Livret A / LDDS — 0 %</option>
+            <option value="none">Brut (US classique sans impôt)</option>
+          </select>
+          <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="dc-envelope-hint">⚠️ Si vous retirez 2 000 €/mois en CTO, vous récupérez en réalité ~1 400 €/mois net. Le retrait brut est ajusté pour vous donner le montant net souhaité.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -62,9 +73,10 @@
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#0891B2;font-weight:700;margin-bottom:12px">✓ DURÉE DE VIE DE VOTRE CAPITAL</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
         <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Survie capital</div><div style="font-size:clamp(28px,4vw,38px);font-weight:800;color:#0891B2;font-family:var(--font-mono)" id="dc-stat-survie">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Retrait brut nécessaire</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="dc-stat-brut">—</div><div style="font-size:10px;color:var(--text-4);font-family:var(--font-mono)" id="dc-stat-brut-sub">—</div></div>
         <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Total retiré</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="dc-stat-retire">—</div></div>
         <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Capital final (40 ans)</div><div style="font-size:24px;font-weight:700;font-family:var(--font-mono)" id="dc-stat-final">—</div></div>
-        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">SWR sûr 30 ans</div><div style="font-size:24px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="dc-stat-swr">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">SWR brut sûr 30 ans</div><div style="font-size:24px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="dc-stat-swr">—</div></div>
       </div>
       <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="dc-msg">—</div>
     </div>
@@ -78,7 +90,8 @@
   <section class="card">
     <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
       <strong>Méthodologie</strong> : simulation déterministe pour le scénario principal (rendement constant). Le <strong>SWR (Safe Withdrawal Rate)</strong> utilise un Monte Carlo de 1 000 trajectoires avec rendements normaux (stocks μ=7 % σ=18 %, bonds μ=2 % σ=7 %, hypothèses Trinity Study).
-      <br/><strong>Limitations</strong> : ne modélise pas le séquence-of-returns risk en détail, ni les taxes (PFU 30 % sur les retraits CTO/AV après 8 ans). Pour un plan personnalisé : <a href="/calculateur-fire" style="color:var(--accent)">calculateur FIRE</a>.
+      <br/><strong>Fiscalité</strong> : depuis 2026, le simulateur ajuste le retrait <em>brut</em> selon l'enveloppe choisie pour vous donner le montant net souhaité (CTO PFU 30 %, PEA &gt; 5 ans à 17.2 %, AV &gt; 8 ans à 24.7 % effectif). C'est la réalité française — la règle des 4 % US ignore ça et sous-estime le capital cible de 25-40 %.
+      <br/><strong>Limitations restantes</strong> : ne modélise pas le sequence-of-returns risk en détail, ni les variations annuelles d'inflation. Pour un plan personnalisé : <a href="/calculateur-fire" style="color:var(--accent)">calculateur FIRE</a>.
       <br/><strong>Règle des 4 %</strong> (Trinity Study 1998) : retrait 4 % du capital initial indexé inflation permet de tenir 30 ans à 95 % de probabilité (portefeuille 60/40). Très conservateur — ce simulateur calcule votre SWR personnalisé.
     </div>
   </section>
@@ -99,13 +112,19 @@
   function read() {
     return {
       capital: CI.safeNum('dc-capital', 500000),
-      retraitMensuel: CI.safeNum('dc-retrait', 2000),
+      retraitMensuel: CI.safeNum('dc-retrait', 2000),  // montant NET souhaité
       rendementAnnuel: CI.safeNum('dc-rendement', 5),
       inflation: CI.safeNum('dc-inflation', 2),
       indexeInflation: CI.safeChecked('dc-index', true),
       allocStocks: CI.safeNum('dc-alloc', 60),
+      envelope: $('dc-envelope')?.value || 'cto',
       dureeMax: 40
     };
+  }
+
+  function taxRateOf(env) {
+    const r = window.FIN && FIN.TAX_REGIMES && FIN.TAX_REGIMES[env];
+    return r && r.gainRate != null ? r.gainRate : 0;
   }
 
   function renderChart(serie) {
@@ -134,25 +153,43 @@
 
   function run() {
     const p = read();
-    const r = DECUM.decumulationDeterministe(p);
+    const taxRate = taxRateOf(p.envelope);
+    // Le user saisit le NET souhaité → on ajuste le brut nécessaire
+    const retraitBrut = taxRate > 0 ? p.retraitMensuel / (1 - taxRate) : p.retraitMensuel;
+    const pAjuste = Object.assign({}, p, { retraitMensuel: retraitBrut });
+
+    const r = DECUM.decumulationDeterministe(pAjuste);
     $('dc-stat-survie').textContent = r.survie;
+    $('dc-stat-brut').textContent = fmtM(retraitBrut) + '/mois';
+    $('dc-stat-brut-sub').textContent = taxRate > 0
+      ? '+' + fmtM(retraitBrut - p.retraitMensuel) + ' d\'impôts/mois'
+      : 'égal au net (aucune fiscalité)';
     $('dc-stat-retire').textContent = fmtM(r.totalRetire);
     $('dc-stat-final').textContent = r.finalCapital > 0 ? fmtM(r.finalCapital) : '0 €';
 
     const swr = DECUM.safeWithdrawalRate({ capital: p.capital, annees: 30, allocStocks: p.allocStocks, inflation: p.inflation });
     $('dc-stat-swr').textContent = swr.swr.toFixed(2) + ' %';
 
+    // Update envelope hint
+    const reg = window.FIN && FIN.TAX_REGIMES && FIN.TAX_REGIMES[p.envelope];
+    const hint = $('dc-envelope-hint');
+    if (hint && reg) {
+      hint.innerHTML = taxRate > 0
+        ? `<strong>${reg.label}</strong> — vous souhaitez <strong>${fmtM(p.retraitMensuel)}/mois net</strong>, donc le retrait brut nécessaire est <strong>${fmtM(retraitBrut)}/mois</strong> (taxe ${(taxRate*100).toFixed(1)} %). La simulation utilise ce montant brut pour épuiser le capital plus vite — c'est la réalité.`
+        : `<strong>${reg.label}</strong> — pas d'impôt sur les retraits, le brut = le net.`;
+    }
+
     const verdict = r.epuise
       ? '<strong style="color:var(--red)">⚠ Capital épuisé en ' + r.yearsToZero.toFixed(1) + ' ans.</strong> Réduisez le retrait ou augmentez l\'allocation actions.'
       : '<strong style="color:#10B981">✓ Capital intact après 40 ans</strong> — vos retraits sont soutenables au rendement projeté.';
-    const swrTxt = 'Selon Monte Carlo Trinity (1 000 trajectoires, allocation ' + p.allocStocks + '/' + (100-p.allocStocks) + ' actions/obligations), votre SWR sur 30 ans est de <strong style="color:#10B981">' + swr.swr.toFixed(2) + ' %</strong>, soit <strong>' + fmtM(swr.retraitMensuel) + '/mois</strong> initialement indexés inflation.';
+    const swrTxt = 'Selon Monte Carlo Trinity (1 000 trajectoires, allocation ' + p.allocStocks + '/' + (100-p.allocStocks) + ' actions/obligations), votre SWR brut sur 30 ans est de <strong style="color:#10B981">' + swr.swr.toFixed(2) + ' %</strong>, soit <strong>' + fmtM(swr.retraitMensuel) + '/mois brut</strong> initialement indexés inflation (≈ ' + fmtM(swr.retraitMensuel * (1 - taxRate)) + '/mois net en ' + (reg ? reg.label.split(' ')[0] : 'CTO') + ').';
     $('dc-msg').innerHTML = verdict + '<br/><br/>' + swrTxt;
 
     renderChart(r.serie);
   }
 
   function safeInit() {
-    ['dc-capital','dc-retrait','dc-rendement','dc-inflation','dc-index','dc-alloc'].forEach(id => {
+    ['dc-capital','dc-retrait','dc-rendement','dc-inflation','dc-index','dc-alloc','dc-envelope'].forEach(id => {
       const el = $(id); if (!el) return;
       el.addEventListener('change', run);
       if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 300); });

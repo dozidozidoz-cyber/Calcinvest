@@ -45,8 +45,16 @@
       annualReturn:   v('return'),
       withdrawalRate: v('withdrawal'),
       inflation:      v('inflation'),
-      safetyMargin:   v('safety')
+      safetyMargin:   v('safety'),
+      envelope:       $('fi-envelope')?.value || 'cto'
     };
+  }
+
+  // Calcule le SWR brut nécessaire pour avoir SWR net après imposition
+  // selon l'enveloppe choisie. C'est ce qui ajuste le "capital cible réel France".
+  function effectiveTaxRate(envelope) {
+    const reg = window.FIN && FIN.TAX_REGIMES && FIN.TAX_REGIMES[envelope];
+    return reg && reg.gainRate != null ? reg.gainRate : 0;
   }
 
   /* ------------------------------------------------------------------ */
@@ -111,6 +119,33 @@
     set('fia1-wr',  r.withdrawalRate.toFixed(1) + ' %');
     set('fia1-ret', r.annualReturn.toFixed(1) + ' %');
     set('fia1-inf', r.inflation.toFixed(1) + ' %');
+
+    // ─── Capital cible RÉEL (ajusté fiscalité) ───
+    // Pour vivre avec annualExpenses NET, il faut retirer expenses / (1 - taxRate) BRUT
+    // Donc capital cible réel = expenses / (1 - taxRate) × multiple_swr
+    // En approximation : on majore le capital cible nominal de 1/(1-tax)
+    const env = p.envelope || 'cto';
+    const taxRate = effectiveTaxRate(env);
+    const grossExpenses = taxRate > 0 ? p.annualExpenses / (1 - taxRate) : p.annualExpenses;
+    const targetReal = r.fireTarget * (grossExpenses / Math.max(1, p.annualExpenses));
+    const swrEffective = grossExpenses > 0 && r.fireTarget > 0
+      ? (p.annualExpenses / targetReal * 100)
+      : r.withdrawalRate;
+    set('fia1-target-real', CI.fmtCompact(targetReal));
+    const regLabel = (window.FIN && FIN.TAX_REGIMES && FIN.TAX_REGIMES[env]) ? FIN.TAX_REGIMES[env].label.split(' ')[0] : 'CTO';
+    set('fia1-real-tag', regLabel);
+    set('fia1-target-real-sub', taxRate > 0
+      ? `SWR net effectif ${swrEffective.toFixed(2)} % · brut ${r.withdrawalRate.toFixed(1)} %`
+      : 'Brut (pas d\'impôt sortie)');
+
+    // Hint enveloppe
+    const hint = $('fi-envelope-hint');
+    if (hint && window.FIN && FIN.TAX_REGIMES && FIN.TAX_REGIMES[env]) {
+      const surcout = (grossExpenses - p.annualExpenses);
+      hint.innerHTML = surcout > 0
+        ? `<strong>${FIN.TAX_REGIMES[env].label}</strong> — pour vivre avec ${CI.fmtCompact(p.annualExpenses)}/an net, il faut retirer <strong>${CI.fmtCompact(grossExpenses)}/an brut</strong> (+${CI.fmtCompact(surcout)} d'impôts). Le capital cible réel est donc <strong>${CI.fmtCompact(targetReal)}</strong> au lieu de ${CI.fmtCompact(r.fireTarget)}.`
+        : `<strong>${FIN.TAX_REGIMES[env].label}</strong> — pas d'impôt à la sortie, le capital cible nominal s'applique tel quel.`;
+    }
 
     // Insight A01
     const ageCls = r.achieved ? 'pos' : 'neg';
