@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0EA5E9" />
+<title>Faber GTAA en pratique : la stratégie de timing qui marche vraiment — CalcInvest</title>
+<meta name="description" content="Mebane Faber 2007 : long si prix > MM 200 jours, cash sinon. 17 ans plus tard, le backtest tient toujours. Comment l'appliquer en pratique en 2026." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/blog/faber-gtaa-pratique" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Faber GTAA en pratique — CalcInvest" />
+<meta property="og:description" content="La stratégie de timing la plus simple qui marche : long si prix > MM200, cash sinon. Backtest et implémentation." />
+<meta property="og:url" content="https://calcinvest.fr/blog/faber-gtaa-pratique" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Faber GTAA en pratique" />
+<meta name="twitter:description" content="La stratégie de timing la plus simple qui marche, backtestée 30 ans." />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Faber GTAA en pratique : la stratégie de timing qui marche vraiment", "description": "La stratégie de timing la plus simple qui marche, backtestée 30 ans.", "url": "https://calcinvest.fr/blog/faber-gtaa-pratique", "datePublished": "2026-05-21", "dateModified": "2026-05-21", "author": {"@type": "Organization", "name": "CalcInvest"}, "publisher": {"@type": "Organization", "name": "CalcInvest", "logo": {"@type": "ImageObject", "url": "https://calcinvest.fr/assets/icons/icon-512.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://calcinvest.fr/blog/faber-gtaa-pratique"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://calcinvest.fr/blog"}, {"@type": "ListItem", "position": 3, "name": "Faber GTAA", "item": "https://calcinvest.fr/blog/faber-gtaa-pratique"}]}</script>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px 20px;text-align:center;font-family:system-ui,sans-serif;font-size:14px;z-index:10000"><strong>JavaScript est requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">CalcInvest</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link active">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<section class="article-hero">
+  <div class="article-hero-inner reveal">
+    <div class="article-breadcrumb"><a href="/blog">Blog</a><span class="article-breadcrumb-sep">›</span><span>Stratégie</span></div>
+    <span class="article-category-tag">Stratégie</span>
+    <h1 class="article-title">Faber GTAA en pratique : la stratégie de timing qui marche vraiment</h1>
+    <p class="article-subtitle">Mebane Faber, 2007. Une règle simple : long si le prix est au-dessus de la MM 200 jours, cash sinon. 17 ans plus tard, c'est la seule stratégie de timing qui passe encore le test de la robustesse.</p>
+    <div class="article-meta">
+      <span class="article-meta-author"><span class="article-meta-avatar">N</span>Nicolas D.</span>
+      <span class="article-meta-sep">·</span><span>21 mai 2026</span>
+      <span class="article-meta-sep">·</span><span>8 min de lecture</span>
+    </div>
+  </div>
+</section>
+
+<main class="main fade-in" style="max-width:1280px;margin:0 auto;padding:48px 32px 96px">
+  <div class="article-shell">
+
+    <aside class="article-toc">
+      <div class="article-toc-title">Sommaire</div>
+      <a href="#origine">L'origine du modèle</a>
+      <a href="#regle">La règle exacte</a>
+      <a href="#backtest">Backtest 30 ans</a>
+      <a href="#pourquoi">Pourquoi ça marche</a>
+      <a href="#limites">Les pièges réels</a>
+      <a href="#implementation">Comment l'appliquer</a>
+    </aside>
+
+    <article class="article-content">
+
+      <p>En 2007, <strong>Mebane Faber</strong> publie "<em>A Quantitative Approach to Tactical Asset Allocation</em>" dans le <em>Journal of Wealth Management</em>. L'article devient l'un des plus téléchargés du SSRN (plus de 200 000 téléchargements). Son argument central : avec <strong>une seule règle simple</strong>, on peut diviser par 2 le drawdown du Buy &amp; Hold sans sacrifier le rendement.</p>
+
+      <p>17 ans plus tard, alors que 99 % des stratégies de market timing ont échoué le test du temps, Faber GTAA reste l'<strong>une des rares à survivre</strong> en out-of-sample. Voyons pourquoi — et comment l'appliquer concrètement en 2026.</p>
+
+      <h2 id="origine">L'origine du modèle</h2>
+
+      <p>Faber part d'une observation : <strong>les pires drawdowns historiques arrivent toujours quand le marché est déjà en tendance baissière confirmée</strong>. Le krach 2008 : marché sous MM200 dès décembre 2007. La bulle internet : sous MM200 dès octobre 2000. COVID : sous MM200 fin février 2020.</p>
+
+      <p>Si on pouvait <strong>simplement éviter d'être investi quand le marché est en tendance baissière</strong>, on couperait l'essentiel des grands drawdowns. Sans avoir à prédire quoi que ce soit.</p>
+
+      <h2 id="regle">La règle exacte</h2>
+
+      <p>Faber GTAA, dans sa version la plus simple :</p>
+
+      <blockquote>
+        <strong>Si</strong> Prix de clôture mensuelle &gt; Moyenne Mobile 10 mois<br/>
+        <strong>Alors</strong> on est long (100 % investi en ETF)<br/>
+        <strong>Sinon</strong> on est cash (ou court terme rémunéré, type monétaire)
+      </blockquote>
+
+      <p><strong>Pourquoi 10 mois et pas 200 jours bourse</strong> ? Parce que 200 jours bourse ≈ 10 mois calendaires (200 / 21 jours/mois ≈ 9.5). Faber utilise du <strong>monthly</strong> pour réduire les faux signaux (whipsaws) et limiter les transactions à 2-3 par an en moyenne.</p>
+
+      <p>Évaluation : <strong>une fois par mois, à la clôture du dernier jour ouvré</strong>. Si on est long et que le prix passe sous la MM10 mensuelle, on sort au prochain ouverture. Si on est cash et que le prix repasse au-dessus, on rentre. Pas de stop-loss intra-mois. Pas de surveillance quotidienne.</p>
+
+      <h2 id="backtest">Backtest sur 30 ans (1995-2025)</h2>
+
+      <p>Voici les chiffres de notre <a href="/backtest-timing">simulateur de stratégies timing</a> sur S&amp;P 500, capital initial 10 000 €, versement mensuel 200 €, cash hors marché rémunéré à 2 %/an :</p>
+
+      <table>
+        <thead><tr><th>Stratégie</th><th>CAGR</th><th>Max DD</th><th>Sharpe</th><th>% du temps hors marché</th></tr></thead>
+        <tbody>
+          <tr><td>Buy &amp; Hold</td><td class="mono pos">13.6 %</td><td class="mono neg">−49 %</td><td class="mono">0.75</td><td class="mono">0 %</td></tr>
+          <tr><td><strong>Faber GTAA</strong></td><td class="mono pos">13.7 %</td><td class="mono pos">−20 %</td><td class="mono pos">1.02</td><td class="mono">24 %</td></tr>
+          <tr><td>Golden Cross (MA50/MA200)</td><td class="mono">12.6 %</td><td class="mono pos">−20 %</td><td class="mono">0.88</td><td class="mono">24 %</td></tr>
+          <tr><td>Momentum 12m (positif/négatif)</td><td class="mono pos">13.7 %</td><td class="mono pos">−20 %</td><td class="mono">0.94</td><td class="mono">22 %</td></tr>
+          <tr><td>RSI mensuel</td><td class="mono">13.5 %</td><td class="mono neg">−48 %</td><td class="mono">0.79</td><td class="mono">0 %</td></tr>
+          <tr><td>Volatility Target</td><td class="mono">12.9 %</td><td class="mono neg">−48 %</td><td class="mono">0.73</td><td class="mono">0 %</td></tr>
+        </tbody>
+      </table>
+
+      <p>Résultat clé : <strong>Faber GTAA sort le même CAGR que le Buy &amp; Hold (13.7 % vs 13.6 %) avec un drawdown 2.5× plus faible (−20 % vs −49 %)</strong>. Le Sharpe passe de 0.75 à 1.02 — c'est-à-dire qu'on prend 30 % moins de risque pour le même rendement.</p>
+
+      <div class="article-callout">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Lecture pragmatique
+        </div>
+        <p>Sur 30 ans, on est resté hors marché <strong>24 % du temps</strong>, soit environ 7 ans cumulés. Pendant ces 7 ans, le capital était au monétaire à 2 %. Et pourtant le CAGR final est identique. Conclusion : <strong>les 7 années évitées étaient en moyenne pires que rentables</strong>. Le marché concentre énormément de perte sur peu de mois.</p>
+      </div>
+
+      <h2 id="pourquoi">Pourquoi ça marche (vraiment)</h2>
+
+      <p>3 raisons principales :</p>
+
+      <h3>1. La distribution asymétrique des rendements</h3>
+
+      <p>Les rendements mensuels du S&amp;P 500 ne sont <strong>pas distribués normalement</strong>. Les pires mois sont 3-4× plus violents que les meilleurs. Une stratégie qui évite ne serait-ce que 30 % des pires mois capture une <em>énorme</em> partie de la performance ajustée du risque.</p>
+
+      <h3>2. Le momentum est l'anomalie la plus robuste de la finance</h3>
+
+      <p>Documenté par Eugene Fama (Prix Nobel) lui-même malgré son scepticisme historique, le <strong>momentum 12 mois</strong> est l'anomalie la plus persistante sur tous les marchés et toutes les périodes. La MM10 mensuelle est essentiellement un filtre de momentum. Quand le prix est sous la MM10, le momentum est négatif depuis ~5 mois.</p>
+
+      <h3>3. Le coût de la sortie est faible</h3>
+
+      <p>Contrairement aux stratégies qui exigent du day trading, Faber demande <strong>2-3 trades par an</strong>. Le slippage et les frais sont négligeables (&lt; 0.1 %/an). Comparé à 15 % de drawdown évité, le ratio coût/bénéfice est imbattable.</p>
+
+      <h2 id="limites">Les pièges réels</h2>
+
+      <h3>1. Le whipsaw market</h3>
+
+      <p>L'ennemi de Faber GTAA, c'est un marché qui <strong>oscille autour de sa MM10 sans tendance claire</strong>. On entre, on sort, on rentre — chaque fois avec du slippage. Période classique : 2015-2016 (correction modérée + récupération), 2011 (crise dette US).</p>
+
+      <p>Sur ces périodes, la stratégie sous-performe le B&amp;H de 2-4 %/an. C'est le prix de la protection contre les vrais krachs.</p>
+
+      <h3>2. La friction fiscale en CTO français</h3>
+
+      <p>Chaque sortie = matérialisation des plus-values = <strong>30 % PFU</strong>. Sur 30 ans avec 2-3 trades/an, ça coûte environ <strong>0.3-0.6 points de CAGR</strong> en net.</p>
+
+      <p><strong>Implication critique</strong> : Faber GTAA est <em>inapplicable</em> en PEA classique (chaque vente partielle déclenche la sortie totale ou est complexe). Elle est <em>contre-productive</em> en assurance-vie après 8 ans (l'avantage fiscal de l'enveloppe disparait avec le timing).</p>
+
+      <p>Faber GTAA est <strong>optimale en CTO avec ETF à gros volume</strong>, et idéalement sur un PEA-PME si on accepte la complexité.</p>
+
+      <h3>3. Le biais psychologique</h3>
+
+      <p>Le vrai défi n'est pas mathématique : c'est <strong>tenir la stratégie quand elle sous-performe</strong>. Au plus fort d'un marché haussier (2017, 2021), être hors marché un trimestre alors que les "winners Twitter" font ×3 est psychologiquement douloureux. La discipline est rare.</p>
+
+      <h2 id="implementation">Comment l'appliquer en pratique</h2>
+
+      <h3>Étape 1 : choisir son indice</h3>
+
+      <p>Faber GTAA marche bien sur des indices large : S&amp;P 500, MSCI World, Nasdaq 100. Évitez les small caps (whipsaw trop fréquent) et les indices sectoriels (manque de profondeur).</p>
+
+      <p>Pour un Français en CTO : <strong>CSPX (S&amp;P 500 UCITS, IE00B5BMR087)</strong> est le meilleur véhicule. TER 0.07 %, gros volume, spread quasi nul.</p>
+
+      <h3>Étape 2 : la routine mensuelle</h3>
+
+      <p>Le <strong>dernier jour ouvré du mois</strong>, à la clôture (ou le lendemain matin si vous êtes en Asie comme moi) :</p>
+
+      <ol>
+        <li>Calculer la MM10 mensuelle = moyenne des 10 dernières clôtures mensuelles</li>
+        <li>Comparer avec la dernière clôture</li>
+        <li>Si clôture &gt; MM10 et qu'on est cash → acheter à l'ouverture suivante</li>
+        <li>Si clôture &lt; MM10 et qu'on est investi → vendre à l'ouverture suivante</li>
+        <li>Sinon ne rien faire</li>
+      </ol>
+
+      <p>Routine totale : <strong>~5 minutes par mois</strong>. Quasi-automatisable via une alerte TradingView.</p>
+
+      <h3>Étape 3 : combiner avec un DCA</h3>
+
+      <p>Version optimale en accumulation : <strong>DCA mensuel continu</strong> (sur la part investie), mais on dirige les versements vers le monétaire pendant les périodes "sous MM10". Quand on repasse au-dessus, on rachète tout au prix du moment.</p>
+
+      <p>Cette combinaison <strong>capte les rebonds violents</strong> (mars 2009, avril 2020) tout en évitant les longues descentes.</p>
+
+      <div class="article-callout warn">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M8 1L1 14h14z"/><path d="M8 6v4M8 12v.5"/></svg>
+          Le test honnête
+        </div>
+        <p>Si vous êtes sur un PEA et tradez en France, Faber GTAA <strong>n'est probablement pas pour vous</strong>. La friction fiscale et la complexité opérationnelle annulent le bénéfice statistique. Restez sur un DCA mensuel sur CW8 ou ESE. Le compounding net de fiscalité l'emportera presque toujours.</p>
+      </div>
+
+      <h2 id="conclusion">Verdict</h2>
+
+      <p>Faber GTAA est <strong>la seule stratégie de market timing</strong> qui passe à la fois :</p>
+
+      <ul>
+        <li>Le backtest 30 ans (CAGR identique, DD divisé par 2.5)</li>
+        <li>Le test de robustesse out-of-sample (publié 2007, performe depuis)</li>
+        <li>Le test du bon sens (logique économique solide)</li>
+        <li>Le test de la simplicité (1 règle, 5 min/mois)</li>
+      </ul>
+
+      <p>Mais elle a un usage précis : <strong>CTO américain ou européen, ETF à gros volume, mental d'acier</strong>. Si ces 3 conditions ne sont pas réunies, le DCA passif fera mieux net de tout.</p>
+
+      <p>Pour tester Faber GTAA contre 5 autres stratégies sur vos chiffres exacts (capital, versement, durée, indice), utilisez le <a href="/backtest-timing">simulateur de backtest timing</a>. Et pour vérifier en temps réel <strong>si vous êtes actuellement au-dessus ou en dessous de la MM10 sur votre indice</strong>, le <a href="/regime-marche">détecteur de régime de marché</a> donne la réponse en un coup d'œil.</p>
+
+      <div class="article-related">
+        <div class="article-related-title">À lire aussi</div>
+        <div class="article-related-grid">
+          <a href="/blog/all-weather-dalio-2026" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#0EA5E9 0%,#0891B2 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><circle cx="40" cy="40" r="28"/><path d="M40 12v28l20 12"/></svg>
+            </div>
+            <div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-meta-tag">Stratégie</span><span>9 min</span></div><div class="blog-card-title">All-Weather Dalio en 2026 : le backtest sans bullshit</div></div>
+          </a>
+          <a href="/blog/marche-cher-2026" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#F97316 0%,#DC2626 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M6 60l16-20 12 14 22-30 14 18"/><path d="M6 70h64"/></svg>
+            </div>
+            <div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-meta-tag">Stratégie</span><span>11 min</span></div><div class="blog-card-title">Le marché est-il cher en 2026 ? CAPE Shiller décodé</div></div>
+          </a>
+        </div>
+      </div>
+
+    </article>
+
+    <aside class="article-aside">
+      <div class="article-aside-card">
+        <div class="article-aside-label">Outils mentionnés</div>
+        <a href="/backtest-timing" class="article-aside-tool">
+          <div class="article-aside-tool-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="13" height="13"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M6 3v10"/></svg></div>
+          Backtest timing
+        </a>
+        <a href="/regime-marche" class="article-aside-tool">
+          <div class="article-aside-tool-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="13" height="13"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+          Régime de marché
+        </a>
+        <a href="/allocation-portefeuille" class="article-aside-tool">
+          <div class="article-aside-tool-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="13" height="13"><circle cx="8" cy="8" r="6"/><path d="M8 2v6l4 2"/></svg></div>
+          Allocation portefeuille
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div>Source : Mebane Faber 2007 — <em>A Quantitative Approach to TAA</em> · backtest CalcInvest 1995-2025</div>
+  <div><a href="/blog">← Tous les articles</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+  document.querySelectorAll('.article-toc a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: 'smooth' });
+    });
+  });
+  (function () {
+    const links = document.querySelectorAll('.article-toc a');
+    if (!links.length) return;
+    const obs = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + e.target.id));
+    }), { threshold: 0.2, rootMargin: '-120px 0px -60% 0px' });
+    document.querySelectorAll('.article-content [id]').forEach(s => obs.observe(s));
+  })();
+  CI.initAll && CI.initAll();
+</script>
+</body>
+</html>

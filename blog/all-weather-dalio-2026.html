@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#F97316" />
+<title>All-Weather Dalio en 2026 : le backtest sans bullshit — CalcInvest</title>
+<meta name="description" content="L'allocation tout-temps de Ray Dalio (30/40/15/7.5/7.5) backtestée sur 22 ans : CAGR, Sharpe, drawdown vs Buy & Hold. Faut-il l'adopter en 2026 ?" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/blog/all-weather-dalio-2026" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="All-Weather Dalio en 2026 : le backtest sans bullshit — CalcInvest" />
+<meta property="og:description" content="L'allocation tout-temps de Ray Dalio (30/40/15/7.5/7.5) backtestée sur 22 ans : CAGR, Sharpe, drawdown vs Buy & Hold." />
+<meta property="og:url" content="https://calcinvest.fr/blog/all-weather-dalio-2026" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="All-Weather Dalio en 2026 : le backtest sans bullshit" />
+<meta name="twitter:description" content="L'allocation tout-temps backtestée 22 ans : ce que dit la data, ce que cache la théorie." />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "All-Weather Dalio en 2026 : le backtest sans bullshit", "description": "L'allocation tout-temps de Ray Dalio backtestée sur 22 ans.", "url": "https://calcinvest.fr/blog/all-weather-dalio-2026", "datePublished": "2026-05-21", "dateModified": "2026-05-21", "author": {"@type": "Organization", "name": "CalcInvest"}, "publisher": {"@type": "Organization", "name": "CalcInvest", "logo": {"@type": "ImageObject", "url": "https://calcinvest.fr/assets/icons/icon-512.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://calcinvest.fr/blog/all-weather-dalio-2026"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://calcinvest.fr/blog"}, {"@type": "ListItem", "position": 3, "name": "All-Weather Dalio 2026", "item": "https://calcinvest.fr/blog/all-weather-dalio-2026"}]}</script>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px 20px;text-align:center;font-family:system-ui,sans-serif;font-size:14px;z-index:10000"><strong>JavaScript est requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="7"/><path d="M7 12l3.5 3.5L17 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text"><div class="logo-text-main">CalcInvest</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link active">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<section class="article-hero">
+  <div class="article-hero-inner reveal">
+    <div class="article-breadcrumb"><a href="/blog">Blog</a><span class="article-breadcrumb-sep">›</span><span>Stratégie</span></div>
+    <span class="article-category-tag">Stratégie</span>
+    <h1 class="article-title">All-Weather Dalio en 2026 : le backtest sans bullshit</h1>
+    <p class="article-subtitle">Ray Dalio promet "résister à tous les régimes économiques" avec une allocation 30/40/15/7.5/7.5. La théorie est élégante. La data dit quoi sur 22 ans ?</p>
+    <div class="article-meta">
+      <span class="article-meta-author"><span class="article-meta-avatar">N</span>Nicolas D.</span>
+      <span class="article-meta-sep">·</span><span>21 mai 2026</span>
+      <span class="article-meta-sep">·</span><span>9 min de lecture</span>
+    </div>
+  </div>
+</section>
+
+<main class="main fade-in" style="max-width:1280px;margin:0 auto;padding:48px 32px 96px">
+  <div class="article-shell">
+
+    <aside class="article-toc">
+      <div class="article-toc-title">Sommaire</div>
+      <a href="#principe">Le principe des 4 régimes</a>
+      <a href="#composition">La recette exacte</a>
+      <a href="#backtest">Backtest 22 ans</a>
+      <a href="#crise">Comment ça tient en crise ?</a>
+      <a href="#limites">Les limites cachées</a>
+      <a href="#implementation">Comment l'implémenter en France</a>
+    </aside>
+
+    <article class="article-content">
+
+      <p>Ray Dalio gère <strong>Bridgewater Associates</strong>, le plus gros hedge fund du monde (~150 Md$ AUM). Son fonds emblématique, "All Weather", est conçu pour <strong>générer un rendement positif dans tous les régimes économiques</strong> : croissance, récession, inflation, déflation. La version "particuliers" qu'il a divulguée en 2014 sous forme d'allocation simple à 5 ETF a depuis fait le tour de tous les blogs FIRE. Mais elle a un défaut majeur : 99 % des articles qui en parlent <em>n'ont jamais regardé un backtest</em>.</p>
+
+      <h2 id="principe">Le principe : 4 régimes économiques</h2>
+
+      <p>Dalio part d'une idée simple : à chaque instant, l'économie peut être dans un de quatre régimes selon deux axes — <strong>croissance</strong> (haute ou basse) et <strong>inflation</strong> (haute ou basse).</p>
+
+      <table>
+        <thead><tr><th>Régime</th><th>Classe d'actifs gagnante</th></tr></thead>
+        <tbody>
+          <tr><td>Croissance ↑ + inflation ↓ (1990s)</td><td>Actions, obligations LT</td></tr>
+          <tr><td>Croissance ↑ + inflation ↑ (1970s)</td><td>Or, matières premières, actions value</td></tr>
+          <tr><td>Croissance ↓ + inflation ↓ (2008, 2020)</td><td>Obligations LT (gros gagnant)</td></tr>
+          <tr><td>Croissance ↓ + inflation ↑ (stagflation)</td><td>Or, commodities, TIPS</td></tr>
+        </tbody>
+      </table>
+
+      <p>L'idée centrale : <strong>on ne peut pas prédire quel régime arrivera</strong>. Donc on alloue en permanence dans chacun proportionnellement à sa "fréquence historique" et à sa volatilité. Pas de timing. Pas de prédiction. Juste de la diversification <em>par régime</em>, pas par classe d'actif.</p>
+
+      <h2 id="composition">La recette exacte</h2>
+
+      <p>La version "particuliers" telle que divulguée par Dalio dans le livre <em>Money: Master the Game</em> de Tony Robbins (2014) :</p>
+
+      <table>
+        <thead><tr><th>Classe</th><th>Poids</th><th>ETF type (FR)</th></tr></thead>
+        <tbody>
+          <tr><td>Actions US</td><td class="mono">30 %</td><td>CSPX (S&amp;P 500 UCITS)</td></tr>
+          <tr><td>Obligations long terme (20+ ans)</td><td class="mono">40 %</td><td>DTLA, IDTL</td></tr>
+          <tr><td>Obligations moyennes (7-10 ans)</td><td class="mono">15 %</td><td>IBTM, IBGS</td></tr>
+          <tr><td>Or</td><td class="mono">7.5 %</td><td>SGLD, EGLN</td></tr>
+          <tr><td>Matières premières</td><td class="mono">7.5 %</td><td>CMOD, RICI</td></tr>
+        </tbody>
+      </table>
+
+      <p>Total actions : <strong>30 % seulement</strong>. C'est ce qui choque tout investisseur français habitué au "100 % ETF World pour le DCA". La logique : on accepte un rendement plus faible que les actions seules, en échange d'une <em>volatilité dramatiquement réduite</em>.</p>
+
+      <h2 id="backtest">Backtest sur 22 ans (2003-2025)</h2>
+
+      <p>Voici les chiffres de notre <a href="/allocation-portefeuille">simulateur d'allocation portefeuille</a> sur la période 2003-2025, capital initial 10 000 €, sans versement mensuel, rebalancing annuel :</p>
+
+      <table>
+        <thead><tr><th>Stratégie</th><th>CAGR</th><th>Vol annualisée</th><th>Max DD</th><th>Sharpe</th></tr></thead>
+        <tbody>
+          <tr><td>Buy &amp; Hold 100 % S&amp;P 500</td><td class="mono pos">10.5 %</td><td class="mono neg">15 %</td><td class="mono neg">−51 %</td><td class="mono">0.57</td></tr>
+          <tr><td>60/40 classique</td><td class="mono">8.5 %</td><td class="mono">9.5 %</td><td class="mono">−31 %</td><td class="mono">0.68</td></tr>
+          <tr><td><strong>All-Weather Dalio</strong></td><td class="mono">7.8 %</td><td class="mono pos">6.4 %</td><td class="mono pos">−13 %</td><td class="mono pos">0.91</td></tr>
+          <tr><td>Permanent Browne (25/25/25/25)</td><td class="mono">7.2 %</td><td class="mono pos">6.0 %</td><td class="mono pos">−12 %</td><td class="mono pos">0.87</td></tr>
+        </tbody>
+      </table>
+
+      <p>Lecture brutale : <strong>All-Weather perd 2.7 points de CAGR vs B&amp;H</strong> (10.5 → 7.8 %). En contrepartie, <strong>la volatilité est divisée par 2.3</strong> et le <strong>drawdown max par 4</strong>. Le Sharpe ratio passe de 0.57 à 0.91 — ce qui est <em>massif</em>.</p>
+
+      <div class="article-callout">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+          Lecture pratique
+        </div>
+        <p>Sur 22 ans, 10 k€ initial : <strong>52 k€ avec All-Weather, 91 k€ avec B&amp;H</strong>. Mais le B&amp;H descend à 49 k€ au plus bas de la crise 2009. L'All-Weather descend à 73 k€. Si vous vivez cette baisse à 60 ans avec 1 M€ investi, la différence n'est plus académique.</p>
+      </div>
+
+      <h2 id="crise">Comment ça tient en crise ?</h2>
+
+      <p>Le moment de vérité d'une allocation tout-temps, c'est <strong>les krachs</strong>. Comparons les 3 plus durs des 20 dernières années :</p>
+
+      <table>
+        <thead><tr><th>Crise</th><th>S&amp;P 500</th><th>60/40</th><th>All-Weather</th></tr></thead>
+        <tbody>
+          <tr><td>2008 (Lehman)</td><td class="mono neg">−51 %</td><td class="mono neg">−27 %</td><td class="mono neg">−13 %</td></tr>
+          <tr><td>2020 (COVID, en 4 semaines)</td><td class="mono neg">−34 %</td><td class="mono neg">−21 %</td><td class="mono neg">−8 %</td></tr>
+          <tr><td>2022 (inflation + Fed)</td><td class="mono neg">−25 %</td><td class="mono neg">−22 %</td><td class="mono neg">−18 %</td></tr>
+        </tbody>
+      </table>
+
+      <p>Deux observations :</p>
+
+      <ul>
+        <li><strong>2008 et 2020 : All-Weather brille</strong>. Les obligations longues s'apprécient (taux qui baissent), l'or aussi. La perte est contenue à 8-13 %.</li>
+        <li><strong>2022 : All-Weather souffre</strong>. C'est l'unique régime où il est faible : taux qui montent rapidement (les obligations longues plongent) + inflation qui détruit le réel. L'or limite la casse mais ne compense pas.</li>
+      </ul>
+
+      <p>C'est l'<strong>angle mort historique</strong> du modèle : il a été conçu sur 30 ans de baisse continue des taux (1981-2020). 2022 est la première fois en une génération où ce régime cesse. Et il a sous-performé pour la première fois.</p>
+
+      <h2 id="limites">Les limites cachées</h2>
+
+      <h3>1. Le proxy obligations en backtest</h3>
+
+      <p>La plupart des simulateurs (le nôtre inclus) utilisent un <strong>proxy de rendement annualisé constant</strong> pour les obligations (4-5 % LT, 3 % IT). Dans la réalité, les obligations longues ont fait du <strong>+11 %/an de 2000 à 2020</strong> grâce à la baisse continue des taux. Cette performance ne se reproduira pas — les taux US sont déjà à 4.5 %, le potentiel de baisse est limité.</p>
+
+      <p><strong>Implication</strong> : le CAGR backtest de 7.8 % d'All-Weather est probablement <em>flatteur</em> par rapport au futur. À taux stables ou montants, il faut s'attendre à 5-6 %/an au mieux.</p>
+
+      <h3>2. La friction fiscale en France</h3>
+
+      <p>All-Weather demande des ETF spécialisés (obligations LT, commodities) qui ne sont <strong>pas éligibles PEA</strong>. Donc CTO obligatoire pour l'essentiel. Le rebalancing annuel = vente partielle = <strong>imposition des plus-values à 30 % (PFU)</strong>. Sur 22 ans, ça gratte 0.3-0.5 points de CAGR.</p>
+
+      <p>Pour comparaison, un Buy &amp; Hold en PEA ne déclenche rien tant qu'on ne sort pas (puis 17.2 % de PS uniquement après 5 ans).</p>
+
+      <h3>3. Le biais "boomer" sur les obligations</h3>
+
+      <p>Le 40 % LT bonds reflète un monde de <strong>désinflation et baisse des taux</strong>. Si on entre dans une décennie de stagflation modérée (croissance basse + inflation 3-4 %), c'est l'allocation la <em>pire possible</em>. Les obligations LT sont le pire actif dans ce régime.</p>
+
+      <h2 id="implementation">Comment l'implémenter en France en 2026</h2>
+
+      <p>Voici une version pragmatique pour un compte-titres ordinaire français, ETF UCITS accessibles via les courtiers FR (Bourse Direct, Saxo, IBKR) :</p>
+
+      <table>
+        <thead><tr><th>Poids</th><th>ETF</th><th>ISIN</th><th>TER</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">30 %</td><td>iShares Core S&amp;P 500 UCITS</td><td class="mono">IE00B5BMR087</td><td class="mono">0.07 %</td></tr>
+          <tr><td class="mono">40 %</td><td>iShares $ Treasury 20+yr</td><td class="mono">IE00BSKRJZ44</td><td class="mono">0.07 %</td></tr>
+          <tr><td class="mono">15 %</td><td>iShares $ Treasury 7-10yr</td><td class="mono">IE00B1FZS798</td><td class="mono">0.07 %</td></tr>
+          <tr><td class="mono">7.5 %</td><td>iShares Physical Gold</td><td class="mono">IE00B4ND3602</td><td class="mono">0.12 %</td></tr>
+          <tr><td class="mono">7.5 %</td><td>Invesco Bloomberg Commodity</td><td class="mono">IE00BD6FTQ80</td><td class="mono">0.34 %</td></tr>
+        </tbody>
+      </table>
+
+      <p>TER moyen pondéré : <strong>~0.1 %/an</strong>. Très acceptable.</p>
+
+      <p><strong>Cadence</strong> : rebalancing annuel le même mois (anniversaire d'investissement). Si une classe s'écarte de plus de <strong>±5 % du poids cible</strong> en cours d'année, rebalancer aussi. C'est ce qui crée la "vendre haut, acheter bas" mécanique du modèle.</p>
+
+      <div class="article-callout warn">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M8 1L1 14h14z"/><path d="M8 6v4M8 12v.5"/></svg>
+          Avant d'adopter ce modèle
+        </div>
+        <p>Vérifiez votre <a href="/regime-marche">régime de marché actuel</a>. All-Weather brille en Bull et Bear, mais peut être inférieur à un B&amp;H sur des cycles Range haussiers prolongés. Si vous êtes en phase d'accumulation jeune (&lt; 40 ans), un mix DCA 100 % World + petite poche or peut être plus performant net de fiscalité.</p>
+      </div>
+
+      <h2 id="conclusion">Verdict 2026</h2>
+
+      <p>All-Weather Dalio est une <strong>excellente allocation de phase de consolidation</strong> (préretraite, retraite, ou simplement après avoir constitué un patrimoine de 100k+ qu'on veut protéger). Sur 22 ans, le Sharpe de 0.91 vs 0.57 d'un B&amp;H justifie le sacrifice de CAGR.</p>
+
+      <p><strong>Mais</strong>, ce n'est pas l'allocation universelle. À 30 ans avec un patrimoine de 10k et un horizon de 30 ans, vous gagnez plus en cumulant DCA + 100 % World qu'en complexifiant. La règle simple : <strong>la complexité doit servir un objectif</strong>. Si l'objectif est "protéger ce qu'on a", oui. Si c'est "maximiser sur 30 ans", peut-être pas.</p>
+
+      <p>Pour comparer All-Weather, 60/40, Permanent et 100 % actions sur <strong>vos chiffres exacts</strong> (capital, versement, durée, rebalancing), utilisez notre <a href="/allocation-portefeuille">simulateur d'allocation portefeuille</a>. Et si le CAPE S&amp;P 500 reste au-dessus de 30 comme aujourd'hui, lire aussi <a href="/blog/marche-cher-2026">notre analyse marché 2026</a> avant de décider.</p>
+
+      <div class="article-related">
+        <div class="article-related-title">À lire aussi</div>
+        <div class="article-related-grid">
+          <a href="/blog/marche-cher-2026" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#F97316 0%,#DC2626 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M6 60l16-20 12 14 22-30 14 18"/><path d="M6 70h64"/></svg>
+            </div>
+            <div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-meta-tag">Stratégie</span><span>11 min</span></div><div class="blog-card-title">Le marché est-il cher en 2026 ? CAPE Shiller décodé</div></div>
+          </a>
+          <a href="/blog/monte-carlo-fire" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#EA580C 0%,#F97316 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M14 60c0-20 12-40 26-40s26 20 26 40"/><circle cx="40" cy="60" r="4"/></svg>
+            </div>
+            <div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-meta-tag">Stratégie</span><span>10 min</span></div><div class="blog-card-title">Monte Carlo + FIRE : votre capital survivra-t-il 40 ans ?</div></div>
+          </a>
+        </div>
+      </div>
+
+    </article>
+
+    <aside class="article-aside">
+      <div class="article-aside-card">
+        <div class="article-aside-label">Outils mentionnés</div>
+        <a href="/allocation-portefeuille" class="article-aside-tool">
+          <div class="article-aside-tool-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="13" height="13"><circle cx="8" cy="8" r="6"/><path d="M8 2v6l4 2"/></svg></div>
+          Allocation portefeuille
+        </a>
+        <a href="/regime-marche" class="article-aside-tool">
+          <div class="article-aside-tool-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="13" height="13"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+          Régime de marché
+        </a>
+        <a href="/valorisation-marche" class="article-aside-tool">
+          <div class="article-aside-tool-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="13" height="13"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+          Valorisation marché
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div>Source : <em>Money: Master the Game</em> (Tony Robbins, 2014) · Bridgewater Associates · backtest CalcInvest</div>
+  <div><a href="/blog">← Tous les articles</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+  document.querySelectorAll('.article-toc a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: 'smooth' });
+    });
+  });
+  (function () {
+    const links = document.querySelectorAll('.article-toc a');
+    if (!links.length) return;
+    const obs = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + e.target.id));
+    }), { threshold: 0.2, rootMargin: '-120px 0px -60% 0px' });
+    document.querySelectorAll('.article-content [id]').forEach(s => obs.observe(s));
+  })();
+  CI.initAll && CI.initAll();
+</script>
+</body>
+</html>
