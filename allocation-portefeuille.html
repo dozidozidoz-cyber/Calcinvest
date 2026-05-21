@@ -126,6 +126,41 @@
           </div>
         </div>
 
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M8 2v12M4 4l8 8M4 12l8-8"/></svg></div>
+            <div class="subsection-title">Inflation &amp; fiscalité</div>
+            <div class="subsection-hint">Pour des résultats plus proches de la réalité</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">Inflation estimée</label>
+              <div class="stepper" data-step="0.5" data-min="0" data-max="10">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" type="number" id="al-inflation" value="2" step="0.5" />
+                <span class="stepper-unit">%/an</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="al-inflation">
+                <button class="pill" data-value="0" type="button">0 %</button>
+                <button class="pill active" data-value="2" type="button">2 %</button>
+                <button class="pill" data-value="3" type="button">3 %</button>
+                <button class="pill" data-value="5" type="button">5 %</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Enveloppe fiscale</label>
+              <select class="select" id="al-envelope" style="width:100%">
+                <option value="cto" selected>CTO — flat tax 30 %</option>
+                <option value="pea-5">PEA après 5 ans — 17.2 % PS</option>
+                <option value="av-8">Assurance-vie après 8 ans — 24.7 % effectif</option>
+                <option value="none">Brut (aucune fiscalité)</option>
+              </select>
+              <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="al-envelope-hint">Imposition appliquée à la sortie sur les plus-values uniquement.</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -139,7 +174,9 @@
         <div style="font-size:14px;color:var(--text-3)" id="al-best-desc">—</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px">
-        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Capital final</div><div style="font-size:20px;font-weight:700;font-family:var(--font-mono)" id="al-best-final">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Capital final <span style="opacity:.6">nominal</span></div><div style="font-size:20px;font-weight:700;font-family:var(--font-mono)" id="al-best-final">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Net d'impôts</div><div style="font-size:20px;font-weight:700;color:#2563EB;font-family:var(--font-mono)" id="al-best-net">—</div><div style="font-size:10px;color:var(--text-4);font-family:var(--font-mono)" id="al-best-tax-cost">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Valeur réelle</div><div style="font-size:20px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="al-best-real">—</div><div style="font-size:10px;color:var(--text-4);font-family:var(--font-mono)">pouvoir d'achat actuel</div></div>
         <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">CAGR</div><div style="font-size:20px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="al-best-cagr">—</div></div>
         <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Max DD</div><div style="font-size:20px;font-weight:700;color:#F97316;font-family:var(--font-mono)" id="al-best-dd">—</div></div>
         <div><div style="font-size:10px;color:var(--text-4);text-transform:uppercase;letter-spacing:.05em">Sharpe</div><div style="font-size:20px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="al-best-sharpe">—</div></div>
@@ -255,6 +292,26 @@
     $('al-best-cagr').textContent = b.cagr.toFixed(2) + ' %';
     $('al-best-dd').textContent = b.maxDrawdown.toFixed(1) + ' %';
     $('al-best-sharpe').textContent = b.sharpe.toFixed(2);
+
+    // Net + Réel : enveloppe fiscale + inflation
+    const env = $('al-envelope').value || 'cto';
+    const invested = b.totalInvested || 0;
+    let net = b.finalValue;
+    if (env === 'av-8') net = FIN.applyTaxAV8(b.finalValue, invested, false);
+    else if (FIN.TAX_REGIMES && FIN.TAX_REGIMES[env]) net = FIN.applyTax(b.finalValue, invested, env);
+    $('al-best-net').textContent = fmtM(net);
+    const taxCost = b.finalValue - net;
+    $('al-best-tax-cost').textContent = taxCost > 0 ? '−' + fmtM(taxCost) : 'aucun impôt';
+
+    const infl = (+$('al-inflation').value || 0) / 100;
+    const years = (b.years || 1);
+    const real = infl > 0 ? net / Math.pow(1 + infl, years) : net;
+    $('al-best-real').textContent = fmtM(real);
+
+    // Update hint enveloppe
+    const reg = FIN.TAX_REGIMES && FIN.TAX_REGIMES[env];
+    const hint = $('al-envelope-hint');
+    if (hint && reg) hint.textContent = reg.desc;
   }
 
   function renderChart(results) {
@@ -310,7 +367,7 @@
 
   async function safeInit() {
     await loadData();
-    ['al-k0','al-monthly'].forEach(id => {
+    ['al-k0','al-monthly','al-inflation','al-envelope'].forEach(id => {
       const el = $(id);
       if (el) {
         el.addEventListener('change', run);

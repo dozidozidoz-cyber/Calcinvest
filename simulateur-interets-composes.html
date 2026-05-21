@@ -348,6 +348,19 @@
                   <button class="pill" data-value="1.5" type="button">OPCVM 1.5 %</button>
                 </div>
               </div>
+              <div class="field field-full">
+                <label class="field-label">Enveloppe fiscale à la sortie</label>
+                <select class="select" id="c-envelope" style="width:100%">
+                  <option value="cto" selected>CTO — flat tax 30 % sur les plus-values</option>
+                  <option value="pea-5">PEA après 5 ans — 17.2 % PS seulement</option>
+                  <option value="pea-avant">PEA avant 5 ans — flat tax 30 %</option>
+                  <option value="av-8">Assurance-vie après 8 ans — 24.7 % effectif (après abattement)</option>
+                  <option value="av-avant">Assurance-vie avant 8 ans — flat tax 30 %</option>
+                  <option value="livret">Livret A / LDDS — 0 % (plafonné)</option>
+                  <option value="none">Brut (aucune fiscalité)</option>
+                </select>
+                <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="c-envelope-hint">Impôt sur la plus-value seulement (pas sur le capital initial). Calculé à la sortie.</div>
+              </div>
             </div>
           </div>
 
@@ -390,18 +403,23 @@
 
       <div class="stats-row">
         <div class="stat">
-          <div class="stat-label">Capital final</div>
+          <div class="stat-label">Capital final <span style="font-size:10px;color:var(--text-4);font-weight:500">nominal</span></div>
           <div class="stat-value pos" id="cs-final">—</div>
           <div class="stat-sub" id="cs-interest-pct">—</div>
         </div>
         <div class="stat">
-          <div class="stat-label">Total versé</div>
-          <div class="stat-value stat-value-sm text-muted" id="cs-invested">—</div>
+          <div class="stat-label">Net d'impôts <span style="font-size:10px;color:var(--text-4);font-weight:500" id="cs-tax-tag">CTO</span></div>
+          <div class="stat-value info" id="cs-net-tax">—</div>
+          <div class="stat-sub" id="cs-tax-cost">—</div>
         </div>
         <div class="stat">
-          <div class="stat-label">Intérêts générés</div>
-          <div class="stat-value pos" id="cs-interest">—</div>
-          <div class="stat-sub">Effet boule de neige</div>
+          <div class="stat-label">Valeur réelle <span style="font-size:10px;color:var(--text-4);font-weight:500">net + inflation</span></div>
+          <div class="stat-value pos" id="cs-real">—</div>
+          <div class="stat-sub" id="cs-real-sub">Pouvoir d'achat aujourd'hui</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total versé</div>
+          <div class="stat-value stat-value-sm text-muted" id="cs-invested">—</div>
         </div>
         <div class="stat">
           <div class="stat-label">Multiplication</div>

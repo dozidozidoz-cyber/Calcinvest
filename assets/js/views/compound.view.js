@@ -49,7 +49,8 @@
       annualRate:         v('c-rate'),
       years:              v('c-years'),
       inflation:          v('c-inflation'),
-      feesPct:            v('c-fees')
+      feesPct:            v('c-fees'),
+      envelope:           document.getElementById('c-envelope')?.value || 'cto'
     };
   }
 
@@ -62,12 +63,14 @@
     set('c-years',     p.years);
     set('c-inflation', p.inflation);
     set('c-fees',      p.feesPct);
+    const envEl = document.getElementById('c-envelope');
+    if (envEl && p.envelope) envEl.value = p.envelope;
   }
 
   /* ------------------------------------------------------------
      URL state
      ------------------------------------------------------------ */
-  const URL_KEYS = ['initialAmount', 'monthlyAmount', 'contributionGrowth', 'annualRate', 'years', 'inflation', 'feesPct'];
+  const URL_KEYS = ['initialAmount', 'monthlyAmount', 'contributionGrowth', 'annualRate', 'years', 'inflation', 'feesPct', 'envelope'];
 
   function syncUrl(p) {
     const out = {};
@@ -78,11 +81,11 @@
   function loadFromUrl() {
     const defaults = {
       initialAmount: 10000, monthlyAmount: 200, contributionGrowth: 0,
-      annualRate: 7, years: 20, inflation: 2, feesPct: 0.2
+      annualRate: 7, years: 20, inflation: 2, feesPct: 0.2, envelope: 'cto'
     };
     URL_KEYS.forEach((k) => {
       const v = CI.getUrlParam(k);
-      if (v !== null) defaults[k] = num(v);
+      if (v !== null) defaults[k] = (k === 'envelope') ? v : num(v);
     });
     return defaults;
   }
@@ -96,14 +99,41 @@
 
     set('cs-final',        CI.fmtMoney(r.finalValue, 0));
     set('cs-invested',     CI.fmtMoney(r.finalInvested, 0));
-    set('cs-interest',     CI.fmtMoney(r.finalInterest, 0));
     set('cs-mult',         'x' + r.multiplier.toFixed(2));
     set('cs-interest-pct', (r.interestShare).toFixed(0) + ' % du capital final');
     set('cs-doubling',     r.doublingYears != null ? r.doublingYears.toFixed(1) + ' ans' : '—');
     set('cs-net-rate',     CI.fmtPctPlain(r.netAnnualRate, 2) + '/an net');
 
     cls('cs-final', 'pos');
-    cls('cs-interest', 'pos');
+
+    // ─── Net d'impôts (selon enveloppe) ───
+    const env = p.envelope || 'cto';
+    const regime = FIN.TAX_REGIMES && FIN.TAX_REGIMES[env];
+    let netAfterTax = r.finalValue;
+    if (env === 'av-8') {
+      netAfterTax = FIN.applyTaxAV8(r.finalValue, r.finalInvested, false);
+    } else if (regime && FIN.applyTax) {
+      netAfterTax = FIN.applyTax(r.finalValue, r.finalInvested, env);
+    }
+    const taxCost = r.finalValue - netAfterTax;
+    set('cs-net-tax', CI.fmtMoney(netAfterTax, 0));
+    cls('cs-net-tax', netAfterTax > r.finalInvested ? 'pos' : 'neg');
+    set('cs-tax-tag', (regime ? regime.label.split(' ')[0] : 'CTO'));
+    set('cs-tax-cost', taxCost > 0 ? '−' + CI.fmtMoney(taxCost, 0) + ' d\'impôts' : 'Aucune fiscalité');
+
+    // ─── Valeur réelle (inflation appliquée sur net d'impôts) ───
+    const inflation = (p.inflation || 0) / 100;
+    const realValue = inflation > 0 ? netAfterTax / Math.pow(1 + inflation, p.years) : netAfterTax;
+    set('cs-real', CI.fmtMoney(realValue, 0));
+    cls('cs-real', realValue > r.finalInvested ? 'pos' : 'neg');
+    const erosion = netAfterTax > 0 ? ((netAfterTax - realValue) / netAfterTax * 100) : 0;
+    set('cs-real-sub', inflation > 0
+      ? 'Inflation érode ' + erosion.toFixed(0) + ' % sur ' + p.years + ' ans'
+      : 'Pas d\'inflation appliquée');
+
+    // Hint enveloppe
+    const hint = document.getElementById('c-envelope-hint');
+    if (hint && regime) hint.textContent = regime.desc;
 
     // Coût des frais
     if (p.feesPct > 0) {

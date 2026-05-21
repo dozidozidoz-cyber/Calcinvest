@@ -183,6 +183,51 @@
   };
 
   /* ------------------------------------------------------------
+     Fiscalité française — enveloppes & PFU
+     ------------------------------------------------------------ */
+  // Régimes fiscaux : taux d'imposition sur les plus-values à la sortie
+  FIN.TAX_REGIMES = {
+    'cto':        { label: 'CTO (PFU 30 %)',           gainRate: 0.30,  desc: 'Compte-titres ordinaire : 12.8 % IR + 17.2 % PS' },
+    'cto-bareme': { label: 'CTO (barème IR)',          gainRate: null,  desc: 'Option globale au barème IR + 17.2 % PS, à choisir selon TMI' },
+    'pea-5':      { label: 'PEA après 5 ans',          gainRate: 0.172, desc: 'PEA > 5 ans : seulement 17.2 % PS, IR exonéré' },
+    'pea-avant':  { label: 'PEA avant 5 ans',          gainRate: 0.30,  desc: 'PEA < 5 ans : flat tax 30 % + perte avantage' },
+    'av-8':       { label: 'Assurance-vie après 8 ans',gainRate: 0.247, desc: 'AV > 8 ans : 7.5 % IR (après abattement) + 17.2 % PS sur gains' },
+    'av-avant':   { label: 'Assurance-vie < 8 ans',    gainRate: 0.30,  desc: 'AV < 8 ans : flat tax 30 %' },
+    'per':        { label: 'PER (sortie en rente)',    gainRate: 0.30,  desc: 'PER : versements déductibles à l\'entrée, sortie imposée' },
+    'livret':     { label: 'Livret A / LDDS',          gainRate: 0,     desc: 'Aucune imposition (limites : 22 950 €/12 000 €)' },
+    'none':       { label: 'Aucune (brut)',            gainRate: 0,     desc: 'Affichage brut, sans fiscalité' }
+  };
+
+  // Applique l'imposition aux PLUS-VALUES (pas au capital initial)
+  // gross = capital final, invested = total versé
+  FIN.applyTax = function (gross, invested, regime) {
+    const r = FIN.TAX_REGIMES[regime];
+    if (!r || r.gainRate == null || r.gainRate === 0) return gross;
+    const gain = Math.max(0, gross - invested);
+    const tax = gain * r.gainRate;
+    return gross - tax;
+  };
+
+  // Variante avec abattement AV après 8 ans (4 600 €/9 200 € selon couple)
+  // Simplifié : on applique l'abattement single par défaut
+  FIN.applyTaxAV8 = function (gross, invested, couple) {
+    const gain = Math.max(0, gross - invested);
+    const abattement = couple ? 9200 : 4600;
+    const gainAfter = Math.max(0, gain - abattement);
+    // 7.5 % IR + 17.2 % PS sur le gain au-dessus de l'abattement
+    // PS s'appliquent à TOUT le gain (pas que l'imposable)
+    const ir = gainAfter * 0.075;
+    const ps = gain * 0.172;
+    return gross - ir - ps;
+  };
+
+  // Helpers de formatage pour KPI inflation
+  FIN.realValue = function (nominal, inflation, years) {
+    // Pouvoir d'achat actuel équivalent à `nominal` dans `years` ans
+    return nominal / Math.pow(1 + inflation, years);
+  };
+
+  /* ------------------------------------------------------------
      Years to reach FV given pmt, pv, rate
      Returns decimal years (e.g. 12.3)
      ------------------------------------------------------------ */
