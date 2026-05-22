@@ -1,4 +1,19 @@
 User-agent: *
 Allow: /
 
+# Pre-launch : pages auth/premium masquées
+Disallow: /abonnement
+Disallow: /connexion
+Disallow: /inscription
+
+# Endpoints serverless (pas du contenu indexable)
+Disallow: /api/
+
+# Scripts internes
+Disallow: /scripts/
+Disallow: /_templates/
+
+# Crawl rate raisonnable
+Crawl-delay: 1
+
 Sitemap: https://calcinvest.fr/sitemap.xml
