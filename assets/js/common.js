@@ -710,7 +710,7 @@
       { url: '/glossaire',         label: 'Glossaire financier',cat: 'Page', keywords: 'glossaire termes definitions cagr tri pfu drawdown' },
       { url: '/comparer',          label: 'Comparer simulations',cat: 'Page', keywords: 'comparer comparaison projets simulations cote a cote' },
       { url: '/blog',              label: 'Blog',              cat: 'Page', keywords: 'blog articles ressources' },
-      { url: '/abonnement',        label: 'Tarifs & Premium',  cat: 'Page', keywords: 'tarifs premium abonnement prix' },
+      // { url: '/abonnement',     label: 'Tarifs & Premium',  cat: 'Page', keywords: 'tarifs premium abonnement prix' },  // PRE-LAUNCH : masqué
       { url: '/mes-projets',       label: 'Mes Projets',       cat: 'Page', keywords: 'projets sauvegarde' },
       { url: '/mentions-legales',  label: 'Mentions légales',  cat: 'Page', keywords: 'rgpd cookies cgv' }
     ];

@@ -5327,3 +5327,44 @@ body.v3-landing {
   .v3-sources-inner { gap: 20px; }
   .v3-sources-list { gap: 18px; }
 }
+
+/* ============================================================
+   PRE-LAUNCH : masquage auth + premium
+   Toutes les entrées visuelles vers connexion/inscription/abonnement
+   sont masquées. Code backend conservé pour réactivation rapide.
+   Pour réactiver : supprimer ce bloc (~30 lignes).
+   ============================================================ */
+a[href="/abonnement"],
+a[href="/connexion"],
+a[href="/inscription"],
+a[href^="/abonnement"],
+a[href^="/connexion"],
+a[href^="/inscription"] {
+  display: none !important;
+}
+
+/* Bouton login dans la topbar */
+.topbar-right #ci-user-zone,
+.topbar-right .ci-user-zone {
+  display: none !important;
+}
+
+/* Floating CTA "Découvrir Premium" sur la home */
+.floating-cta,
+a.floating-cta {
+  display: none !important;
+}
+
+/* Badges premium sur les sections d'analyses (DCA, etc.) */
+section[data-tier="premium"] .premium-badge,
+section[data-tier="locked"] .premium-badge,
+.tier-badge-premium,
+.tier-badge-locked {
+  display: none !important;
+}
+
+/* Cards "tarifs" éventuels dans la home */
+.pricing-cta,
+.premium-banner {
+  display: none !important;
+}

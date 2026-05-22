@@ -222,6 +222,14 @@
     const container = document.getElementById('ci-user-zone');
     if (!container) return;
 
+    // 🚀 PRE-LAUNCH : auth UI désactivée (le site tourne en localStorage)
+    // Pour réactiver : retirer ce bloc.
+    if (true /* HIDE_AUTH_UI */) {
+      container.style.display = 'none';
+      container.innerHTML = '';
+      return;
+    }
+
     // 🛠️ Mode dev : juste un lien tarifs (pas d'auth fonctionnelle)
     if (DEV_MODE) {
       container.innerHTML = `
