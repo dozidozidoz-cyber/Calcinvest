@@ -72,7 +72,10 @@
       regime: sv('l-regime', 'reel-foncier'),
       tmi: v('l-tmi'),
       holdYears: v('l-hold'),
-      appreciation: v('l-appreciation')
+      appreciation: v('l-appreciation'),
+      rentIndexation: v('l-rentrevalo') || 2,
+      taxGrowth: v('l-taxgrowth') || 3.5,
+      chargesGrowth: v('l-chargesgrowth') || 2.5
     };
   }
 
@@ -367,7 +370,7 @@
     'price', 'notary', 'agency', 'works', 'furniture',
     'rent', 'vacancy', 'propTax', 'copro', 'insurance', 'mgmtPct', 'maintPct', 'recurringWorksRate',
     'loan', 'loanRate', 'loanYears', 'loanIns', 'refinanceYear', 'refinanceRate',
-    'regime', 'tmi', 'holdYears', 'appreciation'
+    'regime', 'tmi', 'holdYears', 'appreciation', 'rentIndexation', 'taxGrowth', 'chargesGrowth'
   ];
 
   function syncUrl(p) {
@@ -382,7 +385,8 @@
       rent: 900, vacancy: 5,
       propTax: 1200, copro: 600, insurance: 300, mgmtPct: 0, maintPct: 1, recurringWorksRate: 0,
       loan: 180000, loanRate: 3.8, loanYears: 20, loanIns: 0.36, refinanceYear: 0, refinanceRate: 0,
-      regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5
+      regime: 'reel-foncier', tmi: 30, holdYears: 20, appreciation: 1.5,
+      rentIndexation: 2, taxGrowth: 3.5, chargesGrowth: 2.5
     };
     URL_KEYS.forEach((k) => {
       const v = CI.getUrlParam(k);

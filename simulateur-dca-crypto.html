@@ -362,13 +362,31 @@
                   <button class="pill active" data-value="30" type="button">Flat tax 30 %</button>
                 </div>
               </div>
+              <div class="field">
+                <label class="field-label">Inflation prévue</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="cr-inflation" value="2" step="0.5" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div class="pills" data-target="cr-inflation">
+                  <button class="pill" data-value="0" type="button">0 %</button>
+                  <button class="pill active" data-value="2" type="button">2 %</button>
+                  <button class="pill" data-value="3" type="button">3 %</button>
+                  <button class="pill" data-value="5" type="button">5 %</button>
+                </div>
+              </div>
             </div>
             <div class="info-box" style="margin-top:12px">
               <div class="info-box-title">
                 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
-                Flat tax française
+                Fiscalité crypto française (2026)
               </div>
-              En France, les cryptomonnaies sont soumises à la flat tax de 30 % (PFU) sur les plus-values à la cession. Les simples échanges crypto-crypto ne sont pas taxables depuis 2019.
+              <strong>PFU 30 %</strong> sur la PV à la cession en euros (12.8 % IR + 17.2 % PS). Depuis 2023, option barème IR possible (favorable si TMI ≤ 11 %).<br/>
+              <strong>Abattement</strong> : si total des cessions de l'année &lt; 305 €, pas d'imposition (rarement atteint en DCA).<br/>
+              <strong>Crypto-crypto exonéré</strong> : seuls les passages vers stablecoins (USDT/USDC) ou euros déclenchent l'impôt.<br/>
+              <strong>Inflation</strong> : sur 10 ans à 2 %, votre BTC final perd 18 % de pouvoir d'achat — calculé dans les KPI ci-dessous.
             </div>
           </div>
 
@@ -444,6 +462,11 @@
           <div class="stat-label">Flat tax (30 %)</div>
           <div class="stat-value neg stat-value-sm" id="cr1-tax">—</div>
           <div class="stat-sub">Net : <span id="cr1-net">—</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Valeur réelle <span style="font-size:10px;color:var(--text-4)">post-inflation</span></div>
+          <div class="stat-value pos stat-value-sm" id="cr1-real">—</div>
+          <div class="stat-sub" id="cr1-real-sub">pouvoir d'achat actuel</div>
         </div>
         <div class="stat">
           <div class="stat-label">Durée</div>

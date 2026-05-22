@@ -105,13 +105,26 @@
     let propertyValue = p.price;
     const years = Math.max(1, p.holdYears);
 
+    // Dérives indépendantes (réalisme) :
+    // - taxGrowth : taxe foncière monte ~3.5%/an historiquement (vs inflation 2%)
+    // - chargesGrowth : copro + assurance + entretien suivent inflation+0.5%
+    // - Sur 20 ans à 3.5%/an, la taxe foncière double
+    const taxGrowth = (p.taxGrowth != null ? p.taxGrowth : 0) / 100;
+    const chargesGrowth = (p.chargesGrowth != null ? p.chargesGrowth : 0) / 100;
+
     for (let y = 1; y <= years; y++) {
       const yearLoan = getYearLoan(y);
       const rentFactor = Math.pow(1 + (p.rentIndexation || 0) / 100, y - 1);
       const grossRentYear = grossRent * rentFactor;
       const rentYear = grossRentYear * (1 - p.vacancy / 100);
       const mgmtYear = rentYear * (p.mgmtPct / 100);
-      const chargesYear = p.propTax + p.copro + p.insurance + mgmtYear + p.price * (p.maintPct / 100) + p.price * ((p.recurringWorksRate || 0) / 100);
+      // Indexation différenciée de la taxe foncière (typiquement +3.5 %/an) et des charges (~+2.5 %)
+      const taxFactor = Math.pow(1 + taxGrowth, y - 1);
+      const chargesFactor = Math.pow(1 + chargesGrowth, y - 1);
+      const propTaxYear = p.propTax * taxFactor;
+      const coproYear = p.copro * chargesFactor;
+      const insuranceYear = p.insurance * chargesFactor;
+      const chargesYear = propTaxYear + coproYear + insuranceYear + mgmtYear + p.price * (p.maintPct / 100) * chargesFactor + p.price * ((p.recurringWorksRate || 0) / 100) * chargesFactor;
       const loanYear = (y <= p.loanYears && p.loan > 0) ? getMonthlyPayment(y) * 12 : 0;
       const tax = computeTax(grossRentYear, yearLoan);
       const cashflowYear = rentYear - chargesYear - loanYear - tax;
@@ -122,6 +135,7 @@
 
       yearly.push({
         year: y, rent: rentYear, charges: chargesYear,
+        propTax: propTaxYear, copro: coproYear, insurance: insuranceYear,
         loanPayments: loanYear, loanInterest: yearLoan.interest, loanPrincipal: yearLoan.principal,
         tax: tax, cashflow: cashflowYear, propertyValue: propertyValue, balance: balance, equity: equity
       });

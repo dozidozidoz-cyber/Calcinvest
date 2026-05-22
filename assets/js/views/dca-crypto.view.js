@@ -64,7 +64,8 @@
       initialAmount: v('cr-initial'),
       monthlyAmount: v('cr-monthly'),
       feesPct:       v('cr-fees'),
-      taxRate:       v('cr-tax')
+      taxRate:       v('cr-tax'),
+      inflation:     v('cr-inflation')
     };
   }
 
@@ -133,6 +134,23 @@
       if (taxRow) taxRow.style.display = '';
     } else {
       if (taxRow) taxRow.style.display = 'none';
+    }
+
+    // Valeur réelle (post-inflation)
+    const realEl = document.getElementById('cr1-real');
+    if (realEl) {
+      const netForReal = p.taxRate > 0 ? r.netAfterTax : r.finalValue;
+      const years = Math.max(1, r.months / 12 || (r.years || 1));
+      const inflation = (p.inflation || 0) / 100;
+      const realValue = inflation > 0 ? netForReal / Math.pow(1 + inflation, years) : netForReal;
+      realEl.textContent = CI.fmtMoney(realValue, 0);
+      const realSubEl = document.getElementById('cr1-real-sub');
+      if (realSubEl) {
+        const erosion = netForReal > 0 ? ((netForReal - realValue) / netForReal * 100) : 0;
+        realSubEl.textContent = inflation > 0
+          ? `−${erosion.toFixed(0)}% pouvoir d'achat (infl ${(inflation*100).toFixed(1)}%)`
+          : 'Pas d\'inflation appliquée';
+      }
     }
 
     // Prix actuel
