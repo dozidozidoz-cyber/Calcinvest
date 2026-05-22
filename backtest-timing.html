@@ -136,6 +136,41 @@
           </div>
         </div>
 
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v12M2 8h12M4 4l8 8M4 12l8-8"/></svg></div>
+            <div class="subsection-title">Réalité fiscale</div>
+            <div class="subsection-hint">⚠️ Ce qui transforme le verdict — la friction fiscale en CTO français peut faire perdre 2 %/an au timing</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">Enveloppe fiscale</label>
+              <div class="pills" id="bt-env-pills">
+                <button class="pill" data-value="none" type="button">Brut (US)</button>
+                <button class="pill active" data-value="cto" type="button">CTO 30 %</button>
+                <button class="pill" data-value="pea-5" type="button">PEA &gt; 5a (17.2 %)</button>
+                <button class="pill" data-value="av-8" type="button">AV &gt; 8a (24.7 %)</button>
+              </div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:6px">Imposition matérialisée à chaque vente de positions (sortie + rentrée). Buy &amp; Hold n'est jamais taxé en cours de route.</div>
+            </div>
+            <div class="field">
+              <label class="field-label">Frais transaction (spread + commission)</label>
+              <div class="stepper" data-step="0.05" data-min="0" data-max="2">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" type="number" id="bt-fee" value="0.1" step="0.05" />
+                <span class="stepper-unit">% / trade</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="bt-fee">
+                <button class="pill" data-value="0" type="button">0 %</button>
+                <button class="pill active" data-value="0.1" type="button">0.1 % ETF UCITS</button>
+                <button class="pill" data-value="0.25" type="button">0.25 %</button>
+                <button class="pill" data-value="0.5" type="button">0.5 %</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -266,9 +301,9 @@
           <div><div class="lbl">Capital final</div><div class="val">${fmtM(r.finalValue)}</div></div>
           <div><div class="lbl">CAGR</div><div class="val" style="color:${r.cagr>=0?'#10B981':'#DC2626'}">${fmtP(r.cagr)}</div></div>
           <div><div class="lbl">Max DD</div><div class="val" style="color:#DC2626">${fmtP(r.maxDrawdown)}</div></div>
-          <div><div class="lbl">Vol annuelle</div><div class="val">${fmtP(r.annualVol)}</div></div>
           <div><div class="lbl">Sharpe</div><div class="val" style="color:${r.sharpe>1?'#10B981':r.sharpe>0.5?'#FBBF24':'#DC2626'}">${fmtPa(r.sharpe)}</div></div>
-          <div><div class="lbl">% hors marché</div><div class="val">${r.pctOutOfMarket.toFixed(0)}%</div></div>
+          <div><div class="lbl">Impôts payés</div><div class="val" style="color:#DC2626">${r.totalTaxPaid > 0 ? '−' + fmtM(r.totalTaxPaid) : '0'}</div></div>
+          <div><div class="lbl">Frais cumulés</div><div class="val" style="color:#F97316">${r.totalFees > 0 ? '−' + fmtM(r.totalFees) : '0'}</div></div>
         </div>
       </div>`;
     }).join('');
@@ -290,10 +325,15 @@
   };
   let currentAsset = 'sp500';
   let currentPeriod = 30;
+  let currentEnv = 'cto';
+  const ENV_TAX = { 'none': 0, 'cto': 30, 'pea-5': 17.2, 'av-8': 24.7 };
+  const ENV_LBL = { 'none': 'Brut', 'cto': 'CTO 30 %', 'pea-5': 'PEA >5a', 'av-8': 'AV >8a' };
 
   async function run() {
     const K0 = +$('bt-k0').value || 10000;
     const monthly = +$('bt-monthly').value || 0;
+    const feePct = +$('bt-fee').value || 0;
+    const taxRate = ENV_TAX[currentEnv] || 0;
 
     try {
       const data = await loadAsset(currentAsset);
@@ -302,22 +342,20 @@
       if (currentPeriod > 0 && prices.length > currentPeriod * 12) {
         const offset = prices.length - currentPeriod * 12;
         prices = prices.slice(-currentPeriod * 12);
-        // Décaler startDate
         if (startDate) {
           const d = new Date(startDate + '-01');
           d.setMonth(d.getMonth() + offset);
           startDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
         }
       }
-      const results = TIMING.compareAll({ prices, K0, monthly });
+      const results = TIMING.compareAll({ prices, K0, monthly, feePct, taxRate });
       if (results.error) {
         $('bt-chart-meta').textContent = results.error;
         return;
       }
-      $('bt-chart-meta').textContent = `${prices.length} mois · ${(prices.length/12).toFixed(0)} ans · ${ASSET_NAMES[currentAsset]}`;
-      // Summary accordion
+      $('bt-chart-meta').textContent = `${prices.length} mois · ${(prices.length/12).toFixed(0)} ans · ${ASSET_NAMES[currentAsset]} · friction ${ENV_LBL[currentEnv]} + ${feePct}% par trade`;
       const periodLbl = currentPeriod === 0 ? 'toute la période' : currentPeriod + ' ans';
-      $('bt-sum-params').textContent = `${ASSET_NAMES[currentAsset]} · ${periodLbl} · ${K0.toLocaleString('fr-FR')} € + ${monthly} €/mois`;
+      $('bt-sum-params').textContent = `${ASSET_NAMES[currentAsset]} · ${periodLbl} · ${K0.toLocaleString('fr-FR')} € + ${monthly} €/mois · ${ENV_LBL[currentEnv]} + ${feePct}% frais`;
       renderChart(results, startDate);
       renderCards(results);
     } catch (e) {
@@ -345,10 +383,20 @@
     });
   });
   // Steppers (auto-init via CI.initAll) + listeners
-  ['bt-k0','bt-monthly'].forEach(id => {
-    $(id).addEventListener('input', () => {
+  ['bt-k0','bt-monthly','bt-fee'].forEach(id => {
+    const el = $(id); if (!el) return;
+    el.addEventListener('input', () => {
       clearTimeout(window._btTimer);
       window._btTimer = setTimeout(run, 300);
+    });
+  });
+  // Pills enveloppe
+  document.querySelectorAll('#bt-env-pills .pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#bt-env-pills .pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentEnv = btn.dataset.value;
+      run();
     });
   });
 

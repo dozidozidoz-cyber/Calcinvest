@@ -44,6 +44,8 @@
       trimDejaValides:     v('r-trim-deja')      || 0,
       pointsAgircArrco:    v('r-points')         || 0,
       trimAvant20Ans:      v('r-trim-avant-20')  || 0,
+      inflation:           v('r-inflation')      || 2,
+      revaloPension:       v('r-revalo')         || 1.5,
       anneeActuelle:       new Date().getFullYear()
     };
   }
@@ -109,6 +111,22 @@
 
     // Pension annuelle pour contexte
     set('rs-pension-annuelle', CI.fmtMoney(r.pensionAnnuelleNette, 0) + '/an');
+
+    // Pension réelle dans 15 ans (revalo - inflation)
+    const inflation = (p.inflation || 0) / 100;
+    const revalo = (p.revaloPension || 0) / 100;
+    const yearsAfter = 15;
+    const nominalAfter = r.pensionMensuelleNette * Math.pow(1 + revalo, yearsAfter);
+    const realAfter = nominalAfter / Math.pow(1 + inflation, yearsAfter);
+    const erosion = ((r.pensionMensuelleNette - realAfter) / r.pensionMensuelleNette * 100);
+    set('rs-pension-reelle-15', CI.fmtMoney(realAfter, 0) + '/mois');
+    const sub15El = document.getElementById('rs-pension-reelle-15-sub');
+    if (sub15El) {
+      const dt = inflation - revalo;
+      sub15El.textContent = dt > 0
+        ? `−${erosion.toFixed(0)}% pouvoir d'achat (revalo ${(revalo*100).toFixed(1)}% vs infl ${(inflation*100).toFixed(1)}%)`
+        : (dt < 0 ? `+${(-erosion).toFixed(0)}% pouvoir d'achat (rare)` : `Stable`);
+    }
 
     // Accordion summary
     const sum = document.getElementById('r-sum-params');

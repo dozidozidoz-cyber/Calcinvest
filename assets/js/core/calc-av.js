@@ -66,8 +66,14 @@
     const couple = !!p.couple;
 
     const months = years * 12;
+    const psAnnuelEur = p.psAnnuelEur !== false; // par défaut ON (réalité légale)
+    const inflation = num(p.inflation, 0) / 100;
     // Net of fees (annual rate)
-    const rEurNet = rEur - feeEur;
+    let rEurNet = rEur - feeEur;
+    // PS annuels 17.2 % sur le gain fonds € → réduit le rendement net effectif
+    // Exact car les PS sont calculés sur le gain et le rendement composé est multiplicatif
+    let psAnnuelsCumulPaid = 0;
+    if (psAnnuelEur) rEurNet = rEurNet * (1 - 0.172);
     const rUCNet = rUC - feeUC;
     const rMixNet = allocEur * rEurNet + allocUC * rUCNet;
     const monthlyRate = Math.pow(1 + rMixNet, 1 / 12) - 1;
@@ -97,6 +103,12 @@
       couple
     });
 
+    // Valeur réelle (post-inflation) sur le NET reçu après impôt sortie
+    const netRecuTotal = totalVerse + (fisc.netRecu || 0);
+    const valeurReelle = inflation > 0
+      ? netRecuTotal / Math.pow(1 + inflation, years)
+      : netRecuTotal;
+
     return {
       // Versements
       verseTotal: totalVerse,
@@ -110,6 +122,9 @@
       capitalFinal: capital,
       plusValue,
       fraisEntreeTotaux: fraisTotaux,
+      psAnnuelEurActif: psAnnuelEur,
+      valeurReelle,
+      inflation: inflation * 100,
       // Fiscalité sortie (rachat total)
       ...fisc,
       // Série pour chart

@@ -57,40 +57,67 @@
   /**
    * Backtest générique. La fonction signal(idx) renvoie l'exposition cible (0-1).
    */
-  function backtestStrategy(name, prices, K0, monthly, signalFn) {
-    let inMarket = K0;       // capital investi
-    let inCash = 0;          // capital hors marché
-    let invested = inMarket > 0;
+  function backtestStrategy(name, prices, K0, monthly, signalFn, opts) {
+    opts = opts || {};
+    const feePct = (opts.feePct || 0) / 100;            // ex 0.1 % par trade
+    const taxRate = (opts.taxRate || 0) / 100;          // ex 30 % CTO PFU
+    // Cost basis pour calculer la PV imposable à chaque sortie
+    let inMarket = K0;
+    let costBasis = K0;        // capital sur lequel pas d'impôt (=PV nulle)
+    let inCash = 0;
     let totalIn = K0;
     let nbTrades = 0;
     let monthsOutOfMarket = 0;
+    let totalFees = 0;
+    let totalTaxPaid = 0;
     const equityCurve = [{ month: 0, value: K0, totalIn: K0, inMarket, inCash }];
     const cashMonthlyRate = monthlyCashRate();
 
     for (let m = 1; m < prices.length; m++) {
       const stockRet = prices[m] / prices[m-1] - 1;
 
-      // Returns selon l'état actuel
       inMarket *= (1 + stockRet);
       inCash *= (1 + cashMonthlyRate);
 
-      // Décision basée sur signal au mois précédent
-      const signal = signalFn(m - 1); // exposition cible 0-1
+      const signal = signalFn(m - 1);
 
-      // Versement mensuel : alloué selon signal
+      // Versement mensuel : alloué selon signal (augmente cost basis sur la part actions)
       if (monthly > 0) {
-        inMarket += monthly * signal;
+        const toMarket = monthly * signal;
+        inMarket += toMarket;
+        costBasis += toMarket;
         inCash += monthly * (1 - signal);
         totalIn += monthly;
       }
 
-      // Rebalancing exposition (si signal change drastiquement)
+      // Rebalancing exposition
       const totalCap = inMarket + inCash;
       const currentExpo = totalCap > 0 ? inMarket / totalCap : 0;
       if (Math.abs(currentExpo - signal) > 0.1) {
         nbTrades++;
-        inMarket = totalCap * signal;
-        inCash = totalCap * (1 - signal);
+        // SORTIE : on vend une partie du marché → matérialise PV
+        if (signal < currentExpo) {
+          const sellRatio = (currentExpo - signal) / currentExpo;
+          const grossSold = inMarket * sellRatio;
+          const basisSold = costBasis * sellRatio;
+          const gain = Math.max(0, grossSold - basisSold);
+          const tax = gain * taxRate;
+          const fee = grossSold * feePct;
+          totalTaxPaid += tax;
+          totalFees += fee;
+          // Le cash récupéré net de tax + fee
+          inMarket -= grossSold;
+          costBasis -= basisSold;
+          inCash += grossSold - tax - fee;
+        } else {
+          // ENTRÉE : on achète → fees sur le montant acheté, pas de tax
+          const buyAmount = (signal - currentExpo) * totalCap;
+          const fee = buyAmount * feePct;
+          totalFees += fee;
+          inCash -= buyAmount + fee;
+          inMarket += buyAmount;
+          costBasis += buyAmount;
+        }
       }
 
       if (signal < 0.5) monthsOutOfMarket++;
@@ -103,6 +130,11 @@
         inCash
       });
     }
+
+    // Impôt latent : PV non encore matérialisée sur la position restante en marché
+    // On l'affiche séparément (pas déduit du final, c'est juste indicatif)
+    const latentGain = Math.max(0, inMarket - costBasis);
+    const latentTax = latentGain * taxRate;
 
     const values = equityCurve.map(p => p.value);
     const finalValue = values[values.length - 1];
@@ -133,7 +165,11 @@
       nbTrades,
       monthsOutOfMarket,
       pctOutOfMarket: prices.length > 0 ? (monthsOutOfMarket / prices.length * 100) : 0,
-      equityCurve
+      equityCurve,
+      totalFees,
+      totalTaxPaid,
+      latentTax,
+      finalNetIfClosed: finalValue - latentTax
     };
   }
 
@@ -144,6 +180,10 @@
     const prices = p.prices || [];
     const K0 = Number(p.K0) || 10000;
     const monthly = Number(p.monthly) || 0;
+    const opts = {
+      feePct: Number(p.feePct) || 0,
+      taxRate: Number(p.taxRate) || 0
+    };
 
     if (prices.length < 24) {
       return { error: 'Pas assez de données (min 24 mois)' };
@@ -151,41 +191,35 @@
 
     const results = {};
 
-    // 1. Buy & Hold
-    results.buyhold = backtestStrategy('Buy & Hold', prices, K0, monthly, () => 1);
+    results.buyhold = backtestStrategy('Buy & Hold', prices, K0, monthly, () => 1, opts);
 
-    // 2. Golden Cross MA50/MA200 (proxy mensuel : MA2.5 ≈ 50 jours, MA10 ≈ 200 jours)
     results.golden_cross = backtestStrategy('Golden Cross', prices, K0, monthly, (idx) => {
       const ma50  = ma(prices, idx, 3);
       const ma200 = ma(prices, idx, 10);
       if (ma50 == null || ma200 == null) return 1;
       return ma50 > ma200 ? 1 : 0;
-    });
+    }, opts);
 
-    // 3. Exit < MA200 (Faber GTAA simplifié)
     results.faber = backtestStrategy('Faber GTAA', prices, K0, monthly, (idx) => {
       const ma200 = ma(prices, idx, 10);
       if (ma200 == null) return 1;
       return prices[idx] > ma200 ? 1 : 0;
-    });
+    }, opts);
 
-    // 4. Momentum 12m
     results.momentum_12m = backtestStrategy('Momentum 12m', prices, K0, monthly, (idx) => {
       if (idx < 12) return 1;
       const ret12 = prices[idx] / prices[idx - 12] - 1;
       return ret12 > 0 ? 1 : 0;
-    });
+    }, opts);
 
-    // 5. RSI mensuel — long si RSI > 30 (sort en survente extrême)
     results.rsi_oversold = backtestStrategy('RSI mensuel', prices, K0, monthly, (idx) => {
       const r = rsi(prices, idx, 14);
       if (r == null) return 1;
-      if (r < 30) return 1;   // suracheté pas, on RESTE long
-      if (r > 75) return 0.5; // sur-acheté, réduit
+      if (r < 30) return 1;
+      if (r > 75) return 0.5;
       return 1;
-    });
+    }, opts);
 
-    // 6. Volatility target — réduit si vol annualisée > 20 %
     results.vol_target = backtestStrategy('Volatility Target', prices, K0, monthly, (idx) => {
       if (idx < 12) return 1;
       const rets = [];
@@ -194,7 +228,7 @@
       if (annVol > 0.25) return 0.5;
       if (annVol > 0.20) return 0.75;
       return 1;
-    });
+    }, opts);
 
     return results;
   }

@@ -289,6 +289,36 @@
             </div>
           </div>
 
+          <!-- Inflation + revalorisation -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l3-3 3 3 6-7M14 5v3M14 5h-3"/></svg></div>
+              <div class="subsection-title">Inflation pendant la retraite</div>
+              <div class="subsection-hint">La pension est revalorisée chaque année, mais souvent sous l'inflation réelle</div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label">Inflation prévue</label>
+                <div class="stepper" data-step="0.5" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-inflation" value="2" step="0.1" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Revalorisation pension</label>
+                <div class="stepper" data-step="0.1" data-min="0" data-max="10">
+                  <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                  <input class="stepper-input" type="number" id="r-revalo" value="1.5" step="0.1" />
+                  <span class="stepper-unit">%/an</span>
+                  <button class="stepper-btn" data-dir="1" type="button">+</button>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px">Moy. historique 2010-2024 : ~1.5 %/an (sous-indexation chronique)</div>
+              </div>
+            </div>
+          </div>
+
           <!-- Actions -->
           <div class="btn-row" style="margin-top:22px">
             <button class="btn btn-primary" onclick="saveRetraite()">
@@ -340,6 +370,11 @@
           <div class="stat-label">Année de départ</div>
           <div class="stat-value warn" id="rs-annee-depart">—</div>
           <div class="stat-sub">Âge légal : <span id="rs-age-legal">—</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Pension réelle dans 15 ans</div>
+          <div class="stat-value neg" id="rs-pension-reelle-15">—</div>
+          <div class="stat-sub" id="rs-pension-reelle-15-sub">pouvoir d'achat actuel</div>
         </div>
       </div>
 

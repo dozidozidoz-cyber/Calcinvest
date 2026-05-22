@@ -55,6 +55,9 @@
         <div class="field"><label class="field-label">Rendement UC (actions)</label><div class="stepper" data-step="0.5" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-r-uc" type="number" value="6" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
         <div class="field"><label class="field-label">Frais d'entrée</label><div class="stepper" data-step="0.5" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-frais-in" type="number" value="3" step="0.5" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div></div>
         <div class="field"><label class="field-label">Frais de gestion UC</label><div class="stepper" data-step="0.1" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-frais-uc" type="number" value="0.8" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Frais gestion fonds €</label><div class="stepper" data-step="0.1" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-frais-eur" type="number" value="0.6" step="0.1" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">Inflation prévue</label><div class="stepper" data-step="0.5" data-min="0" data-max="10"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="av-inflation" type="number" value="2" step="0.5" /><span class="stepper-unit">%/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+        <div class="field"><label class="field-label">PS annuels sur fonds €</label><label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer;font-size:13px"><input type="checkbox" id="av-ps-annuels" checked> Prélever 17.2 % chaque année <span style="font-size:11px;color:var(--text-4)">(loi française)</span></label></div>
         <div class="field"><label class="field-label">Foyer</label><label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border-radius:var(--r-sm);cursor:pointer"><input type="checkbox" id="av-couple"> Couple marié/PACSé (abattement doublé)</label></div>
       </div>
     </div>
@@ -64,11 +67,12 @@
   <section class="card av-hero" style="margin-bottom:24px">
     <div class="card-body" style="padding:28px">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;font-weight:700;margin-bottom:12px">✓ CAPITAL FINAL + IMPÔT À LA SORTIE</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
-        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Capital final</div><div style="font-size:clamp(26px,3.5vw,36px);font-weight:800;color:#7C3AED;font-family:var(--font-mono)" id="av-cap">—</div></div>
-        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Plus-value</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="av-pv">—</div></div>
-        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Impôt rachat total</div><div style="font-size:24px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="av-impot">—</div></div>
-        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">TRI annualisé</div><div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="av-tri">—</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px">
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Capital final <span style="opacity:.6">nominal</span></div><div style="font-size:clamp(24px,3.2vw,32px);font-weight:800;color:#7C3AED;font-family:var(--font-mono)" id="av-cap">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Plus-value</div><div style="font-size:22px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="av-pv">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Impôt sortie</div><div style="font-size:22px;font-weight:700;color:var(--red);font-family:var(--font-mono)" id="av-impot">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">Valeur réelle <span style="opacity:.6">post-inflation</span></div><div style="font-size:22px;font-weight:700;color:#10B981;font-family:var(--font-mono)" id="av-real">—</div><div style="font-size:10px;color:var(--text-4);font-family:var(--font-mono)" id="av-real-sub">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-4);text-transform:uppercase;font-weight:600">TRI annualisé</div><div style="font-size:22px;font-weight:700;color:var(--text);font-family:var(--font-mono)" id="av-tri">—</div></div>
       </div>
       <div style="margin-top:18px;padding:12px 14px;background:var(--bg);border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--text-2)" id="av-msg">—</div>
     </div>
@@ -129,7 +133,9 @@
       rendUC: CI.safeNum('av-r-uc', 6),
       fraisEntree: CI.safeNum('av-frais-in', 3),
       fraisGestionUC: CI.safeNum('av-frais-uc', 0.8),
-      fraisGestionEur: 0.6,
+      fraisGestionEur: CI.safeNum('av-frais-eur', 0.6),
+      inflation: CI.safeNum('av-inflation', 2),
+      psAnnuelEur: CI.safeChecked('av-ps-annuels', true),
       couple: CI.safeChecked('av-couple', false)
     };
   }
@@ -142,6 +148,14 @@
     $('av-pv').textContent = fmtM(r.plusValue);
     $('av-impot').textContent = fmtM(r.totalImpot);
     $('av-tri').textContent = fmtP(r.tri);
+    if ($('av-real')) {
+      $('av-real').textContent = fmtM(r.valeurReelle || (r.verseTotal + r.netRecu));
+      const erosion = r.capitalFinal > 0 ? ((r.capitalFinal - r.valeurReelle) / r.capitalFinal * 100) : 0;
+      const psTxt = r.psAnnuelEurActif ? '+ PS annuels fonds €' : '(PS désactivés)';
+      $('av-real-sub').textContent = r.inflation > 0
+        ? `${r.inflation}% infl. ${psTxt} → −${erosion.toFixed(0)}% en réel`
+        : `Pas d'inflation appliquée ${psTxt}`;
+    }
 
     $('av-bar-eur').style.width = r.allocEur + '%';
     $('av-bar-uc').style.width = r.allocUC + '%';
@@ -169,7 +183,7 @@
   }
 
   function safeInit() {
-    ['av-k0','av-monthly','av-years','av-alloc-uc','av-r-eur','av-r-uc','av-frais-in','av-frais-uc','av-couple','av-benef'].forEach(id => {
+    ['av-k0','av-monthly','av-years','av-alloc-uc','av-r-eur','av-r-uc','av-frais-in','av-frais-uc','av-frais-eur','av-inflation','av-ps-annuels','av-couple','av-benef'].forEach(id => {
       const el = $(id); if (!el) return;
       el.addEventListener('change', run);
       if (el.type === 'number') el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(run, 200); });

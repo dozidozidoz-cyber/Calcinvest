@@ -20,7 +20,9 @@
       riskPct:      CI.safeNum('mc-risk', 1),
       numTrades:    parseInt($('mc-n').value)         || 200,
       numSims:      parseInt($('mc-sims').value)      || 2000,
-      targetBalance:CI.safeNum('mc-target', 20000)
+      targetBalance:CI.safeNum('mc-target', 20000),
+      feePerTrade:  CI.safeNum('mc-fee', 0),
+      taxRate:      window._mcTaxRate != null ? window._mcTaxRate : 30
     };
   }
 
@@ -39,6 +41,20 @@
     $('mc-stat-final-p50').textContent = fmt(r.finalP50) + ' €';
     $('mc-stat-final-p5').textContent = fmt(r.finalP5) + ' €';
     $('mc-stat-final-p95').textContent = fmt(r.finalP95) + ' €';
+
+    // Médiane nette (frais cumulés moyens + tax moyen sur PV)
+    const netEl = $('mc-stat-final-p50-net');
+    const fricEl = $('mc-stat-friction');
+    if (netEl) {
+      netEl.textContent = fmt(r.finalP50Net) + ' €';
+      const gap = r.finalP50 - r.finalP50Net;
+      netEl.className = 'stat-value ' + (r.finalP50Net >= p.startBalance ? 'pos' : 'neg');
+      if (fricEl) {
+        fricEl.textContent = gap > 0
+          ? `frais ${fmt(r.avgFeesPaid)} € + impôt ${fmt(r.avgTaxPaid)} € (moy.)`
+          : 'aucune friction modélisée';
+      }
+    }
 
     // Gain median en %
     const medGainPct = ((r.finalP50 - p.startBalance) / p.startBalance) * 100;
@@ -162,11 +178,20 @@
 
   function init() {
     if (CI && CI.initAll) CI.initAll();
-    ['mc-balance','mc-wr','mc-rr','mc-risk','mc-n','mc-sims','mc-target'].forEach(id => {
+    ['mc-balance','mc-wr','mc-rr','mc-risk','mc-n','mc-sims','mc-target','mc-fee'].forEach(id => {
       const el = $(id); if (!el) return;
       el.addEventListener('change', run);
       if (el.tagName === 'INPUT') el.addEventListener('input', () => {
         clearTimeout(el._t); el._t = setTimeout(run, 300);
+      });
+    });
+    // Pills enveloppe fiscale
+    document.querySelectorAll('#mc-env-pills .pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#mc-env-pills .pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        window._mcTaxRate = parseFloat(btn.dataset.val);
+        run();
       });
     });
     const btn = $('mc-btn-calc'); if (btn) btn.addEventListener('click', run);

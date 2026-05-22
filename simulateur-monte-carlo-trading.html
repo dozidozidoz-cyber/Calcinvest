@@ -198,6 +198,32 @@
               <button class="stepper-btn" data-act="plus">+</button>
             </div>
           </div>
+
+          <div class="field">
+            <div class="field-label">Frais par trade (commission + spread)</div>
+            <div class="stepper" data-min="0" data-step="0.5">
+              <button class="stepper-btn" data-act="minus">−</button>
+              <input class="stepper-input" id="mc-fee" type="number" value="2" step="0.5" />
+              <span class="stepper-unit">€/trade</span>
+              <button class="stepper-btn" data-act="plus">+</button>
+            </div>
+            <div class="pills" data-target="mc-fee">
+              <button class="pill" data-val="0">0 (théorique)</button>
+              <button class="pill active" data-val="2">2 € IBKR</button>
+              <button class="pill" data-val="5">5 € Bourse Direct</button>
+              <button class="pill" data-val="10">10 € banque trad.</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Fiscalité PV finale (CTO)</div>
+            <div class="pills" id="mc-env-pills">
+              <button class="pill" data-val="0">Brut</button>
+              <button class="pill active" data-val="30">CTO 30 %</button>
+              <button class="pill" data-val="17.2">PEA &gt; 5a (17.2 %)</button>
+            </div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px">Imposition sur la plus-value finale uniquement (pas trade par trade). Si pas de PV : 0 impôt.</div>
+          </div>
         </div>
 
         <div class="btn-row">
@@ -217,7 +243,8 @@
       <div class="card-header"><div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="8" width="3" height="6"/><rect x="6" y="4" width="3" height="10"/></svg></div>Où finissent les 2 000 trajectoires ?</div></div>
       <div class="card-body">
         <div class="stats-row">
-          <div class="stat"><div class="stat-label">Médiane (P50)</div><div class="stat-value pos" id="mc-stat-final-p50">—</div><div class="stat-sub">scénario central</div></div>
+          <div class="stat"><div class="stat-label">Médiane brute (P50)</div><div class="stat-value pos" id="mc-stat-final-p50">—</div><div class="stat-sub">scénario central, avant frais/impôt</div></div>
+          <div class="stat"><div class="stat-label">Médiane <strong>nette</strong></div><div class="stat-value info" id="mc-stat-final-p50-net">—</div><div class="stat-sub" id="mc-stat-friction">frais + impôt déduits</div></div>
           <div class="stat"><div class="stat-label">Pire 5 % (P5)</div><div class="stat-value neg" id="mc-stat-final-p5">—</div><div class="stat-sub">scénario défavorable</div></div>
           <div class="stat"><div class="stat-label">Meilleur 5 % (P95)</div><div class="stat-value pos" id="mc-stat-final-p95">—</div><div class="stat-sub">scénario favorable</div></div>
           <div class="stat"><div class="stat-label">Gain médian</div><div class="stat-value" id="mc-stat-median-gain">—</div><div class="stat-sub">% vs capital initial</div></div>

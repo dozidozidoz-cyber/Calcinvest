@@ -35,6 +35,8 @@
     const riskPct    = p.riskPct / 100;
     const numTrades  = p.numTrades;
     const startBal   = p.startBalance;
+    const feePerTrade = (p.feePerTrade != null ? p.feePerTrade : 0); // € fixe par trade (commission + spread)
+    const taxRate    = (p.taxRate || 0) / 100; // % PFU à la fin sur PV nette
 
     let balance = startBal;
     let peak = startBal;
@@ -42,6 +44,7 @@
     let trades = [balance];
     let nWins = 0, nLosses = 0;
     let consecLosses = 0, maxConsecLosses = 0;
+    let totalFeesPaid = 0;
 
     for (let i = 0; i < numTrades; i++) {
       const risk = balance * riskPct;
@@ -55,9 +58,10 @@
         consecLosses++;
         if (consecLosses > maxConsecLosses) maxConsecLosses = consecLosses;
       }
-      // Ruine = compte sous 10 % du capital initial
-      if (balance < startBal * 0.1) {
-        // On garde le compte ouvert pour la fin mais on log "ruin"
+      // Frais déduits à chaque trade
+      if (feePerTrade > 0) {
+        balance -= feePerTrade;
+        totalFeesPaid += feePerTrade;
       }
       if (balance > peak) peak = balance;
       const dd = (peak - balance) / peak;
@@ -65,15 +69,23 @@
       trades.push(balance);
     }
 
+    // PV finale = balance - startBal, imposée si positive
+    const pv = balance - startBal;
+    const taxPaid = (taxRate > 0 && pv > 0) ? pv * taxRate : 0;
+    const balanceNet = balance - taxPaid;
+
     return {
       finalBalance: balance,
+      finalBalanceNet: balanceNet,
       peak,
       maxDDPct: maxDD * 100,
       nWins,
       nLosses,
       maxConsecLosses,
       trades,
-      ruined: balance < startBal * 0.5  // ruine = perte de 50 %
+      totalFeesPaid,
+      taxPaid,
+      ruined: balance < startBal * 0.5
     };
   }
 
@@ -146,6 +158,13 @@
       maxDDP75: maxDDs[Math.floor(numSims * 0.75)],
       maxDDP95: maxDDs[Math.floor(numSims * 0.95)],
       maxDDMax: maxDDs[numSims - 1],
+      // Médianes nets (après frais + impôts)
+      finalP50Net: (function(){
+        const nets = results.map(r => r.finalBalanceNet).sort((a, b) => a - b);
+        return nets[Math.floor(numSims * 0.50)];
+      })(),
+      avgFeesPaid:  results.reduce((s, r) => s + r.totalFeesPaid, 0) / numSims,
+      avgTaxPaid:   results.reduce((s, r) => s + r.taxPaid, 0) / numSims,
       // Probabilités
       probRuin,
       probTarget,
