@@ -2560,7 +2560,7 @@ table { border-collapse: collapse; width: 100%; }
 }
 
 /* Smooth scroll natif */
-html { scroll-behavior: smooth; scroll-padding-top: 124px; } /* topbar 56 + subnav 48 + marge 20 */
+html { scroll-behavior: smooth; scroll-padding-top: 72px; } /* subnav 48 + marge 24 (topbar cachée au scroll) */
 
 /* ============================================================
    TOPBAR — état compact au scroll
@@ -3643,29 +3643,34 @@ html { scroll-behavior: smooth; scroll-padding-top: 124px; } /* topbar 56 + subn
    ============================================================ */
 .v3-subnav {
   position: fixed !important; /* anti-override : reste collée même si parent change */
-  top: 64px; /* sous topbar normale */
+  top: 0; /* collée au bord du navigateur — la topbar se cache au scroll, la subnav la remplace */
   left: 0; right: 0;
-  z-index: 45;
-  background: rgba(247, 248, 250, 0.94);
+  z-index: 55; /* AU-DESSUS de la topbar (50) pour bien la couvrir si chevauchement */
+  background: rgba(247, 248, 250, 0.96);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   border-bottom: 1px solid var(--border-soft);
+  box-shadow: 0 1px 0 var(--border-soft), 0 4px 14px rgba(15, 23, 42, 0.04);
   transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
   transition: transform 0.35s cubic-bezier(0.22,1,0.36,1),
-              opacity 0.35s ease,
-              top 0.25s ease;
-  will-change: transform, opacity, top;
+              opacity 0.35s ease;
+  will-change: transform, opacity;
 }
 .v3-subnav.is-visible {
   transform: translateY(0);
   opacity: 1;
   pointer-events: auto;
 }
-/* Quand la topbar passe compact (56px), la subnav remonte d'autant */
-.topbar.is-scrolled ~ .v3-subnav,
-.v3-subnav.compact { top: 56px; }
+/* Quand la subnav apparaît, la topbar se rétracte vers le haut pour libérer la place */
+.topbar.is-scrolled {
+  transform: translateY(-100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1),
+              opacity 0.25s ease;
+}
 
 .v3-subnav-inner {
   max-width: 1100px;

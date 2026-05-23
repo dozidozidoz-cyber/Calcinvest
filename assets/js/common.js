@@ -1485,13 +1485,9 @@
   CI.initTopbarScroll = function () {
     const topbar = document.querySelector('.topbar');
     if (!topbar) return;
-    const subnav = document.querySelector('[data-subnav]');
     let ticking = false;
     function update() {
-      const isScrolled = window.scrollY > 60;
-      topbar.classList.toggle('is-scrolled', isScrolled);
-      // Synchronise la subnav : remonte à 56px quand topbar compact (fallback si ~ ne marche pas)
-      if (subnav) subnav.classList.toggle('compact', isScrolled);
+      topbar.classList.toggle('is-scrolled', window.scrollY > 60);
       ticking = false;
     }
     window.addEventListener('scroll', () => {
