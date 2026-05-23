@@ -5363,8 +5363,18 @@ section[data-tier="locked"] .premium-badge,
   display: none !important;
 }
 
-/* Cards "tarifs" éventuels dans la home */
+/* Cards "tarifs" et bannière "Débloquez analyses avancées" sur la home */
 .pricing-cta,
-.premium-banner {
+.premium-banner,
+.v3-premium-cta,
+.v3-premium-cta-inner,
+.v3-premium-eyebrow,
+.v3-premium-title,
+.v3-premium-desc,
+.v3-premium-actions,
+.v3-premium-features,
+.v3-premium-price-tag,
+.v3-premium-btn-primary,
+.v3-premium-btn-secondary {
   display: none !important;
 }
