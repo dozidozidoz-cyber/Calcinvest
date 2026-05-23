@@ -1404,41 +1404,59 @@
   CI.initSubNav = function () {
     const subnav = document.querySelector('[data-subnav]');
     if (!subnav) return;
-    // Trigger : déclencher quand le hero est >70% sorti du viewport
     const trigger = document.querySelector('[data-subnav-trigger]');
-    if (!trigger) return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        // Quand le trigger sort par le HAUT (scroll down passé), montrer la subnav
-        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-          subnav.classList.add('is-visible');
-        } else {
-          subnav.classList.remove('is-visible');
-        }
-      });
-    }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
-    observer.observe(trigger);
-
-    // Surligner le lien actif selon section visible
-    const links = subnav.querySelectorAll('[data-subnav-link]');
+    const links = Array.from(subnav.querySelectorAll('[data-subnav-link]'));
     if (!links.length) return;
-    const sectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const id = entry.target.id;
-        links.forEach(l => {
-          if (l.getAttribute('href') === '#' + id) l.classList.add('is-active');
-          else l.classList.remove('is-active');
-        });
-      });
-    }, { threshold: 0.3, rootMargin: '-100px 0px -50% 0px' });
-    links.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href && href.startsWith('#')) {
+
+    // Résout les sections à observer (ordonnées du haut vers le bas du document)
+    const sections = links
+      .map(l => {
+        const href = l.getAttribute('href');
+        if (!href || !href.startsWith('#')) return null;
         const target = document.getElementById(href.slice(1));
-        if (target) sectionObserver.observe(target);
+        return target ? { link: l, target, id: href.slice(1) } : null;
+      })
+      .filter(Boolean);
+    if (!sections.length) return;
+
+    let ticking = false;
+
+    function update() {
+      ticking = false;
+      const scrollY = window.scrollY;
+
+      // 1) Afficher la subnav dès qu'on a scrollé sous le hero (ou >300px si pas de trigger)
+      let showThreshold = 300;
+      if (trigger) {
+        const r = trigger.getBoundingClientRect();
+        showThreshold = Math.max(0, scrollY + r.bottom - 80); // bas du hero - hauteur topbar
       }
-    });
+      if (scrollY >= showThreshold) subnav.classList.add('is-visible');
+      else subnav.classList.remove('is-visible');
+
+      // 2) Trouver la section "active" : la dernière dont le haut a passé sous la topbar+subnav
+      // La section active est celle dont le top est le plus proche (mais au-dessus) du seuil scroll+offset
+      const offset = 140; // topbar (~56-64) + subnav (~48) + petite marge
+      let activeIdx = -1;
+      for (let i = 0; i < sections.length; i++) {
+        const top = sections[i].target.getBoundingClientRect().top;
+        if (top - offset <= 0) activeIdx = i;
+        else break;
+      }
+
+      sections.forEach((s, i) => {
+        if (i === activeIdx) s.link.classList.add('is-active');
+        else s.link.classList.remove('is-active');
+      });
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    window.addEventListener('resize', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
   };
 
   /* ===========================================================

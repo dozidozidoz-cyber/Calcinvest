@@ -3661,7 +3661,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 80px; }
   opacity: 1;
   pointer-events: auto;
 }
-.topbar.is-scrolled ~ * .v3-subnav.is-visible,
+.topbar.is-scrolled ~ .v3-subnav.is-visible,
 .v3-subnav.is-visible.compact { top: 56px; } /* aligné si topbar compact */
 
 .v3-subnav-inner {
