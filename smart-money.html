@@ -5,8 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#34D399" />
 <title>Smart Money — Suivre les portefeuilles des meilleurs investisseurs | CalcInvest</title>
-<meta name="description" content="Suivez en temps réel les positions des grands gérants (Buffett, Burry, Ackman…) via les filings 13F SEC, et les transactions des politiciens US déclarées sous le STOCK Act." />
+<meta name="description" content="Suivez en temps réel les positions des grands gérants (Buffett, Burry, Ackman…) via les filings 13F SEC, et les transactions des politiciens US déclarées sous le STOCK Act. Perf vs S&P 500." />
+<link rel="manifest" href="/manifest.json" />
 <link rel="canonical" href="https://calcinvest.fr/smart-money" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Smart Money — CalcInvest" />
+<meta property="og:description" content="Tracker des portefeuilles 13F (Buffett, Burry, Ackman, Druckenmiller, Tepper), ARK Invest daily holdings, et transactions des élus US (STOCK Act). Avec perf vs S&P 500." />
+<meta property="og:url" content="https://calcinvest.fr/smart-money" />
+<meta property="og:image" content="https://calcinvest.fr/assets/icons/icon-512.svg" />
 <link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,63 +20,217 @@
 <link rel="stylesheet" href="/assets/css/style.css" />
 
 <style>
-.sm-shell { max-width: 1280px; margin: 0 auto; padding: 24px; display: grid; gap: 24px; }
-.sm-hero { padding: 24px; background: linear-gradient(135deg, var(--bg-card), var(--bg-2)); border: 1px solid var(--border); border-radius: var(--r); }
-.sm-hero-eyebrow { color: var(--accent); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-.sm-hero h1 { margin: 0 0 8px; font-size: 28px; }
-.sm-hero p { margin: 0; color: var(--text-2); max-width: 720px; }
+/* ---- Smart Money — styles spécifiques alignés sur le design system ---- */
 
-.sm-tabs { display: flex; gap: 4px; background: var(--bg-card); padding: 4px; border: 1px solid var(--border); border-radius: var(--r); width: fit-content; }
+.sm-source-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  width: fit-content;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
 .sm-tab {
-  padding: 9px 18px; background: transparent; border: 0; border-radius: calc(var(--r) - 4px);
-  color: var(--text-2); cursor: pointer; font: 500 13px var(--font-sans);
+  padding: 9px 16px;
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--r) - 4px);
+  color: var(--text-2);
+  cursor: pointer;
+  font: 500 13px var(--font-sans);
   transition: var(--t-fast);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.sm-tab:hover { color: var(--text); }
-.sm-tab.active { background: var(--accent-soft); color: var(--text); box-shadow: 0 0 0 1px var(--accent); }
-
-.sm-section { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
-@media (max-width: 900px) { .sm-section { grid-template-columns: 1fr; } }
-
-.sm-list { display: grid; gap: 8px; position: sticky; top: 16px; }
-.sm-mgr-card {
-  text-align: left; padding: 12px 14px; background: var(--bg-card);
-  border: 1px solid var(--border); border-radius: var(--r);
-  cursor: pointer; transition: var(--t-fast); color: inherit; font: inherit;
+.sm-tab:hover { color: var(--text); background: var(--bg-2); }
+.sm-tab.active {
+  background: var(--accent-soft);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--accent);
 }
-.sm-mgr-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
-.sm-mgr-card.active { border-color: var(--accent); background: var(--accent-soft); }
-.sm-mgr-name { font-weight: 600; font-size: 14px; color: var(--text); }
-.sm-mgr-fund { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.sm-tab svg { width: 14px; height: 14px; }
+
+.sm-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .sm-layout { grid-template-columns: 1fr; }
+}
+
+.sm-list-card {
+  position: sticky;
+  top: 16px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 6px;
+}
+.sm-list-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  font-weight: 600;
+  padding: 2px 4px 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.sm-item {
+  text-align: left;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: calc(var(--r) - 4px);
+  cursor: pointer;
+  transition: var(--t-fast);
+  color: inherit;
+  font: inherit;
+  display: block;
+}
+.sm-item:hover { background: var(--bg-2); border-color: var(--border); }
+.sm-item.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.sm-item-name { font-weight: 600; font-size: 13px; color: var(--text); }
+.sm-item-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
 .sm-party-d { color: var(--blue); font-weight: 600; }
 .sm-party-r { color: var(--red); font-weight: 600; }
 
-.sm-mgr-header { padding: 18px 22px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 16px; }
-.sm-mgr-title { margin: 0; font-size: 22px; }
-.sm-mgr-sub { color: var(--text-2); font-size: 13px; margin-top: 4px; }
+.sm-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font: 600 11px var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.sm-source-badge.live { background: rgba(52,211,153,0.12); color: var(--accent); }
+.sm-source-badge.archive { background: rgba(251,191,36,0.12); color: var(--yellow); }
+.sm-source-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+}
+.sm-source-badge.live .dot { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 .sm-badge {
-  display: inline-block; padding: 2px 8px; border-radius: 10px;
-  font: 600 11px var(--font-mono); letter-spacing: 0.04em;
-  background: var(--bg-2); color: var(--text-2);
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font: 600 11px var(--font-mono);
+  letter-spacing: 0.04em;
+  background: var(--bg-2);
+  color: var(--text-2);
+  white-space: nowrap;
 }
 .sm-badge.pos { background: rgba(52,211,153,0.12); color: var(--accent); }
 .sm-badge.neg { background: rgba(248,113,113,0.12); color: var(--red); }
 .sm-badge.warn { background: rgba(251,191,36,0.12); color: var(--yellow); }
 
 .sm-loading { padding: 40px; text-align: center; color: var(--text-2); }
-.sm-movers { margin-bottom: 16px; }
 
-.table-wrap { overflow-x: auto; max-height: 600px; overflow-y: auto; }
-.data-table { width: 100%; }
-.data-table th { position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
-
-.sm-source-note {
-  font-size: 12px; color: var(--text-2);
-  padding: 12px 16px; background: var(--bg-2); border: 1px dashed var(--border);
-  border-radius: var(--r);
+.sm-perf-cell {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 13px;
 }
-.sm-source-note strong { color: var(--text); }
+.sm-perf-cell .alpha {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+.sm-perf-cell.evitee { opacity: 0.7; }
+.sm-perf-cell .label-evitee {
+  display: block;
+  font-size: 10px;
+  color: var(--text-2);
+  font-weight: 400;
+  font-family: var(--font-sans);
+}
+
+.table-wrap { overflow-x: auto; max-height: 600px; overflow-y: auto; border-radius: var(--r); }
+.table-wrap .data-table th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 1;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.sm-search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+.sm-search-input {
+  flex: 1;
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  transition: var(--t-fast);
+}
+.sm-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.sm-summary-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.sm-summary-tile {
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+}
+.sm-summary-tile-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  font-weight: 600;
+}
+.sm-summary-tile-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-mono);
+  margin-top: 6px;
+  letter-spacing: -0.02em;
+}
+.sm-summary-tile-value.pos { color: var(--accent); }
+.sm-summary-tile-value.neg { color: var(--red); }
+.sm-summary-tile-sub {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 4px;
+}
 </style>
 </head>
 <body>
@@ -89,76 +249,146 @@
       </div>
       <div class="logo-text">
         <div class="logo-text-main">Smart Money</div>
-        <div class="logo-text-sub">Tracker</div>
+        <div class="logo-text-sub">Tracker · 13F + STOCK Act</div>
       </div>
     </a>
   </div>
-  <div class="topbar-right">
-    <a href="/" class="btn-ghost">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2L2 8h3v6h6V8h3z"/></svg>
-      <span>Accueil</span>
+  <div class="topbar-right" id="ci-user-zone">
+    <a href="/mes-projets" class="btn-ghost">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h5l1 2h6v7H2z"/></svg>
+      <span>Projets</span>
     </a>
   </div>
 </header>
 
-<main class="sm-shell">
+<div class="shell" id="page-smartmoney">
 
-  <section class="sm-hero">
-    <div class="sm-hero-eyebrow">Smart Money tracker</div>
-    <h1>Suivez les positions des meilleurs investisseurs</h1>
-    <p>Données officielles SEC EDGAR (filings 13F-HR trimestriels) et déclarations STOCK Act des élus US. Mise à jour automatique via le script <code>scripts/fetch_smartmoney.py</code>.</p>
-  </section>
+  <main class="main fade-in" style="grid-column: 1 / -1;">
 
-  <div id="sm-error" style="color: var(--red); font-size: 13px;"></div>
-
-  <div class="sm-tabs">
-    <button class="sm-tab active" data-target="sm-tab-13f">13F · Gérants institutionnels</button>
-    <button class="sm-tab" data-target="sm-tab-pol">Politiciens · STOCK Act</button>
-    <button class="sm-tab" data-target="sm-tab-ark">ARK · Holdings daily</button>
-    <button class="sm-tab" data-target="sm-tab-search">🔍 Recherche cross-source</button>
-  </div>
-
-  <!-- Tab 13F -->
-  <section class="sm-section" id="sm-tab-13f">
-    <div id="sm-mgr-list" class="sm-list"></div>
-    <div id="sm-mgr-panel"></div>
-  </section>
-
-  <!-- Tab Politiciens -->
-  <section class="sm-section" id="sm-tab-pol" style="display:none">
-    <div id="sm-pol-list" class="sm-list"></div>
-    <div id="sm-pol-panel"></div>
-  </section>
-
-  <!-- Tab ARK -->
-  <section class="sm-section" id="sm-tab-ark" style="display:none">
-    <div id="sm-ark-list" class="sm-list"></div>
-    <div id="sm-ark-panel"></div>
-  </section>
-
-  <!-- Tab Recherche cross-source -->
-  <section id="sm-tab-search" style="display:none">
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Qui détient ce titre ?</div>
-      <p style="color:var(--text-2); font-size:13px; margin:6px 0 14px">
-        Tape le nom d'une société ou un ticker (ex : <code>AAPL</code>, <code>tesla</code>, <code>nvidia</code>). On cherche dans les 13F des 5 gérants, les holdings ARK et les transactions des politiciens.
-      </p>
-      <div style="display:flex; gap:10px; align-items:center">
-        <input type="text" id="sm-search-input" placeholder="Apple, NVDA, Tesla…" autocomplete="off"
-          style="flex:1; padding:11px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:var(--font-mono); font-size:14px;" />
-        <button id="sm-search-clear" class="btn-ghost" style="padding:10px 14px">Effacer</button>
+    <div class="page-header">
+      <div class="page-eyebrow">
+        <span class="page-eyebrow-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 14h12"/>
+            <path d="M4 14V9M7 14V6M10 14V8M13 14V4"/>
+            <path d="M12 2l1.5 0.7L14.5 1 14 2.5 15 3.5 13.7 3.7 13 5 12.3 3.7 11 3.5 12 2.5z"/>
+          </svg>
+        </span>
+        Smart Money · Tracker
       </div>
+      <h1 class="page-title">Suivez les positions des meilleurs investisseurs — comparées au S&amp;P 500.</h1>
+      <p class="page-lede">
+        Sources officielles : <strong style="color:var(--text)">SEC EDGAR</strong> (filings 13F des hedge funds),
+        <strong style="color:var(--text)">arkfunds.io</strong> (holdings ARK daily), et
+        <strong style="color:var(--text)">disclosures-clerk.house.gov</strong> (transactions des élus US).
+        Chaque trade est comparé à la performance du S&amp;P 500 sur la même période — l'alpha vous dit
+        s'ils battent vraiment le marché.
+      </p>
     </div>
-    <div id="sm-search-results"></div>
-  </section>
 
-  <p class="sm-source-note">
-    <strong>Sources :</strong> <code>data.sec.gov</code> (13F officiels, live) · <code>arkfunds.io</code> (ARK holdings daily) ·
-    <code>house/senate-stock-watcher</code> via Wayback Machine (STOCK Act, snapshot 2024 — les agrégats S3 publics sont actuellement hors-ligne).
-    Les 13F sont déposés sous 45 jours après chaque trimestre fiscal. Aucune recommandation d'investissement, données à titre informatif uniquement.
-  </p>
+    <div id="sm-error" style="color: var(--red); font-size: 13px; margin-bottom: 12px;"></div>
 
-</main>
+    <!-- Sélecteur de source -->
+    <div class="sm-source-tabs" role="tablist" aria-label="Sources de données">
+      <button class="sm-tab active" data-target="sm-tab-13f" role="tab">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M5 11h4"/></svg>
+        13F · Gérants institutionnels
+      </button>
+      <button class="sm-tab" data-target="sm-tab-pol" role="tab">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 14V8l5-4 5 4v6"/><path d="M6 14v-4h4v4"/></svg>
+        Politiciens · STOCK Act
+      </button>
+      <button class="sm-tab" data-target="sm-tab-ark" role="tab">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2L2 6l6 4 6-4z"/><path d="M2 10l6 4 6-4"/></svg>
+        ARK · Daily holdings
+      </button>
+      <button class="sm-tab" data-target="sm-tab-search" role="tab">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3" stroke-linecap="round"/></svg>
+        Recherche cross-source
+      </button>
+    </div>
+
+    <!-- Section 13F -->
+    <section class="sm-section" id="sm-tab-13f">
+      <div class="sm-layout">
+        <aside class="sm-list-card">
+          <div class="sm-list-title">Gérants 13F</div>
+          <div id="sm-mgr-list"></div>
+        </aside>
+        <div id="sm-mgr-panel"></div>
+      </div>
+    </section>
+
+    <!-- Section Politiciens -->
+    <section class="sm-section" id="sm-tab-pol" style="display:none">
+      <div class="sm-layout">
+        <aside class="sm-list-card">
+          <div class="sm-list-title">Élus suivis</div>
+          <div id="sm-pol-list"></div>
+        </aside>
+        <div id="sm-pol-panel"></div>
+      </div>
+    </section>
+
+    <!-- Section ARK -->
+    <section class="sm-section" id="sm-tab-ark" style="display:none">
+      <div class="sm-layout">
+        <aside class="sm-list-card">
+          <div class="sm-list-title">Fonds ARK</div>
+          <div id="sm-ark-list"></div>
+        </aside>
+        <div id="sm-ark-panel"></div>
+      </div>
+    </section>
+
+    <!-- Section Recherche -->
+    <section class="sm-section" id="sm-tab-search" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3" stroke-linecap="round"/></svg></div>
+            Qui détient ce titre ?
+          </div>
+          <div class="card-meta">3 sources · 13F + ARK + Congress</div>
+        </div>
+        <div class="card-body">
+          <p style="color:var(--text-2); font-size:13px; margin:0 0 12px">
+            Tape le nom d'une société ou un ticker (ex&nbsp;: <code>AAPL</code>, <code>tesla</code>, <code>nvidia</code>).
+            On cherche dans les positions 13F des 5 gérants, les holdings ARK et les transactions des politiciens.
+          </p>
+          <div class="sm-search-row">
+            <input type="text" id="sm-search-input" class="sm-search-input"
+                   placeholder="Apple, NVDA, Tesla…" autocomplete="off" spellcheck="false" />
+            <button id="sm-search-clear" class="btn-ghost">Effacer</button>
+          </div>
+        </div>
+      </div>
+      <div id="sm-search-results" style="margin-top:16px"></div>
+    </section>
+
+    <!-- Footer sources -->
+    <section class="card" style="margin-top:24px">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div>
+          Sources &amp; méthodologie
+        </div>
+      </div>
+      <div class="card-body" style="font-size:13px; color:var(--text-2); line-height:1.7">
+        <strong style="color:var(--text)">13F-HR</strong> : positions trimestrielles des hedge funds &gt; $100M (data.sec.gov, livré 45j après chaque trimestre fiscal).
+        <strong style="color:var(--text)">ARK</strong> : holdings daily via arkfunds.io (data du jour ouvré précédent).
+        <strong style="color:var(--text)">STOCK Act</strong> : pour la Chambre, scraping live des PTRs PDFs de <code>disclosures-clerk.house.gov</code>.
+        Pour le Sénat, fallback Wayback Machine en attendant la réouverture des agrégats S3 publics.
+        <strong style="color:var(--text)">Prix</strong> : yfinance, monthly close ajusté splits/dividendes, benchmark S&amp;P 500 (^GSPC).
+        <br><br>
+        <em>Aucune recommandation d'investissement. Les performances passées ne préjugent pas des performances futures.
+        Données à titre purement informatif. Tu suis ces gérants à tes risques.</em>
+      </div>
+    </section>
+
+  </main>
+
+</div>
 
 <script src="/assets/js/common.js"></script>
 <script src="/assets/js/core/calc-smartmoney.js"></script>

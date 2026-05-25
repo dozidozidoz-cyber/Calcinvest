@@ -551,10 +551,17 @@ def run_prices():
     earliest = min(tickers_meta.values())
     # Clamp à 2018 pour limiter le volume
     if earliest < '2018-01-01': earliest = '2018-01-01'
-    print(f'  {len(tickers_meta)} tickers, depuis {earliest}')
+    print(f'  {len(tickers_meta)} tickers + ^GSPC benchmark, depuis {earliest}')
+
+    # Toujours inclure le S&P 500 pour comparer la perf vs benchmark
+    tickers_meta['^GSPC'] = earliest
 
     prices_out = {}
+    # Tickers exotiques à skip (options, mutual funds longs codes)
+    # ^GSPC est OK car traité comme index par yfinance
     for i, (tk, _) in enumerate(sorted(tickers_meta.items())):
+        if tk.startswith('^') is False and (len(tk) > 5 or '.' in tk):
+            continue
         try:
             t = yf.Ticker(tk)
             hist = t.history(start=earliest, interval='1mo', auto_adjust=True, prepost=False)

@@ -176,10 +176,61 @@
     var entry = priceAtDate(series, isoDate);
     var latest = latestPrice(series);
     if (entry == null || latest == null || entry === 0) return null;
+    var ret = 100 * (latest - entry) / entry;
+    var out = { entryPrice: entry, latestPrice: latest, returnPct: ret };
+
+    // Alpha vs S&P 500 sur la même période
+    var sp = prices['^GSPC'];
+    if (sp) {
+      var spEntry = priceAtDate(sp, isoDate);
+      var spLatest = latestPrice(sp);
+      if (spEntry && spLatest && spEntry !== 0) {
+        var spRet = 100 * (spLatest - spEntry) / spEntry;
+        out.benchmarkReturnPct = spRet;
+        out.alphaPct = ret - spRet;
+      }
+    }
+    return out;
+  }
+
+  /**
+   * Stats agrégées d'un set de transactions (perf moyenne, win rate, alpha moyen).
+   * @param txns - transactions avec ticker + date
+   * @param prices - object des séries de prix
+   * @param onlyBuys - si true, ne considère que les achats
+   */
+  function aggregatePerf(txns, prices, onlyBuys) {
+    var perfs = [];
+    txns.forEach(function (t) {
+      if (!t.ticker || !t.date) return;
+      var type = (t.type || '').toLowerCase().trim();
+      var isBuy = type === 'p' || type.indexOf('purchase') >= 0;
+      var isSell = type === 's' || type.indexOf('sale') >= 0 || type.indexOf('s (') === 0;
+      if (onlyBuys && !isBuy) return;
+      if (!isBuy && !isSell) return;
+      // Normalize date if MM/DD/YYYY
+      var d = t.date;
+      if (d.indexOf('/') >= 0) {
+        var p = d.split('/');
+        d = p[2] + '-' + p[0].padStart(2, '0') + '-' + p[1].padStart(2, '0');
+      }
+      var perf = tradeReturn(prices, t.ticker, d);
+      if (!perf) return;
+      perfs.push({ ticker: t.ticker, isBuy: isBuy, isSell: isSell,
+                   ret: perf.returnPct, alpha: perf.alphaPct, bench: perf.benchmarkReturnPct });
+    });
+    if (!perfs.length) return null;
+    var avg = function (arr) { return arr.reduce(function (s, x) { return s + x; }, 0) / arr.length; };
+    var rets = perfs.map(function (p) { return p.ret; });
+    var alphas = perfs.filter(function (p) { return p.alpha != null; }).map(function (p) { return p.alpha; });
+    var wins = perfs.filter(function (p) { return p.isBuy ? p.ret > 0 : p.ret < 0; });  // achat = win si +, vente = win si négatif (évité une perte)
     return {
-      entryPrice: entry,
-      latestPrice: latest,
-      returnPct: 100 * (latest - entry) / entry,
+      count: perfs.length,
+      avgReturn: avg(rets),
+      avgAlpha: alphas.length ? avg(alphas) : null,
+      winRate: 100 * wins.length / perfs.length,
+      bestTrade: perfs.reduce(function (a, b) { return a.ret > b.ret ? a : b; }),
+      worstTrade: perfs.reduce(function (a, b) { return a.ret < b.ret ? a : b; }),
     };
   }
 
@@ -193,6 +244,7 @@
     priceAtDate: priceAtDate,
     latestPrice: latestPrice,
     tradeReturn: tradeReturn,
+    aggregatePerf: aggregatePerf,
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

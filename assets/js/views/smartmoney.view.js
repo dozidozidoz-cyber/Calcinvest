@@ -76,6 +76,26 @@
     return '<span class="sm-badge ' + m.cls + '">' + m.label + '</span>';
   }
 
+  function sourceBadge(source) {
+    if (source === 'live_house_clerk') {
+      return '<span class="sm-source-badge live"><span class="dot"></span>LIVE · disclosures-clerk.house.gov</span>';
+    }
+    if (source === 'wayback') {
+      return '<span class="sm-source-badge archive"><span class="dot"></span>Archive Wayback Machine</span>';
+    }
+    return '';
+  }
+
+  function summaryTile(label, value, cls, sub) {
+    cls = cls || '';
+    sub = sub || '';
+    return '<div class="sm-summary-tile">'
+      + '<div class="sm-summary-tile-label">' + escapeHtml(label) + '</div>'
+      + '<div class="sm-summary-tile-value ' + cls + '">' + value + '</div>'
+      + (sub ? '<div class="sm-summary-tile-sub">' + sub + '</div>' : '')
+      + '</div>';
+  }
+
   function fetchJSON(path) {
     return fetch(path).then(function (r) {
       if (!r.ok) throw new Error(r.status + ' ' + path);
@@ -97,19 +117,19 @@
     var list = document.getElementById('sm-mgr-list');
     if (!list || !state.manifest) return;
     list.innerHTML = state.manifest.managers_13f.map(function (m) {
-      return '<button class="sm-mgr-card" data-id="' + m.id + '">'
-        + '<div class="sm-mgr-name">' + escapeHtml(m.name) + '</div>'
-        + '<div class="sm-mgr-fund">' + escapeHtml(m.fund) + '</div>'
+      return '<button class="sm-item" data-id="' + m.id + '">'
+        + '<div class="sm-item-name">' + escapeHtml(m.name) + '</div>'
+        + '<div class="sm-item-meta">' + escapeHtml(m.fund) + '</div>'
         + '</button>';
     }).join('');
-    list.querySelectorAll('.sm-mgr-card').forEach(function (btn) {
+    list.querySelectorAll('.sm-item').forEach(function (btn) {
       btn.addEventListener('click', function () { selectManager(btn.dataset.id); });
     });
   }
 
   function selectManager(id) {
     state.selectedManager = id;
-    document.querySelectorAll('#sm-mgr-list .sm-mgr-card').forEach(function (b) {
+    document.querySelectorAll('#sm-mgr-list .sm-item').forEach(function (b) {
       b.classList.toggle('active', b.dataset.id === id);
     });
     var panel = document.getElementById('sm-mgr-panel');
@@ -137,18 +157,21 @@
     var exitCount = diff.filter(function (d) { return d.flag === 'EXIT'; }).length;
 
     panel.innerHTML = ''
-      + '<div class="sm-mgr-header">'
-      +   '<div>'
-      +     '<h2 class="sm-mgr-title">' + escapeHtml(data.meta.name) + '</h2>'
-      +     '<div class="sm-mgr-sub">' + escapeHtml(data.meta.fund) + ' · 13F-HR au ' + curr.period + ' (déposé le ' + curr.filed + ')</div>'
+      + '<div class="card" style="margin-bottom:16px">'
+      +   '<div class="card-header">'
+      +     '<div class="card-title">'
+      +       '<div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2 1"/></svg></div>'
+      +       escapeHtml(data.meta.name) + ' · ' + escapeHtml(data.meta.fund)
+      +     '</div>'
+      +     '<div class="card-meta">13F-HR au ' + curr.period + ' · déposé le ' + curr.filed + '</div>'
       +   '</div>'
       + '</div>'
-      + '<div class="stats-row">'
-      +   '<div class="stat"><div class="stat-label">Valeur du portefeuille</div><div class="stat-value">' + fmtBig(curr.total_value) + '</div></div>'
-      +   '<div class="stat"><div class="stat-label">Positions</div><div class="stat-value">' + curr.count + '</div></div>'
-      +   '<div class="stat"><div class="stat-label">Concentration top ' + topN + '</div><div class="stat-value">' + conc.toFixed(1) + ' %</div></div>'
-      +   '<div class="stat pos"><div class="stat-label">Nouvelles positions</div><div class="stat-value">' + newCount + '</div></div>'
-      +   '<div class="stat neg"><div class="stat-label">Sorties</div><div class="stat-value">' + exitCount + '</div></div>'
+      + '<div class="sm-summary-card">'
+      +   summaryTile('Valeur portefeuille', fmtBig(curr.total_value), '', 'positions équity uniquement')
+      +   summaryTile('Positions', String(curr.count), '', 'lignes 13F')
+      +   summaryTile('Concentration top ' + topN, conc.toFixed(1) + ' %', '', 'sur valeur totale')
+      +   summaryTile('Nouvelles positions', String(newCount), 'pos', 'vs trimestre précédent')
+      +   summaryTile('Sorties', String(exitCount), 'neg', 'vs trimestre précédent')
       + '</div>'
       + (prev ? renderMovers(movers) : '')
       + renderPositionsTable(diff, prev);
@@ -156,8 +179,14 @@
 
   function renderMovers(movers) {
     if (!movers.length) return '';
-    return '<div class="card sm-movers">'
-      + '<div class="card-title">Top mouvements vs trimestre précédent</div>'
+    return '<div class="card" style="margin-bottom:16px">'
+      + '<div class="card-header">'
+      +   '<div class="card-title">'
+      +     '<div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12l4-4 3 3 5-6"/><path d="M14 8V5h-3"/></svg></div>'
+      +     'Top mouvements vs trimestre précédent'
+      +   '</div>'
+      + '</div>'
+      + '<div class="card-body">'
       + '<table class="data-table"><thead><tr>'
       + '<th>Position</th><th>Action</th><th>Δ valeur</th><th>Δ parts</th><th>Δ % port</th>'
       + '</tr></thead><tbody>'
@@ -171,13 +200,20 @@
           + '<td class="' + cls + '">' + fmtPct(m.dPct, 2) + '</td>'
           + '</tr>';
       }).join('')
-      + '</tbody></table></div>';
+      + '</tbody></table></div></div>';
   }
 
   function renderPositionsTable(diff, prev) {
     var active = diff.filter(function (d) { return d.flag !== 'EXIT'; });
-    return '<div class="card sm-positions">'
-      + '<div class="card-title">Portefeuille complet (' + active.length + ' positions)</div>'
+    return '<div class="card">'
+      + '<div class="card-header">'
+      +   '<div class="card-title">'
+      +     '<div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M5 11h4"/></svg></div>'
+      +     'Portefeuille complet'
+      +   '</div>'
+      +   '<div class="card-meta">' + active.length + ' positions</div>'
+      + '</div>'
+      + '<div class="card-body">'
       + '<div class="table-wrap"><table class="data-table"><thead><tr>'
       + '<th>#</th><th>Émetteur</th><th>Classe</th><th>% port</th><th>Valeur</th><th>Parts</th>'
       + (prev ? '<th>Mouvement</th><th>Δ parts</th>' : '')
@@ -196,7 +232,7 @@
                   + '</td>' : '')
           + '</tr>';
       }).join('')
-      + '</tbody></table></div></div>';
+      + '</tbody></table></div></div></div>';
   }
 
   // ---------- Politicians ----------
@@ -214,19 +250,19 @@
     if (!list || !state.manifest) return;
     list.innerHTML = state.manifest.politicians.map(function (p) {
       var partyCls = p.party === 'D' ? 'sm-party-d' : p.party === 'R' ? 'sm-party-r' : '';
-      return '<button class="sm-mgr-card" data-id="' + p.id + '">'
-        + '<div class="sm-mgr-name">' + escapeHtml(p.name) + '</div>'
-        + '<div class="sm-mgr-fund">' + escapeHtml(p.chamber) + ' · <span class="' + partyCls + '">' + p.party + '-' + p.state + '</span></div>'
+      return '<button class="sm-item" data-id="' + p.id + '">'
+        + '<div class="sm-item-name">' + escapeHtml(p.name) + '</div>'
+        + '<div class="sm-item-meta">' + escapeHtml(p.chamber) + ' · <span class="' + partyCls + '">' + p.party + '-' + p.state + '</span></div>'
         + '</button>';
     }).join('');
-    list.querySelectorAll('.sm-mgr-card').forEach(function (btn) {
+    list.querySelectorAll('.sm-item').forEach(function (btn) {
       btn.addEventListener('click', function () { selectPolitician(btn.dataset.id); });
     });
   }
 
   function selectPolitician(id) {
     state.selectedPolitician = id;
-    document.querySelectorAll('#sm-pol-list .sm-mgr-card').forEach(function (b) {
+    document.querySelectorAll('#sm-pol-list .sm-item').forEach(function (b) {
       b.classList.toggle('active', b.dataset.id === id);
     });
     var panel = document.getElementById('sm-pol-panel');
@@ -245,50 +281,101 @@
       panel.innerHTML = '<div class="info-box warn">Aucune transaction.</div>';
       return;
     }
-    var s365 = SM.summarizeTxns(txns, 365);
     var sAll = SM.summarizeTxns(txns);
     var latestDate = txns[0] && txns[0].date ? txns[0].date : '—';
-    var sourceNote;
-    if (data.data_source === 'live_house_clerk') {
-      sourceNote = '<div class="sm-source-note" style="margin-bottom:14px; border-color: rgba(52,211,153,0.4); background: rgba(52,211,153,0.06)"><strong style="color:var(--accent)">● Source LIVE</strong> — scrapping officiel <code>disclosures-clerk.house.gov</code>. Dernière transaction : ' + escapeHtml(latestDate) + '. Mise à jour : ré-exécuter <code>fetch_smartmoney.py</code>.</div>';
-    } else if (data.data_source === 'wayback') {
-      sourceNote = '<div class="sm-source-note" style="margin-bottom:14px"><strong>Source : Wayback Machine</strong> — snapshot d\'archive (les agrégats S3 publics étant hors-ligne). Dernière transaction connue : ' + escapeHtml(latestDate) + '.</div>';
+
+    // Stats agrégées via core (avec alpha vs S&P)
+    var aggBuys  = SM.aggregatePerf(txns, state.prices, true);
+    var aggAll   = SM.aggregatePerf(txns, state.prices, false);
+    // Fallback : si pas d'achats trackés (que des ventes type Meuser), on utilise toutes les txns
+    var agg = aggBuys || aggAll;
+    var isAllSells = !aggBuys && aggAll;
+
+    // Color helpers pour la perf moyenne
+    var perfCls = function (v) { return v == null ? '' : v >= 0 ? 'pos' : 'neg'; };
+    var fmtP = function (v) { return v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(1) + ' %'; };
+
+    // Tuiles de résumé
+    var summaryTiles = '';
+    if (agg) {
+      var perfLabel    = isAllSells ? 'Perf moyenne évitée' : 'Perf moyenne achats';
+      var perfSub      = isAllSells ? 'ce qu\'il a manqué en vendant (' + agg.count + ' ventes)' : 'depuis chaque achat (' + agg.count + ' trades)';
+      var winRateLabel = isAllSells ? 'Timing des ventes' : 'Win rate';
+      var winRateSub   = isAllSells ? 'ventes au-dessus du marché' : 'achats gagnants';
+      summaryTiles += summaryTile(perfLabel, fmtP(agg.avgReturn), perfCls(agg.avgReturn), perfSub);
+      if (agg.avgAlpha != null) {
+        var alphaSub = agg.avgAlpha >= 0
+          ? (isAllSells ? 'mauvais timing vs marché' : 'bat le marché')
+          : (isAllSells ? 'bon timing vs marché' : 'sous le marché');
+        summaryTiles += summaryTile('Alpha vs S&P 500', fmtP(agg.avgAlpha), perfCls(isAllSells ? -agg.avgAlpha : agg.avgAlpha), alphaSub);
+      }
+      summaryTiles += summaryTile(winRateLabel, agg.winRate.toFixed(0) + ' %',
+        agg.winRate >= 50 ? 'pos' : 'neg', winRateSub);
+      summaryTiles += summaryTile('Meilleur trade', fmtP(agg.bestTrade.ret), 'pos',
+        '<strong>' + escapeHtml(agg.bestTrade.ticker) + '</strong>');
+      summaryTiles += summaryTile('Pire trade', fmtP(agg.worstTrade.ret), 'neg',
+        '<strong>' + escapeHtml(agg.worstTrade.ticker) + '</strong>');
     } else {
-      sourceNote = '';
+      summaryTiles += summaryTile('Transactions totales', String(sAll.total), '', 'historique complet');
+      summaryTiles += summaryTile('Dernière transaction', escapeHtml(latestDate), '', '');
     }
+
     panel.innerHTML = ''
-      + sourceNote
-      + '<div class="sm-mgr-header">'
-      +   '<h2 class="sm-mgr-title">' + escapeHtml(data.meta.name) + '</h2>'
-      +   '<div class="sm-mgr-sub">' + escapeHtml(data.meta.chamber) + ' · ' + data.meta.party + '-' + data.meta.state + ' · ' + sAll.total + ' transactions · dernière le ' + escapeHtml(latestDate) + '</div>'
+      + '<div class="card" style="margin-bottom:16px">'
+      +   '<div class="card-header">'
+      +     '<div class="card-title">'
+      +       '<div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="5" r="3"/><path d="M3 14c0-3 2-5 5-5s5 2 5 5"/></svg></div>'
+      +       escapeHtml(data.meta.name)
+      +     '</div>'
+      +     '<div class="card-meta">' + escapeHtml(data.meta.chamber) + ' · '
+      +       '<span class="' + (data.meta.party === 'D' ? 'sm-party-d' : 'sm-party-r') + '">' + data.meta.party + '-' + data.meta.state + '</span>'
+      +       ' · ' + sAll.total + ' transactions · dernière le ' + escapeHtml(latestDate)
+      +     '</div>'
+      +   '</div>'
+      +   '<div class="card-body" style="padding-top:10px">' + sourceBadge(data.data_source) + '</div>'
       + '</div>'
-      + '<div class="stats-row">'
-      +   '<div class="stat"><div class="stat-label">Sur 12 mois</div><div class="stat-value">' + s365.total + '</div></div>'
-      +   '<div class="stat pos"><div class="stat-label">Achats 12m</div><div class="stat-value">' + s365.buys + '</div></div>'
-      +   '<div class="stat neg"><div class="stat-label">Ventes 12m</div><div class="stat-value">' + s365.sells + '</div></div>'
-      +   '<div class="stat"><div class="stat-label">Volume achats 12m</div><div class="stat-value">' + fmtBig(s365.buyAmt) + '</div></div>'
-      +   '<div class="stat"><div class="stat-label">Volume ventes 12m</div><div class="stat-value">' + fmtBig(s365.sellAmt) + '</div></div>'
+      + '<div class="sm-summary-card">' + summaryTiles + '</div>'
+      + renderTxnTable(txns);
+  }
+
+  function renderTxnTable(txns) {
+    return '<div class="card">'
+      + '<div class="card-header">'
+      +   '<div class="card-title">'
+      +     '<div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 7h6M5 10h4"/></svg></div>'
+      +     'Transactions détaillées'
+      +   '</div>'
+      +   '<div class="card-meta">' + Math.min(txns.length, 100) + ' affichées sur ' + txns.length + '</div>'
       + '</div>'
-      + '<div class="card"><div class="card-title">Dernières transactions</div>'
+      + '<div class="card-body" style="padding-top:0">'
       + '<div class="table-wrap"><table class="data-table"><thead><tr>'
-      + '<th>Date</th><th>Ticker</th><th>Actif</th><th>Type</th><th>Montant</th><th>Perf depuis*</th><th>Détenteur</th>'
+      + '<th>Date</th><th>Ticker</th><th>Actif</th><th>Type</th><th>Montant</th>'
+      + '<th>Perf depuis*</th><th>vs S&P 500</th><th>Détenteur</th>'
       + '</tr></thead><tbody>'
       + txns.slice(0, 100).map(function (t) {
         var ttype = (t.type || '').toLowerCase();
         var isSell = ttype.indexOf('sale') >= 0 || ttype === 's' || ttype.indexOf('s (') === 0;
         var typeCls = isSell ? 'neg' : 'pos';
         var descHtml = t.description ? '<div style="font-size:11px;color:var(--text-2);margin-top:3px;line-height:1.4">' + escapeHtml(t.description) + '</div>' : '';
-        // Perf : pertinente pour les achats, "perf évitée" pour les ventes
         var isoDate = t.date && t.date.indexOf('/') >= 0
           ? (function(){var p=t.date.split('/');return p[2]+'-'+p[0].padStart(2,'0')+'-'+p[1].padStart(2,'0');})()
           : t.date;
         var perf = SM.tradeReturn(state.prices, t.ticker, isoDate);
         var perfHtml = '<span class="muted">—</span>';
+        var alphaHtml = '<span class="muted">—</span>';
         if (perf) {
           var pCls = perf.returnPct >= 0 ? 'pos' : 'neg';
-          var perfLabel = isSell ? '(évitée)' : '';
-          perfHtml = '<strong class="' + pCls + '">' + (perf.returnPct >= 0 ? '+' : '') + perf.returnPct.toFixed(1) + ' %</strong>'
-            + (perfLabel ? ' <span class="muted" style="font-size:10px">' + perfLabel + '</span>' : '');
+          var eviteeCls = isSell ? 'evitee' : '';
+          perfHtml = '<span class="sm-perf-cell ' + eviteeCls + '"><span class="' + pCls + '">'
+            + (perf.returnPct >= 0 ? '+' : '') + perf.returnPct.toFixed(1) + ' %</span>'
+            + (isSell ? '<span class="label-evitee">évitée</span>' : '') + '</span>';
+          if (perf.alphaPct != null) {
+            var aCls = perf.alphaPct >= 0 ? 'pos' : 'neg';
+            alphaHtml = '<span class="sm-perf-cell ' + eviteeCls + '"><span class="' + aCls + '">'
+              + (perf.alphaPct >= 0 ? '+' : '') + perf.alphaPct.toFixed(1) + ' %</span>'
+              + '<span class="alpha">S&P : ' + (perf.benchmarkReturnPct >= 0 ? '+' : '')
+              + perf.benchmarkReturnPct.toFixed(1) + ' %</span></span>';
+          }
         }
         return '<tr>'
           + '<td>' + escapeHtml(t.date) + '</td>'
@@ -297,11 +384,17 @@
           + '<td class="' + typeCls + '">' + escapeHtml(t.type || '') + '</td>'
           + '<td>' + escapeHtml(t.amount || '') + '</td>'
           + '<td>' + perfHtml + '</td>'
+          + '<td>' + alphaHtml + '</td>'
           + '<td><span class="muted">' + escapeHtml(t.owner || '') + '</span></td>'
           + '</tr>';
       }).join('')
-      + '</tbody></table>'
-      + '<p style="font-size:11px;color:var(--text-2);margin:8px 0 0">* Perf calculée du close mensuel le plus proche de la date du trade jusqu\'au dernier close disponible. « (évitée) » pour les ventes = ce que le politicien aurait gagné en gardant. Données yfinance, peut manquer pour certains tickers (options, ETF petits, sociétés délistées).</p>'
+      + '</tbody></table></div>'
+      + '<p style="font-size:11px;color:var(--text-2);margin:12px 0 0;line-height:1.6">'
+      + '<strong>Perf depuis*</strong> = variation du close mensuel le plus proche de la date du trade jusqu\'au dernier close. '
+      + '<strong>vs S&P 500</strong> = alpha (perf du titre − perf de l\'indice sur la même période). '
+      + 'Positif = le politicien bat le marché. <strong>« évitée »</strong> sur les ventes = gain qu\'il aurait fait en gardant. '
+      + 'Source prix : yfinance, certains tickers exotiques (options, mutual funds, délistés) sont indisponibles.'
+      + '</p>'
       + '</div></div>';
   }
 
@@ -315,23 +408,29 @@
     });
   }
 
+  var ARK_DESCS = {
+    ARKK: 'Innovation', ARKQ: 'Autonomous Tech & Robotics',
+    ARKW: 'Next-Gen Internet', ARKG: 'Genomic Revolution',
+    ARKF: 'Fintech Innovation', ARKX: 'Space Exploration',
+  };
+
   function renderArkList() {
     var list = document.getElementById('sm-ark-list');
     if (!list || !state.manifest) return;
     list.innerHTML = state.manifest.ark_funds.map(function (f) {
-      return '<button class="sm-mgr-card" data-id="' + f + '">'
-        + '<div class="sm-mgr-name">' + f + '</div>'
-        + '<div class="sm-mgr-fund">ARK Invest</div>'
+      return '<button class="sm-item" data-id="' + f + '">'
+        + '<div class="sm-item-name">' + f + '</div>'
+        + '<div class="sm-item-meta">' + (ARK_DESCS[f] || 'ARK Invest') + '</div>'
         + '</button>';
     }).join('');
-    list.querySelectorAll('.sm-mgr-card').forEach(function (btn) {
+    list.querySelectorAll('.sm-item').forEach(function (btn) {
       btn.addEventListener('click', function () { selectArkFund(btn.dataset.id); });
     });
   }
 
   function selectArkFund(symbol) {
     state.selectedArkFund = symbol;
-    document.querySelectorAll('#sm-ark-list .sm-mgr-card').forEach(function (b) {
+    document.querySelectorAll('#sm-ark-list .sm-item').forEach(function (b) {
       b.classList.toggle('active', b.dataset.id === symbol);
     });
     var panel = document.getElementById('sm-ark-panel');
@@ -350,16 +449,29 @@
     var top10pct = holdings.slice(0, 10).reduce(function (s, h) { return s + (h.weight || 0); }, 0);
 
     panel.innerHTML = ''
-      + '<div class="sm-mgr-header">'
-      +   '<h2 class="sm-mgr-title">' + symbol + ' · ARK Invest</h2>'
-      +   '<div class="sm-mgr-sub">Holdings au ' + escapeHtml(fund.as_of || '—') + ' · source arkfunds.io</div>'
+      + '<div class="card" style="margin-bottom:16px">'
+      +   '<div class="card-header">'
+      +     '<div class="card-title">'
+      +       '<div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2L2 6l6 4 6-4z"/><path d="M2 10l6 4 6-4"/></svg></div>'
+      +       symbol + ' · ' + (ARK_DESCS[symbol] || 'ARK Invest')
+      +     '</div>'
+      +     '<div class="card-meta">Holdings au ' + escapeHtml(fund.as_of || '—') + ' · arkfunds.io</div>'
+      +   '</div>'
       + '</div>'
-      + '<div class="stats-row">'
-      +   '<div class="stat"><div class="stat-label">AUM (mkt value)</div><div class="stat-value">' + fmtBig(totalValue) + '</div></div>'
-      +   '<div class="stat"><div class="stat-label">Positions</div><div class="stat-value">' + holdings.length + '</div></div>'
-      +   '<div class="stat"><div class="stat-label">Top 10</div><div class="stat-value">' + top10pct.toFixed(1) + ' %</div></div>'
+      + '<div class="sm-summary-card">'
+      +   summaryTile('AUM (mkt value)', fmtBig(totalValue), '', 'valeur marché des positions')
+      +   summaryTile('Positions', String(holdings.length), '', 'lignes du fonds')
+      +   summaryTile('Concentration top 10', top10pct.toFixed(1) + ' %', '', 'sur poids total')
       + '</div>'
-      + '<div class="card"><div class="card-title">Portefeuille complet</div>'
+      + '<div class="card">'
+      + '<div class="card-header">'
+      +   '<div class="card-title">'
+      +     '<div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M5 11h4"/></svg></div>'
+      +     'Portefeuille complet'
+      +   '</div>'
+      +   '<div class="card-meta">' + holdings.length + ' positions</div>'
+      + '</div>'
+      + '<div class="card-body" style="padding-top:0">'
       + '<div class="table-wrap"><table class="data-table"><thead><tr>'
       + '<th>#</th><th>Ticker</th><th>Société</th><th>% port</th><th>Valeur</th><th>Parts</th><th>Cours</th>'
       + '</tr></thead><tbody>'
@@ -374,7 +486,7 @@
           + '<td>$' + (h.share_price || 0).toFixed(2) + '</td>'
           + '</tr>';
       }).join('')
-      + '</tbody></table></div></div>';
+      + '</tbody></table></div></div></div>';
   }
 
   // ---------- Cross-source search ----------
