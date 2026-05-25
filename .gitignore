@@ -40,6 +40,9 @@ package-lock.json
 Icon?
 ehthumbs.db
 
+# Smart Money — cache de PDFs House Clerk (reproductible via fetch_smartmoney.py)
+assets/data/smart-money/_pdf_cache/
+
 # Keep
 !.gitkeep
 .claude/

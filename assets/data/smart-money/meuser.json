@@ -1,0 +1,220 @@
+{
+  "meta": {
+    "name": "Dan Meuser",
+    "chamber": "House",
+    "party": "R",
+    "state": "PA",
+    "match": [
+      [
+        "daniel",
+        "meuser"
+      ],
+      [
+        "dan",
+        "meuser"
+      ]
+    ],
+    "id": "meuser",
+    "type": "CONGRESS"
+  },
+  "updated": "2026-05-24T22:24:10.464157Z",
+  "data_source": "live_house_clerk",
+  "count": 15,
+  "transactions": [
+    {
+      "date": "2026-04-24",
+      "disclosed": "2026-05-12",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2026-05-21",
+      "doc_id": "20034547"
+    },
+    {
+      "date": "2026-03-25",
+      "disclosed": "2026-04-14",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2026-04-21",
+      "doc_id": "20034359"
+    },
+    {
+      "date": "2026-02-25",
+      "disclosed": "2026-03-09",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2026-04-03",
+      "doc_id": "20034158"
+    },
+    {
+      "date": "2026-01-30",
+      "disclosed": "2026-02-11",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2026-02-17",
+      "doc_id": "20034016"
+    },
+    {
+      "date": "2026-01-14",
+      "disclosed": "2026-02-11",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2026-02-17",
+      "doc_id": "20034016"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "GOOGL",
+      "asset": "Alphabet Inc. - Class A Common Stock",
+      "asset_class": "ST",
+      "type": "S",
+      "amount": "$50,001 - $100,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "AMGN",
+      "asset": "Amgen Inc. - Common Stock",
+      "asset_class": "ST",
+      "type": "S",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "AAPL",
+      "asset": "Apple Inc. - Common Stock",
+      "asset_class": "ST",
+      "type": "S",
+      "amount": "$15,001 - $50,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "APTV",
+      "asset": "Aptiv PLC Ordinary Shares",
+      "asset_class": "ST",
+      "type": "S",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "MSFT",
+      "asset": "Microsoft Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "MDLZ",
+      "asset": "Mondelez International, Inc. - Class A Common Stock",
+      "asset_class": "ST",
+      "type": "S",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$250,001 - $500,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2025-02-11",
+      "disclosed": "2025-02-11",
+      "ticker": "QCOM",
+      "asset": "QUALCOMM Incorporated - Common Stock",
+      "asset_class": "ST",
+      "type": "S",
+      "amount": "$15,001 - $50,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-20",
+      "doc_id": "20030922"
+    },
+    {
+      "date": "2024-10-01",
+      "disclosed": "2024-10-01",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$500,001 - $1,000,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-13",
+      "doc_id": "20030884"
+    },
+    {
+      "date": "2024-08-07",
+      "disclosed": "2024-08-07",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$250,001 - $500,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2025-08-13",
+      "doc_id": "20030884"
+    }
+  ]
+}

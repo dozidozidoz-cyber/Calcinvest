@@ -1,0 +1,95 @@
+{
+  "updated": "2026-05-24T22:30:52.956839Z",
+  "managers_13f": [
+    {
+      "id": "berkshire",
+      "name": "Warren Buffett",
+      "fund": "Berkshire Hathaway",
+      "cik": "0001067983",
+      "file": "berkshire.json"
+    },
+    {
+      "id": "scion",
+      "name": "Michael Burry",
+      "fund": "Scion Asset Mgmt",
+      "cik": "0001649339",
+      "file": "scion.json"
+    },
+    {
+      "id": "pershing",
+      "name": "Bill Ackman",
+      "fund": "Pershing Square",
+      "cik": "0001336528",
+      "file": "pershing.json"
+    },
+    {
+      "id": "duquesne",
+      "name": "Stanley Druckenmiller",
+      "fund": "Duquesne Family Office",
+      "cik": "0001536411",
+      "file": "duquesne.json"
+    },
+    {
+      "id": "appaloosa",
+      "name": "David Tepper",
+      "fund": "Appaloosa Management",
+      "cik": "0001656456",
+      "file": "appaloosa.json"
+    }
+  ],
+  "politicians": [
+    {
+      "id": "pelosi",
+      "name": "Nancy Pelosi",
+      "chamber": "House",
+      "party": "D",
+      "state": "CA",
+      "match": [
+        [
+          "nancy",
+          "pelosi"
+        ]
+      ],
+      "file": "pelosi.json"
+    },
+    {
+      "id": "meuser",
+      "name": "Dan Meuser",
+      "chamber": "House",
+      "party": "R",
+      "state": "PA",
+      "match": [
+        [
+          "daniel",
+          "meuser"
+        ],
+        [
+          "dan",
+          "meuser"
+        ]
+      ],
+      "file": "meuser.json"
+    },
+    {
+      "id": "carper",
+      "name": "Tom Carper",
+      "chamber": "Senate",
+      "party": "D",
+      "state": "DE",
+      "match": [
+        [
+          "carper"
+        ]
+      ],
+      "file": "carper.json"
+    }
+  ],
+  "ark_funds": [
+    "ARKK",
+    "ARKQ",
+    "ARKW",
+    "ARKG",
+    "ARKF",
+    "ARKX"
+  ]
+}

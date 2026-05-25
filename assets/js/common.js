@@ -1001,6 +1001,7 @@
     '/allocation-portefeuille':         { label: 'Allocation Portefeuille',cat: 'Marchés',color: '#10B981' },
     '/regime-marche':                   { label: 'Régime de marché',   cat: 'Marchés',  color: '#A855F7' },
     '/backtest-timing':                 { label: 'Backtest Timing',    cat: 'Marchés',  color: '#0EA5E9' },
+    '/smart-money':                     { label: 'Smart Money',        cat: 'Marchés',  color: '#34D399' },
     '/simulateur-rendement-locatif':    { label: 'Rendement Locatif',  cat: 'Immobilier', color: '#059669' },
     '/simulateur-scpi':                 { label: 'SCPI',               cat: 'Immobilier', color: '#0E9F6E' },
     '/simulateur-pret':                 { label: 'Simulateur de Prêt', cat: 'Immobilier', color: '#0E9F6E' },
@@ -1133,7 +1134,8 @@
           { url: '/valorisation-marche',   label: 'Valorisation Marché', desc: 'CAPE, drawdown, score composite', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg>' },
           { url: '/allocation-portefeuille', label: 'Allocation Portefeuille', desc: '60/40, All-Weather, Permanent', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 4"/></svg>' },
           { url: '/regime-marche',         label: 'Régime de marché',    desc: 'Bull / Bear / Range / Volatile', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 18l6-6 4 4 8-10"/></svg>' },
-          { url: '/backtest-timing',       label: 'Backtest Timing',     desc: 'Golden Cross, Faber GTAA, Momentum', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 10h18M9 4v16"/></svg>' }
+          { url: '/backtest-timing',       label: 'Backtest Timing',     desc: 'Golden Cross, Faber GTAA, Momentum', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 10h18M9 4v16"/></svg>' },
+          { url: '/smart-money',           label: 'Smart Money',         desc: 'Suivre les positions 13F, ARK, Congress', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12l3-2 3 3 3-5 3 3 3-4"/><circle cx="6" cy="10" r="1.2"/><circle cx="12" cy="8" r="1.2"/><circle cx="18" cy="7" r="1.2"/></svg>' }
         ]
       },
       {
