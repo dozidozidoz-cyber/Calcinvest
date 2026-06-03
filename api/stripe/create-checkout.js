@@ -29,9 +29,17 @@ if (!STRIPE_SECRET_KEY || !STRIPE_PRICE_ID) {
 
 const Stripe = STRIPE_SECRET_KEY ? require('stripe')(STRIPE_SECRET_KEY) : null;
 
+// CORS : verrouillé sur calcinvest.fr en prod, libre en preview/dev Vercel
+const ALLOWED_ORIGINS = ['https://calcinvest.fr', 'https://www.calcinvest.fr'];
+
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '';
+  const isAllowed = ALLOWED_ORIGINS.includes(origin)
+    || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)
+    || /^http:\/\/localhost(:\d+)?$/.test(origin);
+  res.setHeader('Access-Control-Allow-Origin', isAllowed ? origin : ALLOWED_ORIGINS[0]);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Vary', 'Origin');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { user_id, email } = req.query;
@@ -59,8 +67,9 @@ module.exports = async function handler(req, res) {
       subscription_data: {
         metadata: { user_id },
       },
-      success_url: `${req.headers.origin || 'https://calcinvest.fr'}/abonnement?success=1`,
-      cancel_url:  `${req.headers.origin || 'https://calcinvest.fr'}/abonnement?cancel=1`,
+      // Sécu : on n'utilise l'origin que s'il est dans la whitelist, sinon prod
+      success_url: `${isAllowed ? origin : 'https://calcinvest.fr'}/abonnement?success=1`,
+      cancel_url:  `${isAllowed ? origin : 'https://calcinvest.fr'}/abonnement?cancel=1`,
       locale: 'fr',
       allow_promotion_codes: true,
     });

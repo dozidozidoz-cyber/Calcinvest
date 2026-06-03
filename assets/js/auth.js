@@ -184,8 +184,13 @@
   /* ----------------------------------------------------------
      Mode dev — badge discret + console info
      ---------------------------------------------------------- */
+  /* 🚀 PRE-LAUNCH : badge dev + console log masqués. Pour réactiver en
+     local pendant le dev, mettre HIDE_DEV_BADGE = false. */
+  const HIDE_DEV_BADGE = true;
+
   function renderDevBadge() {
     if (!DEV_MODE) return;
+    if (HIDE_DEV_BADGE) return;
     if (document.getElementById('ci-dev-badge')) return;
     const badge = document.createElement('div');
     badge.id = 'ci-dev-badge';
