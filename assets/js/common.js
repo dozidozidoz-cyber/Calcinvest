@@ -2258,7 +2258,88 @@
   document.addEventListener('DOMContentLoaded', () => {
     CI.initAll();
     CI.initTheme();
+    CI.initNewsletter();
   });
+
+  /* ===========================================================
+     NEWSLETTER — Beehiiv
+     ===========================================================
+     Pour activer : remplacer BEEHIIV_PUB_ID par l'ID de ta publication
+     (visible dans Beehiiv → Settings → Publication ID, format "pub_xxxx").
+     Tant que le placeholder est en place, le form accepte les saisies mais
+     les stocke en localStorage en attendant — aucune perte de leads.
+     =========================================================== */
+  const BEEHIIV_PUB_ID = 'BEEHIIV_PUB_ID';   // ← à remplacer
+  const NL_DISMISS_KEY = 'ci_nl_dismissed_v1';
+  const NL_LOCAL_KEY   = 'ci_nl_pending_emails_v1';
+
+  CI.initNewsletter = function () {
+    // Skip si déjà rendu OU déjà dismissé OU page sans footer
+    if (document.querySelector('.ci-newsletter')) return;
+    const footer = document.querySelector('footer.footer');
+    if (!footer) return;
+    let dismissed = false;
+    try { dismissed = !!localStorage.getItem(NL_DISMISS_KEY); } catch (e) {}
+    if (dismissed) return;
+
+    const card = document.createElement('section');
+    card.className = 'ci-newsletter';
+    card.innerHTML = `
+      <div class="ci-newsletter-inner">
+        <div class="ci-newsletter-text">
+          <div class="ci-newsletter-eyebrow">Newsletter CalcInvest</div>
+          <h2 class="ci-newsletter-title">1 email par mois. Zéro spam.</h2>
+          <p class="ci-newsletter-lede">Les nouveaux outils, les meilleures analyses marché, et un récap des trades Smart Money les plus intéressants.</p>
+        </div>
+        <form class="ci-newsletter-form" data-ci-newsletter>
+          <input type="email" name="email" required placeholder="ton.email@exemple.com" aria-label="Votre adresse email"/>
+          <button type="submit">S'abonner</button>
+        </form>
+        <button class="ci-newsletter-dismiss" type="button" aria-label="Masquer la newsletter">×</button>
+      </div>
+    `;
+    footer.parentNode.insertBefore(card, footer);
+
+    // Form submit
+    card.querySelector('[data-ci-newsletter]').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const input = this.querySelector('input[type=email]');
+      const btn   = this.querySelector('button[type=submit]');
+      const email = (input.value || '').trim();
+      if (!email) return;
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      try {
+        if (BEEHIIV_PUB_ID && BEEHIIV_PUB_ID !== 'BEEHIIV_PUB_ID') {
+          // POST réel à Beehiiv (CORS-friendly endpoint)
+          await fetch('https://embeds.beehiiv.com/v2/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, publication_id: BEEHIIV_PUB_ID })
+          });
+        } else {
+          // Mode fallback : stocke en localStorage pour récup ultérieure
+          try {
+            const pending = JSON.parse(localStorage.getItem(NL_LOCAL_KEY) || '[]');
+            pending.push({ email: email, ts: Date.now(), page: location.pathname });
+            localStorage.setItem(NL_LOCAL_KEY, JSON.stringify(pending));
+          } catch (e) {}
+        }
+        // UI succès dans tous les cas (UX)
+        this.innerHTML = '<div class="ci-newsletter-success">✓ Merci ! Tu recevras le prochain numéro.</div>';
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Réessayer';
+      }
+    });
+
+    // Dismiss
+    card.querySelector('.ci-newsletter-dismiss').addEventListener('click', function () {
+      try { localStorage.setItem(NL_DISMISS_KEY, '1'); } catch (e) {}
+      card.remove();
+    });
+  };
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

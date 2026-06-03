@@ -5383,3 +5383,91 @@ section[data-tier="locked"] .premium-badge,
 .v3-premium-btn-secondary {
   display: none !important;
 }
+
+/* ============================================================
+   NEWSLETTER (injecté par CI.initNewsletter avant le footer)
+   ============================================================ */
+.ci-newsletter {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 20px;
+  margin-top: 24px;
+}
+.ci-newsletter-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 32px;
+  align-items: center;
+  position: relative;
+}
+@media (max-width: 760px) {
+  .ci-newsletter-inner { grid-template-columns: 1fr; gap: 18px; }
+}
+.ci-newsletter-eyebrow {
+  font: 600 11px var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.ci-newsletter-title { margin: 0 0 6px; font-size: 22px; font-weight: 700; color: var(--text); }
+.ci-newsletter-lede { margin: 0; font-size: 14px; color: var(--text-2); line-height: 1.5; max-width: 540px; }
+.ci-newsletter-form { display: flex; gap: 8px; align-items: stretch; }
+.ci-newsletter-form input[type=email] {
+  padding: 12px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font: 500 14px var(--font-sans);
+  min-width: 240px;
+  transition: var(--t-fast);
+}
+.ci-newsletter-form input[type=email]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.ci-newsletter-form button[type=submit] {
+  padding: 12px 22px;
+  background: var(--accent);
+  color: #0A0F14;
+  border: 0;
+  border-radius: var(--r);
+  font: 600 14px var(--font-sans);
+  cursor: pointer;
+  transition: var(--t-fast);
+  white-space: nowrap;
+}
+.ci-newsletter-form button[type=submit]:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.ci-newsletter-form button[type=submit]:disabled { opacity: 0.6; cursor: wait; transform: none; }
+.ci-newsletter-success {
+  padding: 12px 16px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--r);
+  color: var(--accent);
+  font: 600 14px var(--font-sans);
+}
+.ci-newsletter-dismiss {
+  position: absolute;
+  top: -12px;
+  right: 0;
+  width: 28px; height: 28px;
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--t-fast);
+  border-radius: 6px;
+}
+.ci-newsletter-dismiss:hover { color: var(--text); background: var(--bg-2); }
+@media (max-width: 760px) {
+  .ci-newsletter-dismiss { top: 8px; right: 8px; }
+}
+
