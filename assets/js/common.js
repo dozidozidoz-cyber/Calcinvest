@@ -2233,12 +2233,11 @@
   }
 
   CI.initTheme = function () {
-    // Apply stored theme (or system pref) au plus tôt
+    // Défaut = light. On respecte le choix utilisateur stocké mais on n'auto-flip plus
+    // vers dark selon prefers-color-scheme — le site est "clair par défaut".
     const stored = CI.getTheme();
     if (stored === 'dark' || stored === 'light') {
       document.documentElement.dataset.theme = stored;
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.dataset.theme = 'dark';
     }
 
     // Inject toggle button into .topbar-right (idempotent)
