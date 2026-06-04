@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#34D399" />
 <title>Smart Money — Suivre les portefeuilles des meilleurs investisseurs | CalcInvest</title>
-<meta name="description" content="Suivez en temps réel les positions des grands gérants (Buffett, Burry, Ackman…) via les filings 13F SEC, et les transactions des politiciens US déclarées sous le STOCK Act. Perf vs S&P 500." />
+<meta name="description" content="Smart Money Tracker : suivez les positions 13F SEC de Buffett, Burry, Ackman, les holdings ARK Invest et les transactions de Nancy Pelosi. Alpha calculé vs S&P 500." />
 <link rel="manifest" href="/manifest.json" />
 <link rel="canonical" href="https://calcinvest.fr/smart-money" />
 <meta property="og:type" content="website" />
@@ -239,6 +239,89 @@
 }
 </style>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Smart Money Tracker",
+  "description": "Suivi des portefeuilles d'investisseurs institutionnels et politiciens",
+  "url": "https://calcinvest.fr/smart-money",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "fr-FR",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CalcInvest",
+    "url": "https://calcinvest.fr",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://calcinvest.fr/assets/icons/icon-512.png"
+    }
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Qu'est-ce qu'un filing 13F ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Aux États-Unis, tout gérant de fonds avec plus de 100M$ d'actifs doit publier ses positions actions chaque trimestre via la SEC (formulaire 13F-HR). C'est public et gratuit. CalcInvest récupère ces données directement depuis data.sec.gov."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Pourquoi suivre Nancy Pelosi ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pelosi (et son mari Paul Pelosi qui gère le portefeuille) a battu le S&P 500 de manière significative sur les dernières années. Que ce soit par chance, information privilégiée ou compétence, le timing de ses trades est étudié par toute la communauté finance — CalcInvest calcule l'alpha en direct."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Les données sont-elles en temps réel ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "13F : trimestriel, déposé sous 45 jours après la fin du trimestre. ARK : daily (J+1). STOCK Act House : généralement sous 30-45 jours après la transaction. Donc pas du \"temps réel\", mais aussi frais que la loi le permet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je copier ces trades ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Légalement oui (données publiques). Pratiquement : tu auras toujours 30-90 jours de retard sur les hedge funds. Sur les politiciens c'est plus exploitable car les trades sont smaller et le timing révèle des paris ciblés (ex : NVDA call options Pelosi). Mais aucune garantie."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "C'est quoi l'alpha vs S&P 500 ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "L'alpha = ta performance — la performance du benchmark sur la même période. Si Pelosi achète AAPL et fait +25%, mais que le S&P 500 a fait +20% sur la même fenêtre, son alpha est +5%. C'est ce qui mesure la skill (ou la chance)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Combien coûte le suivi sur CalcInvest ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Gratuit, sans inscription, sans cookies. Toutes les sources sont publiques (SEC EDGAR, arkfunds.io, disclosures-clerk.house.gov). Premium prévu pour les alertes email \"Pelosi a tradé\" et l'export PDF."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 

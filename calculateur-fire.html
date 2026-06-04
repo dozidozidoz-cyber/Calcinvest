@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#34D399" />
 <title>Calculateur FIRE — Indépendance Financière & Retraite Anticipée | CalcInvest</title>
-<meta name="description" content="Calculateur FIRE gratuit. Règle des 4 %, capital cible, âge de retraite, coast FIRE, lean FIRE, fat FIRE. Simulation Monte Carlo pour tester la solidité de votre plan." />
+<meta name="description" content="Calculateur FIRE 2026 : indépendance financière, règle des 4%. Combien faut-il pour arrêter de travailler et combien de temps tient le capital ?" />
 <meta name="keywords" content="calculateur FIRE, indépendance financière, retraite anticipée, règle des 4 pour cent, coast FIRE, lean FIRE, fat FIRE, simulation retraite" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="canonical" href="https://calcinvest.fr/calculateur-fire" />
@@ -33,6 +33,62 @@
 
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Calculateur FIRE", "description": "Calculateur FIRE gratuit. Règle des 4 %, capital cible, âge de retraite, coast FIRE, lean FIRE, fat FIRE. Simulation Monte Carlo pour tester la solidité de votre plan.", "url": "https://calcinvest.fr/calculateur-fire", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "publisher": {"@type": "Organization", "name": "CalcInvest", "url": "https://calcinvest.fr"}}</script>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "C'est quoi le mouvement FIRE ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "FIRE = Financial Independence, Retire Early. Le principe : épargner agressivement (50% du revenu et plus) et investir en ETF/immobilier pour atteindre l'indépendance financière avant 50 ans. La règle des 4% en est le pilier."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Qu'est-ce que la règle des 4% ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Étude Trinity (1998) : sur 30 ans de marchés US (1926-1995), retirer 4% du capital initial chaque année (ajusté de l'inflation) avait une probabilité de survie de 95%+ avec un portefeuille 60/40 actions/obligations. C'est devenu le standard FIRE."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "La règle des 4% est-elle valide en 2026 ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Débattue. Les rendements futurs des actions et obligations pourraient être inférieurs aux moyennes historiques. Beaucoup de FIRE actuels visent plutôt 3-3,5% pour plus de sécurité. Le simulateur permet d'ajuster ce taux."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Combien faut-il pour devenir FIRE en France ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Règle du 25x : si tu dépenses 30 000€/an, il te faut 750 000€ investis. Mais en France ajoute les prélèvements sociaux (17,2%) et impôts. Compte plutôt 30-33x tes dépenses annuelles pour être tranquille."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "FIRE et fiscalité française : quelles enveloppes ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PEA après 5 ans (exonération hors PS) reste la meilleure pour les actions UE/US via ETF. Assurance-vie après 8 ans (abattement 4 600€/an + 152 500€ succession). PER pour réduire l'IR pendant la phase d'accumulation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "LeanFIRE, FatFIRE, BaristaFIRE : c'est quoi ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LeanFIRE : FIRE avec budget serré (~25k€/an). FatFIRE : FIRE confortable (>60k€/an). BaristaFIRE : capital partiel + petit job pour combler le gap. Choisis selon ton style de vie cible."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <noscript>
@@ -827,6 +883,50 @@
   </main>
 </div><!-- /shell -->
 
+
+<!-- ═══ Outils liés (SEO internal linking) ═══ -->
+<aside class="ci-related" aria-label="Outils complémentaires">
+  <div class="ci-related-inner">
+    <h3 class="ci-related-title">Outils complémentaires</h3>
+    <div class="ci-related-grid">
+  <a href="/simulateur-interets-composes" class="ci-related-item"><span class="ci-related-arrow">→</span>Intérêts Composés</a>
+  <a href="/simulateur-decumulation" class="ci-related-item"><span class="ci-related-arrow">→</span>Décumulation</a>
+  <a href="/simulateur-dca" class="ci-related-item"><span class="ci-related-arrow">→</span>DCA Bourse</a>
+  <a href="/allocation-portefeuille" class="ci-related-item"><span class="ci-related-arrow">→</span>Allocation Portefeuille</a>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ FAQ (SEO + UX) ═══ -->
+<section class="ci-faq" aria-label="Questions fréquentes">
+  <div class="ci-faq-inner">
+    <h2 class="ci-faq-title">Questions fréquentes</h2>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">C'est quoi le mouvement FIRE ?</summary>
+    <div class="ci-faq-a">FIRE = Financial Independence, Retire Early. Le principe : épargner agressivement (50% du revenu et plus) et investir en ETF/immobilier pour atteindre l'indépendance financière avant 50 ans. La règle des 4% en est le pilier.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Qu'est-ce que la règle des 4% ?</summary>
+    <div class="ci-faq-a">Étude Trinity (1998) : sur 30 ans de marchés US (1926-1995), retirer 4% du capital initial chaque année (ajusté de l'inflation) avait une probabilité de survie de 95%+ avec un portefeuille 60/40 actions/obligations. C'est devenu le standard FIRE.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">La règle des 4% est-elle valide en 2026 ?</summary>
+    <div class="ci-faq-a">Débattue. Les rendements futurs des actions et obligations pourraient être inférieurs aux moyennes historiques. Beaucoup de FIRE actuels visent plutôt 3-3,5% pour plus de sécurité. Le simulateur permet d'ajuster ce taux.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Combien faut-il pour devenir FIRE en France ?</summary>
+    <div class="ci-faq-a">Règle du 25x : si tu dépenses 30 000€/an, il te faut 750 000€ investis. Mais en France ajoute les prélèvements sociaux (17,2%) et impôts. Compte plutôt 30-33x tes dépenses annuelles pour être tranquille.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">FIRE et fiscalité française : quelles enveloppes ?</summary>
+    <div class="ci-faq-a">PEA après 5 ans (exonération hors PS) reste la meilleure pour les actions UE/US via ETF. Assurance-vie après 8 ans (abattement 4 600€/an + 152 500€ succession). PER pour réduire l'IR pendant la phase d'accumulation.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">LeanFIRE, FatFIRE, BaristaFIRE : c'est quoi ?</summary>
+    <div class="ci-faq-a">LeanFIRE : FIRE avec budget serré (~25k€/an). FatFIRE : FIRE confortable (>60k€/an). BaristaFIRE : capital partiel + petit job pour combler le gap. Choisis selon ton style de vie cible.</div>
+  </details>
+  </div>
+</section>
 <footer class="footer">
   <div>© 2026 CalcInvest — Simulation informative</div>
   <div>

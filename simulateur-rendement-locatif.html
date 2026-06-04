@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#34D399" />
 <title>Simulateur Rendement Locatif — CalcInvest</title>
-<meta name="description" content="Simulateur rendement locatif gratuit. Rendement brut, net, net-net, cashflow et TRI sur 20 ans. LMNP, micro-foncier, réel, tous régimes fiscaux." />
+<meta name="description" content="Calcul rendement locatif net 2026 : cashflow, TRI, LMNP, SCI IS. Tous les frais inclus (notaire, gestion, vacance). Simulateur immobilier complet et gratuit." />
 <meta name="keywords" content="simulateur rendement locatif, calculateur rentabilité, cashflow locatif, LMNP, TRI immobilier" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="canonical" href="https://calcinvest.fr/simulateur-rendement-locatif" />
@@ -33,6 +33,62 @@
 
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Simulateur Rendement Locatif", "description": "Simulateur rendement locatif gratuit. Rendement brut, net, net-net, cashflow et TRI sur 20 ans. LMNP, micro-foncier, réel, tous régimes fiscaux.", "url": "https://calcinvest.fr/simulateur-rendement-locatif", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "publisher": {"@type": "Organization", "name": "CalcInvest", "url": "https://calcinvest.fr"}}</script>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Comment calculer le rendement locatif net ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Rendement net = (Loyers annuels - charges - impôts - vacance) / (Prix d'achat + frais de notaire + travaux). Le simulateur intègre tous ces postes pour un calcul réaliste, pas juste le rendement brut affiché par les agences."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quel est un bon rendement locatif en 2026 ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Net (après tout) : 3-4% = correct, 5%+ = excellent, 7%+ = exceptionnel mais souvent risqué (zone tendue, état dégradé). Brut affiché par les agences : ajoute 2 points pour comparer au net. La fiscalité française rogne sévèrement."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "LMNP réel ou Micro-BIC : lequel choisir ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sous 77 700€ de recettes, Micro-BIC = abattement forfaitaire 50%. Réel = on déduit les vraies charges + amortissements. Si tu as un crédit ou des travaux, Réel gagne presque toujours. Le simulateur compare les deux."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vaut-il mieux investir en SCI à l'IS ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pour les patrimoines importants ou les revenus locatifs élevés (TMI 30%+), oui. L'IS à 15-25% sur les premiers 42 500€ et amortissement du bien rendent la SCI ultra-efficace. Mais complexité comptable + plus-value des parts = plus dur à revendre."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment intégrer la vacance locative au calcul ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Compte 1 mois de vacance par an minimum (8% des loyers) en zone tendue, 2-3 mois en zone détendue. Le simulateur permet de saisir le taux pour stresser ton scénario."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quel TRI cible pour un investissement locatif ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TRI sur 20 ans : 6-8% = bon investissement (proche du S&P 500 net d'impôts). 10%+ = excellent (mais souvent en zone à risque). En dessous de 5%, regarde plutôt les SCPI ou les ETF — moins de hassle pour le même rendement."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <noscript>
@@ -1374,6 +1430,50 @@
   </main>
 </div>
 
+
+<!-- ═══ Outils liés (SEO internal linking) ═══ -->
+<aside class="ci-related" aria-label="Outils complémentaires">
+  <div class="ci-related-inner">
+    <h3 class="ci-related-title">Outils complémentaires</h3>
+    <div class="ci-related-grid">
+  <a href="/simulateur-pret" class="ci-related-item"><span class="ci-related-arrow">→</span>Simulateur Prêt</a>
+  <a href="/simulateur-lmnp" class="ci-related-item"><span class="ci-related-arrow">→</span>LMNP</a>
+  <a href="/calculateur-plus-value-immobiliere" class="ci-related-item"><span class="ci-related-arrow">→</span>Plus-Value Immobilière</a>
+  <a href="/simulateur-scpi" class="ci-related-item"><span class="ci-related-arrow">→</span>SCPI</a>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ FAQ (SEO + UX) ═══ -->
+<section class="ci-faq" aria-label="Questions fréquentes">
+  <div class="ci-faq-inner">
+    <h2 class="ci-faq-title">Questions fréquentes</h2>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Comment calculer le rendement locatif net ?</summary>
+    <div class="ci-faq-a">Rendement net = (Loyers annuels - charges - impôts - vacance) / (Prix d'achat + frais de notaire + travaux). Le simulateur intègre tous ces postes pour un calcul réaliste, pas juste le rendement brut affiché par les agences.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Quel est un bon rendement locatif en 2026 ?</summary>
+    <div class="ci-faq-a">Net (après tout) : 3-4% = correct, 5%+ = excellent, 7%+ = exceptionnel mais souvent risqué (zone tendue, état dégradé). Brut affiché par les agences : ajoute 2 points pour comparer au net. La fiscalité française rogne sévèrement.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">LMNP réel ou Micro-BIC : lequel choisir ?</summary>
+    <div class="ci-faq-a">Sous 77 700€ de recettes, Micro-BIC = abattement forfaitaire 50%. Réel = on déduit les vraies charges + amortissements. Si tu as un crédit ou des travaux, Réel gagne presque toujours. Le simulateur compare les deux.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Vaut-il mieux investir en SCI à l'IS ?</summary>
+    <div class="ci-faq-a">Pour les patrimoines importants ou les revenus locatifs élevés (TMI 30%+), oui. L'IS à 15-25% sur les premiers 42 500€ et amortissement du bien rendent la SCI ultra-efficace. Mais complexité comptable + plus-value des parts = plus dur à revendre.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Comment intégrer la vacance locative au calcul ?</summary>
+    <div class="ci-faq-a">Compte 1 mois de vacance par an minimum (8% des loyers) en zone tendue, 2-3 mois en zone détendue. Le simulateur permet de saisir le taux pour stresser ton scénario.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Quel TRI cible pour un investissement locatif ?</summary>
+    <div class="ci-faq-a">TRI sur 20 ans : 6-8% = bon investissement (proche du S&P 500 net d'impôts). 10%+ = excellent (mais souvent en zone à risque). En dessous de 5%, regarde plutôt les SCPI ou les ETF — moins de hassle pour le même rendement.</div>
+  </details>
+  </div>
+</section>
 <footer class="footer">
   <div>© 2026 CalcInvest — Simulation informative</div>
   <div>
