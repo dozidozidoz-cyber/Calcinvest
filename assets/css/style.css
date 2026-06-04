@@ -5565,3 +5565,21 @@ section[data-tier="locked"] .premium-badge,
   .ci-newsletter-dismiss { top: 8px; right: 8px; }
 }
 
+
+
+
+/* SEO data block — sections indexables visibles avant le footer */
+.ci-seo-data { padding: 48px 20px; background: var(--bg-2); border-top: 1px solid var(--border); }
+.ci-seo-data-inner { max-width: 1100px; margin: 0 auto; }
+.ci-seo-data-title { margin: 0 0 8px; font-size: 26px; font-weight: 700; color: var(--text); }
+.ci-seo-data-lede { margin: 0 0 24px; font-size: 15px; color: var(--text-2); line-height: 1.6; max-width: 760px; }
+.ci-seo-data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 32px; }
+.ci-seo-data-card { padding: 18px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); }
+.ci-seo-data-label { font: 600 11px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-2); }
+.ci-seo-data-value { font: 700 28px var(--font-mono); color: var(--accent); margin-top: 8px; letter-spacing: -0.02em; }
+.ci-seo-data-sub { font-size: 12px; color: var(--text-2); margin-top: 6px; line-height: 1.5; }
+.ci-seo-data-h3 { font-size: 18px; font-weight: 600; color: var(--text); margin: 24px 0 8px; }
+.ci-seo-data ul, .ci-seo-data p { font-size: 14px; color: var(--text-2); line-height: 1.65; max-width: 820px; }
+.ci-seo-data ul li { margin-bottom: 8px; }
+.ci-seo-data strong { color: var(--text); }
+
