@@ -297,6 +297,51 @@
   ]
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Comment backtester une stratégie DCA en 4 étapes",
+  "description": "Tester l'efficacité d'un investissement DCA (Dollar Cost Averaging) sur les données historiques du S&P 500 et d'autres indices.",
+  "totalTime": "PT2M",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Choisir un actif et une période",
+      "text": "Sélectionner parmi 13 actifs disponibles (S&P 500, MSCI World, Nasdaq, Or, etc.) et la période de backtest (1871 à 2026)."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Définir le versement mensuel",
+      "text": "Saisir le montant à investir chaque mois (DCA) ou en une fois (Lump Sum) pour comparer les deux stratégies."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Activer les options avancées",
+      "text": "Cocher dividendes réinvestis, ajustement inflation (CPI US), frais ETF (TER), et choisir un scénario historique (1929, 2000, 2008, 2020)."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Analyser les 10 graphiques",
+      "text": "Le simulateur génère vue d'ensemble, rendements glissants, drawdown, volatilité, Monte Carlo et comparaison multi-actifs."
+    }
+  ],
+  "estimatedCost": {
+    "@type": "MonetaryAmount",
+    "currency": "EUR",
+    "value": "0"
+  },
+  "image": "https://calcinvest.fr/assets/og/simulateur-dca.png",
+  "tool": {
+    "@type": "HowToTool",
+    "name": "Aucun — outil gratuit en ligne"
+  }
+}
+</script>
 </head>
 <body>
 <noscript>
