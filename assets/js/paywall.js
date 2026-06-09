@@ -11,6 +11,11 @@
 (function () {
   'use strict';
 
+  /* 🚀 PRE-LAUNCH : paywall complètement désactivée. Toutes les analyses
+     premium restent visibles pour les visiteurs (stratégie de découverte
+     avant monétisation). Pour réactiver le paywall, mettre à false. */
+  const PAYWALL_DISABLED = true;
+
   /* ----------------------------------------------------------
      Templates overlay
      ---------------------------------------------------------- */
@@ -55,8 +60,8 @@
     const CI = window.CI;
     if (!CI) return;
 
-    // Si premium → tout débloquer (retire d'éventuels overlays anciens)
-    if (CI.isPremium && CI.isPremium()) {
+    // 🚀 PRE-LAUNCH : on traite tout le monde comme premium
+    if (PAYWALL_DISABLED || (CI.isPremium && CI.isPremium())) {
       document.querySelectorAll('.paywall-wrapped').forEach(section => {
         const inner = section.querySelector('.paywall-content-blur');
         const overlay = section.querySelector('.paywall-overlay');
