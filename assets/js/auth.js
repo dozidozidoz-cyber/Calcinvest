@@ -227,11 +227,13 @@
     const container = document.getElementById('ci-user-zone');
     if (!container) return;
 
-    // 🚀 PRE-LAUNCH : auth UI désactivée (le site tourne en localStorage)
-    // Pour réactiver : retirer ce bloc.
+    // 🚀 PRE-LAUNCH : auth UI désactivée. On préserve le contenu HTML
+    // initial du container (ex: bouton "Projets") + les éléments injectés
+    // par d'autres modules (theme-toggle, cmdk-trigger) — sinon ils
+    // disparaissent. On ne fait que retirer les éventuels éléments
+    // d'auth (connexion, compte, déconnexion) déjà rendus.
     if (true /* HIDE_AUTH_UI */) {
-      container.style.display = 'none';
-      container.innerHTML = '';
+      container.querySelectorAll('[data-auth-ui]').forEach(el => el.remove());
       return;
     }
 
