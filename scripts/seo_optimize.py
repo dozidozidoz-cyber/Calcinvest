@@ -434,11 +434,9 @@ def regen_sitemap():
 
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
-        '        xmlns:image="http://www.google.com/schemas/sitemaps/image/1.1">',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ]
     seen = set()
-    og_dir = ROOT / 'assets' / 'og'
     for slug, pri, freq in pages:
         if slug in seen: continue
         seen.add(slug)
@@ -448,12 +446,6 @@ def regen_sitemap():
         lines.append(f'    <lastmod>{TODAY}</lastmod>')
         lines.append(f'    <changefreq>{freq}</changefreq>')
         lines.append(f'    <priority>{pri}</priority>')
-        # image (si existe)
-        og_key = 'home' if slug == '' else slug.split('/')[-1]
-        if (og_dir / f'{og_key}.png').exists():
-            lines.append('    <image:image>')
-            lines.append(f'      <image:loc>{BASE_URL}/assets/og/{og_key}.png</image:loc>')
-            lines.append('    </image:image>')
         lines.append('  </url>')
     lines.append('</urlset>')
     (ROOT / 'sitemap.xml').write_text('\n'.join(lines), encoding='utf-8')
