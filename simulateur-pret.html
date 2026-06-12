@@ -29,6 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="/assets/css/style.css" as="style" />
 <link rel="stylesheet" href="/assets/css/style.css" />
 <style>
   .mode-toggle { display:flex; gap:6px; flex-wrap:wrap }
@@ -90,6 +91,8 @@
   }
 }
 </script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Immobilier", "item": "https://calcinvest.fr/#cat-immo"}, {"@type": "ListItem", "position": 3, "name": "Simulateur de Prêt", "item": "https://calcinvest.fr/simulateur-pret"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Comment calculer la mensualité d'un prêt immobilier ?", "acceptedAnswer": {"@type": "Answer", "text": "Formule : M = C × t/12 / (1 − (1 + t/12)^−n), avec C le capital, t le taux annuel et n le nombre de mois. Pour 250 000 € sur 25 ans à 3,5 % : 1 251 €/mois hors assurance. Le simulateur ajoute l'assurance et calcule le coût total du crédit."}}, {"@type": "Question", "name": "Quelle capacité d'emprunt avec mon salaire ?", "acceptedAnswer": {"@type": "Answer", "text": "Le HCSF limite le taux d'endettement à 35 % des revenus nets (assurance incluse). Avec 3 000 €/mois, votre mensualité max est 1 050 €, soit environ 210 000 € empruntables sur 25 ans à 3,5 %. Les revenus locatifs existants comptent à 70 %."}}, {"@type": "Question", "name": "L'assurance emprunteur compte-t-elle dans le coût ?", "acceptedAnswer": {"@type": "Answer", "text": "Énormément : à 0,35 % du capital sur 25 ans, elle représente 15-30 % du coût total du crédit. Depuis la loi Lemoine, vous pouvez la changer à tout moment — passer de l'assurance groupe banque (0,35 %) à une délégation (0,10-0,15 % pour un profil jeune) économise 10 000-20 000 €."}}, {"@type": "Question", "name": "Vaut-il mieux allonger la durée ou augmenter l'apport ?", "acceptedAnswer": {"@type": "Answer", "text": "Allonger la durée augmente la capacité d'emprunt mais gonfle le coût total (+30 % d'intérêts entre 20 et 25 ans). L'apport réduit le taux obtenu et les intérêts. Règle pratique : apport minimum 10 % + frais de notaire, et la durée la plus courte que votre taux d'endettement tolère."}}, {"@type": "Question", "name": "Combien coûtent les frais de notaire en 2026 ?", "acceptedAnswer": {"@type": "Answer", "text": "7 à 8 % du prix dans l'ancien (dont l'essentiel est constitué des droits de mutation départementaux), 2 à 3 % dans le neuf. Sur 250 000 € dans l'ancien : environ 18 500 €. Ils ne sont pas finançables par toutes les banques — souvent à sortir de l'apport."}}]}</script>
 </head>
 <body>
 <noscript>
@@ -568,6 +571,52 @@
     </div>
   </div>
 </section>
+
+
+<!-- ═══ Pour aller plus loin (maillage outils → blog) ═══ -->
+
+<!-- ═══ FAQ (SEO + UX) ═══ -->
+<section class="ci-faq" aria-label="Questions fréquentes">
+  <div class="ci-faq-inner">
+    <h2 class="ci-faq-title">Questions fréquentes</h2>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Comment calculer la mensualité d'un prêt immobilier ?</summary>
+    <div class="ci-faq-a">Formule : M = C × t/12 / (1 − (1 + t/12)^−n), avec C le capital, t le taux annuel et n le nombre de mois. Pour 250 000 € sur 25 ans à 3,5 % : 1 251 €/mois hors assurance. Le simulateur ajoute l'assurance et calcule le coût total du crédit.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Quelle capacité d'emprunt avec mon salaire ?</summary>
+    <div class="ci-faq-a">Le HCSF limite le taux d'endettement à 35 % des revenus nets (assurance incluse). Avec 3 000 €/mois, votre mensualité max est 1 050 €, soit environ 210 000 € empruntables sur 25 ans à 3,5 %. Les revenus locatifs existants comptent à 70 %.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">L'assurance emprunteur compte-t-elle dans le coût ?</summary>
+    <div class="ci-faq-a">Énormément : à 0,35 % du capital sur 25 ans, elle représente 15-30 % du coût total du crédit. Depuis la loi Lemoine, vous pouvez la changer à tout moment — passer de l'assurance groupe banque (0,35 %) à une délégation (0,10-0,15 % pour un profil jeune) économise 10 000-20 000 €.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Vaut-il mieux allonger la durée ou augmenter l'apport ?</summary>
+    <div class="ci-faq-a">Allonger la durée augmente la capacité d'emprunt mais gonfle le coût total (+30 % d'intérêts entre 20 et 25 ans). L'apport réduit le taux obtenu et les intérêts. Règle pratique : apport minimum 10 % + frais de notaire, et la durée la plus courte que votre taux d'endettement tolère.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Combien coûtent les frais de notaire en 2026 ?</summary>
+    <div class="ci-faq-a">7 à 8 % du prix dans l'ancien (dont l'essentiel est constitué des droits de mutation départementaux), 2 à 3 % dans le neuf. Sur 250 000 € dans l'ancien : environ 18 500 €. Ils ne sont pas finançables par toutes les banques — souvent à sortir de l'apport.</div>
+  </details>
+  </div>
+</section>
+
+<aside class="ci-readmore" aria-label="Articles liés">
+  <div class="ci-readmore-inner">
+    <h3 class="ci-readmore-title">📖 Pour aller plus loin</h3>
+    <a href="/blog/rendement-locatif-net-2026" class="ci-readmore-item">
+      <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
+      <span class="ci-readmore-text"><strong>Rendement locatif net : la formule complète + 5 pièges</strong><span class="ci-readmore-meta">Article · 10 min de lecture</span></span>
+      <span class="ci-readmore-arrow">→</span>
+    </a>
+    <a href="/blog/plus-value-immobiliere-2026" class="ci-readmore-item">
+      <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
+      <span class="ci-readmore-text"><strong>Plus-value immobilière : barème complet + 4 cas concrets</strong><span class="ci-readmore-meta">Article · 9 min de lecture</span></span>
+      <span class="ci-readmore-arrow">→</span>
+    </a>
+  </div>
+</aside>
 
 <aside class="ci-related" aria-label="Outils complémentaires">
   <div class="ci-related-inner">

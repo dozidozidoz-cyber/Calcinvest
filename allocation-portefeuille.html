@@ -29,6 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="/assets/css/style.css" as="style" />
 <link rel="stylesheet" href="/assets/css/style.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Allocation Portefeuille","description":"Backtest comparatif des stratégies d'allocation","url":"https://calcinvest.fr/allocation-portefeuille","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
 <style>
@@ -49,6 +50,7 @@
 .legend-dot { display:inline-block; width:8px; height:8px; border-radius:50%; vertical-align:middle; margin-right:4px }
 </style>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Marchés", "item": "https://calcinvest.fr/#cat-marches"}, {"@type": "ListItem", "position": 3, "name": "Allocation de Portefeuille", "item": "https://calcinvest.fr/allocation-portefeuille"}]}</script>
 </head>
 <body>
 <noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
@@ -244,6 +246,24 @@
     </div>
   </div>
 </section>
+
+
+<!-- ═══ Pour aller plus loin (maillage outils → blog) ═══ -->
+<aside class="ci-readmore" aria-label="Articles liés">
+  <div class="ci-readmore-inner">
+    <h3 class="ci-readmore-title">📖 Pour aller plus loin</h3>
+    <a href="/blog/all-weather-dalio-2026" class="ci-readmore-item">
+      <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
+      <span class="ci-readmore-text"><strong>All-Weather de Dalio : le portefeuille tous temps backtesté</strong><span class="ci-readmore-meta">Article · 10 min de lecture</span></span>
+      <span class="ci-readmore-arrow">→</span>
+    </a>
+    <a href="/blog/faber-gtaa-pratique" class="ci-readmore-item">
+      <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
+      <span class="ci-readmore-text"><strong>Faber GTAA : la stratégie de timing qui marche vraiment</strong><span class="ci-readmore-meta">Article · 8 min de lecture</span></span>
+      <span class="ci-readmore-arrow">→</span>
+    </a>
+  </div>
+</aside>
 
 <aside class="ci-related" aria-label="Outils complémentaires">
   <div class="ci-related-inner">

@@ -5589,6 +5589,21 @@ section[data-tier="locked"] .premium-badge,
 .ci-seo-data ul li { margin-bottom: 8px; }
 .ci-seo-data strong { color: var(--text); }
 
+
+/* ============================================================
+   POUR ALLER PLUS LOIN (maillage outils → blog)
+   ============================================================ */
+.ci-readmore { padding: 28px 20px; background: var(--bg); border-top: 1px solid var(--border); }
+.ci-readmore-inner { max-width: 1100px; margin: 0 auto; display: grid; gap: 8px; }
+.ci-readmore-title { margin: 0 0 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); }
+.ci-readmore-item { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); text-decoration: none; transition: var(--t-fast); }
+.ci-readmore-item:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.ci-readmore-icon { color: var(--accent); flex-shrink: 0; display: grid; place-items: center; }
+.ci-readmore-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.ci-readmore-text strong { font-size: 14px; color: var(--text); font-weight: 600; }
+.ci-readmore-meta { font-size: 11.5px; color: var(--text-2); }
+.ci-readmore-arrow { color: var(--accent); font-weight: 600; flex-shrink: 0; }
+
 /* ============================================================
    RESPONSIVE MOBILE — fixes placés EN FIN DE FICHIER pour battre
    toutes les règles de base définies plus haut (cascade order).

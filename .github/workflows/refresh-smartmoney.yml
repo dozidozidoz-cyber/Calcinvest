@@ -1,0 +1,50 @@
+# ============================================================
+# CalcInvest — Refresh automatique des données Smart Money
+# ============================================================
+# Lundi + jeudi à 06h30 UTC :
+#   - ARK holdings (arkfunds.io)
+#   - Prix yfinance (229 tickers + ^GSPC)
+#   - Congress STOCK Act (PDFs House Clerk, live scraping)
+#   - 13F SEC EDGAR (nouveaux filings trimestriels détectés)
+# Commit + push → Vercel redéploie automatiquement.
+# ============================================================
+name: Refresh Smart Money data
+
+on:
+  schedule:
+    - cron: '30 6 * * 1,4'   # lundi + jeudi 06h30 UTC
+  workflow_dispatch:          # déclenchement manuel possible
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install deps
+        run: pip install requests pdfplumber yfinance pandas
+
+      - name: Fetch all sources
+        run: python scripts/fetch_smartmoney.py
+        continue-on-error: true   # une source down ne doit pas bloquer les autres
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "calcinvest-bot"
+          git config user.email "actions@github.com"
+          git add assets/data/smart-money/
+          if git diff --cached --quiet; then
+            echo "Aucun changement de données."
+          else
+            git commit -m "data: refresh smart-money ($(date -u +%Y-%m-%d))"
+            git push
+          fi

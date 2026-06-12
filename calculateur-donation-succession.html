@@ -29,6 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="/assets/css/style.css" as="style" />
 <link rel="stylesheet" href="/assets/css/style.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Donation & Succession","description":"Abattements + barème progressif","url":"https://calcinvest.fr/calculateur-donation-succession","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
 <style>
@@ -40,6 +41,8 @@
 .tab-pane.active { display:block; }
 </style>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Fiscalité", "item": "https://calcinvest.fr/#cat-fisca"}, {"@type": "ListItem", "position": 3, "name": "Donation & Succession", "item": "https://calcinvest.fr/calculateur-donation-succession"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Quel est l'abattement pour une donation parent-enfant ?", "acceptedAnswer": {"@type": "Answer", "text": "100 000 € par parent et par enfant, renouvelable tous les 15 ans. Un couple peut donc transmettre 200 000 € à chaque enfant sans aucun droit, et recommencer 15 ans plus tard. S'y ajoute le don familial d'argent de 31 865 € (donateur < 80 ans, bénéficiaire majeur)."}}, {"@type": "Question", "name": "Comment sont calculés les droits de succession ?", "acceptedAnswer": {"@type": "Answer", "text": "Après abattement (100 000 € par enfant), le solde est taxé par tranches : 5 % jusqu'à 8 072 €, puis 10 %, 15 %, 20 % jusqu'à 552 324 €, 30 %, 40 % et 45 % au-delà de 1 805 677 €. Entre frères/sœurs : 35-45 % après 15 932 € d'abattement. Le conjoint survivant est totalement exonéré."}}, {"@type": "Question", "name": "Qu'est-ce que le démembrement de propriété ?", "acceptedAnswer": {"@type": "Answer", "text": "Donner la nue-propriété en gardant l'usufruit : vous continuez d'occuper ou louer le bien, et les droits sont calculés sur la seule nue-propriété (60 % de la valeur à 65 ans, 50 % à 75 ans). Au décès, l'usufruit rejoint la nue-propriété sans aucun droit supplémentaire."}}, {"@type": "Question", "name": "L'assurance-vie échappe-t-elle à la succession ?", "acceptedAnswer": {"@type": "Answer", "text": "En grande partie : les versements faits avant 70 ans donnent droit à 152 500 € d'abattement par bénéficiaire, puis taxation 20 % (31,25 % au-delà de 852 500 €). Hors succession civile, hors barème. C'est l'outil de transmission le plus puissant pour les patrimoines moyens."}}, {"@type": "Question", "name": "Faut-il donner de son vivant ou laisser hériter ?", "acceptedAnswer": {"@type": "Answer", "text": "Donner tôt presque toujours : les abattements se renouvellent tous les 15 ans, le démembrement réduit l'assiette, et la plus-value future du bien échappe aux droits. Commencer à 55-60 ans permet 2 cycles complets d'abattements avant 90 ans."}}]}</script>
 </head>
 <body>
 <noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
@@ -164,6 +167,34 @@
     </div>
   </div>
 </aside>
+
+<!-- ═══ FAQ (SEO + UX) ═══ -->
+<section class="ci-faq" aria-label="Questions fréquentes">
+  <div class="ci-faq-inner">
+    <h2 class="ci-faq-title">Questions fréquentes</h2>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Quel est l'abattement pour une donation parent-enfant ?</summary>
+    <div class="ci-faq-a">100 000 € par parent et par enfant, renouvelable tous les 15 ans. Un couple peut donc transmettre 200 000 € à chaque enfant sans aucun droit, et recommencer 15 ans plus tard. S'y ajoute le don familial d'argent de 31 865 € (donateur < 80 ans, bénéficiaire majeur).</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Comment sont calculés les droits de succession ?</summary>
+    <div class="ci-faq-a">Après abattement (100 000 € par enfant), le solde est taxé par tranches : 5 % jusqu'à 8 072 €, puis 10 %, 15 %, 20 % jusqu'à 552 324 €, 30 %, 40 % et 45 % au-delà de 1 805 677 €. Entre frères/sœurs : 35-45 % après 15 932 € d'abattement. Le conjoint survivant est totalement exonéré.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Qu'est-ce que le démembrement de propriété ?</summary>
+    <div class="ci-faq-a">Donner la nue-propriété en gardant l'usufruit : vous continuez d'occuper ou louer le bien, et les droits sont calculés sur la seule nue-propriété (60 % de la valeur à 65 ans, 50 % à 75 ans). Au décès, l'usufruit rejoint la nue-propriété sans aucun droit supplémentaire.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">L'assurance-vie échappe-t-elle à la succession ?</summary>
+    <div class="ci-faq-a">En grande partie : les versements faits avant 70 ans donnent droit à 152 500 € d'abattement par bénéficiaire, puis taxation 20 % (31,25 % au-delà de 852 500 €). Hors succession civile, hors barème. C'est l'outil de transmission le plus puissant pour les patrimoines moyens.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Faut-il donner de son vivant ou laisser hériter ?</summary>
+    <div class="ci-faq-a">Donner tôt presque toujours : les abattements se renouvellent tous les 15 ans, le démembrement réduit l'assiette, et la plus-value future du bien échappe aux droits. Commencer à 55-60 ans permet 2 cycles complets d'abattements avant 90 ans.</div>
+  </details>
+  </div>
+</section>
+
 <footer class="footer"><div>Barème 2025 · CGI / BOFiP</div><div><a href="/">Accueil</a> · <a href="/simulateur-assurance-vie">AV</a> · <a href="/calculateur-impot-revenu">IR</a></div></footer>
 
 <script src="/assets/js/common.js"></script>

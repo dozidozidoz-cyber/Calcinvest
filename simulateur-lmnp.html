@@ -29,6 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="/assets/css/style.css" as="style" />
 <link rel="stylesheet" href="/assets/css/style.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Simulateur LMNP","description":"Micro-BIC vs Réel avec amortissements","url":"https://calcinvest.fr/simulateur-lmnp","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
 <style>
@@ -39,6 +40,8 @@
 .regime-net { font-size:24px; font-weight:800; font-family:var(--font-mono); }
 </style>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Immobilier", "item": "https://calcinvest.fr/#cat-immo"}, {"@type": "ListItem", "position": 3, "name": "Simulateur LMNP", "item": "https://calcinvest.fr/simulateur-lmnp"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "LMNP réel ou Micro-BIC : lequel choisir ?", "acceptedAnswer": {"@type": "Answer", "text": "Micro-BIC = abattement forfaitaire de 50 % sur les loyers, zéro paperasse. Réel = déduction des charges réelles + amortissement du bien (hors terrain). Avec un crédit en cours ou un bien > 100 000 €, le réel aboutit presque toujours à 0 € d'impôt pendant 10-15 ans. Le simulateur compare les deux sur votre cas."}}, {"@type": "Question", "name": "Comment fonctionne l'amortissement en LMNP réel ?", "acceptedAnswer": {"@type": "Answer", "text": "Le bien est décomposé : gros œuvre (~40 % sur 50 ans), façade/étanchéité (~15 % sur 20 ans), installations (~15 % sur 15 ans), agencements (~15 % sur 10 ans), mobilier (sur 7 ans). Le terrain (~15 %) ne s'amortit pas. Résultat : 2-3 % du prix déduit chaque année, souvent plus que le bénéfice imposable."}}, {"@type": "Question", "name": "L'amortissement LMNP est-il réintégré à la revente ?", "acceptedAnswer": {"@type": "Answer", "text": "Depuis février 2025, oui : la loi de finances réintègre les amortissements déduits dans le calcul de la plus-value imposable à la revente. Le LMNP réel reste avantageux pendant la détention, mais l'écart avec le micro se réduit à la sortie — à simuler sur la durée totale."}}, {"@type": "Question", "name": "Faut-il un comptable en LMNP réel ?", "acceptedAnswer": {"@type": "Answer", "text": "Fortement recommandé : liasse fiscale 2031, tableaux d'amortissement, FEC. Comptez 400-700 €/an, dont les deux tiers récupérés via la réduction d'impôt pour adhésion à un OGA/CGA (plafonnée à 915 €). C'est une charge déductible en plus."}}, {"@type": "Question", "name": "Quels sont les seuils du statut LMNP ?", "acceptedAnswer": {"@type": "Answer", "text": "Recettes locatives meublées < 23 000 €/an OU inférieures aux autres revenus du foyer. Au-delà des deux, vous basculez en LMP (loueur professionnel) : cotisations sociales SSI (~35-40 % du bénéfice) mais plus-values professionnelles potentiellement exonérées après 5 ans."}}]}</script>
 </head>
 <body>
 <noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
@@ -138,6 +141,52 @@
     </div>
   </div>
 </section>
+
+
+<!-- ═══ Pour aller plus loin (maillage outils → blog) ═══ -->
+
+<!-- ═══ FAQ (SEO + UX) ═══ -->
+<section class="ci-faq" aria-label="Questions fréquentes">
+  <div class="ci-faq-inner">
+    <h2 class="ci-faq-title">Questions fréquentes</h2>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">LMNP réel ou Micro-BIC : lequel choisir ?</summary>
+    <div class="ci-faq-a">Micro-BIC = abattement forfaitaire de 50 % sur les loyers, zéro paperasse. Réel = déduction des charges réelles + amortissement du bien (hors terrain). Avec un crédit en cours ou un bien > 100 000 €, le réel aboutit presque toujours à 0 € d'impôt pendant 10-15 ans. Le simulateur compare les deux sur votre cas.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Comment fonctionne l'amortissement en LMNP réel ?</summary>
+    <div class="ci-faq-a">Le bien est décomposé : gros œuvre (~40 % sur 50 ans), façade/étanchéité (~15 % sur 20 ans), installations (~15 % sur 15 ans), agencements (~15 % sur 10 ans), mobilier (sur 7 ans). Le terrain (~15 %) ne s'amortit pas. Résultat : 2-3 % du prix déduit chaque année, souvent plus que le bénéfice imposable.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">L'amortissement LMNP est-il réintégré à la revente ?</summary>
+    <div class="ci-faq-a">Depuis février 2025, oui : la loi de finances réintègre les amortissements déduits dans le calcul de la plus-value imposable à la revente. Le LMNP réel reste avantageux pendant la détention, mais l'écart avec le micro se réduit à la sortie — à simuler sur la durée totale.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Faut-il un comptable en LMNP réel ?</summary>
+    <div class="ci-faq-a">Fortement recommandé : liasse fiscale 2031, tableaux d'amortissement, FEC. Comptez 400-700 €/an, dont les deux tiers récupérés via la réduction d'impôt pour adhésion à un OGA/CGA (plafonnée à 915 €). C'est une charge déductible en plus.</div>
+  </details>
+  <details class="ci-faq-item">
+    <summary class="ci-faq-q">Quels sont les seuils du statut LMNP ?</summary>
+    <div class="ci-faq-a">Recettes locatives meublées < 23 000 €/an OU inférieures aux autres revenus du foyer. Au-delà des deux, vous basculez en LMP (loueur professionnel) : cotisations sociales SSI (~35-40 % du bénéfice) mais plus-values professionnelles potentiellement exonérées après 5 ans.</div>
+  </details>
+  </div>
+</section>
+
+<aside class="ci-readmore" aria-label="Articles liés">
+  <div class="ci-readmore-inner">
+    <h3 class="ci-readmore-title">📖 Pour aller plus loin</h3>
+    <a href="/blog/rendement-locatif-net-2026" class="ci-readmore-item">
+      <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
+      <span class="ci-readmore-text"><strong>Rendement locatif net : la formule complète + 5 pièges</strong><span class="ci-readmore-meta">Article · 10 min de lecture</span></span>
+      <span class="ci-readmore-arrow">→</span>
+    </a>
+    <a href="/blog/plus-value-immobiliere-2026" class="ci-readmore-item">
+      <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
+      <span class="ci-readmore-text"><strong>Plus-value immobilière : barème complet + 4 cas concrets</strong><span class="ci-readmore-meta">Article · 9 min de lecture</span></span>
+      <span class="ci-readmore-arrow">→</span>
+    </a>
+  </div>
+</aside>
 
 <aside class="ci-related" aria-label="Outils complémentaires">
   <div class="ci-related-inner">
