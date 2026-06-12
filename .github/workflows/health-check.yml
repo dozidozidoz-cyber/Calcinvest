@@ -1,0 +1,52 @@
+# ============================================================
+# CalcInvest — Health check hebdomadaire
+# ============================================================
+# Mercredi 07h00 UTC :
+#   - Liens internes cassés (scripts/check_links.py)
+#   - Smoke test complet : sitemap, TOOL_CATALOG, data JSON,
+#     modules core (scripts/smoke_test.js)
+#   - Disponibilité du site en prod (https://calcinvest.fr)
+# En cas d'échec : ouvre une issue GitHub automatiquement.
+# ============================================================
+name: Health check
+
+on:
+  schedule:
+    - cron: '0 7 * * 3'   # mercredi 07h00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Liens internes
+        run: python scripts/check_links.py
+
+      - name: Smoke test (sitemap, data, core JS)
+        run: node scripts/smoke_test.js
+
+      - name: Site en prod répond
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" https://calcinvest.fr/)
+          echo "calcinvest.fr → HTTP $code"
+          [ "$code" = "200" ]
+
+      - name: Ouvrir une issue si échec
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "🔴 Health check échoué ($(date -u +%Y-%m-%d))" \
+            --body "Le health check hebdomadaire a détecté un problème. Voir le run : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

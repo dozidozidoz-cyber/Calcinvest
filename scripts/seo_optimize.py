@@ -424,6 +424,8 @@ def regen_sitemap():
     main_tools = [k.replace('.html', '') for k in WEBAPP_META]
     for slug in main_tools:
         pages.append((slug, 0.9, 'monthly'))
+    # Rapport hebdo auto-généré (contenu frais → crawl fréquent)
+    pages.append(('marche-cette-semaine', 0.8, 'weekly'))
     # Pages secondaires
     for slug in ['a-propos', 'methodologie', 'glossaire', 'comparer', 'mes-projets',
                  'mentions-legales', 'abonnement', 'connexion', 'inscription', 'blog']:

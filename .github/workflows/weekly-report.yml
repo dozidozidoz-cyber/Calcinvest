@@ -1,0 +1,45 @@
+# ============================================================
+# CalcInvest — Rapport de marché hebdomadaire auto-généré
+# ============================================================
+# Lundi 06h00 UTC : régénère /marche-cette-semaine avec les perfs
+# de la semaine, le régime de tendance et l'activité Smart Money.
+# Contenu frais hebdomadaire = signal SEO + page partageable.
+# ============================================================
+name: Weekly market report
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # lundi 06h00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install yfinance pandas
+
+      - name: Generate report
+        run: python scripts/generate_weekly_report.py
+
+      - name: Commit & push
+        run: |
+          git config user.name "calcinvest-bot"
+          git config user.email "actions@github.com"
+          git add marche-cette-semaine.html
+          if git diff --cached --quiet; then
+            echo "Aucun changement."
+          else
+            git commit -m "content: rapport marché hebdo ($(date -u +%Y-%m-%d))"
+            git push
+          fi

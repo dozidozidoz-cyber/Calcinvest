@@ -1,0 +1,53 @@
+# ============================================================
+# CalcInvest — Refresh mensuel des données de marché
+# ============================================================
+# Le 1er de chaque mois à 05h00 UTC :
+#   - Indices & matières premières (S&P 500, CAC 40, Nasdaq, or…)
+#     via scripts/fetch_data.py --all
+#   - Cryptos (BTC, ETH, SOL, BNB, XRP) via scripts/fetch_crypto.py
+# Sans ça, les backtests "jusqu'à aujourd'hui" se figent à leur
+# dernière date de fetch. Commit + push → Vercel redéploie.
+# ============================================================
+name: Refresh market data
+
+on:
+  schedule:
+    - cron: '0 5 1 * *'   # 1er du mois, 05h00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install yfinance pandas
+
+      - name: Refresh indices & commodities
+        run: python scripts/fetch_data.py --all
+        continue-on-error: true
+
+      - name: Refresh cryptos
+        run: python scripts/fetch_crypto.py
+        continue-on-error: true
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "calcinvest-bot"
+          git config user.email "actions@github.com"
+          git add assets/data/
+          if git diff --cached --quiet; then
+            echo "Aucun changement de données."
+          else
+            git commit -m "data: monthly market refresh ($(date -u +%Y-%m))"
+            git push
+          fi
