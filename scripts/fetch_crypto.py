@@ -91,6 +91,10 @@ def fetch_monthly(tickers):
 def build_crypto_json(crypto, df, used_ticker):
     closes = df['Close'].dropna()
     closes = closes.groupby(closes.index.to_period('M')).last()
+    # Ne garder que les mois terminés : on coupe le mois courant (incomplet)
+    # si le fetch tourne en milieu/début de mois. Ainsi, au 1er du mois,
+    # seul le mois précédent (clôturé) devient accessible.
+    closes = closes[closes.index < pd.Timestamp.utcnow().to_period('M')]
     dates  = [p.strftime('%Y-%m') for p in closes.index]
     prices = [round(float(p), 6) for p in closes.values]
 

@@ -76,6 +76,8 @@ def build_json(asset, df, used_ticker):
 
     # Keep only month-ends, remove duplicates
     closes = closes.groupby(closes.index.to_period('M')).last()
+    # Ne garder que les mois terminés : on coupe le mois courant (incomplet).
+    closes = closes[closes.index < pd.Timestamp.utcnow().to_period('M')]
     dates = [p.strftime('%Y-%m') for p in closes.index]
     prices = [round(float(p), 4) for p in closes.values]
 
