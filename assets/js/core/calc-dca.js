@@ -571,7 +571,7 @@
     options = options || {};
     const si = monthDiff(seriesStart, options.startDate || seriesStart);
     if (si < 0 || si >= prices.length) return null;
-    const tgt = options.monthlyAmount || 500;
+    const tgt = Number.isFinite(options.monthlyAmount) ? options.monthlyAmount : 500;
     const init = options.initialAmount || 0;
     const fm = (options.feesPct || 0) / 100 / 12;
     const reinvDiv = options.dividendsReinvested !== false && dividends && dividends.length === prices.length;
