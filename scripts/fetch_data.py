@@ -118,6 +118,12 @@ def main():
             continue
         if asset['available'] and not args.all:
             continue
+        # Les cryptos sont gérées par fetch_crypto.py (schéma enrichi :
+        # symbol, color, halvings). On les saute ici pour ne pas écraser
+        # leurs JSON avec un schéma plus pauvre.
+        if asset.get('category') == 'crypto':
+            print(f'\n⤳ {asset["id"]:12s} | crypto — géré par fetch_crypto.py, ignoré')
+            continue
 
         aid = asset['id']
         main_ticker = asset['ticker']
