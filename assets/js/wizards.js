@@ -23,6 +23,21 @@
     } else if (path.includes('simulateur-rendement-locatif')) {
       openFn  = 'openLocatifWizard';
       calcKey = 'locatif';
+    } else if (path.includes('simulateur-per')) {
+      openFn  = 'openPerWizard';
+      calcKey = 'per';
+    } else if (path.includes('simulateur-retraite')) {
+      openFn  = 'openRetraiteWizard';
+      calcKey = 'retraite';
+    } else if (path.includes('simulateur-pret')) {
+      openFn  = 'openLoanWizard';
+      calcKey = 'pret';
+    } else if (path.includes('simulateur-decumulation')) {
+      openFn  = 'openDecumulationWizard';
+      calcKey = 'decumulation';
+    } else if (path.includes('simulateur-assurance-vie')) {
+      openFn  = 'openAvWizard';
+      calcKey = 'assurance-vie';
     }
     if (!openFn) return;
 
@@ -305,6 +320,406 @@
           regime:    'l-regime'
         }, answers);
         CI.toast('Paramètres appliqués · explore les 10 analyses', 'success');
+      }
+    });
+  };
+
+  /* ============================================================
+     4. PER — Plan d'Épargne Retraite
+     ============================================================ */
+  window.openPerWizard = function () {
+    CI.wizard({
+      title: 'Mode débutant — PER',
+      steps: [
+        {
+          id: 'age',
+          question: 'Quel âge as-tu aujourd\'hui ?',
+          helpText: 'Plus tu ouvres tôt, plus le capital a le temps de croître avant la retraite.',
+          inputType: 'number', suffix: 'ans', defaultValue: 35, min: 18, max: 70,
+          presets: [
+            { label: '25', value: 25 },
+            { label: '35', value: 35 },
+            { label: '45', value: 45 },
+            { label: '55', value: 55 }
+          ]
+        },
+        {
+          id: 'tmi',
+          question: 'Quelle est ta tranche marginale d\'imposition (TMI) ?',
+          helpText: 'Le taux d\'imposition de ton dernier euro de revenu. C\'est lui qui détermine l\'économie d\'impôt du PER : un versement de 1 000 € te fait économiser TMV × 1 000 € d\'impôt.',
+          inputType: 'select', defaultValue: '30',
+          options: [
+            { value: '0',  label: '0 % — non imposable' },
+            { value: '11', label: '11 % — revenus modestes' },
+            { value: '30', label: '30 % — cas le plus courant' },
+            { value: '41', label: '41 % — hauts revenus' },
+            { value: '45', label: '45 % — très hauts revenus' }
+          ]
+        },
+        {
+          id: 'monthly',
+          question: 'Combien tu peux verser par mois sur ton PER ?',
+          helpText: 'Versement régulier. Les versements sont déductibles dans la limite de ton plafond annuel (≈ 10 % de tes revenus).',
+          inputType: 'number', suffix: '€/mois', defaultValue: 200, min: 0,
+          presets: [
+            { label: '50', value: 50 },
+            { label: '200', value: 200 },
+            { label: '500', value: 500 },
+            { label: '1 000', value: 1000 }
+          ]
+        },
+        {
+          id: 'retireAge',
+          question: 'À quel âge tu comptes partir en retraite ?',
+          helpText: 'Le PER est bloqué jusqu\'à la retraite (sauf accidents de la vie et achat de résidence principale).',
+          inputType: 'number', suffix: 'ans', defaultValue: 64, min: 55, max: 70,
+          presets: [
+            { label: '62', value: 62 },
+            { label: '64', value: 64 },
+            { label: '67', value: 67 }
+          ]
+        },
+        {
+          id: 'rate',
+          question: 'Quel rendement annuel pour ton PER ?',
+          helpText: 'Dépend de la gestion : fonds € sécurisé 2-3 %, gestion pilotée équilibrée 4-5 %, ETF actions 6-7 %.',
+          inputType: 'number', suffix: '%/an', defaultValue: 5, min: 0, max: 12, step: 0.5,
+          presets: [
+            { label: 'Prudent (3 %)', value: 3 },
+            { label: 'Équilibré (5 %)', value: 5 },
+            { label: 'Dynamique (7 %)', value: 7 }
+          ]
+        }
+      ],
+      onComplete: (answers) => {
+        applyToForm({
+          age:       'per-age',
+          tmi:       'per-tmi-in',
+          monthly:   'per-monthly',
+          retireAge: 'per-retire-age',
+          rate:      'per-return'
+        }, answers);
+        CI.toast('Paramètres appliqués · regarde l\'économie d\'impôt', 'success');
+      }
+    });
+  };
+
+  /* ============================================================
+     5. RETRAITE — Pension estimée
+     ============================================================ */
+  window.openRetraiteWizard = function () {
+    CI.wizard({
+      title: 'Mode débutant — Retraite',
+      steps: [
+        {
+          id: 'birthYear',
+          question: 'Quelle est ton année de naissance ?',
+          helpText: 'Elle détermine ton âge légal de départ et le nombre de trimestres requis.',
+          inputType: 'number', suffix: '', defaultValue: 1985, min: 1950, max: 2005,
+          presets: [
+            { label: '1970', value: 1970 },
+            { label: '1980', value: 1980 },
+            { label: '1990', value: 1990 },
+            { label: '2000', value: 2000 }
+          ]
+        },
+        {
+          id: 'careerStart',
+          question: 'En quelle année as-tu commencé à travailler ?',
+          helpText: 'Premier emploi déclaré (même job étudiant régulier). Sert à compter tes trimestres et détecter une carrière longue.',
+          inputType: 'number', suffix: '', defaultValue: 2008, min: 1965, max: 2025,
+          presets: [
+            { label: '1995', value: 1995 },
+            { label: '2005', value: 2005 },
+            { label: '2015', value: 2015 }
+          ]
+        },
+        {
+          id: 'salary',
+          question: 'Quel est ton salaire brut annuel actuel ?',
+          helpText: 'Salaire brut, primes incluses. Sert de base pour projeter ta pension.',
+          inputType: 'number', suffix: '€/an', defaultValue: 40000, min: 12000,
+          presets: [
+            { label: '25 000', value: 25000 },
+            { label: '40 000', value: 40000 },
+            { label: '60 000', value: 60000 },
+            { label: '90 000', value: 90000 }
+          ]
+        },
+        {
+          id: 'departureAge',
+          question: 'À quel âge tu veux partir ?',
+          helpText: 'Partir avant le taux plein applique une décote ; rester au-delà donne une surcote.',
+          inputType: 'number', suffix: 'ans', defaultValue: 64, min: 60, max: 70,
+          presets: [
+            { label: '62', value: 62 },
+            { label: '64', value: 64 },
+            { label: '67', value: 67 }
+          ]
+        },
+        {
+          id: 'growth',
+          question: 'Croissance annuelle de ton salaire ?',
+          helpText: 'Augmentation moyenne attendue jusqu\'à la retraite (au-delà de l\'inflation). 1-2 % est réaliste sur une carrière.',
+          inputType: 'number', suffix: '%/an', defaultValue: 1.5, min: 0, max: 5, step: 0.5,
+          presets: [
+            { label: '0 %', value: 0 },
+            { label: '1 %', value: 1 },
+            { label: '1.5 %', value: 1.5 },
+            { label: '2.5 %', value: 2.5 }
+          ]
+        }
+      ],
+      onComplete: (answers) => {
+        applyToForm({
+          birthYear:    'r-naissance',
+          careerStart:  'r-debut-carriere',
+          salary:       'r-salaire',
+          departureAge: 'r-age-depart',
+          growth:       'r-croissance'
+        }, answers);
+        CI.toast('Paramètres appliqués · découvre ta pension estimée', 'success');
+      }
+    });
+  };
+
+  /* ============================================================
+     6. PRÊT IMMOBILIER
+     ============================================================ */
+  window.openLoanWizard = function () {
+    CI.wizard({
+      title: 'Mode débutant — Prêt immobilier',
+      steps: [
+        {
+          id: 'prix',
+          question: 'Quel est le prix du bien ?',
+          helpText: 'Prix d\'achat affiché, hors frais de notaire.',
+          inputType: 'number', suffix: '€', defaultValue: 250000, min: 30000,
+          presets: [
+            { label: '150 k', value: 150000 },
+            { label: '250 k', value: 250000 },
+            { label: '350 k', value: 350000 },
+            { label: '500 k', value: 500000 }
+          ]
+        },
+        {
+          id: 'apport',
+          question: 'Quel apport tu mets ?',
+          helpText: 'Somme que tu finances toi-même. Les banques attendent souvent 10-20 % du prix. Le montant emprunté = prix − apport.',
+          inputType: 'number', suffix: '€', defaultValue: 30000, min: 0,
+          presets: [
+            { label: '0', value: 0 },
+            { label: '25 000', value: 25000 },
+            { label: '50 000', value: 50000 },
+            { label: '80 000', value: 80000 }
+          ]
+        },
+        {
+          id: 'duree',
+          question: 'Sur combien d\'années tu rembourses ?',
+          helpText: '20 ans est le standard. Plus long = mensualité plus faible mais coût total plus élevé.',
+          inputType: 'number', suffix: 'ans', defaultValue: 25, min: 5, max: 30,
+          presets: [
+            { label: '15', value: 15 },
+            { label: '20', value: 20 },
+            { label: '25', value: 25 }
+          ]
+        },
+        {
+          id: 'taux',
+          question: 'Quel taux d\'intérêt ?',
+          helpText: 'Taux nominal annuel hors assurance. En 2026 : ~3-4 % pour un bon dossier sur 20-25 ans.',
+          inputType: 'number', suffix: '%/an', defaultValue: 3.5, min: 0, max: 10, step: 0.1,
+          presets: [
+            { label: '3 %', value: 3 },
+            { label: '3.5 %', value: 3.5 },
+            { label: '4 %', value: 4 }
+          ]
+        },
+        {
+          id: 'revenus',
+          question: 'Quels sont tes revenus nets mensuels ?',
+          helpText: 'Revenus du foyer après impôts. Sert à calculer ton taux d\'endettement (limite recommandée : 35 %).',
+          inputType: 'number', suffix: '€/mois', defaultValue: 3500, min: 0,
+          presets: [
+            { label: '2 000', value: 2000 },
+            { label: '3 500', value: 3500 },
+            { label: '5 000', value: 5000 },
+            { label: '8 000', value: 8000 }
+          ]
+        }
+      ],
+      onComplete: (answers) => {
+        answers.capital = Math.max(0, (answers.prix || 0) - (answers.apport || 0));
+        applyToForm({
+          prix:    'loan-prix-bien',
+          apport:  'loan-apport',
+          capital: 'loan-capital',
+          duree:   'loan-duree',
+          taux:    'loan-taux',
+          revenus: 'loan-revenus'
+        }, answers);
+        CI.toast('Paramètres appliqués · voici ta mensualité', 'success');
+      }
+    });
+  };
+
+  /* ============================================================
+     7. DÉCUMULATION — Retraits à la retraite
+     ============================================================ */
+  window.openDecumulationWizard = function () {
+    CI.wizard({
+      title: 'Mode débutant — Décumulation',
+      steps: [
+        {
+          id: 'capital',
+          question: 'Quel capital as-tu accumulé pour ta retraite ?',
+          helpText: 'Total de ton patrimoine financier disponible au moment où tu commences à retirer.',
+          inputType: 'number', suffix: '€', defaultValue: 500000, min: 10000,
+          presets: [
+            { label: '200 k', value: 200000 },
+            { label: '500 k', value: 500000 },
+            { label: '750 k', value: 750000 },
+            { label: '1 M', value: 1000000 }
+          ]
+        },
+        {
+          id: 'withdrawal',
+          question: 'Combien tu veux retirer par mois ?',
+          helpText: 'Revenu mensuel que tu veux tirer de ton capital. La règle des 4 %/an est un bon repère de départ.',
+          inputType: 'number', suffix: '€/mois', defaultValue: 2000, min: 100,
+          presets: [
+            { label: '1 000', value: 1000 },
+            { label: '2 000', value: 2000 },
+            { label: '3 000', value: 3000 },
+            { label: '4 000', value: 4000 }
+          ]
+        },
+        {
+          id: 'rate',
+          question: 'Quel rendement annuel de ton capital ?',
+          helpText: 'Pendant la phase de retrait on reste souvent prudent. Équilibré 4-5 %, prudent 3 %.',
+          inputType: 'number', suffix: '%/an', defaultValue: 5, min: 0, max: 12, step: 0.1,
+          presets: [
+            { label: 'Prudent (3 %)', value: 3 },
+            { label: 'Équilibré (5 %)', value: 5 },
+            { label: 'Dynamique (7 %)', value: 7 }
+          ]
+        },
+        {
+          id: 'inflation',
+          question: 'Quelle inflation tu anticipes ?',
+          helpText: 'Tes retraits sont revalorisés de l\'inflation chaque année pour garder ton pouvoir d\'achat.',
+          inputType: 'number', suffix: '%/an', defaultValue: 2, min: 0, max: 6, step: 0.1,
+          presets: [
+            { label: '1 %', value: 1 },
+            { label: '2 %', value: 2 },
+            { label: '3 %', value: 3 }
+          ]
+        },
+        {
+          id: 'envelope',
+          question: 'Dans quelle enveloppe est ton capital ?',
+          helpText: 'La fiscalité des retraits varie fortement selon l\'enveloppe : c\'est ce qui reste vraiment dans ta poche.',
+          inputType: 'select', defaultValue: 'cto',
+          options: [
+            { value: 'cto',     label: 'CTO — flat tax 30 % sur les gains' },
+            { value: 'pea-5',   label: 'PEA > 5 ans — 17,2 % de PS seulement' },
+            { value: 'av-8',    label: 'Assurance-vie > 8 ans — ~24,7 %' },
+            { value: 'livret',  label: 'Livret A / LDDS — 0 %' },
+            { value: 'none',    label: 'Brut (sans impôt)' }
+          ]
+        }
+      ],
+      onComplete: (answers) => {
+        applyToForm({
+          capital:    'dc-capital',
+          withdrawal: 'dc-retrait',
+          rate:       'dc-rendement',
+          inflation:  'dc-inflation',
+          envelope:   'dc-envelope'
+        }, answers);
+        CI.toast('Paramètres appliqués · combien de temps ton capital tient', 'success');
+      }
+    });
+  };
+
+  /* ============================================================
+     8. ASSURANCE-VIE
+     ============================================================ */
+  window.openAvWizard = function () {
+    CI.wizard({
+      title: 'Mode débutant — Assurance-vie',
+      steps: [
+        {
+          id: 'k0',
+          question: 'Quel versement initial ?',
+          helpText: 'Somme placée à l\'ouverture du contrat. Tu peux mettre peu et compléter avec des versements mensuels.',
+          inputType: 'number', suffix: '€', defaultValue: 20000, min: 0,
+          presets: [
+            { label: '5 000', value: 5000 },
+            { label: '20 000', value: 20000 },
+            { label: '50 000', value: 50000 },
+            { label: '100 000', value: 100000 }
+          ]
+        },
+        {
+          id: 'monthly',
+          question: 'Combien tu verses par mois ?',
+          helpText: 'Versement programmé régulier. Tu peux le modifier ou le stopper à tout moment.',
+          inputType: 'number', suffix: '€/mois', defaultValue: 200, min: 0,
+          presets: [
+            { label: '0', value: 0 },
+            { label: '100', value: 100 },
+            { label: '300', value: 300 },
+            { label: '600', value: 600 }
+          ]
+        },
+        {
+          id: 'years',
+          question: 'Pendant combien d\'années ?',
+          helpText: 'L\'assurance-vie devient fiscalement très avantageuse après 8 ans de détention.',
+          inputType: 'number', suffix: 'ans', defaultValue: 20, min: 1, max: 40,
+          presets: [
+            { label: '8', value: 8 },
+            { label: '15', value: 15 },
+            { label: '20', value: 20 },
+            { label: '30', value: 30 }
+          ]
+        },
+        {
+          id: 'allocUC',
+          question: 'Quelle part en unités de compte (actions) ?',
+          helpText: 'UC = potentiel de rendement plus élevé mais avec risque de perte. Le reste va sur le fonds € (sécurisé). 0 % = 100 % sécurisé.',
+          inputType: 'number', suffix: '%', defaultValue: 50, min: 0, max: 100,
+          presets: [
+            { label: '0 % (sécurisé)', value: 0 },
+            { label: '30 %', value: 30 },
+            { label: '50 %', value: 50 },
+            { label: '70 %', value: 70 }
+          ]
+        },
+        {
+          id: 'rUC',
+          question: 'Quel rendement pour la part UC ?',
+          helpText: 'Rendement annuel espéré des unités de compte (actions/ETF). Historique long terme : 6-7 %.',
+          inputType: 'number', suffix: '%/an', defaultValue: 6, min: 0, max: 12, step: 0.1,
+          presets: [
+            { label: 'Prudent (4 %)', value: 4 },
+            { label: 'Standard (6 %)', value: 6 },
+            { label: 'Dynamique (8 %)', value: 8 }
+          ]
+        }
+      ],
+      onComplete: (answers) => {
+        applyToForm({
+          k0:      'av-k0',
+          monthly: 'av-monthly',
+          years:   'av-years',
+          allocUC: 'av-alloc-uc',
+          rUC:     'av-r-uc'
+        }, answers);
+        CI.toast('Paramètres appliqués · capital net et succession estimés', 'success');
       }
     });
   };
