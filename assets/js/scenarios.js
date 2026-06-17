@@ -13,7 +13,11 @@
     Object.keys(params).forEach((id) => {
       const el = document.getElementById(id);
       if (el && params[id] != null) {
-        el.value = params[id];
+        if (el.type === 'checkbox') {
+          el.checked = !!params[id];
+        } else {
+          el.value = params[id];
+        }
         el.dispatchEvent(new Event('input', { bubbles: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
       }
@@ -133,6 +137,54 @@
       }
     ],
 
+    'lmnp': [
+      {
+        emoji: '🎓', label: 'Studio meublé étudiant',
+        desc: 'Loyer 7 200 €/an, payé comptant, charges faibles — souvent Micro-BIC',
+        params: {
+          'lmnp-loyers': 7200, 'lmnp-charges': 1500, 'lmnp-interets': 0, 'lmnp-tmi': 30,
+          'lmnp-prix-bien': 90000, 'lmnp-terrain': 20, 'lmnp-duree-bien': 30,
+          'lmnp-prix-mob': 6000, 'lmnp-duree-mob': 8, 'lmnp-tourisme': false
+        }
+      },
+      {
+        emoji: '🏘️', label: 'T2 meublé à crédit',
+        desc: 'Loyer 9 600 €/an, intérêts 4 000 €, TMI 30 % — le réel efface l\'impôt',
+        params: {
+          'lmnp-loyers': 9600, 'lmnp-charges': 2500, 'lmnp-interets': 4000, 'lmnp-tmi': 30,
+          'lmnp-prix-bien': 130000, 'lmnp-terrain': 20, 'lmnp-duree-bien': 30,
+          'lmnp-prix-mob': 8000, 'lmnp-duree-mob': 8, 'lmnp-tourisme': false
+        }
+      },
+      {
+        emoji: '🏡', label: 'Grand appart TMI 41 %',
+        desc: 'Loyer 14 400 €/an, fort amortissement, TMI 41 % — réel largement gagnant',
+        params: {
+          'lmnp-loyers': 14400, 'lmnp-charges': 3500, 'lmnp-interets': 5000, 'lmnp-tmi': 41,
+          'lmnp-prix-bien': 220000, 'lmnp-terrain': 20, 'lmnp-duree-bien': 30,
+          'lmnp-prix-mob': 12000, 'lmnp-duree-mob': 8, 'lmnp-tourisme': false
+        }
+      },
+      {
+        emoji: '🏨', label: 'Meublé tourisme classé',
+        desc: 'Saisonnier 18 000 €/an, classé (abat. 71 %), côte — Micro-BIC tourisme costaud',
+        params: {
+          'lmnp-loyers': 18000, 'lmnp-charges': 4000, 'lmnp-interets': 4500, 'lmnp-tmi': 41,
+          'lmnp-prix-bien': 200000, 'lmnp-terrain': 25, 'lmnp-duree-bien': 30,
+          'lmnp-prix-mob': 15000, 'lmnp-duree-mob': 8, 'lmnp-tourisme': true
+        }
+      },
+      {
+        emoji: '💰', label: 'Cash buyer petit meublé',
+        desc: 'Loyer 6 000 €/an, sans crédit, TMI 11 % — Micro-BIC pour la simplicité',
+        params: {
+          'lmnp-loyers': 6000, 'lmnp-charges': 1200, 'lmnp-interets': 0, 'lmnp-tmi': 11,
+          'lmnp-prix-bien': 80000, 'lmnp-terrain': 20, 'lmnp-duree-bien': 30,
+          'lmnp-prix-mob': 5000, 'lmnp-duree-mob': 8, 'lmnp-tourisme': false
+        }
+      }
+    ],
+
     'per': [
       {
         emoji: '💼', label: 'Cadre 30 ans, TMI 30 %',
@@ -213,13 +265,15 @@
     if (path.includes('simulateur-interets-composes'))   return 'interets-composes';
     if (path.includes('calculateur-fire'))                return 'fire';
     if (path.includes('simulateur-rendement-locatif'))    return 'rendement-locatif';
+    if (path.includes('simulateur-lmnp'))                 return 'lmnp';
     if (path.includes('simulateur-per'))                  return 'per';
     if (path.includes('simulateur-retraite'))             return 'retraite';
     return null;
   }
 
   /* ------------------------------------------------------------
-     Rendu : section "Cas pratiques" en bas du main, avant footer
+     Rendu : section "Cas pratiques" en haut, juste après le header
+     (et après une éventuelle bannière d'intro), avant les paramètres
      ------------------------------------------------------------ */
   function renderScenariosSection(calcKey) {
     const scenarios = SCENARIOS[calcKey];
@@ -229,7 +283,7 @@
     const main = document.querySelector('main.main, main') || document.body;
     const section = document.createElement('section');
     section.id = 'scenarios-section';
-    section.style.cssText = 'margin-top:32px';
+    section.style.cssText = 'margin:8px 0 24px';
     section.innerHTML = '<div class="page-eyebrow" style="margin-bottom:14px">' +
       '<span class="page-eyebrow-icon" style="background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.3);color:#60A5FA">' +
         '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h10v10H3z"/><path d="M3 7h10M7 3v10"/></svg>' +
@@ -239,7 +293,17 @@
     '<p class="text-muted" style="font-size:13px;margin-bottom:14px">Profils types réalistes pour t\'inspirer ou comparer ta situation. Chaque card pré-remplit le formulaire et lance la simulation.</p>' +
     '<div id="scenarios-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px"></div>';
 
-    main.appendChild(section);
+    // Injection en haut : juste après le header (en sautant la bannière d'intro si présente)
+    let anchor = document.querySelector('.page-header');
+    const sib = anchor && anchor.nextElementSibling;
+    if (sib && (sib.matches('[data-intro-banner]') || sib.classList.contains('intro-banner'))) {
+      anchor = sib;
+    }
+    if (anchor && anchor.parentNode) {
+      anchor.insertAdjacentElement('afterend', section);
+    } else {
+      main.appendChild(section);
+    }
 
     const grid = section.querySelector('#scenarios-grid');
     grid.innerHTML = scenarios.map((s, i) => (
