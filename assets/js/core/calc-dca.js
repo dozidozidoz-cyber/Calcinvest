@@ -616,6 +616,67 @@
   }
 
   /* ============================================================
+     STRATÉGIES DE DÉPLOIEMENT — comparaison à BUDGET ÉGAL
+     ============================================================
+     Question : « j'ai une somme X, comment la déployer ? »
+     Les 3 stratégies partent du MÊME budget (initial + monthly*durée).
+     Le cash non encore déployé est rémunéré au taux Livret (cashRate).
+     On compare la RICHESSE FINALE TOTALE = portefeuille + cash restant,
+     ce qui rend la comparaison équitable même si une stratégie déploie
+     moins (le Value Averaging laisse souvent du cash en marché haussier).
+     ============================================================ */
+  function computeDeploymentStrategies(prices, dividends, seriesStart, options) {
+    options = options || {};
+    const si = monthDiff(seriesStart, options.startDate || seriesStart);
+    if (si < 0 || si >= prices.length) return null;
+    const monthly = Number.isFinite(options.monthlyAmount) ? options.monthlyAmount : 0;
+    const initial = options.initialAmount || 0;
+    const fm = (options.feesPct || 0) / 100 / 12;
+    const cm = Math.pow(1 + (options.cashRate || 0) / 100, 1 / 12) - 1; // taux cash mensuel
+    const reinvDiv = options.dividendsReinvested !== false && dividends && dividends.length === prices.length;
+    const dur = Math.min(
+      options.durationMonths && options.durationMonths > 0 ? options.durationMonths : prices.length - si,
+      prices.length - si
+    );
+    if (dur < 1) return null;
+
+    // Budget total = ce que le DCA finirait par déployer
+    const budget = initial + monthly * dur;
+    if (budget <= 0) return null;
+
+    // Simule un plan : investFn(i, price, units) → montant cible à investir ce mois,
+    // capé à [0, cash disponible]. Le cash restant est rémunéré sur le mois.
+    function simulate(investFn) {
+      let units = 0, cashLeft = budget, deployedTotal = 0;
+      const wealth = [], deployed = [];
+      for (let i = 0; i < dur; i++) {
+        const idx = si + i;
+        const p = prices[idx];
+        let toInvest = investFn(i, p, units);
+        toInvest = Math.max(0, Math.min(toInvest, cashLeft));
+        if (toInvest > 0) { units += toInvest / p; cashLeft -= toInvest; deployedTotal += toInvest; }
+        if (reinvDiv && dividends[idx] > 0) units += (units * dividends[idx]) / p;
+        if (fm > 0) units *= (1 - fm);
+        cashLeft *= (1 + cm); // le cash non déployé gagne des intérêts sur le mois
+        wealth.push(units * p + cashLeft);
+        deployed.push(deployedTotal);
+      }
+      const finalValue = wealth[wealth.length - 1];
+      return {
+        finalValue, deployed: deployedTotal, cashLeft,
+        gainPct: budget > 0 ? (finalValue / budget - 1) * 100 : 0,
+        series: { wealth, deployed }
+      };
+    }
+
+    const lump = simulate((i) => (i === 0 ? budget : 0));
+    const dca  = simulate((i) => (i === 0 ? initial + monthly : monthly));
+    const va   = simulate((i, p, units) => (initial + (i + 1) * monthly) - units * p);
+
+    return { budget, dur, durationYears: dur / 12, lump, dca, va };
+  }
+
+  /* ============================================================
      COMPARATEUR BROKERS (frais 2025 indicatifs FR/EU)
      ============================================================
      Modèle simplifié : pour chaque ordre, frais = max(feeMin,
@@ -714,7 +775,7 @@
     }).sort((a, b) => a.costTotal - b.costTotal);
   }
 
-  const mod = { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, computeBrokerComparison, computeOrderFee, BROKERS_2025, monthDiff, addMonths, ymLabel };
+  const mod = { calcDCA, computeAssetStats, computeLumpVsDCA, computeVolatilityCAPE, computeMonteCarlo, computeRollingReturns, computeFiscalImpact, computeDecaissement, computeValueAveraging, computeDeploymentStrategies, computeBrokerComparison, computeOrderFee, BROKERS_2025, monthDiff, addMonths, ymLabel };
   if (typeof module !== 'undefined' && module.exports) module.exports = mod;
   else global.CalcDCA = mod;
 })(typeof window !== 'undefined' ? window : this);
