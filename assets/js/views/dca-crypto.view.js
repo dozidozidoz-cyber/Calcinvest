@@ -47,7 +47,15 @@
   function loadCrypto(id) {
     if (DATA_CACHE[id]) return Promise.resolve(DATA_CACHE[id]);
     return fetch(`/assets/data/${id}.json`)
-      .then((r) => r.json())
+      .then((r) => {
+        const ct = r.headers.get('content-type') || '';
+        // Garde-fou : un SW offline peut renvoyer du HTML (index.html) en 200.
+        // On le détecte avant .json() pour donner une erreur claire au lieu d'un crash.
+        if (!r.ok || ct.indexOf('json') === -1) {
+          throw new Error('Réponse data invalide (' + r.status + ' ' + ct + ')');
+        }
+        return r.json();
+      })
       .then((d) => { DATA_CACHE[id] = d; return d; });
   }
 

@@ -59,11 +59,21 @@
     // (badge SOON / actif). Doit toujours être frais, même si un vieux
     // service worker (v10-v13) le sert en cache-first.
     const res = await fetch('/assets/data/manifest.json?v=' + Date.now(), { cache: 'no-store' });
+    const ct = res.headers.get('content-type') || '';
+    if (!res.ok || ct.indexOf('json') === -1) {
+      throw new Error('Manifest invalide (' + res.status + ' ' + ct + ')');
+    }
     manifest = await res.json();
   }
   async function loadData(id) {
     if (dataCache[id]) return dataCache[id];
     const res = await fetch(`/assets/data/${id}.json`);
+    const ct = res.headers.get('content-type') || '';
+    // Garde-fou : un SW offline peut renvoyer du HTML (index.html) en 200.
+    // On le détecte avant .json() pour une erreur claire plutôt qu'un crash.
+    if (!res.ok || ct.indexOf('json') === -1) {
+      throw new Error('Réponse data invalide (' + res.status + ' ' + ct + ')');
+    }
     const data = await res.json();
     dataCache[id] = data;
     return data;

@@ -10,7 +10,7 @@
 //  manuel de CACHE_VERSION). En network-first, chaque navigation revalide
 // la CSS via Vercel (304 Not Modified si inchangée, donc latence négligeable).
 
-const CACHE_VERSION = 'calcinvest-v116';
+const CACHE_VERSION = 'calcinvest-v117';
 
 // Seuls les assets STABLES vont en cache-first (icons, data JSONs).
 const STATIC_ASSETS = [
@@ -87,7 +87,16 @@ self.addEventListener('fetch', (event) => {
           }
           return res;
         })
-        .catch(() => caches.match(request).then((hit) => hit || caches.match('/index.html')))
+        .catch(() => caches.match(request).then((hit) => {
+          if (hit) return hit;
+          // Fallback HTML RÉSERVÉ aux navigations. Pour une requête data/JSON/JS,
+          // renvoyer index.html ferait planter res.json() côté client ("Erreur
+          // chargement"). On renvoie une réponse JSON 503 propre à la place.
+          if (request.destination === 'document') return caches.match('/index.html');
+          return new Response('{"error":"offline"}', {
+            status: 503, headers: { 'Content-Type': 'application/json' }
+          });
+        }))
     );
     return;
   }
@@ -102,7 +111,9 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_VERSION).then((c) => c.put(request, clone));
         }
         return res;
-      });
+      }).catch(() => caches.match(request).then((h) => h || new Response(
+        '{"error":"offline"}', { status: 503, headers: { 'Content-Type': 'application/json' } }
+      )));
     })
   );
 });
