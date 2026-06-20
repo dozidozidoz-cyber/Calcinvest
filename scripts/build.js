@@ -56,16 +56,19 @@ async function minify() {
     const before = size(file);
     totalBefore += before;
     try {
-      const result = await esbuild.build({
-        entryPoints: [file],
-        outfile: file,
+      // transform (et NON build) : minifie le texte tel quel, sans bundler ni
+      // wrapper CommonJS. Crucial : nos fichiers ont `module.exports` (tests
+      // Node) ET `window.X = ...` (chargés en <script>). esbuild.build()
+      // détectait module.exports et encapsulait le fichier → l'assignation
+      // globale ne s'exécutait plus → window.CalcDCA undefined → pages cassées.
+      const src = fs.readFileSync(file, 'utf8');
+      const result = await esbuild.transform(src, {
         minify: true,
-        target: ['es2020'],
-        format: 'iife',
-        allowOverwrite: true,
+        target: 'es2020',
+        loader: 'js',
         legalComments: 'none',
-        logLevel: 'error',
       });
+      fs.writeFileSync(file, result.code);
       const after = size(file);
       totalAfter += after;
       const pct = before > 0 ? ((1 - after / before) * 100).toFixed(0) : 0;
@@ -81,15 +84,13 @@ async function minify() {
     const before = size(file);
     totalBefore += before;
     try {
-      await esbuild.build({
-        entryPoints: [file],
-        outfile: file,
+      const src = fs.readFileSync(file, 'utf8');
+      const result = await esbuild.transform(src, {
         minify: true,
-        loader: { '.css': 'css' },
-        allowOverwrite: true,
+        loader: 'css',
         legalComments: 'none',
-        logLevel: 'error',
       });
+      fs.writeFileSync(file, result.code);
       const after = size(file);
       totalAfter += after;
       const pct = before > 0 ? ((1 - after / before) * 100).toFixed(0) : 0;
