@@ -669,9 +669,15 @@
       };
     }
 
+    // Les 3 stratégies déploient le MÊME budget, mais à un rythme différent :
+    // - Lump : tout au mois 1
+    // - DCA  : étalé uniformément (budget / durée) sur toute la période
+    // - VA   : value averaging vers une cible linéaire qui atteint le budget à la fin
+    // (indépendant du découpage initial/mensuel saisi : ici on compare des
+    //  FAÇONS de déployer une somme, pas un plan d'épargne précis)
     const lump = simulate((i) => (i === 0 ? budget : 0));
-    const dca  = simulate((i) => (i === 0 ? initial + monthly : monthly));
-    const va   = simulate((i, p, units) => (initial + (i + 1) * monthly) - units * p);
+    const dca  = simulate(() => budget / dur);
+    const va   = simulate((i, p, units) => (budget * (i + 1) / dur) - units * p);
 
     return { budget, dur, durationYears: dur / 12, lump, dca, va };
   }
