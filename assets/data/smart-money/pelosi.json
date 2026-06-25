@@ -13,10 +13,36 @@
     "id": "pelosi",
     "type": "CONGRESS"
   },
-  "updated": "2026-06-22T12:31:14.444466Z",
+  "updated": "2026-06-25T09:51:05.125570Z",
   "data_source": "live_house_clerk",
-  "count": 27,
+  "count": 29,
   "transactions": [
+    {
+      "date": "2026-05-29",
+      "disclosed": "2026-05-29",
+      "ticker": "INTC",
+      "asset": "Intel Corporation - Common Stock",
+      "asset_class": "OP",
+      "type": "P",
+      "amount": "$1,000,001 - $5,000,000",
+      "owner": "SP",
+      "description": "Purchased 200 call options with a strike price of $50 and an expiration date of 3/19/27.",
+      "filing_date": "2026-06-23",
+      "doc_id": "20034836"
+    },
+    {
+      "date": "2026-05-29",
+      "disclosed": "2026-05-29",
+      "ticker": "UBER",
+      "asset": "Uber Technologies, Inc. Common Stock",
+      "asset_class": "OP",
+      "type": "P",
+      "amount": "$500,001 - $1,000,000",
+      "owner": "SP",
+      "description": "Purchased 200 call options with a strike price of $50 and an expiration date of 3/19/27. * For the complete list of asset type abbreviations, please visit https://fd.house.gov/reference/asset-type-codes.aspx. I P O Yes No C  S I CERTIFY that the statements I have made on the attached Periodic Transaction Report are true, complete, and correct to the best of my knowledge and belief. Further, I CERTIFY that I have disclosed all transactions as required by the STOCK Act. Digitally Signed: Hon. Nancy Pelosi , 06/23/2026",
+      "filing_date": "2026-06-23",
+      "doc_id": "20034836"
+    },
     {
       "date": "2026-01-16",
       "disclosed": "2026-01-16",
