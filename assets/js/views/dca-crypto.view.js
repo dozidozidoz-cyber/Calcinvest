@@ -7,9 +7,10 @@
   'use strict';
 
   const CC = window.CalcDCACrypto;
-  // CalcDCA loaded from /assets/js/core/calc-dca.js — used here only for
-  // computeValueAveraging dans la 2e tab "Stratégies de déploiement".
-  const VAfn = (window.CalcDCA && window.CalcDCA.computeValueAveraging) || null;
+  // CalcDCA loaded from /assets/js/core/calc-dca.js — used here for la tab
+  // "Stratégies de déploiement" (comparaison à budget égal).
+  const DEPLOYfn = (window.CalcDCA && window.CalcDCA.computeDeploymentStrategies) || null;
+  const addMonths = (window.CalcDCA && window.CalcDCA.addMonths) || ((ym) => ym);
 
   /* ------------------------------------------------------------------ */
   /* Catalogue des cryptos                                                 */
@@ -344,55 +345,29 @@
   /* A04 — Stratégies de déploiement (DCA vs VA vs Lump Sum)              */
   /* ------------------------------------------------------------------ */
   function renderA04(p, r, data) {
-    if (!r) return;
+    if (!r || !DEPLOYfn) return;
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const cls = (id, c) => { const el = document.getElementById(id); if (el) el.className = 'stat-value ' + c; };
 
-    // Window in months between start and end
+    // Fenêtre en mois entre début et fin
     const [sy, sm] = p.startDate.split('-').map(Number);
     const [ey, em] = (p.endDate || data.end).split('-').map(Number);
     const months = (ey - sy) * 12 + (em - sm) + 1;
 
-    // 1) DCA = déjà calculé (r) — finalValue, finalInvested, monthly_data
-    const dcaFinal = r.finalValue;
-    const dcaInv   = r.finalInvested;
-
-    // 2) Lump Sum = même montant total versé, tout au mois 1
-    const lump = CC.calcCryptoDCA({
-      prices: data.prices,
-      dataStart: data.start,
-      startDate: p.startDate,
-      endDate: p.endDate || data.end,
-      initialAmount: dcaInv,
-      monthlyAmount: 0,
-      feesPct: p.feesPct,
-      taxRate: 0
+    // Comparaison à BUDGET ÉGAL : les 3 stratégies partent du même capital
+    // (initial + mensuel*durée), le cash non déployé rémunéré (Livret 2 %),
+    // on compare la richesse finale totale (portefeuille + cash restant).
+    const strat = DEPLOYfn(data.prices, null, data.start, {
+      startDate: p.startDate, durationMonths: months,
+      monthlyAmount: p.monthlyAmount, initialAmount: p.initialAmount || 0,
+      feesPct: p.feesPct, cashRate: 2, dividendsReinvested: false
     });
+    if (!strat) return;
 
-    // 3) Value Averaging — réutilise computeValueAveraging du module stocks
-    let va = null;
-    if (VAfn) {
-      va = VAfn(data.prices, null, data.start, {
-        startDate: p.startDate,
-        durationMonths: months,
-        monthlyAmount: p.monthlyAmount,
-        initialAmount: p.initialAmount || 0,
-        feesPct: p.feesPct,
-        dividendsReinvested: false
-      });
-    }
-
-    if (!lump || !va) return;
-
-    const lumpFinal = lump.finalValue;
-    const vaFinal = va.finalValue;
-    const vaInv = va.totalInvested;
-
-    // Vainqueur
     const finals = [
-      { id: 'dca', label: 'DCA', val: dcaFinal, color: '#34D399' },
-      { id: 'va', label: 'Value Averaging', val: vaFinal, color: '#A78BFA' },
-      { id: 'lump', label: 'Lump Sum', val: lumpFinal, color: '#F7931A' }
+      { id: 'dca',  label: 'DCA',             val: strat.dca.finalValue,  color: '#34D399' },
+      { id: 'va',   label: 'Value Averaging', val: strat.va.finalValue,   color: '#A78BFA' },
+      { id: 'lump', label: 'Lump Sum',        val: strat.lump.finalValue, color: '#F7931A' }
     ].sort((a, b) => b.val - a.val);
     const winner = finals[0];
     const runner = finals[1];
@@ -405,47 +380,45 @@
     if (winEl) winEl.style.color = winner.color;
 
     const triFmt = (val) => CI.fmtCompact(val) + ' €';
-    const triPct = (a, b) => b > 0 ? ((a / b - 1) * 100).toFixed(1) + ' %' : '—';
+    const detail = (s) => 'Déployé ' + CI.fmtCompact(s.deployed) + ' · cash ' + CI.fmtCompact(s.cashLeft) + ' · +' + s.gainPct.toFixed(1) + ' %';
 
-    set('cr4-dca-final', triFmt(dcaFinal));
-    set('cr4-dca-detail', 'Versé ' + CI.fmtCompact(dcaInv) + ' · gain ' + triPct(dcaFinal, dcaInv));
+    set('cr4-dca-final', triFmt(strat.dca.finalValue));
+    set('cr4-dca-detail', detail(strat.dca));
     cls('cr4-dca-final', winner.id === 'dca' ? 'pos' : '');
 
-    set('cr4-va-final', triFmt(vaFinal));
-    set('cr4-va-detail', 'Versé ' + CI.fmtCompact(vaInv) + ' · gain ' + triPct(vaFinal, vaInv));
+    set('cr4-va-final', triFmt(strat.va.finalValue));
+    set('cr4-va-detail', detail(strat.va));
     cls('cr4-va-final', winner.id === 'va' ? 'pos' : '');
 
-    set('cr4-lump-final', triFmt(lumpFinal));
-    set('cr4-lump-detail', 'Versé ' + CI.fmtCompact(dcaInv) + ' · gain ' + triPct(lumpFinal, dcaInv));
+    set('cr4-lump-final', triFmt(strat.lump.finalValue));
+    set('cr4-lump-detail', detail(strat.lump));
     cls('cr4-lump-final', winner.id === 'lump' ? 'pos' : '');
 
-    set('cr4-meta', (CRYPTOS_META[p.cryptoId] || {name: p.cryptoId}).name + ' · ' + p.startDate + ' → ' + (p.endDate || data.end));
+    set('cr4-meta', (CRYPTOS_META[p.cryptoId] || {name: p.cryptoId}).name + ' · ' + p.startDate + ' → ' + (p.endDate || data.end) + ' · budget ' + CI.fmtCompact(strat.budget) + ' €');
 
     requestAnimationFrame(() => {
-      const dcaPts = r.monthly_data || [];
-      const lumpPts = lump.monthly_data || [];
-      const vaSeries = va.series || { portfolio: [], invested: [] };
-      const n = Math.min(dcaPts.length, lumpPts.length, vaSeries.portfolio.length);
+      const n = Math.min(strat.dca.series.wealth.length, strat.va.series.wealth.length, strat.lump.series.wealth.length);
       if (n < 2) return;
       const stride = Math.max(1, Math.ceil(n / 300));
       const idxs = [];
       for (let i = 0; i < n; i += stride) idxs.push(i);
       if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
-      const labels = idxs.map((i) => dcaPts[i].date);
+      const labels = idxs.map((i) => addMonths(p.startDate, i));
       CI.safeChart('cra4-chart', labels, [
-        { label: 'Versé DCA / Lump', data: idxs.map((i) => dcaPts[i].invested), color: '#94A3B8', width: 1, dash: [3, 3] },
-        { label: 'Versé VA',         data: idxs.map((i) => vaSeries.invested[i]), color: '#FBBF24', width: 1, dash: [3, 3] },
-        { label: 'Lump Sum',         data: idxs.map((i) => lumpPts[i].value),     color: '#F7931A', width: 2.5 },
-        { label: 'Value Averaging',  data: idxs.map((i) => vaSeries.portfolio[i]), color: '#A78BFA', width: 2.5 },
-        { label: 'DCA classique',    data: idxs.map((i) => dcaPts[i].value),       color: '#34D399', width: 3 }
+        { label: 'Budget',          data: idxs.map(() => strat.budget),               color: '#94A3B8', width: 1, dash: [3, 3] },
+        { label: 'Lump Sum',        data: idxs.map((i) => strat.lump.series.wealth[i]), color: '#F7931A', width: 2.5 },
+        { label: 'Value Averaging', data: idxs.map((i) => strat.va.series.wealth[i]),   color: '#A78BFA', width: 2.5 },
+        { label: 'DCA classique',   data: idxs.map((i) => strat.dca.series.wealth[i]),  color: '#34D399', width: 3 }
       ], { yFormat: (v) => CI.fmtCompact(v) });
     });
 
     // Insight A04
     setInsight('cra-lumpvsdca',
-      `<strong>${winner.label}</strong> domine sur cette plage avec <em>${CI.fmtCompact(winner.val)} €</em>, ` +
-      `soit <span class="pos">+${CI.fmtCompact(gap)} €</span> (<strong>+${gapPct.toFixed(1)} %</strong>) de plus que ${runner.label}. ` +
-      `<span class="muted">DCA ${CI.fmtCompact(dcaFinal)} · VA ${CI.fmtCompact(vaFinal)} · Lump ${CI.fmtCompact(lumpFinal)}.</span>`
+      `<strong>${winner.label}</strong> maximise la richesse finale à budget égal ` +
+      `(${CI.fmtCompact(strat.budget)} €) avec <em>${CI.fmtCompact(winner.val)} €</em>, soit ` +
+      `<span class="pos">+${CI.fmtCompact(gap)} €</span> (<strong>+${gapPct.toFixed(1)} %</strong>) de plus que ${runner.label}. ` +
+      `<span class="muted">À capital identique, le cash non déployé est rémunéré à 2 % (Livret). Sur crypto, très volatil : ` +
+      `le Lump Sum gagne quand le point d'entrée est bas, mais le DCA/VA amortissent un mauvais timing.</span>`
     );
   }
 
