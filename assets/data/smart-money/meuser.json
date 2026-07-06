@@ -17,10 +17,36 @@
     "id": "meuser",
     "type": "CONGRESS"
   },
-  "updated": "2026-07-02T09:42:21.068606Z",
+  "updated": "2026-07-06T11:12:03.872561Z",
   "data_source": "live_house_clerk",
-  "count": 15,
+  "count": 17,
   "transactions": [
+    {
+      "date": "2026-06-15",
+      "disclosed": "2026-06-16",
+      "ticker": "SPCX",
+      "asset": "Space Exploration Technologies Corp. - Class A Common Stock",
+      "asset_class": "ST",
+      "type": "P",
+      "amount": "$15,001 - $50,000",
+      "owner": "DC",
+      "description": "Schwab DM Brokerage Account",
+      "filing_date": "2026-07-02",
+      "doc_id": "20034774"
+    },
+    {
+      "date": "2026-05-27",
+      "disclosed": "2026-06-09",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2026-07-02",
+      "doc_id": "20034774"
+    },
     {
       "date": "2026-04-24",
       "disclosed": "2026-05-12",
