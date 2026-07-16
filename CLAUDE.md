@@ -211,19 +211,42 @@ Manifest : `assets/data/manifest.json`. Format JSON par actif :
 
 ---
 
-## 🗺️ Roadmap prochaines sessions
+## 🚀 État actuel (juillet 2026)
 
-**Session 4** — Compléter Analyses 02 (heatmap rendements glissants) + 03 (Lump vs DCA). Analyses "simples" basées sur la data existante.
+**Le site est LIVE en production sur [calcinvest.fr](https://calcinvest.fr)** (Vercel, auto-deploy sur push `main`). Mise en ligne début juin 2026. Phase actuelle : **croissance SEO pre-monétisation**.
 
-**Session 5** — Analyse 06 (Volatilité glissante 12 mois + CAPE vs moyenne historique). La CAPE est déjà dans `sp500.json` (`pe10`), c'est du pur calcul.
+### Monétisation — codée mais désactivée (pre-launch)
 
-**Session 6** — Analyse 07 (Monte Carlo bootstrap). Le gros morceau : 2000 trajectoires rééchantillonnant les rendements mensuels historiques.
+- **Paywall** : `PAYWALL_DISABLED = true` dans `assets/js/paywall.js` — tout est gratuit pour construire le trafic
+- **Auth Supabase** : wrapper complet dans `assets/js/auth.js`, UI masquée
+- **Stripe** : `api/stripe/create-checkout.js` + `webhook.js` prêts — 4,90 €/mois, 49 €/an (env vars à configurer)
+- **Tier gates** : `assets/js/core/flags.js` (free vs pro : Monte Carlo 5k/50k paths, export CSV/PDF, 5/100 projets)
+- **Règles de déclenchement** (cf. `scripts/LAUNCH_CHECKLIST.md`) : AdSense + affiliation à J+30 si seuils atteints ; premium à J+90 si > 500 visites/jour
 
-**Session 7+** — Nouveaux outils :
-1. **Intérêts composés** (12K recherches/mois FR — gros trafic)
-2. **FIRE** (niche vierge, règle des 4%)
-3. **PER** (affiliation bancaire lucrative)
-4. **DCA Crypto** (séparé de la finance trad)
+### Automatisations GitHub Actions (4)
+
+| Workflow | Cron | Rôle |
+|---|---|---|
+| `refresh-smartmoney.yml` | lun + jeu 06h30 UTC | ARK, 13F SEC, Congress, prix (229 tickers) |
+| `refresh-market-data.yml` | 1er du mois 05h00 UTC | Indices + commodities + crypto (yfinance) |
+| `weekly-report.yml` | lundi | Régénère `/marche-cette-semaine` (SEO frais) |
+| `health-check.yml` | mercredi 07h00 UTC | Liens internes + smoke test + prod 200 → ouvre une issue si échec |
+
+⚠️ `scripts/check_links.py` ne suit PAS les redirections vercel.json : tout lien interne doit pointer vers le chemin réel du fichier (pas une URL redirigée).
+
+### Travail SEO réalisé (mai-juillet 2026)
+
+16 articles blog (`blog/`), H1/titles keyword sur 34 outils, schema.org (FAQ, HowTo, breadcrumbs), E-E-A-T identité auteur, OG images sur 40 pages, newsletter Beehiiv, Vercel Analytics, light mode par défaut.
+
+### Moteur probabiliste unifié
+
+`assets/js/core/engine/` (stats, distributions, rng, sampling, correlation…) + `core/sim/` (Monte Carlo, portfolio, projection, withdrawal) + `core/calculators/`. Testé : `npm test` (suites dans `tests/engine/` + `tests/sim/`, node --test natif). Bundle via `scripts/build-engine-bundle.js`, minification esbuild au build Vercel (`scripts/build.js`).
+
+## 🗺️ Roadmap
+
+**Court terme** — Suivre GSC/Vercel Analytics ; si seuils LAUNCH_CHECKLIST atteints → activer AdSense + affiliation brokers (Trade Republic, IBKR). Continuer le rythme d'articles blog SEO.
+
+**Moyen terme (J+90, si > 500 visites/jour)** — Réactiver auth + paywall premium (Supabase + Stripe déjà prêts).
 
 **Phase 2 (Y2)** — Version EN (`calcinvest.com`). Clone i18n, adaptation fiscalité (ISA/SIPP, 401k/Roth), affiliation EN (eToro, IBKR, Kraken).
 
