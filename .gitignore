@@ -37,7 +37,7 @@ package-lock.json
 .cache/
 
 # OS generated files
-Icon?
+# (ne PAS utiliser "Icon?" : insensible à la casse, il ignorait assets/icons/ !)
 ehthumbs.db
 
 # Smart Money — cache de PDFs House Clerk (reproductible via fetch_smartmoney.py)
