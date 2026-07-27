@@ -1,138 +1,138 @@
 {
-  "updated": "2026-07-23T09:05:52.192781Z",
+  "updated": "2026-07-27T10:14:30.628132Z",
   "funds": {
     "ARKK": {
-      "as_of": "2026-07-23",
+      "as_of": "2026-07-27",
       "holdings": [
         {
           "ticker": "TSLA",
           "name": "TESLA INC",
           "cusip": "88160R101",
-          "shares": 1602040,
-          "value": 599178980.4,
-          "weight": 10.03,
+          "shares": 1722986,
+          "value": 539346307.58,
+          "weight": 9.48,
           "weight_rank": 1,
-          "share_price": 374.01
+          "share_price": 313.03
         },
         {
           "ticker": "TEM",
           "name": "TEMPUS AI INC-CL A",
           "cusip": "88023B103",
-          "shares": 6224927,
-          "value": 292322571.92,
-          "weight": 4.89,
+          "shares": 6304207,
+          "value": 269126596.83,
+          "weight": 4.73,
           "weight_rank": 2,
-          "share_price": 46.96
+          "share_price": 42.69
         },
         {
           "ticker": "CRSP",
           "name": "CRISPR THERAPEUTICS AG",
           "cusip": "H17182108",
-          "shares": 5656736,
-          "value": 267224208.64,
-          "weight": 4.47,
+          "shares": 5728796,
+          "value": 266618165.84,
+          "weight": 4.69,
           "weight_rank": 3,
-          "share_price": 47.24
-        },
-        {
-          "ticker": "COIN",
-          "name": "COINBASE GLOBAL INC -CLASS A",
-          "cusip": "19260Q107",
-          "shares": 1591976,
-          "value": 264459053.12,
-          "weight": 4.43,
-          "weight_rank": 4,
-          "share_price": 166.12
+          "share_price": 46.54
         },
         {
           "ticker": "SPCX",
           "name": "SPACE EXPLORATION TECHN-CL A",
           "cusip": "84615Q103",
-          "shares": 2283829,
-          "value": 263234130.54,
-          "weight": 4.41,
+          "shares": 2312909,
+          "value": 266146438.63,
+          "weight": 4.68,
+          "weight_rank": 4,
+          "share_price": 115.07
+        },
+        {
+          "ticker": "COIN",
+          "name": "COINBASE GLOBAL INC -CLASS A",
+          "cusip": "19260Q107",
+          "shares": 1612264,
+          "value": 255205268.56,
+          "weight": 4.48,
           "weight_rank": 5,
-          "share_price": 115.26
-        },
-        {
-          "ticker": "HOOD",
-          "name": "ROBINHOOD MARKETS INC - A",
-          "cusip": "770700102",
-          "shares": 2493785,
-          "value": 260550656.8,
-          "weight": 4.36,
-          "weight_rank": 6,
-          "share_price": 104.48
-        },
-        {
-          "ticker": "AMD",
-          "name": "ADVANCED MICRO DEVICES",
-          "cusip": "007903107",
-          "shares": 467451,
-          "value": 258187210.83,
-          "weight": 4.32,
-          "weight_rank": 7,
-          "share_price": 552.33
+          "share_price": 158.29
         },
         {
           "ticker": "SHOP",
           "name": "SHOPIFY INC - CLASS A",
           "cusip": "82509L107",
-          "shares": 2178616,
-          "value": 257991706.72,
-          "weight": 4.32,
+          "shares": 2206356,
+          "value": 250972995.0,
+          "weight": 4.41,
+          "weight_rank": 6,
+          "share_price": 113.75
+        },
+        {
+          "ticker": "AMD",
+          "name": "ADVANCED MICRO DEVICES",
+          "cusip": "007903107",
+          "shares": 473391,
+          "value": 247086432.45,
+          "weight": 4.34,
+          "weight_rank": 7,
+          "share_price": 521.95
+        },
+        {
+          "ticker": "HOOD",
+          "name": "ROBINHOOD MARKETS INC - A",
+          "cusip": "770700102",
+          "shares": 2433657,
+          "value": 230978385.87,
+          "weight": 4.06,
           "weight_rank": 8,
-          "share_price": 118.42
+          "share_price": 94.91
         },
         {
           "ticker": "CRCL",
           "name": "CIRCLE INTERNET GROUP INC",
           "cusip": "172573107",
-          "shares": 3312666,
-          "value": 219165982.56,
-          "weight": 3.67,
+          "shares": 3448878,
+          "value": 215072032.08,
+          "weight": 3.78,
           "weight_rank": 9,
-          "share_price": 66.16
+          "share_price": 62.36
         },
         {
           "ticker": "TXG",
           "name": "10X GENOMICS INC-CLASS A",
           "cusip": "88025U109",
-          "shares": 4256599,
-          "value": 200272982.95,
-          "weight": 3.35,
+          "shares": 4155478,
+          "value": 192273967.06,
+          "weight": 3.38,
           "weight_rank": 10,
-          "share_price": 47.05
+          "share_price": 46.27
         },
         {
           "ticker": "TWST",
           "name": "TWIST BIOSCIENCE CORP",
           "cusip": "90184D100",
-          "shares": 2119102,
-          "value": 199640599.42,
-          "weight": 3.34,
+          "shares": 2099557,
+          "value": 189527010.39,
+          "weight": 3.33,
           "weight_rank": 11,
-          "share_price": 94.21
+          "share_price": 90.27
         },
         {
           "ticker": "RBLX",
           "name": "ROBLOX CORP -CLASS A",
           "cusip": "771049103",
-          "shares": 3846669,
-          "value": 190948649.16,
-          "weight": 3.2,
+          "shares": 3895669,
+          "value": 185239060.95,
+          "weight": 3.26,
           "weight_rank": 12,
-          "share_price": 49.64
+          "share_price": 47.55
         },
         {
           "ticker": "PLTR",
           "name": "PALANTIR TECHNOLOGIES INC-A",
           "cusip": "69608A108",
-          "shares": 1414117,
-          "value": 176156554.69,
-          "weight": 2.95,
+          "shares": 1432117,
+          "value": 176035821.64,
+          "weight": 3.09,
           "weight_rank": 13,
-          "share_price": 124.57
+          "share_price": 122.92
         },
         {
           "ticker": null,
@@ -140,7 +140,7 @@
           "cusip": "PPOPENAIC",
           "shares": 254476,
           "value": 174999811.56,
-          "weight": 2.93,
+          "weight": 3.08,
           "weight_rank": 14,
           "share_price": 687.69
         },
@@ -148,724 +148,724 @@
           "ticker": "BEAM",
           "name": "BEAM THERAPEUTICS INC",
           "cusip": "07373V105",
-          "shares": 6106293,
-          "value": 162671645.52,
-          "weight": 2.72,
+          "shares": 6184073,
+          "value": 155220232.3,
+          "weight": 2.73,
           "weight_rank": 15,
-          "share_price": 26.64
+          "share_price": 25.1
         },
         {
           "ticker": "AMZN",
           "name": "AMAZON.COM INC",
           "cusip": "023135106",
-          "shares": 621722,
-          "value": 152228631.7,
-          "weight": 2.55,
+          "shares": 629642,
+          "value": 146146204.62,
+          "weight": 2.57,
           "weight_rank": 16,
-          "share_price": 244.85
+          "share_price": 232.11
         },
         {
           "ticker": "CRWV",
           "name": "COREWEAVE INC-CL A",
           "cusip": "21873S108",
-          "shares": 1641811,
-          "value": 135679261.04,
-          "weight": 2.27,
+          "shares": 1662711,
+          "value": 119515666.68,
+          "weight": 2.1,
           "weight_rank": 17,
-          "share_price": 82.64
-        },
-        {
-          "ticker": "NTLA",
-          "name": "INTELLIA THERAPEUTICS INC",
-          "cusip": "45826J105",
-          "shares": 10680760,
-          "value": 118876858.8,
-          "weight": 1.99,
-          "weight_rank": 18,
-          "share_price": 11.13
+          "share_price": 71.88
         },
         {
           "ticker": "XYZ",
           "name": "BLOCK INC",
           "cusip": "852234103",
-          "shares": 1508610,
-          "value": 116856930.6,
-          "weight": 1.96,
+          "shares": 1527810,
+          "value": 117870541.5,
+          "weight": 2.07,
+          "weight_rank": 18,
+          "share_price": 77.15
+        },
+        {
+          "ticker": "NTLA",
+          "name": "INTELLIA THERAPEUTICS INC",
+          "cusip": "45826J105",
+          "shares": 10423200,
+          "value": 111840936.0,
+          "weight": 1.97,
           "weight_rank": 19,
-          "share_price": 77.46
+          "share_price": 10.73
         },
         {
           "ticker": "GOOG",
           "name": "ALPHABET INC-CL C",
           "cusip": "02079K107",
-          "shares": 333822,
-          "value": 114137080.02,
-          "weight": 1.91,
+          "shares": 338062,
+          "value": 107872203.58,
+          "weight": 1.9,
           "weight_rank": 20,
-          "share_price": 341.91
-        },
-        {
-          "ticker": "CBRS",
-          "name": "CEREBRAS SYSTEMS INC - A",
-          "cusip": "15675D103",
-          "shares": 502959,
-          "value": 105520798.2,
-          "weight": 1.77,
-          "weight_rank": 21,
-          "share_price": 209.8
-        },
-        {
-          "ticker": "NVDA",
-          "name": "NVIDIA CORP",
-          "cusip": "67066G104",
-          "shares": 497725,
-          "value": 105547563.5,
-          "weight": 1.77,
-          "weight_rank": 22,
-          "share_price": 212.06
+          "share_price": 319.09
         },
         {
           "ticker": "BLSH",
           "name": "BULLISH",
           "cusip": "G16910120",
-          "shares": 4292723,
-          "value": 101565826.18,
-          "weight": 1.7,
+          "shares": 4347403,
+          "value": 104163775.88,
+          "weight": 1.83,
+          "weight_rank": 21,
+          "share_price": 23.96
+        },
+        {
+          "ticker": "NVDA",
+          "name": "NVIDIA CORP",
+          "cusip": "67066G104",
+          "shares": 504065,
+          "value": 104260804.6,
+          "weight": 1.83,
+          "weight_rank": 22,
+          "share_price": 206.84
+        },
+        {
+          "ticker": "CBRS",
+          "name": "CEREBRAS SYSTEMS INC - A",
+          "cusip": "15675D103",
+          "shares": 509359,
+          "value": 101423564.08,
+          "weight": 1.78,
           "weight_rank": 23,
-          "share_price": 23.66
+          "share_price": 199.12
         },
         {
           "ticker": "BMNR",
           "name": "BITMINE IMMERSION TECHNOLOGI",
           "cusip": "09175A206",
-          "shares": 5526565,
-          "value": 98041263.1,
-          "weight": 1.64,
+          "shares": 5602229,
+          "value": 88459195.91,
+          "weight": 1.55,
           "weight_rank": 24,
-          "share_price": 17.74
+          "share_price": 15.79
         },
         {
           "ticker": "META",
           "name": "META PLATFORMS INC-CLASS A",
           "cusip": "30303M102",
-          "shares": 140449,
-          "value": 88085399.33,
-          "weight": 1.47,
+          "shares": 142229,
+          "value": 84653278.51,
+          "weight": 1.49,
           "weight_rank": 25,
-          "share_price": 627.17
+          "share_price": 595.19
         },
         {
           "ticker": "ILMN",
           "name": "ILLUMINA INC",
           "cusip": "452327109",
-          "shares": 398997,
-          "value": 76156557.39,
-          "weight": 1.27,
+          "shares": 404077,
+          "value": 78427304.93,
+          "weight": 1.38,
           "weight_rank": 26,
-          "share_price": 190.87
-        },
-        {
-          "ticker": "ACHR",
-          "name": "ARCHER AVIATION INC-A",
-          "cusip": "03945R102",
-          "shares": 14117309,
-          "value": 73127660.62,
-          "weight": 1.22,
-          "weight_rank": 27,
-          "share_price": 5.18
-        },
-        {
-          "ticker": "XE",
-          "name": "X-ENERGY INC",
-          "cusip": "98386P102",
-          "shares": 4367760,
-          "value": 71849652.0,
-          "weight": 1.2,
-          "weight_rank": 28,
-          "share_price": 16.45
-        },
-        {
-          "ticker": "AVGO",
-          "name": "BROADCOM INC",
-          "cusip": "11135F101",
-          "shares": 178455,
-          "value": 70812728.55,
-          "weight": 1.19,
-          "weight_rank": 29,
-          "share_price": 396.81
+          "share_price": 194.09
         },
         {
           "ticker": "NTRA",
           "name": "NATERA INC",
           "cusip": "632307104",
-          "shares": 269620,
-          "value": 71238996.4,
-          "weight": 1.19,
+          "shares": 273040,
+          "value": 71533749.6,
+          "weight": 1.26,
+          "weight_rank": 27,
+          "share_price": 261.99
+        },
+        {
+          "ticker": "AVGO",
+          "name": "BROADCOM INC",
+          "cusip": "11135F101",
+          "shares": 180715,
+          "value": 69018672.8,
+          "weight": 1.21,
+          "weight_rank": 28,
+          "share_price": 381.92
+        },
+        {
+          "ticker": "ACHR",
+          "name": "ARCHER AVIATION INC-A",
+          "cusip": "03945R102",
+          "shares": 14297129,
+          "value": 68197305.33,
+          "weight": 1.2,
+          "weight_rank": 29,
+          "share_price": 4.77
+        },
+        {
+          "ticker": "XE",
+          "name": "X-ENERGY INC",
+          "cusip": "98386P102",
+          "shares": 4513943,
+          "value": 65723010.08,
+          "weight": 1.15,
           "weight_rank": 30,
-          "share_price": 264.22
+          "share_price": 14.56
         },
         {
           "ticker": "DE",
           "name": "DEERE & CO",
           "cusip": "244199105",
-          "shares": 105844,
-          "value": 64282236.52,
-          "weight": 1.08,
+          "shares": 102352,
+          "value": 64293432.32,
+          "weight": 1.13,
           "weight_rank": 31,
-          "share_price": 607.33
+          "share_price": 628.16
         },
         {
           "ticker": "KTOS",
           "name": "KRATOS DEFENSE & SECURITY",
           "cusip": "50077B207",
-          "shares": 1269053,
-          "value": 60774948.17,
-          "weight": 1.02,
+          "shares": 1285213,
+          "value": 60854835.55,
+          "weight": 1.07,
           "weight_rank": 32,
-          "share_price": 47.89
+          "share_price": 47.35
         },
         {
           "ticker": "RXRX",
           "name": "RECURSION PHARMACEUTICALS-A",
           "cusip": "75629V104",
-          "shares": 20346279,
-          "value": 60631911.42,
-          "weight": 1.02,
+          "shares": 20605459,
+          "value": 60992158.64,
+          "weight": 1.07,
           "weight_rank": 33,
-          "share_price": 2.98
+          "share_price": 2.96
         },
         {
           "ticker": "VCYT",
           "name": "VERACYTE INC",
           "cusip": "92337F107",
-          "shares": 1051367,
-          "value": 60989799.67,
-          "weight": 1.02,
+          "shares": 1064747,
+          "value": 60275327.67,
+          "weight": 1.06,
           "weight_rank": 34,
-          "share_price": 58.01
+          "share_price": 56.61
         },
         {
           "ticker": "TSM",
           "name": "TAIWAN SEMICONDUCTOR-SP ADR",
           "cusip": "874039100",
-          "shares": 134334,
-          "value": 56582824.14,
-          "weight": 0.95,
+          "shares": 136034,
+          "value": 54877475.94,
+          "weight": 0.96,
           "weight_rank": 35,
-          "share_price": 421.21
+          "share_price": 403.41
         },
         {
           "ticker": "WGS",
           "name": "GENEDX HOLDINGS CORP",
           "cusip": "81663L200",
-          "shares": 880527,
-          "value": 55120990.2,
-          "weight": 0.92,
+          "shares": 891727,
+          "value": 52701065.7,
+          "weight": 0.93,
           "weight_rank": 36,
-          "share_price": 62.6
+          "share_price": 59.1
         },
         {
           "ticker": "TER",
           "name": "TERADYNE INC",
           "cusip": "880770102",
-          "shares": 146607,
-          "value": 54165422.22,
+          "shares": 148467,
+          "value": 51951572.64,
           "weight": 0.91,
           "weight_rank": 37,
-          "share_price": 369.46
+          "share_price": 349.92
         },
         {
           "ticker": "BWXT",
           "name": "BWX TECHNOLOGIES INC",
           "cusip": "05605H100",
-          "shares": 257129,
-          "value": 45041286.93,
-          "weight": 0.75,
+          "shares": 260389,
+          "value": 45443088.28,
+          "weight": 0.8,
           "weight_rank": 38,
-          "share_price": 175.17
-        },
-        {
-          "ticker": "SOFI",
-          "name": "SOFI TECHNOLOGIES INC",
-          "cusip": "83406F102",
-          "shares": 2240971,
-          "value": 38253374.97,
-          "weight": 0.64,
-          "weight_rank": 39,
-          "share_price": 17.07
+          "share_price": 174.52
         },
         {
           "ticker": "SNOW",
           "name": "SNOWFLAKE INC",
           "cusip": "833445109",
-          "shares": 141558,
-          "value": 37909232.4,
-          "weight": 0.63,
+          "shares": 143358,
+          "value": 38428545.48,
+          "weight": 0.68,
+          "weight_rank": 39,
+          "share_price": 268.06
+        },
+        {
+          "ticker": "SOFI",
+          "name": "SOFI TECHNOLOGIES INC",
+          "cusip": "83406F102",
+          "shares": 2269511,
+          "value": 37356151.06,
+          "weight": 0.66,
           "weight_rank": 40,
-          "share_price": 267.8
+          "share_price": 16.46
         },
         {
           "ticker": "LLY",
           "name": "ELI LILLY & CO",
           "cusip": "532457108",
-          "shares": 28542,
-          "value": 33194631.42,
-          "weight": 0.56,
+          "shares": 28902,
+          "value": 34567659.06,
+          "weight": 0.61,
           "weight_rank": 41,
-          "share_price": 1163.01
-        },
-        {
-          "ticker": "FIG",
-          "name": "FIGMA INC-CL A",
-          "cusip": "316841105",
-          "shares": 1523078,
-          "value": 32700484.66,
-          "weight": 0.55,
-          "weight_rank": 42,
-          "share_price": 21.47
+          "share_price": 1196.03
         },
         {
           "ticker": "GOOGL",
           "name": "ALPHABET INC-CL A",
           "cusip": "02079K305",
-          "shares": 86350,
-          "value": 29539471.5,
+          "shares": 87458,
+          "value": 27963820.92,
           "weight": 0.49,
-          "weight_rank": 43,
-          "share_price": 342.09
+          "weight_rank": 42,
+          "share_price": 319.74
         },
         {
           "ticker": "CERS",
           "name": "CERUS CORP",
           "cusip": "157085101",
-          "shares": 8321670,
-          "value": 25131443.4,
-          "weight": 0.42,
-          "weight_rank": 44,
-          "share_price": 3.02
+          "shares": 8427670,
+          "value": 24693073.1,
+          "weight": 0.43,
+          "weight_rank": 43,
+          "share_price": 2.93
         },
         {
           "ticker": "PACB",
           "name": "PACIFIC BIOSCIENCES OF CALIF",
           "cusip": "69404D108",
-          "shares": 12867750,
-          "value": 17757495.0,
-          "weight": 0.3,
-          "weight_rank": 45,
-          "share_price": 1.38
+          "shares": 13031670,
+          "value": 17723071.2,
+          "weight": 0.31,
+          "weight_rank": 44,
+          "share_price": 1.36
         },
         {
           "ticker": null,
           "name": "GOLDMAN FS TRSY OBLIG INST 468",
           "cusip": "X9USDGSFT",
-          "shares": 11471764,
-          "value": 11471764.3,
-          "weight": 0.19,
-          "weight_rank": 46,
+          "shares": 2616250,
+          "value": 2616250.01,
+          "weight": 0.05,
+          "weight_rank": 45,
           "share_price": 1.0
         },
         {
           "ticker": null,
           "name": "BRERA HOLDINGS PLC-CL B",
           "cusip": "G13311132",
-          "shares": 360629,
-          "value": 1821176.45,
-          "weight": 0.03,
+          "shares": 341931,
+          "value": 1323272.97,
+          "weight": 0.02,
+          "weight_rank": 46,
+          "share_price": 3.87
+        },
+        {
+          "ticker": "FIG",
+          "name": "FIGMA INC-CL A",
+          "cusip": "316841105",
+          "shares": 40588,
+          "value": 857218.56,
+          "weight": 0.02,
           "weight_rank": 47,
-          "share_price": 5.05
+          "share_price": 21.12
         },
         {
           "ticker": null,
           "name": "BRERA HOLDINGS PLC WTS",
           "cusip": "BREADUMMY",
           "shares": 431626,
-          "value": 1122226.82,
-          "weight": 0.02,
+          "value": 798507.55,
+          "weight": 0.01,
           "weight_rank": 48,
-          "share_price": 2.6
+          "share_price": 1.85
         }
       ]
     },
     "ARKQ": {
-      "as_of": "2026-07-23",
+      "as_of": "2026-07-27",
       "holdings": [
         {
           "ticker": "TSLA",
           "name": "TESLA INC",
           "cusip": "88160R101",
-          "shares": 547167,
-          "value": 204645929.67,
-          "weight": 10.42,
+          "shares": 577563,
+          "value": 180794545.89,
+          "weight": 9.63,
           "weight_rank": 1,
-          "share_price": 374.01
+          "share_price": 313.03
         },
         {
           "ticker": "AMD",
           "name": "ADVANCED MICRO DEVICES",
           "cusip": "007903107",
           "shares": 244603,
-          "value": 135101574.99,
-          "weight": 6.88,
+          "value": 127670535.85,
+          "weight": 6.8,
           "weight_rank": 2,
-          "share_price": 552.33
+          "share_price": 521.95
         },
         {
           "ticker": "TER",
           "name": "TERADYNE INC",
           "cusip": "880770102",
           "shares": 341573,
-          "value": 126197560.58,
-          "weight": 6.42,
+          "value": 119523224.16,
+          "weight": 6.37,
           "weight_rank": 3,
-          "share_price": 369.46
+          "share_price": 349.92
         },
         {
           "ticker": "SPCX",
           "name": "SPACE EXPLORATION TECHN-CL A",
           "cusip": "84615Q103",
           "shares": 962670,
-          "value": 110957344.2,
-          "weight": 5.65,
+          "value": 110774436.9,
+          "weight": 5.9,
           "weight_rank": 4,
-          "share_price": 115.26
+          "share_price": 115.07
         },
         {
           "ticker": "KTOS",
           "name": "KRATOS DEFENSE & SECURITY",
           "cusip": "50077B207",
           "shares": 2297297,
-          "value": 110017553.33,
-          "weight": 5.6,
+          "value": 108777012.95,
+          "weight": 5.8,
           "weight_rank": 5,
-          "share_price": 47.89
+          "share_price": 47.35
         },
         {
           "ticker": "GOOG",
           "name": "ALPHABET INC-CL C",
           "cusip": "02079K107",
           "shares": 273177,
-          "value": 93401948.07,
-          "weight": 4.75,
+          "value": 87168048.93,
+          "weight": 4.64,
           "weight_rank": 6,
-          "share_price": 341.91
-        },
-        {
-          "ticker": "DE",
-          "name": "DEERE & CO",
-          "cusip": "244199105",
-          "shares": 120856,
-          "value": 73399474.48,
-          "weight": 3.74,
-          "weight_rank": 7,
-          "share_price": 607.33
+          "share_price": 319.09
         },
         {
           "ticker": "PLTR",
           "name": "PALANTIR TECHNOLOGIES INC-A",
           "cusip": "69608A108",
           "shares": 580779,
-          "value": 72347640.03,
-          "weight": 3.68,
+          "value": 71389354.68,
+          "weight": 3.8,
+          "weight_rank": 7,
+          "share_price": 122.92
+        },
+        {
+          "ticker": "DE",
+          "name": "DEERE & CO",
+          "cusip": "244199105",
+          "shares": 113035,
+          "value": 71004065.6,
+          "weight": 3.78,
           "weight_rank": 8,
-          "share_price": 124.57
+          "share_price": 628.16
         },
         {
           "ticker": "TSM",
           "name": "TAIWAN SEMICONDUCTOR-SP ADR",
           "cusip": "874039100",
           "shares": 161886,
-          "value": 68188002.06,
-          "weight": 3.47,
+          "value": 65306431.26,
+          "weight": 3.48,
           "weight_rank": 9,
-          "share_price": 421.21
-        },
-        {
-          "ticker": "RKLB UQ",
-          "name": "ROCKET LAB",
-          "cusip": "773121108",
-          "shares": 934420,
-          "value": 65175795.0,
-          "weight": 3.32,
-          "weight_rank": 10,
-          "share_price": 69.75
-        },
-        {
-          "ticker": "AMZN",
-          "name": "AMAZON.COM INC",
-          "cusip": "023135106",
-          "shares": 264229,
-          "value": 64696470.65,
-          "weight": 3.29,
-          "weight_rank": 11,
-          "share_price": 244.85
-        },
-        {
-          "ticker": "NVDA",
-          "name": "NVIDIA CORP",
-          "cusip": "67066G104",
-          "shares": 292957,
-          "value": 62124461.42,
-          "weight": 3.16,
-          "weight_rank": 12,
-          "share_price": 212.06
+          "share_price": 403.41
         },
         {
           "ticker": "LHX",
           "name": "L3HARRIS TECHNOLOGIES INC",
           "cusip": "502431109",
           "shares": 206376,
-          "value": 58850180.16,
-          "weight": 3.0,
+          "value": 61956138.96,
+          "weight": 3.3,
+          "weight_rank": 10,
+          "share_price": 300.21
+        },
+        {
+          "ticker": "AMZN",
+          "name": "AMAZON.COM INC",
+          "cusip": "023135106",
+          "shares": 264229,
+          "value": 61330193.19,
+          "weight": 3.27,
+          "weight_rank": 11,
+          "share_price": 232.11
+        },
+        {
+          "ticker": "NVDA",
+          "name": "NVIDIA CORP",
+          "cusip": "67066G104",
+          "shares": 292957,
+          "value": 60595225.88,
+          "weight": 3.23,
+          "weight_rank": 12,
+          "share_price": 206.84
+        },
+        {
+          "ticker": "RKLB UQ",
+          "name": "ROCKET LAB",
+          "cusip": "773121108",
+          "shares": 934420,
+          "value": 59718782.2,
+          "weight": 3.18,
           "weight_rank": 13,
-          "share_price": 285.16
+          "share_price": 63.91
         },
         {
           "ticker": "AVAV",
           "name": "AEROVIRONMENT INC",
           "cusip": "008073108",
           "shares": 345543,
-          "value": 51952390.05,
-          "weight": 2.64,
+          "value": 51662133.93,
+          "weight": 2.75,
           "weight_rank": 14,
-          "share_price": 150.35
+          "share_price": 149.51
         },
         {
           "ticker": "ACHR",
           "name": "ARCHER AVIATION INC-A",
           "cusip": "03945R102",
           "shares": 9384690,
-          "value": 48612694.2,
-          "weight": 2.47,
+          "value": 44764971.3,
+          "weight": 2.39,
           "weight_rank": 15,
-          "share_price": 5.18
+          "share_price": 4.77
         },
         {
           "ticker": "CAT",
           "name": "CATERPILLAR INC",
           "cusip": "149123101",
-          "shares": 53013,
-          "value": 47144991.03,
-          "weight": 2.4,
+          "shares": 47691,
+          "value": 42384422.43,
+          "weight": 2.26,
           "weight_rank": 16,
-          "share_price": 889.31
+          "share_price": 888.73
         },
         {
           "ticker": "TRMB",
           "name": "TRIMBLE INC",
           "cusip": "896239100",
           "shares": 750638,
-          "value": 37606963.8,
-          "weight": 1.91,
+          "value": 39716256.58,
+          "weight": 2.12,
           "weight_rank": 17,
-          "share_price": 50.1
+          "share_price": 52.91
         },
         {
           "ticker": "KMTUY",
           "name": "KOMATSU LTD -SPONS ADR",
           "cusip": "500458401",
           "shares": 914185,
-          "value": 36092023.8,
-          "weight": 1.84,
+          "value": 37234755.05,
+          "weight": 1.98,
           "weight_rank": 18,
-          "share_price": 39.48
-        },
-        {
-          "ticker": "AUR",
-          "name": "AURORA INNOVATION INC",
-          "cusip": "051774107",
-          "shares": 5332896,
-          "value": 35250442.56,
-          "weight": 1.79,
-          "weight_rank": 19,
-          "share_price": 6.61
-        },
-        {
-          "ticker": "AVGO",
-          "name": "BROADCOM INC",
-          "cusip": "11135F101",
-          "shares": 83724,
-          "value": 33222520.44,
-          "weight": 1.69,
-          "weight_rank": 20,
-          "share_price": 396.81
+          "share_price": 40.73
         },
         {
           "ticker": "ESLT",
           "name": "ELBIT SYSTEMS LTD",
           "cusip": "M3760D101",
           "shares": 40413,
-          "value": 32034980.97,
-          "weight": 1.63,
+          "value": 33147146.73,
+          "weight": 1.77,
+          "weight_rank": 19,
+          "share_price": 820.21
+        },
+        {
+          "ticker": "AVGO",
+          "name": "BROADCOM INC",
+          "cusip": "11135F101",
+          "shares": 83724,
+          "value": 31975870.08,
+          "weight": 1.7,
+          "weight_rank": 20,
+          "share_price": 381.92
+        },
+        {
+          "ticker": "AUR",
+          "name": "AURORA INNOVATION INC",
+          "cusip": "051774107",
+          "shares": 5332896,
+          "value": 31730731.2,
+          "weight": 1.69,
           "weight_rank": 21,
-          "share_price": 792.69
+          "share_price": 5.95
         },
         {
           "ticker": "BWXT",
           "name": "BWX TECHNOLOGIES INC",
           "cusip": "05605H100",
           "shares": 175283,
-          "value": 30704323.11,
-          "weight": 1.56,
+          "value": 30590389.16,
+          "weight": 1.63,
           "weight_rank": 22,
-          "share_price": 175.17
+          "share_price": 174.52
         },
         {
           "ticker": "CCJ",
           "name": "CAMECO CORP",
           "cusip": "13321L108",
           "shares": 334377,
-          "value": 30217649.49,
-          "weight": 1.54,
+          "value": 29378363.22,
+          "weight": 1.57,
           "weight_rank": 23,
-          "share_price": 90.37
+          "share_price": 87.86
         },
         {
           "ticker": "SYM UQ",
           "name": "SYMBOTIC INC",
           "cusip": "87151X101",
           "shares": 675926,
-          "value": 28699817.96,
-          "weight": 1.46,
+          "value": 27138428.9,
+          "weight": 1.45,
           "weight_rank": 24,
-          "share_price": 42.46
+          "share_price": 40.15
         },
         {
           "ticker": "DASH",
           "name": "DOORDASH INC - A",
           "cusip": "25809K105",
           "shares": 146503,
-          "value": 26037978.19,
-          "weight": 1.33,
+          "value": 25331833.73,
+          "weight": 1.35,
           "weight_rank": 25,
-          "share_price": 177.73
+          "share_price": 172.91
         },
         {
           "ticker": "JOBY",
           "name": "JOBY AVIATION INC",
           "cusip": "G65163100",
           "shares": 3412522,
-          "value": 26037542.86,
-          "weight": 1.33,
-          "weight_rank": 26,
-          "share_price": 7.63
-        },
-        {
-          "ticker": "LUNR",
-          "name": "INTUITIVE MACHINES INC",
-          "cusip": "46125A100",
-          "shares": 1756836,
-          "value": 24753819.24,
+          "value": 23648777.46,
           "weight": 1.26,
-          "weight_rank": 27,
-          "share_price": 14.09
+          "weight_rank": 26,
+          "share_price": 6.93
         },
         {
           "ticker": "ISRG",
           "name": "INTUITIVE SURGICAL INC",
           "cusip": "46120E602",
           "shares": 69276,
-          "value": 23601640.44,
-          "weight": 1.2,
-          "weight_rank": 28,
-          "share_price": 340.69
-        },
-        {
-          "ticker": "XE",
-          "name": "X-ENERGY INC",
-          "cusip": "98386P102",
-          "shares": 1418937,
-          "value": 23341513.65,
-          "weight": 1.19,
-          "weight_rank": 29,
-          "share_price": 16.45
+          "value": 23380650.0,
+          "weight": 1.25,
+          "weight_rank": 27,
+          "share_price": 337.5
         },
         {
           "ticker": "TDY",
           "name": "TELEDYNE TECHNOLOGIES INC",
           "cusip": "879360105",
           "shares": 34917,
-          "value": 22713508.5,
-          "weight": 1.16,
-          "weight_rank": 30,
-          "share_price": 650.5
+          "value": 22882855.95,
+          "weight": 1.22,
+          "weight_rank": 28,
+          "share_price": 655.35
         },
         {
-          "ticker": "WRD",
-          "name": "WERIDE INC-ADR",
-          "cusip": "950915108",
-          "shares": 3663790,
-          "value": 21213344.1,
-          "weight": 1.08,
-          "weight_rank": 31,
-          "share_price": 5.79
+          "ticker": "LUNR",
+          "name": "INTUITIVE MACHINES INC",
+          "cusip": "46125A100",
+          "shares": 1756836,
+          "value": 22698321.12,
+          "weight": 1.21,
+          "weight_rank": 29,
+          "share_price": 12.92
+        },
+        {
+          "ticker": "XE",
+          "name": "X-ENERGY INC",
+          "cusip": "98386P102",
+          "shares": 1449098,
+          "value": 21098866.88,
+          "weight": 1.12,
+          "weight_rank": 30,
+          "share_price": 14.56
         },
         {
           "ticker": "BIDU",
           "name": "BAIDU INC - SPON ADR",
           "cusip": "056752108",
           "shares": 194424,
-          "value": 20904468.48,
-          "weight": 1.06,
-          "weight_rank": 32,
-          "share_price": 107.52
-        },
-        {
-          "ticker": "OKLO",
-          "name": "OKLO INC",
-          "cusip": "02156V109",
-          "shares": 466931,
-          "value": 20778429.5,
-          "weight": 1.06,
-          "weight_rank": 33,
-          "share_price": 44.5
+          "value": 20480624.16,
+          "weight": 1.09,
+          "weight_rank": 31,
+          "share_price": 105.34
         },
         {
           "ticker": "PONY",
           "name": "PONY AI INC",
           "cusip": "732908108",
-          "shares": 2802478,
-          "value": 19140924.74,
-          "weight": 0.97,
-          "weight_rank": 34,
-          "share_price": 6.83
+          "shares": 2843282,
+          "value": 20272600.66,
+          "weight": 1.08,
+          "weight_rank": 32,
+          "share_price": 7.13
+        },
+        {
+          "ticker": "WRD",
+          "name": "WERIDE INC-ADR",
+          "cusip": "950915108",
+          "shares": 3760120,
+          "value": 20003838.4,
+          "weight": 1.07,
+          "weight_rank": 33,
+          "share_price": 5.32
         },
         {
           "ticker": "BYDDY",
           "name": "BYD CO LTD-UNSPONSORED ADR",
           "cusip": "05606L100",
           "shares": 1695571,
-          "value": 18888660.94,
-          "weight": 0.96,
+          "value": 18854749.52,
+          "weight": 1.0,
+          "weight_rank": 34,
+          "share_price": 11.12
+        },
+        {
+          "ticker": "OKLO",
+          "name": "OKLO INC",
+          "cusip": "02156V109",
+          "shares": 466931,
+          "value": 18793972.75,
+          "weight": 1.0,
           "weight_rank": 35,
-          "share_price": 11.14
+          "share_price": 40.25
         },
         {
           "ticker": "SNPS",
           "name": "SYNOPSYS INC",
           "cusip": "871607107",
           "shares": 45021,
-          "value": 17000379.81,
-          "weight": 0.87,
+          "value": 16813992.87,
+          "weight": 0.9,
           "weight_rank": 36,
-          "share_price": 377.61
+          "share_price": 373.47
         },
         {
           "ticker": "KDK",
           "name": "KODIAK AI INC",
           "cusip": "500081104",
-          "shares": 3784387,
-          "value": 16802678.28,
+          "shares": 3908749,
+          "value": 16221308.35,
           "weight": 0.86,
           "weight_rank": 37,
-          "share_price": 4.44
+          "share_price": 4.15
         },
         {
           "ticker": null,
           "name": "GOLDMAN FS TRSY OBLIG INST 468",
           "cusip": "X9USDGSFT",
-          "shares": 9560932,
-          "value": 9560932.08,
-          "weight": 0.49,
+          "shares": 7054770,
+          "value": 7054770.2,
+          "weight": 0.38,
           "weight_rank": 38,
           "share_price": 1.0
         },
@@ -873,206 +873,206 @@
           "ticker": "IRDM",
           "name": "IRIDIUM COMMUNICATIONS INC",
           "cusip": "46269C102",
-          "shares": 195733,
-          "value": 9172048.38,
-          "weight": 0.47,
+          "shares": 145551,
+          "value": 6663324.78,
+          "weight": 0.36,
           "weight_rank": 39,
-          "share_price": 46.86
+          "share_price": 45.78
         },
         {
           "ticker": "GOOGL",
           "name": "ALPHABET INC-CL A",
           "cusip": "02079K305",
           "shares": 16120,
-          "value": 5514490.8,
-          "weight": 0.28,
+          "value": 5154208.8,
+          "weight": 0.27,
           "weight_rank": 40,
-          "share_price": 342.09
+          "share_price": 319.74
         },
         {
           "ticker": "SRTA",
           "name": "STRATA CRITICAL MEDICAL INC",
           "cusip": "092667104",
-          "shares": 535039,
-          "value": 2717998.12,
-          "weight": 0.14,
+          "shares": 361477,
+          "value": 1821844.08,
+          "weight": 0.1,
           "weight_rank": 41,
-          "share_price": 5.08
+          "share_price": 5.04
         }
       ]
     },
     "ARKW": {
-      "as_of": "2026-07-23",
+      "as_of": "2026-07-27",
       "holdings": [
         {
           "ticker": "AMD",
           "name": "ADVANCED MICRO DEVICES",
           "cusip": "007903107",
-          "shares": 254216,
-          "value": 140411123.28,
-          "weight": 8.23,
+          "shares": 253148,
+          "value": 132130598.6,
+          "weight": 8.17,
           "weight_rank": 1,
-          "share_price": 552.33
+          "share_price": 521.95
         },
         {
           "ticker": "TSLA",
           "name": "TESLA INC",
           "cusip": "88160R101",
-          "shares": 364411,
-          "value": 136293358.11,
-          "weight": 7.99,
+          "shares": 383840,
+          "value": 120153435.2,
+          "weight": 7.43,
           "weight_rank": 2,
-          "share_price": 374.01
+          "share_price": 313.03
         },
         {
           "ticker": "HOOD",
           "name": "ROBINHOOD MARKETS INC - A",
           "cusip": "770700102",
-          "shares": 910137,
-          "value": 95091113.76,
-          "weight": 5.57,
+          "shares": 865931,
+          "value": 82185511.21,
+          "weight": 5.08,
           "weight_rank": 3,
-          "share_price": 104.48
+          "share_price": 94.91
         },
         {
           "ticker": null,
           "name": "ARK BITCOIN ETF HOLDCO (ARKW)",
           "cusip": "MM0051EWE",
           "shares": 3775474,
-          "value": 82531484.09,
-          "weight": 4.84,
+          "value": 80341709.17,
+          "weight": 4.97,
           "weight_rank": 4,
-          "share_price": 21.86
+          "share_price": 21.28
         },
         {
           "ticker": "SHOP",
           "name": "SHOPIFY INC - CLASS A",
           "cusip": "82509L107",
-          "shares": 634085,
-          "value": 75088345.7,
-          "weight": 4.4,
+          "shares": 631421,
+          "value": 71824138.75,
+          "weight": 4.44,
           "weight_rank": 5,
-          "share_price": 118.42
+          "share_price": 113.75
         },
         {
           "ticker": "AMZN",
           "name": "AMAZON.COM INC",
           "cusip": "023135106",
-          "shares": 265890,
-          "value": 65103166.5,
-          "weight": 3.81,
+          "shares": 264773,
+          "value": 61456461.03,
+          "weight": 3.8,
           "weight_rank": 6,
-          "share_price": 244.85
-        },
-        {
-          "ticker": "GOOG",
-          "name": "ALPHABET INC-CL C",
-          "cusip": "02079K107",
-          "shares": 185493,
-          "value": 63421911.63,
-          "weight": 3.72,
-          "weight_rank": 7,
-          "share_price": 341.91
+          "share_price": 232.11
         },
         {
           "ticker": "COIN",
           "name": "COINBASE GLOBAL INC -CLASS A",
           "cusip": "19260Q107",
-          "shares": 381193,
-          "value": 63323781.16,
+          "shares": 379592,
+          "value": 60085617.68,
           "weight": 3.71,
+          "weight_rank": 7,
+          "share_price": 158.29
+        },
+        {
+          "ticker": "GOOG",
+          "name": "ALPHABET INC-CL C",
+          "cusip": "02079K107",
+          "shares": 184714,
+          "value": 58940390.26,
+          "weight": 3.64,
           "weight_rank": 8,
-          "share_price": 166.12
+          "share_price": 319.09
         },
         {
           "ticker": "CRCL",
           "name": "CIRCLE INTERNET GROUP INC",
           "cusip": "172573107",
-          "shares": 886961,
-          "value": 58681339.76,
-          "weight": 3.44,
+          "shares": 909396,
+          "value": 56709934.56,
+          "weight": 3.51,
           "weight_rank": 9,
-          "share_price": 66.16
+          "share_price": 62.36
         },
         {
           "ticker": "XYZ",
           "name": "BLOCK INC",
           "cusip": "852234103",
-          "shares": 722271,
-          "value": 55947111.66,
-          "weight": 3.28,
+          "shares": 719237,
+          "value": 55489134.55,
+          "weight": 3.43,
           "weight_rank": 10,
-          "share_price": 77.46
+          "share_price": 77.15
         },
         {
           "ticker": "SPCX",
           "name": "SPACE EXPLORATION TECHN-CL A",
           "cusip": "84615Q103",
-          "shares": 472659,
-          "value": 54478676.34,
-          "weight": 3.19,
+          "shares": 470674,
+          "value": 54160457.18,
+          "weight": 3.35,
           "weight_rank": 11,
-          "share_price": 115.26
-        },
-        {
-          "ticker": "CRWV",
-          "name": "COREWEAVE INC-CL A",
-          "cusip": "21873S108",
-          "shares": 635076,
-          "value": 52482680.64,
-          "weight": 3.08,
-          "weight_rank": 12,
-          "share_price": 82.64
+          "share_price": 115.07
         },
         {
           "ticker": "RBLX",
           "name": "ROBLOX CORP -CLASS A",
           "cusip": "771049103",
-          "shares": 1048460,
-          "value": 52045554.4,
-          "weight": 3.05,
+          "shares": 1044055,
+          "value": 49644815.25,
+          "weight": 3.07,
+          "weight_rank": 12,
+          "share_price": 47.55
+        },
+        {
+          "ticker": "CRWV",
+          "name": "COREWEAVE INC-CL A",
+          "cusip": "21873S108",
+          "shares": 632408,
+          "value": 45457487.04,
+          "weight": 2.81,
           "weight_rank": 13,
-          "share_price": 49.64
+          "share_price": 71.88
         },
         {
           "ticker": "CRWD",
           "name": "CROWDSTRIKE HOLDINGS INC - A",
           "cusip": "22788C105",
-          "shares": 249436,
-          "value": 46998731.12,
-          "weight": 2.75,
+          "shares": 248388,
+          "value": 45524552.64,
+          "weight": 2.81,
           "weight_rank": 14,
-          "share_price": 188.42
-        },
-        {
-          "ticker": "META",
-          "name": "META PLATFORMS INC-CLASS A",
-          "cusip": "30303M102",
-          "shares": 74835,
-          "value": 46934266.95,
-          "weight": 2.75,
-          "weight_rank": 15,
-          "share_price": 627.17
+          "share_price": 183.28
         },
         {
           "ticker": "PLTR",
           "name": "PALANTIR TECHNOLOGIES INC-A",
           "cusip": "69608A108",
-          "shares": 367404,
-          "value": 45767516.28,
-          "weight": 2.68,
-          "weight_rank": 16,
-          "share_price": 124.57
+          "shares": 365861,
+          "value": 44971634.12,
+          "weight": 2.78,
+          "weight_rank": 15,
+          "share_price": 122.92
         },
         {
           "ticker": "DDOG",
           "name": "DATADOG INC - CLASS A",
           "cusip": "23804L103",
-          "shares": 181599,
-          "value": 44631586.23,
-          "weight": 2.62,
+          "shares": 180836,
+          "value": 44641174.96,
+          "weight": 2.76,
+          "weight_rank": 16,
+          "share_price": 246.86
+        },
+        {
+          "ticker": "META",
+          "name": "META PLATFORMS INC-CLASS A",
+          "cusip": "30303M102",
+          "shares": 74521,
+          "value": 44354153.99,
+          "weight": 2.74,
           "weight_rank": 17,
-          "share_price": 245.77
+          "share_price": 595.19
         },
         {
           "ticker": null,
@@ -1080,719 +1080,729 @@
           "cusip": "PPOPENAIC",
           "shares": 62528,
           "value": 42999686.48,
-          "weight": 2.52,
+          "weight": 2.66,
           "weight_rank": 18,
           "share_price": 687.69
-        },
-        {
-          "ticker": "AVGO",
-          "name": "BROADCOM INC",
-          "cusip": "11135F101",
-          "shares": 95039,
-          "value": 37712425.59,
-          "weight": 2.21,
-          "weight_rank": 19,
-          "share_price": 396.81
         },
         {
           "ticker": "NET",
           "name": "CLOUDFLARE INC - CLASS A",
           "cusip": "18915M107",
-          "shares": 139668,
-          "value": 37567898.64,
-          "weight": 2.2,
+          "shares": 139082,
+          "value": 36460346.3,
+          "weight": 2.25,
+          "weight_rank": 19,
+          "share_price": 262.15
+        },
+        {
+          "ticker": "AVGO",
+          "name": "BROADCOM INC",
+          "cusip": "11135F101",
+          "shares": 94640,
+          "value": 36144908.8,
+          "weight": 2.23,
           "weight_rank": 20,
-          "share_price": 268.98
+          "share_price": 381.92
         },
         {
           "ticker": "TSM",
           "name": "TAIWAN SEMICONDUCTOR-SP ADR",
           "cusip": "874039100",
-          "shares": 88262,
-          "value": 37176837.02,
-          "weight": 2.18,
+          "shares": 87892,
+          "value": 35456511.72,
+          "weight": 2.19,
           "weight_rank": 21,
-          "share_price": 421.21
+          "share_price": 403.41
         },
         {
           "ticker": "CBRS",
           "name": "CEREBRAS SYSTEMS INC - A",
           "cusip": "15675D103",
-          "shares": 145819,
-          "value": 30592826.2,
+          "shares": 145207,
+          "value": 28913617.84,
           "weight": 1.79,
           "weight_rank": 22,
-          "share_price": 209.8
+          "share_price": 199.12
         },
         {
           "ticker": "NVDA",
           "name": "NVIDIA CORP",
           "cusip": "67066G104",
-          "shares": 129553,
-          "value": 27473009.18,
-          "weight": 1.61,
+          "shares": 129009,
+          "value": 26684221.56,
+          "weight": 1.65,
           "weight_rank": 23,
-          "share_price": 212.06
-        },
-        {
-          "ticker": "BMNR",
-          "name": "BITMINE IMMERSION TECHNOLOGI",
-          "cusip": "09175A206",
-          "shares": 1533178,
-          "value": 27198577.72,
-          "weight": 1.59,
-          "weight_rank": 24,
-          "share_price": 17.74
+          "share_price": 206.84
         },
         {
           "ticker": "P",
           "name": "EVERPURE INC-A",
           "cusip": "74624M102",
-          "shares": 333359,
-          "value": 24861914.22,
-          "weight": 1.46,
-          "weight_rank": 25,
-          "share_price": 74.58
+          "shares": 331959,
+          "value": 24750863.04,
+          "weight": 1.53,
+          "weight_rank": 24,
+          "share_price": 74.56
         },
         {
           "ticker": "RBRK",
           "name": "RUBRIK INC-A",
           "cusip": "781154109",
-          "shares": 335636,
-          "value": 24733016.84,
-          "weight": 1.45,
+          "shares": 334226,
+          "value": 24478712.24,
+          "weight": 1.51,
+          "weight_rank": 25,
+          "share_price": 73.24
+        },
+        {
+          "ticker": "BMNR",
+          "name": "BITMINE IMMERSION TECHNOLOGI",
+          "cusip": "09175A206",
+          "shares": 1526737,
+          "value": 24107177.23,
+          "weight": 1.49,
           "weight_rank": 26,
-          "share_price": 73.69
+          "share_price": 15.79
         },
         {
           "ticker": "BLSH",
           "name": "BULLISH",
           "cusip": "G16910120",
-          "shares": 1000837,
-          "value": 23679803.42,
-          "weight": 1.39,
+          "shares": 996632,
+          "value": 23879302.72,
+          "weight": 1.48,
           "weight_rank": 27,
-          "share_price": 23.66
-        },
-        {
-          "ticker": "FIG",
-          "name": "FIGMA INC-CL A",
-          "cusip": "316841105",
-          "shares": 1016676,
-          "value": 21828033.72,
-          "weight": 1.28,
-          "weight_rank": 28,
-          "share_price": 21.47
+          "share_price": 23.96
         },
         {
           "ticker": "TOST",
           "name": "TOAST INC-CLASS A",
           "cusip": "888787108",
-          "shares": 723793,
-          "value": 21141993.53,
-          "weight": 1.24,
-          "weight_rank": 29,
-          "share_price": 29.21
+          "shares": 720752,
+          "value": 20930638.08,
+          "weight": 1.29,
+          "weight_rank": 28,
+          "share_price": 29.04
         },
         {
           "ticker": "GENI",
           "name": "GENIUS SPORTS LTD",
           "cusip": "G3934V109",
-          "shares": 3158667,
-          "value": 20120708.79,
-          "weight": 1.18,
-          "weight_rank": 30,
-          "share_price": 6.37
+          "shares": 3145396,
+          "value": 20382166.08,
+          "weight": 1.26,
+          "weight_rank": 29,
+          "share_price": 6.48
         },
         {
           "ticker": "GTLB",
           "name": "GITLAB INC-CL A",
           "cusip": "37637K108",
-          "shares": 636893,
-          "value": 19966595.55,
-          "weight": 1.17,
-          "weight_rank": 31,
-          "share_price": 31.35
+          "shares": 634217,
+          "value": 19838307.76,
+          "weight": 1.23,
+          "weight_rank": 30,
+          "share_price": 31.28
         },
         {
           "ticker": "SNOW",
           "name": "SNOWFLAKE INC",
           "cusip": "833445109",
-          "shares": 71517,
-          "value": 19152252.6,
-          "weight": 1.12,
-          "weight_rank": 32,
-          "share_price": 267.8
+          "shares": 71217,
+          "value": 19090429.02,
+          "weight": 1.18,
+          "weight_rank": 31,
+          "share_price": 268.06
         },
         {
           "ticker": "NFLX",
           "name": "NETFLIX INC",
           "cusip": "64110L106",
-          "shares": 269750,
-          "value": 18485967.5,
-          "weight": 1.08,
-          "weight_rank": 33,
-          "share_price": 68.53
+          "shares": 268617,
+          "value": 18827365.53,
+          "weight": 1.16,
+          "weight_rank": 32,
+          "share_price": 70.09
         },
         {
           "ticker": "SPOT",
           "name": "SPOTIFY TECHNOLOGY SA",
           "cusip": "L8681T102",
-          "shares": 38229,
-          "value": 18126662.64,
-          "weight": 1.06,
+          "shares": 38069,
+          "value": 18374383.54,
+          "weight": 1.14,
+          "weight_rank": 33,
+          "share_price": 482.66
+        },
+        {
+          "ticker": "FIG",
+          "name": "FIGMA INC-CL A",
+          "cusip": "316841105",
+          "shares": 804717,
+          "value": 16995623.04,
+          "weight": 1.05,
           "weight_rank": 34,
-          "share_price": 474.16
+          "share_price": 21.12
         },
         {
           "ticker": "DASH",
           "name": "DOORDASH INC - A",
           "cusip": "25809K105",
-          "shares": 95073,
-          "value": 16897324.29,
-          "weight": 0.99,
+          "shares": 94674,
+          "value": 16370081.34,
+          "weight": 1.01,
           "weight_rank": 35,
-          "share_price": 177.73
+          "share_price": 172.91
         },
         {
           "ticker": "MELI",
           "name": "MERCADOLIBRE INC",
           "cusip": "58733R102",
-          "shares": 8796,
-          "value": 15825851.16,
-          "weight": 0.93,
+          "shares": 8760,
+          "value": 15780614.4,
+          "weight": 0.98,
           "weight_rank": 36,
-          "share_price": 1799.21
+          "share_price": 1801.44
         },
         {
           "ticker": "DKNG UW",
           "name": "DRAFTKINGS INC-CL A",
           "cusip": "26142V105",
-          "shares": 666258,
-          "value": 15210670.14,
-          "weight": 0.89,
+          "shares": 663459,
+          "value": 15266191.59,
+          "weight": 0.94,
           "weight_rank": 37,
-          "share_price": 22.83
+          "share_price": 23.01
         },
         {
           "ticker": "ABNB",
           "name": "AIRBNB INC-CLASS A",
           "cusip": "009066101",
-          "shares": 64655,
-          "value": 9054932.75,
-          "weight": 0.53,
+          "shares": 64384,
+          "value": 9084582.4,
+          "weight": 0.56,
           "weight_rank": 38,
-          "share_price": 140.05
+          "share_price": 141.1
         },
         {
           "ticker": "ETHQ/U",
           "name": "3IQ ETHER STAKING ETF",
           "cusip": "BQ84B35",
-          "shares": 808777,
-          "value": 6058147.11,
+          "shares": 805379,
+          "value": 5734298.48,
           "weight": 0.35,
           "weight_rank": 39,
-          "share_price": 7.49
+          "share_price": 7.12
         },
         {
           "ticker": "GOOGL",
           "name": "ALPHABET INC-CL A",
           "cusip": "02079K305",
-          "shares": 12405,
-          "value": 4243626.45,
-          "weight": 0.25,
+          "shares": 12353,
+          "value": 3949748.22,
+          "weight": 0.24,
           "weight_rank": 40,
-          "share_price": 342.09
-        },
-        {
-          "ticker": null,
-          "name": "GOLDMAN FS TRSY OBLIG INST 468",
-          "cusip": "X9USDGSFT",
-          "shares": 3468162,
-          "value": 3468161.62,
-          "weight": 0.2,
-          "weight_rank": 41,
-          "share_price": 1.0
+          "share_price": 319.74
         },
         {
           "ticker": "SOLQ/U",
           "name": "3IQ SOLANA STAKING ETF",
           "cusip": "BTRDQ40",
-          "shares": 432122,
-          "value": 2765580.8,
-          "weight": 0.16,
+          "shares": 447224,
+          "value": 2687816.24,
+          "weight": 0.17,
+          "weight_rank": 41,
+          "share_price": 6.01
+        },
+        {
+          "ticker": null,
+          "name": "GOLDMAN FS TRSY OBLIG INST 468",
+          "cusip": "X9USDGSFT",
+          "shares": 1421747,
+          "value": 1421747.23,
+          "weight": 0.09,
           "weight_rank": 42,
-          "share_price": 6.4
+          "share_price": 1.0
         },
         {
           "ticker": null,
           "name": "BRERA HOLDINGS PLC-CL B",
           "cusip": "G13311132",
-          "shares": 142791,
-          "value": 721094.55,
-          "weight": 0.04,
+          "shares": 135388,
+          "value": 523951.56,
+          "weight": 0.03,
           "weight_rank": 43,
-          "share_price": 5.05
+          "share_price": 3.87
         },
         {
           "ticker": null,
           "name": "BRERA HOLDINGS PLC WTS",
           "cusip": "BREADUMMY",
           "shares": 139569,
-          "value": 362879.66,
+          "value": 258202.84,
           "weight": 0.02,
           "weight_rank": 44,
-          "share_price": 2.6
+          "share_price": 1.85
         }
       ]
     },
     "ARKG": {
-      "as_of": "2026-07-23",
+      "as_of": "2026-07-27",
       "holdings": [
         {
           "ticker": "TXG",
           "name": "10X GENOMICS INC-CLASS A",
           "cusip": "88025U109",
-          "shares": 3121776,
-          "value": 146879560.8,
-          "weight": 9.3,
+          "shares": 3175466,
+          "value": 146928811.82,
+          "weight": 9.39,
           "weight_rank": 1,
-          "share_price": 47.05
+          "share_price": 46.27
         },
         {
           "ticker": "TWST",
           "name": "TWIST BIOSCIENCE CORP",
           "cusip": "90184D100",
-          "shares": 1326139,
-          "value": 124935555.19,
-          "weight": 7.91,
+          "shares": 1348945,
+          "value": 121769265.15,
+          "weight": 7.78,
           "weight_rank": 2,
-          "share_price": 94.21
+          "share_price": 90.27
         },
         {
           "ticker": "TEM",
           "name": "TEMPUS AI INC-CL A",
           "cusip": "88023B103",
-          "shares": 2349326,
-          "value": 110324348.96,
-          "weight": 6.99,
+          "shares": 2389730,
+          "value": 102017573.7,
+          "weight": 6.52,
           "weight_rank": 3,
-          "share_price": 46.96
+          "share_price": 42.69
         },
         {
           "ticker": "CRSP",
           "name": "CRISPR THERAPEUTICS AG",
           "cusip": "H17182108",
-          "shares": 2057229,
-          "value": 97183497.96,
-          "weight": 6.15,
+          "shares": 2092607,
+          "value": 97389929.78,
+          "weight": 6.23,
           "weight_rank": 4,
-          "share_price": 47.24
-        },
-        {
-          "ticker": "ABSI",
-          "name": "ABSCI CORP",
-          "cusip": "00091E109",
-          "shares": 10372352,
-          "value": 85468180.48,
-          "weight": 5.41,
-          "weight_rank": 5,
-          "share_price": 8.24
+          "share_price": 46.54
         },
         {
           "ticker": "PSNL",
           "name": "PERSONALIS INC",
           "cusip": "71535D106",
-          "shares": 6792220,
-          "value": 84698983.4,
-          "weight": 5.36,
+          "shares": 6909036,
+          "value": 81388444.08,
+          "weight": 5.2,
+          "weight_rank": 5,
+          "share_price": 11.78
+        },
+        {
+          "ticker": "ABSI",
+          "name": "ABSCI CORP",
+          "cusip": "00091E109",
+          "shares": 10555601,
+          "value": 79800343.56,
+          "weight": 5.1,
           "weight_rank": 6,
-          "share_price": 12.47
+          "share_price": 7.56
         },
         {
           "ticker": "LLY",
           "name": "ELI LILLY & CO",
           "cusip": "532457108",
-          "shares": 64048,
-          "value": 74488464.48,
-          "weight": 4.72,
+          "shares": 65140,
+          "value": 77909394.2,
+          "weight": 4.98,
           "weight_rank": 7,
-          "share_price": 1163.01
-        },
-        {
-          "ticker": "GH",
-          "name": "GUARDANT HEALTH INC",
-          "cusip": "40131M109",
-          "shares": 459833,
-          "value": 69319824.75,
-          "weight": 4.39,
-          "weight_rank": 8,
-          "share_price": 150.75
+          "share_price": 1196.03
         },
         {
           "ticker": "ILMN",
           "name": "ILLUMINA INC",
           "cusip": "452327109",
-          "shares": 362916,
-          "value": 69269776.92,
-          "weight": 4.39,
+          "shares": 369146,
+          "value": 71647547.14,
+          "weight": 4.58,
+          "weight_rank": 8,
+          "share_price": 194.09
+        },
+        {
+          "ticker": "GH",
+          "name": "GUARDANT HEALTH INC",
+          "cusip": "40131M109",
+          "shares": 467729,
+          "value": 68910513.57,
+          "weight": 4.41,
           "weight_rank": 9,
-          "share_price": 190.87
+          "share_price": 147.33
         },
         {
           "ticker": "NTRA",
           "name": "NATERA INC",
           "cusip": "632307104",
-          "shares": 242224,
-          "value": 64000425.28,
-          "weight": 4.05,
+          "shares": 246382,
+          "value": 64549620.18,
+          "weight": 4.13,
           "weight_rank": 10,
-          "share_price": 264.22
+          "share_price": 261.99
         },
         {
           "ticker": "BEAM",
           "name": "BEAM THERAPEUTICS INC",
           "cusip": "07373V105",
-          "shares": 2324792,
-          "value": 61932458.88,
-          "weight": 3.92,
+          "shares": 2364776,
+          "value": 59355877.6,
+          "weight": 3.79,
           "weight_rank": 11,
-          "share_price": 26.64
+          "share_price": 25.1
         },
         {
           "ticker": "CDNA",
           "name": "CAREDX INC",
           "cusip": "14167L103",
-          "shares": 1544858,
-          "value": 58364735.24,
-          "weight": 3.7,
+          "shares": 1571416,
+          "value": 58362390.24,
+          "weight": 3.73,
           "weight_rank": 12,
-          "share_price": 37.78
+          "share_price": 37.14
         },
         {
           "ticker": "CMPS",
           "name": "COMPASS PATHWAYS PLC",
           "cusip": "20451W101",
-          "shares": 4366105,
-          "value": 52087632.65,
+          "shares": 4580026,
+          "value": 51571092.76,
           "weight": 3.3,
           "weight_rank": 13,
-          "share_price": 11.93
+          "share_price": 11.26
         },
         {
           "ticker": "VCYT",
           "name": "VERACYTE INC",
           "cusip": "92337F107",
-          "shares": 863540,
-          "value": 50093955.4,
-          "weight": 3.17,
+          "shares": 878380,
+          "value": 49725091.8,
+          "weight": 3.18,
           "weight_rank": 14,
-          "share_price": 58.01
+          "share_price": 56.61
         },
         {
           "ticker": "RXRX",
           "name": "RECURSION PHARMACEUTICALS-A",
           "cusip": "75629V104",
-          "shares": 13757207,
-          "value": 40996476.86,
-          "weight": 2.6,
+          "shares": 13993807,
+          "value": 41421668.72,
+          "weight": 2.65,
           "weight_rank": 15,
-          "share_price": 2.98
-        },
-        {
-          "ticker": "NRIX",
-          "name": "NURIX THERAPEUTICS INC",
-          "cusip": "67080M103",
-          "shares": 1696642,
-          "value": 40040751.2,
-          "weight": 2.54,
-          "weight_rank": 16,
-          "share_price": 23.6
+          "share_price": 2.96
         },
         {
           "ticker": "ADPT",
           "name": "ADAPTIVE BIOTECHNOLOGIES",
           "cusip": "00650F109",
-          "shares": 1790149,
-          "value": 39293770.55,
-          "weight": 2.49,
+          "shares": 1820935,
+          "value": 40552222.45,
+          "weight": 2.59,
+          "weight_rank": 16,
+          "share_price": 22.27
+        },
+        {
+          "ticker": "NRIX",
+          "name": "NURIX THERAPEUTICS INC",
+          "cusip": "67080M103",
+          "shares": 1725818,
+          "value": 40349624.84,
+          "weight": 2.58,
           "weight_rank": 17,
-          "share_price": 21.95
+          "share_price": 23.38
         },
         {
           "ticker": "BFLY",
           "name": "BUTTERFLY NETWORK INC",
           "cusip": "124155102",
-          "shares": 4812186,
-          "value": 31808549.46,
-          "weight": 2.01,
+          "shares": 4894940,
+          "value": 32208705.2,
+          "weight": 2.06,
           "weight_rank": 18,
-          "share_price": 6.61
-        },
-        {
-          "ticker": "NTLA",
-          "name": "INTELLIA THERAPEUTICS INC",
-          "cusip": "45826J105",
-          "shares": 2835877,
-          "value": 31563311.01,
-          "weight": 2.0,
-          "weight_rank": 19,
-          "share_price": 11.13
+          "share_price": 6.58
         },
         {
           "ticker": "SDGR",
           "name": "SCHRODINGER INC",
           "cusip": "80810D103",
-          "shares": 2060296,
-          "value": 30966248.88,
-          "weight": 1.96,
-          "weight_rank": 20,
-          "share_price": 15.03
+          "shares": 2095730,
+          "value": 31373078.1,
+          "weight": 2.01,
+          "weight_rank": 19,
+          "share_price": 14.97
         },
         {
           "ticker": "IONS",
           "name": "IONIS PHARMACEUTICALS INC",
           "cusip": "462222100",
-          "shares": 536239,
-          "value": 28962268.39,
-          "weight": 1.83,
+          "shares": 545451,
+          "value": 30845254.05,
+          "weight": 1.97,
+          "weight_rank": 20,
+          "share_price": 56.55
+        },
+        {
+          "ticker": "NTLA",
+          "name": "INTELLIA THERAPEUTICS INC",
+          "cusip": "45826J105",
+          "shares": 2814979,
+          "value": 30204724.67,
+          "weight": 1.93,
           "weight_rank": 21,
-          "share_price": 54.01
+          "share_price": 10.73
         },
         {
           "ticker": "WGS",
           "name": "GENEDX HOLDINGS CORP",
           "cusip": "81663L200",
-          "shares": 450836,
-          "value": 28222333.6,
-          "weight": 1.79,
+          "shares": 458578,
+          "value": 27101959.8,
+          "weight": 1.73,
           "weight_rank": 22,
-          "share_price": 62.6
+          "share_price": 59.1
         },
         {
           "ticker": "ALMR",
           "name": "ALAMAR BIOSCIENCES INC",
           "cusip": "010911105",
-          "shares": 965480,
-          "value": 24252857.6,
-          "weight": 1.54,
+          "shares": 982084,
+          "value": 25416333.92,
+          "weight": 1.62,
           "weight_rank": 23,
-          "share_price": 25.12
+          "share_price": 25.88
         },
         {
           "ticker": "PRME",
           "name": "PRIME MEDICINE INC",
           "cusip": "74168J101",
-          "shares": 7578655,
-          "value": 23418043.95,
-          "weight": 1.48,
+          "shares": 7708995,
+          "value": 22741535.25,
+          "weight": 1.45,
           "weight_rank": 24,
-          "share_price": 3.09
+          "share_price": 2.95
         },
         {
           "ticker": "CERS",
           "name": "CERUS CORP",
           "cusip": "157085101",
-          "shares": 7285776,
-          "value": 22003043.52,
+          "shares": 7411076,
+          "value": 21714452.68,
           "weight": 1.39,
           "weight_rank": 25,
-          "share_price": 3.02
+          "share_price": 2.93
         },
         {
           "ticker": "GENB",
           "name": "GENERATE BIOMEDICINES INC",
           "cusip": "370920100",
-          "shares": 1248622,
-          "value": 17355845.8,
-          "weight": 1.1,
-          "weight_rank": 26,
-          "share_price": 13.9
-        },
-        {
-          "ticker": "ATAI UQ",
-          "name": "ATAIBECKLEY INC",
-          "cusip": "04650F101",
-          "shares": 2404113,
-          "value": 17261531.34,
+          "shares": 1270084,
+          "value": 17019125.6,
           "weight": 1.09,
-          "weight_rank": 27,
-          "share_price": 7.18
+          "weight_rank": 26,
+          "share_price": 13.4
         },
         {
           "ticker": "ARCT UQ",
           "name": "ARCTURUS THERAPEUTICS HOLDIN",
           "cusip": "03969T109",
-          "shares": 2764895,
-          "value": 16395827.35,
-          "weight": 1.04,
-          "weight_rank": 28,
-          "share_price": 5.93
+          "shares": 2812439,
+          "value": 15552787.67,
+          "weight": 0.99,
+          "weight_rank": 27,
+          "share_price": 5.53
         },
         {
           "ticker": "PACB",
           "name": "PACIFIC BIOSCIENCES OF CALIF",
           "cusip": "69404D108",
-          "shares": 10722467,
-          "value": 14797004.46,
-          "weight": 0.94,
-          "weight_rank": 29,
-          "share_price": 1.38
+          "shares": 10906875,
+          "value": 14833350.0,
+          "weight": 0.95,
+          "weight_rank": 28,
+          "share_price": 1.36
         },
         {
           "ticker": "MASS",
           "name": "908 DEVICES INC",
           "cusip": "65443P102",
-          "shares": 1921859,
-          "value": 13914259.16,
-          "weight": 0.88,
+          "shares": 1954913,
+          "value": 13958078.82,
+          "weight": 0.89,
+          "weight_rank": 29,
+          "share_price": 7.14
+        },
+        {
+          "ticker": "ATAI UQ",
+          "name": "ATAIBECKLEY INC",
+          "cusip": "04650F101",
+          "shares": 1687102,
+          "value": 12113392.36,
+          "weight": 0.77,
           "weight_rank": 30,
-          "share_price": 7.24
+          "share_price": 7.18
+        },
+        {
+          "ticker": null,
+          "name": "SCRIBE THERAPEUTICS INC",
+          "cusip": "811033109",
+          "shares": 361253,
+          "value": 7821127.45,
+          "weight": 0.5,
+          "weight_rank": 31,
+          "share_price": 21.65
         },
         {
           "ticker": "QSI",
           "name": "QUANTUM-SI INC",
           "cusip": "74765K105",
-          "shares": 6819442,
-          "value": 5455553.6,
-          "weight": 0.35,
-          "weight_rank": 31,
-          "share_price": 0.8
+          "shares": 6936720,
+          "value": 5341968.07,
+          "weight": 0.34,
+          "weight_rank": 32,
+          "share_price": 0.77
         },
         {
           "ticker": null,
           "name": "GOLDMAN FS TRSY OBLIG INST 468",
           "cusip": "X9USDGSFT",
-          "shares": 3462613,
-          "value": 3462613.2,
-          "weight": 0.22,
-          "weight_rank": 32,
+          "shares": 2438280,
+          "value": 2438280.01,
+          "weight": 0.16,
+          "weight_rank": 33,
           "share_price": 1.0
         }
       ]
     },
     "ARKF": {
-      "as_of": "2026-07-23",
+      "as_of": "2026-07-27",
       "holdings": [
         {
           "ticker": "SHOP",
           "name": "SHOPIFY INC - CLASS A",
           "cusip": "82509L107",
           "shares": 574589,
-          "value": 68042829.38,
-          "weight": 9.16,
+          "value": 65359498.75,
+          "weight": 9.11,
           "weight_rank": 1,
-          "share_price": 118.42
-        },
-        {
-          "ticker": "HOOD",
-          "name": "ROBINHOOD MARKETS INC - A",
-          "cusip": "770700102",
-          "shares": 445972,
-          "value": 46595154.56,
-          "weight": 6.27,
-          "weight_rank": 2,
-          "share_price": 104.48
-        },
-        {
-          "ticker": null,
-          "name": "ARK BITCOIN ETF HOLDCO (ARKF)",
-          "cusip": "MM005473T",
-          "shares": 2096992,
-          "value": 45831857.15,
-          "weight": 6.17,
-          "weight_rank": 3,
-          "share_price": 21.86
+          "share_price": 113.75
         },
         {
           "ticker": "XYZ",
           "name": "BLOCK INC",
           "cusip": "852234103",
           "shares": 588583,
-          "value": 45591639.18,
-          "weight": 6.14,
+          "value": 45409178.45,
+          "weight": 6.33,
+          "weight_rank": 2,
+          "share_price": 77.15
+        },
+        {
+          "ticker": null,
+          "name": "ARK BITCOIN ETF HOLDCO (ARKF)",
+          "cusip": "MM005473T",
+          "shares": 2096992,
+          "value": 44615601.79,
+          "weight": 6.22,
+          "weight_rank": 3,
+          "share_price": 21.28
+        },
+        {
+          "ticker": "HOOD",
+          "name": "ROBINHOOD MARKETS INC - A",
+          "cusip": "770700102",
+          "shares": 445972,
+          "value": 42327202.52,
+          "weight": 5.9,
           "weight_rank": 4,
-          "share_price": 77.46
+          "share_price": 94.91
         },
         {
           "ticker": "COIN",
           "name": "COINBASE GLOBAL INC -CLASS A",
           "cusip": "19260Q107",
           "shares": 258472,
-          "value": 42937368.64,
-          "weight": 5.78,
+          "value": 40913532.88,
+          "weight": 5.7,
           "weight_rank": 5,
-          "share_price": 166.12
+          "share_price": 158.29
         },
         {
           "ticker": "CRCL",
           "name": "CIRCLE INTERNET GROUP INC",
           "cusip": "172573107",
-          "shares": 528065,
-          "value": 34936780.4,
-          "weight": 4.7,
+          "shares": 539577,
+          "value": 33648021.72,
+          "weight": 4.69,
           "weight_rank": 6,
-          "share_price": 66.16
+          "share_price": 62.36
         },
         {
           "ticker": "TOST",
           "name": "TOAST INC-CLASS A",
           "cusip": "888787108",
           "shares": 1144769,
-          "value": 33438702.49,
-          "weight": 4.5,
+          "value": 33244091.76,
+          "weight": 4.63,
           "weight_rank": 7,
-          "share_price": 29.21
+          "share_price": 29.04
         },
         {
           "ticker": "PLTR",
           "name": "PALANTIR TECHNOLOGIES INC-A",
           "cusip": "69608A108",
           "shares": 247660,
-          "value": 30851006.2,
-          "weight": 4.15,
+          "value": 30442367.2,
+          "weight": 4.24,
           "weight_rank": 8,
-          "share_price": 124.57
+          "share_price": 122.92
         },
         {
           "ticker": "AMD",
           "name": "ADVANCED MICRO DEVICES",
           "cusip": "007903107",
           "shares": 53137,
-          "value": 29349159.21,
-          "weight": 3.95,
+          "value": 27734857.15,
+          "weight": 3.86,
           "weight_rank": 9,
-          "share_price": 552.33
+          "share_price": 521.95
         },
         {
           "ticker": "AMZN",
           "name": "AMAZON.COM INC",
           "cusip": "023135106",
           "shares": 115379,
-          "value": 28250548.15,
-          "weight": 3.8,
+          "value": 26780619.69,
+          "weight": 3.73,
           "weight_rank": 10,
-          "share_price": 244.85
+          "share_price": 232.11
         },
         {
           "ticker": "META",
           "name": "META PLATFORMS INC-CLASS A",
           "cusip": "30303M102",
           "shares": 42568,
-          "value": 26697372.56,
-          "weight": 3.59,
+          "value": 25336047.92,
+          "weight": 3.53,
           "weight_rank": 11,
-          "share_price": 627.17
+          "share_price": 595.19
         },
         {
           "ticker": "MELI",
           "name": "MERCADOLIBRE INC",
           "cusip": "58733R102",
           "shares": 13356,
-          "value": 24030248.76,
-          "weight": 3.23,
+          "value": 24060032.64,
+          "weight": 3.35,
           "weight_rank": 12,
-          "share_price": 1799.21
+          "share_price": 1801.44
         },
         {
           "ticker": null,
@@ -1800,7 +1810,7 @@
           "cusip": "PPOPENAIC",
           "shares": 31991,
           "value": 21999791.62,
-          "weight": 2.96,
+          "weight": 3.06,
           "weight_rank": 13,
           "share_price": 687.69
         },
@@ -1809,238 +1819,238 @@
           "name": "ROBLOX CORP -CLASS A",
           "cusip": "771049103",
           "shares": 432112,
-          "value": 21450039.68,
-          "weight": 2.89,
+          "value": 20546925.6,
+          "weight": 2.86,
           "weight_rank": 14,
-          "share_price": 49.64
+          "share_price": 47.55
         },
         {
           "ticker": "SOFI",
           "name": "SOFI TECHNOLOGIES INC",
           "cusip": "83406F102",
           "shares": 1169459,
-          "value": 19962665.13,
-          "weight": 2.69,
+          "value": 19249295.14,
+          "weight": 2.68,
           "weight_rank": 15,
-          "share_price": 17.07
-        },
-        {
-          "ticker": "NVDA",
-          "name": "NVIDIA CORP",
-          "cusip": "67066G104",
-          "shares": 85949,
-          "value": 18226344.94,
-          "weight": 2.45,
-          "weight_rank": 16,
-          "share_price": 212.06
+          "share_price": 16.46
         },
         {
           "ticker": "BLSH",
           "name": "BULLISH",
           "cusip": "G16910120",
           "shares": 766971,
-          "value": 18146533.86,
-          "weight": 2.44,
+          "value": 18376625.16,
+          "weight": 2.56,
+          "weight_rank": 16,
+          "share_price": 23.96
+        },
+        {
+          "ticker": "NVDA",
+          "name": "NVIDIA CORP",
+          "cusip": "67066G104",
+          "shares": 85949,
+          "value": 17777691.16,
+          "weight": 2.48,
           "weight_rank": 17,
-          "share_price": 23.66
+          "share_price": 206.84
         },
         {
           "ticker": "CRWD",
           "name": "CROWDSTRIKE HOLDINGS INC - A",
           "cusip": "22788C105",
           "shares": 87696,
-          "value": 16523680.32,
-          "weight": 2.22,
+          "value": 16072922.88,
+          "weight": 2.24,
           "weight_rank": 18,
-          "share_price": 188.42
+          "share_price": 183.28
         },
         {
           "ticker": "SE",
           "name": "SEA LTD-ADR",
           "cusip": "81141R100",
           "shares": 156686,
-          "value": 16433227.68,
-          "weight": 2.21,
+          "value": 15668600.0,
+          "weight": 2.18,
           "weight_rank": 19,
-          "share_price": 104.88
+          "share_price": 100.0
         },
         {
           "ticker": "NU UN",
           "name": "NU HOLDINGS LTD/CAYMAN ISL-A",
           "cusip": "G6683N103",
           "shares": 1059843,
-          "value": 15378321.93,
-          "weight": 2.07,
+          "value": 14933187.87,
+          "weight": 2.08,
           "weight_rank": 20,
-          "share_price": 14.51
+          "share_price": 14.09
         },
         {
           "ticker": "ADYEN",
           "name": "ADYEN NV",
           "cusip": "BZ1HM42",
           "shares": 14694,
-          "value": 13763626.47,
-          "weight": 1.85,
+          "value": 13382939.73,
+          "weight": 1.86,
           "weight_rank": 21,
-          "share_price": 936.68
-        },
-        {
-          "ticker": "BMNR",
-          "name": "BITMINE IMMERSION TECHNOLOGI",
-          "cusip": "09175A206",
-          "shares": 755266,
-          "value": 13398418.84,
-          "weight": 1.8,
-          "weight_rank": 22,
-          "share_price": 17.74
+          "share_price": 910.78
         },
         {
           "ticker": "DKNG UW",
           "name": "DRAFTKINGS INC-CL A",
           "cusip": "26142V105",
           "shares": 574270,
-          "value": 13110584.1,
-          "weight": 1.76,
-          "weight_rank": 23,
-          "share_price": 22.83
-        },
-        {
-          "ticker": "KLAR",
-          "name": "KLARNA GROUP PLC",
-          "cusip": "G5279N105",
-          "shares": 704441,
-          "value": 12574271.85,
-          "weight": 1.69,
-          "weight_rank": 24,
-          "share_price": 17.85
+          "value": 13213952.7,
+          "weight": 1.84,
+          "weight_rank": 22,
+          "share_price": 23.01
         },
         {
           "ticker": "SPOT",
           "name": "SPOTIFY TECHNOLOGY SA",
           "cusip": "L8681T102",
           "shares": 25634,
-          "value": 12154617.44,
-          "weight": 1.64,
-          "weight_rank": 25,
-          "share_price": 474.16
+          "value": 12372506.44,
+          "weight": 1.72,
+          "weight_rank": 23,
+          "share_price": 482.66
+        },
+        {
+          "ticker": "KLAR",
+          "name": "KLARNA GROUP PLC",
+          "cusip": "G5279N105",
+          "shares": 704441,
+          "value": 12229095.76,
+          "weight": 1.7,
+          "weight_rank": 24,
+          "share_price": 17.36
         },
         {
           "ticker": "ABNB",
           "name": "AIRBNB INC-CLASS A",
           "cusip": "009066101",
           "shares": 84630,
-          "value": 11852431.5,
-          "weight": 1.6,
-          "weight_rank": 26,
-          "share_price": 140.05
+          "value": 11941293.0,
+          "weight": 1.66,
+          "weight_rank": 25,
+          "share_price": 141.1
         },
         {
-          "ticker": "FUTU",
-          "name": "FUTU HOLDINGS LTD-ADR",
-          "cusip": "36118L106",
-          "shares": 99562,
-          "value": 10562532.58,
-          "weight": 1.42,
-          "weight_rank": 27,
-          "share_price": 106.09
+          "ticker": "BMNR",
+          "name": "BITMINE IMMERSION TECHNOLOGI",
+          "cusip": "09175A206",
+          "shares": 755266,
+          "value": 11925650.14,
+          "weight": 1.66,
+          "weight_rank": 26,
+          "share_price": 15.79
         },
         {
           "ticker": "DASH",
           "name": "DOORDASH INC - A",
           "cusip": "25809K105",
           "shares": 58081,
-          "value": 10322736.13,
-          "weight": 1.39,
+          "value": 10042785.71,
+          "weight": 1.4,
+          "weight_rank": 27,
+          "share_price": 172.91
+        },
+        {
+          "ticker": "FUTU",
+          "name": "FUTU HOLDINGS LTD-ADR",
+          "cusip": "36118L106",
+          "shares": 99562,
+          "value": 9892480.32,
+          "weight": 1.38,
           "weight_rank": 28,
-          "share_price": 177.73
+          "share_price": 99.36
         },
         {
           "ticker": "ETOR",
           "name": "ETORO GROUP LTD-A",
           "cusip": "G32089107",
           "shares": 254871,
-          "value": 9562759.92,
-          "weight": 1.29,
+          "value": 9374155.38,
+          "weight": 1.31,
           "weight_rank": 29,
-          "share_price": 37.52
+          "share_price": 36.78
         },
         {
           "ticker": "SECZ",
           "name": "SECURITIZE CORP",
           "cusip": "81517B101",
-          "shares": 619595,
-          "value": 4752293.65,
-          "weight": 0.64,
+          "shares": 667972,
+          "value": 4989750.84,
+          "weight": 0.7,
           "weight_rank": 30,
-          "share_price": 7.67
+          "share_price": 7.47
         },
         {
           "ticker": "Z",
           "name": "ZILLOW GROUP INC - C",
           "cusip": "98954M200",
           "shares": 150915,
-          "value": 4732694.4,
-          "weight": 0.64,
+          "value": 4642145.4,
+          "weight": 0.65,
           "weight_rank": 31,
-          "share_price": 31.36
-        },
-        {
-          "ticker": "ROKU",
-          "name": "ROKU INC",
-          "cusip": "77543R102",
-          "shares": 29197,
-          "value": 4177506.76,
-          "weight": 0.56,
-          "weight_rank": 32,
-          "share_price": 143.08
-        },
-        {
-          "ticker": "ETHQ/U",
-          "name": "3IQ ETHER STAKING ETF",
-          "cusip": "BQ84B35",
-          "shares": 511506,
-          "value": 3831437.59,
-          "weight": 0.52,
-          "weight_rank": 33,
-          "share_price": 7.49
+          "share_price": 30.76
         },
         {
           "ticker": "PAYP",
           "name": "PAYPAY CORP",
           "cusip": "70450C101",
           "shares": 242317,
-          "value": 3852840.3,
+          "value": 3758336.67,
           "weight": 0.52,
-          "weight_rank": 34,
-          "share_price": 15.9
+          "weight_rank": 32,
+          "share_price": 15.51
+        },
+        {
+          "ticker": "ETHQ/U",
+          "name": "3IQ ETHER STAKING ETF",
+          "cusip": "BQ84B35",
+          "shares": 511506,
+          "value": 3641922.72,
+          "weight": 0.51,
+          "weight_rank": 33,
+          "share_price": 7.12
         },
         {
           "ticker": "KSPI",
           "name": "JSC KASPI.KZ ADR",
           "cusip": "BJY21K1",
           "shares": 41073,
-          "value": 3586083.63,
+          "value": 3523652.67,
+          "weight": 0.49,
+          "weight_rank": 34,
+          "share_price": 85.79
+        },
+        {
+          "ticker": "ROKU",
+          "name": "ROKU INC",
+          "cusip": "77543R102",
+          "shares": 24107,
+          "value": 3422470.79,
           "weight": 0.48,
           "weight_rank": 35,
-          "share_price": 87.31
+          "share_price": 141.97
         },
         {
           "ticker": "SOLQ/U",
           "name": "3IQ SOLANA STAKING ETF",
           "cusip": "BTRDQ40",
-          "shares": 363283,
-          "value": 2325011.2,
+          "shares": 374384,
+          "value": 2250047.84,
           "weight": 0.31,
           "weight_rank": 36,
-          "share_price": 6.4
+          "share_price": 6.01
         },
         {
           "ticker": null,
           "name": "GOLDMAN FS TRSY OBLIG INST 468",
           "cusip": "X9USDGSFT",
-          "shares": 1786184,
-          "value": 1786183.92,
-          "weight": 0.24,
+          "shares": 955688,
+          "value": 955688.15,
+          "weight": 0.13,
           "weight_rank": 37,
           "share_price": 1.0
         },
@@ -2049,413 +2059,413 @@
           "name": "CANTON STRATEGIC HOLDINGS IN",
           "cusip": "432705309",
           "shares": 401099,
-          "value": 838296.91,
+          "value": 778132.06,
           "weight": 0.11,
           "weight_rank": 38,
-          "share_price": 2.09
+          "share_price": 1.94
         },
         {
           "ticker": "BABA",
           "name": "ALIBABA GROUP HOLDING-SP ADR",
           "cusip": "01609W102",
           "shares": 4427,
-          "value": 516011.12,
+          "value": 496443.78,
           "weight": 0.07,
           "weight_rank": 39,
-          "share_price": 116.56
+          "share_price": 112.14
         },
         {
           "ticker": null,
           "name": "BRERA HOLDINGS PLC-CL B",
           "cusip": "G13311132",
-          "shares": 90372,
-          "value": 456378.6,
-          "weight": 0.06,
+          "shares": 85686,
+          "value": 331604.82,
+          "weight": 0.05,
           "weight_rank": 40,
-          "share_price": 5.05
+          "share_price": 3.87
         },
         {
           "ticker": null,
           "name": "BRERA HOLDINGS PLC WTS",
           "cusip": "BREADUMMY",
           "shares": 78805,
-          "value": 204893.78,
-          "weight": 0.03,
+          "value": 145789.81,
+          "weight": 0.02,
           "weight_rank": 41,
-          "share_price": 2.6
+          "share_price": 1.85
         }
       ]
     },
     "ARKX": {
-      "as_of": "2026-07-23",
+      "as_of": "2026-07-27",
       "holdings": [
         {
           "ticker": "SPCX",
           "name": "SPACE EXPLORATION TECHN-CL A",
           "cusip": "84615Q103",
           "shares": 528259,
-          "value": 60887132.34,
-          "weight": 7.59,
+          "value": 60786763.13,
+          "weight": 7.74,
           "weight_rank": 1,
-          "share_price": 115.26
+          "share_price": 115.07
         },
         {
           "ticker": "LHX",
           "name": "L3HARRIS TECHNOLOGIES INC",
           "cusip": "502431109",
           "shares": 197483,
-          "value": 56314252.28,
-          "weight": 7.02,
+          "value": 59286371.43,
+          "weight": 7.55,
           "weight_rank": 2,
-          "share_price": 285.16
+          "share_price": 300.21
         },
         {
           "ticker": "KTOS",
           "name": "KRATOS DEFENSE & SECURITY",
           "cusip": "50077B207",
           "shares": 1030562,
-          "value": 49353614.18,
-          "weight": 6.15,
+          "value": 48797110.7,
+          "weight": 6.22,
           "weight_rank": 3,
-          "share_price": 47.89
+          "share_price": 47.35
         },
         {
           "ticker": "DE",
           "name": "DEERE & CO",
           "cusip": "244199105",
-          "shares": 78607,
-          "value": 47740389.31,
-          "weight": 5.95,
+          "shares": 75999,
+          "value": 47739531.84,
+          "weight": 6.08,
           "weight_rank": 4,
-          "share_price": 607.33
+          "share_price": 628.16
         },
         {
           "ticker": "AMD",
           "name": "ADVANCED MICRO DEVICES",
           "cusip": "007903107",
           "shares": 81914,
-          "value": 45243559.62,
-          "weight": 5.64,
+          "value": 42755012.3,
+          "weight": 5.45,
           "weight_rank": 5,
-          "share_price": 552.33
-        },
-        {
-          "ticker": "RKLB UQ",
-          "name": "ROCKET LAB",
-          "cusip": "773121108",
-          "shares": 558878,
-          "value": 38981740.5,
-          "weight": 4.86,
-          "weight_rank": 6,
-          "share_price": 69.75
+          "share_price": 521.95
         },
         {
           "ticker": "AVAV",
           "name": "AEROVIRONMENT INC",
           "cusip": "008073108",
           "shares": 240172,
-          "value": 36109860.2,
-          "weight": 4.5,
+          "value": 35908115.72,
+          "weight": 4.57,
+          "weight_rank": 6,
+          "share_price": 149.51
+        },
+        {
+          "ticker": "RKLB UQ",
+          "name": "ROCKET LAB",
+          "cusip": "773121108",
+          "shares": 558878,
+          "value": 35717892.98,
+          "weight": 4.55,
           "weight_rank": 7,
-          "share_price": 150.35
+          "share_price": 63.91
         },
         {
           "ticker": "AMZN",
           "name": "AMAZON.COM INC",
           "cusip": "023135106",
           "shares": 142664,
-          "value": 34931280.4,
-          "weight": 4.35,
+          "value": 33113741.04,
+          "weight": 4.22,
           "weight_rank": 8,
-          "share_price": 244.85
+          "share_price": 232.11
         },
         {
           "ticker": "GOOG",
           "name": "ALPHABET INC-CL C",
           "cusip": "02079K107",
           "shares": 96636,
-          "value": 33040814.76,
-          "weight": 4.12,
+          "value": 30835581.24,
+          "weight": 3.93,
           "weight_rank": 9,
-          "share_price": 341.91
+          "share_price": 319.09
         },
         {
           "ticker": "TER",
           "name": "TERADYNE INC",
           "cusip": "880770102",
-          "shares": 87340,
-          "value": 32268636.4,
-          "weight": 4.02,
+          "shares": 85187,
+          "value": 29808635.04,
+          "weight": 3.8,
           "weight_rank": 10,
-          "share_price": 369.46
-        },
-        {
-          "ticker": "ACHR",
-          "name": "ARCHER AVIATION INC-A",
-          "cusip": "03945R102",
-          "shares": 5317997,
-          "value": 27547224.46,
-          "weight": 3.43,
-          "weight_rank": 11,
-          "share_price": 5.18
+          "share_price": 349.92
         },
         {
           "ticker": "NVDA",
           "name": "NVIDIA CORP",
           "cusip": "67066G104",
           "shares": 127885,
-          "value": 27119293.1,
-          "weight": 3.38,
+          "value": 26451733.4,
+          "weight": 3.37,
+          "weight_rank": 11,
+          "share_price": 206.84
+        },
+        {
+          "ticker": "ACHR",
+          "name": "ARCHER AVIATION INC-A",
+          "cusip": "03945R102",
+          "shares": 5317997,
+          "value": 25366845.69,
+          "weight": 3.23,
           "weight_rank": 12,
-          "share_price": 212.06
+          "share_price": 4.77
         },
         {
           "ticker": "6301",
           "name": "KOMATSU LTD",
           "cusip": "6496584",
           "shares": 620793,
-          "value": 24530369.72,
-          "weight": 3.06,
+          "value": 25165901.35,
+          "weight": 3.21,
           "weight_rank": 13,
-          "share_price": 39.51
-        },
-        {
-          "ticker": "TSLA",
-          "name": "TESLA INC",
-          "cusip": "88160R101",
-          "shares": 64734,
-          "value": 24211163.34,
-          "weight": 3.02,
-          "weight_rank": 14,
-          "share_price": 374.01
-        },
-        {
-          "ticker": "PLTR",
-          "name": "PALANTIR TECHNOLOGIES INC-A",
-          "cusip": "69608A108",
-          "shares": 188881,
-          "value": 23528906.17,
-          "weight": 2.93,
-          "weight_rank": 15,
-          "share_price": 124.57
+          "share_price": 40.54
         },
         {
           "ticker": "TRMB",
           "name": "TRIMBLE INC",
           "cusip": "896239100",
           "shares": 467448,
-          "value": 23419144.8,
-          "weight": 2.92,
+          "value": 24732673.68,
+          "weight": 3.15,
+          "weight_rank": 14,
+          "share_price": 52.91
+        },
+        {
+          "ticker": "TSLA",
+          "name": "TESLA INC",
+          "cusip": "88160R101",
+          "shares": 74659,
+          "value": 23370506.77,
+          "weight": 2.98,
+          "weight_rank": 15,
+          "share_price": 313.03
+        },
+        {
+          "ticker": "PLTR",
+          "name": "PALANTIR TECHNOLOGIES INC-A",
+          "cusip": "69608A108",
+          "shares": 188881,
+          "value": 23217252.52,
+          "weight": 2.96,
           "weight_rank": 16,
-          "share_price": 50.1
+          "share_price": 122.92
         },
         {
           "ticker": "IRDM",
           "name": "IRIDIUM COMMUNICATIONS INC",
           "cusip": "46269C102",
-          "shares": 438057,
-          "value": 20527351.02,
-          "weight": 2.56,
+          "shares": 422651,
+          "value": 19348962.78,
+          "weight": 2.46,
           "weight_rank": 17,
-          "share_price": 46.86
+          "share_price": 45.78
         },
         {
           "ticker": "JOBY",
           "name": "JOBY AVIATION INC",
           "cusip": "G65163100",
           "shares": 2402261,
-          "value": 18329251.43,
-          "weight": 2.28,
+          "value": 16647668.73,
+          "weight": 2.12,
           "weight_rank": 18,
-          "share_price": 7.63
+          "share_price": 6.93
         },
         {
           "ticker": "HO",
           "name": "THALES SA",
           "cusip": "4162791",
           "shares": 59221,
-          "value": 15325737.17,
-          "weight": 1.91,
+          "value": 15918501.37,
+          "weight": 2.03,
           "weight_rank": 19,
-          "share_price": 258.79
+          "share_price": 268.8
         },
         {
           "ticker": "HEI",
           "name": "HEICO CORP",
           "cusip": "422806109",
           "shares": 44794,
-          "value": 15016740.56,
-          "weight": 1.87,
+          "value": 15660430.34,
+          "weight": 1.99,
           "weight_rank": 20,
-          "share_price": 335.24
+          "share_price": 349.61
         },
         {
           "ticker": "ESLT",
           "name": "ELBIT SYSTEMS LTD",
           "cusip": "M3760D101",
-          "shares": 18144,
-          "value": 14382567.36,
-          "weight": 1.79,
+          "shares": 17366,
+          "value": 14243766.86,
+          "weight": 1.81,
           "weight_rank": 21,
-          "share_price": 792.69
-        },
-        {
-          "ticker": "TSM",
-          "name": "TAIWAN SEMICONDUCTOR-SP ADR",
-          "cusip": "874039100",
-          "shares": 32251,
-          "value": 13584443.71,
-          "weight": 1.69,
-          "weight_rank": 22,
-          "share_price": 421.21
+          "share_price": 820.21
         },
         {
           "ticker": "GRMN UN",
           "name": "GARMIN LTD",
           "cusip": "B3Z5T14",
           "shares": 54815,
-          "value": 13183555.65,
-          "weight": 1.64,
-          "weight_rank": 23,
-          "share_price": 240.51
+          "value": 13321689.45,
+          "weight": 1.7,
+          "weight_rank": 22,
+          "share_price": 243.03
         },
         {
-          "ticker": "DASH",
-          "name": "DOORDASH INC - A",
-          "cusip": "25809K105",
-          "shares": 71916,
-          "value": 12781630.68,
-          "weight": 1.59,
-          "weight_rank": 24,
-          "share_price": 177.73
+          "ticker": "TSM",
+          "name": "TAIWAN SEMICONDUCTOR-SP ADR",
+          "cusip": "874039100",
+          "shares": 32251,
+          "value": 13010375.91,
+          "weight": 1.66,
+          "weight_rank": 23,
+          "share_price": 403.41
         },
         {
           "ticker": "BWXT",
           "name": "BWX TECHNOLOGIES INC",
           "cusip": "05605H100",
           "shares": 71435,
-          "value": 12513268.95,
-          "weight": 1.56,
-          "weight_rank": 25,
-          "share_price": 175.17
+          "value": 12466836.2,
+          "weight": 1.59,
+          "weight_rank": 24,
+          "share_price": 174.52
         },
         {
-          "ticker": "LUNR",
-          "name": "INTUITIVE MACHINES INC",
-          "cusip": "46125A100",
-          "shares": 813774,
-          "value": 11466075.66,
-          "weight": 1.43,
-          "weight_rank": 26,
-          "share_price": 14.09
+          "ticker": "DASH",
+          "name": "DOORDASH INC - A",
+          "cusip": "25809K105",
+          "shares": 71916,
+          "value": 12434995.56,
+          "weight": 1.58,
+          "weight_rank": 25,
+          "share_price": 172.91
         },
         {
           "ticker": "TDY",
           "name": "TELEDYNE TECHNOLOGIES INC",
           "cusip": "879360105",
           "shares": 17289,
-          "value": 11246494.5,
-          "weight": 1.4,
-          "weight_rank": 27,
-          "share_price": 650.5
+          "value": 11330346.15,
+          "weight": 1.44,
+          "weight_rank": 26,
+          "share_price": 655.35
         },
         {
           "ticker": "2618",
           "name": "JD LOGISTICS INC",
           "cusip": "BNMBPD9",
           "shares": 6282058,
-          "value": 11023824.89,
-          "weight": 1.37,
+          "value": 11207088.93,
+          "weight": 1.43,
+          "weight_rank": 27,
+          "share_price": 1.78
+        },
+        {
+          "ticker": "LUNR",
+          "name": "INTUITIVE MACHINES INC",
+          "cusip": "46125A100",
+          "shares": 813774,
+          "value": 10513960.08,
+          "weight": 1.34,
           "weight_rank": 28,
-          "share_price": 1.75
+          "share_price": 12.92
         },
         {
           "ticker": "XE",
           "name": "X-ENERGY INC",
           "cusip": "98386P102",
           "shares": 596243,
-          "value": 9808197.35,
-          "weight": 1.22,
+          "value": 8681298.08,
+          "weight": 1.11,
           "weight_rank": 29,
-          "share_price": 16.45
-        },
-        {
-          "ticker": "AIR",
-          "name": "AIRBUS SE",
-          "cusip": "4012250",
-          "shares": 34502,
-          "value": 8200420.59,
-          "weight": 1.02,
-          "weight_rank": 30,
-          "share_price": 237.68
-        },
-        {
-          "ticker": "SNPS",
-          "name": "SYNOPSYS INC",
-          "cusip": "871607107",
-          "shares": 19646,
-          "value": 7418526.06,
-          "weight": 0.92,
-          "weight_rank": 31,
-          "share_price": 377.61
+          "share_price": 14.56
         },
         {
           "ticker": "LMT",
           "name": "LOCKHEED MARTIN CORP",
           "cusip": "539830109",
           "shares": 13996,
-          "value": 7198982.56,
-          "weight": 0.9,
+          "value": 8154069.6,
+          "weight": 1.04,
+          "weight_rank": 30,
+          "share_price": 582.6
+        },
+        {
+          "ticker": "AIR",
+          "name": "AIRBUS SE",
+          "cusip": "4012250",
+          "shares": 34502,
+          "value": 8083433.32,
+          "weight": 1.03,
+          "weight_rank": 31,
+          "share_price": 234.29
+        },
+        {
+          "ticker": "SNPS",
+          "name": "SYNOPSYS INC",
+          "cusip": "871607107",
+          "shares": 19646,
+          "value": 7337191.62,
+          "weight": 0.93,
           "weight_rank": 32,
-          "share_price": 514.36
+          "share_price": 373.47
         },
         {
           "ticker": "HON UW",
           "name": "HONEYWELL INTERNATIONAL INC",
           "cusip": "438516205",
           "shares": 20790,
-          "value": 4843862.1,
-          "weight": 0.6,
+          "value": 5055088.5,
+          "weight": 0.64,
           "weight_rank": 33,
-          "share_price": 232.99
+          "share_price": 243.15
         },
         {
           "ticker": "HONA",
           "name": "HONEYWELL AEROSPACE INC",
           "cusip": "43849R105",
           "shares": 20790,
-          "value": 4319746.2,
+          "value": 4242615.3,
           "weight": 0.54,
           "weight_rank": 34,
-          "share_price": 207.78
+          "share_price": 204.07
         },
         {
           "ticker": "GOOGL",
           "name": "ALPHABET INC-CL A",
           "cusip": "02079K305",
           "shares": 6586,
-          "value": 2253004.74,
-          "weight": 0.28,
+          "value": 2105807.64,
+          "weight": 0.27,
           "weight_rank": 35,
-          "share_price": 342.09
+          "share_price": 319.74
         },
         {
           "ticker": "SRTA",
           "name": "STRATA CRITICAL MEDICAL INC",
           "cusip": "092667104",
-          "shares": 359760,
-          "value": 1827580.8,
-          "weight": 0.23,
+          "shares": 239643,
+          "value": 1207800.72,
+          "weight": 0.15,
           "weight_rank": 36,
-          "share_price": 5.08
+          "share_price": 5.04
         },
         {
           "ticker": null,
           "name": "GOLDMAN FS TRSY OBLIG INST 468",
           "cusip": "X9USDGSFT",
-          "shares": 1770013,
-          "value": 1770013.2,
-          "weight": 0.22,
+          "shares": 1085342,
+          "value": 1085342.48,
+          "weight": 0.14,
           "weight_rank": 37,
           "share_price": 1.0
         }
