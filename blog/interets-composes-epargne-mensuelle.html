@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#34D399" />
+<title>Intérêts composés : combien rapporte vraiment 100 € par mois ? — CalcInvest</title>
+<meta name="description" content="Calcul complet des intérêts composés sur une épargne mensuelle : tableaux à 2, 4, 6 et 8 %/an sur 10 à 40 ans, point de bascule, coût du retard, inflation et fiscalité française." />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/blog/interets-composes-epargne-mensuelle" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Intérêts composés : combien rapporte vraiment 100 € par mois ? — CalcInvest" />
+<meta property="og:description" content="Le calcul complet de l'intérêt composé sur une épargne mensuelle : tableaux par taux et par durée, point de bascule, coût du retard, inflation et fiscalité." />
+<meta property="og:url" content="https://calcinvest.fr/blog/interets-composes-epargne-mensuelle" />
+<meta property="og:image" content="https://calcinvest.fr/assets/og/simulateur-interets-composes.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/og/simulateur-interets-composes.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="/assets/css/style.css" as="style" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Intérêts composés : combien rapporte vraiment 100 € par mois ?", "description": "Calcul complet des intérêts composés sur une épargne mensuelle : tableaux à 2, 4, 6 et 8 %/an sur 10 à 40 ans, point de bascule, coût du retard, inflation et fiscalité française.", "url": "https://calcinvest.fr/blog/interets-composes-epargne-mensuelle", "datePublished": "2026-08-29", "dateModified": "2026-08-29", "author": {"@type": "Person", "@id": "https://calcinvest.fr/a-propos#nicolas", "name": "Nicolas D.", "url": "https://calcinvest.fr/a-propos", "sameAs": ["https://x.com/nicoladoz1"]}, "publisher": {"@type": "Organization", "name": "CalcInvest", "logo": {"@type": "ImageObject", "url": "https://calcinvest.fr/assets/icons/icon-512.png"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://calcinvest.fr/blog/interets-composes-epargne-mensuelle"}, "image": "https://calcinvest.fr/assets/og/simulateur-interets-composes.png"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://calcinvest.fr/blog"}, {"@type": "ListItem", "position": 3, "name": "Intérêts composés sur une épargne mensuelle", "item": "https://calcinvest.fr/blog/interets-composes-epargne-mensuelle"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Combien rapporte 100 € par mois pendant 20 ans ?", "acceptedAnswer": {"@type": "Answer", "text": "Avec 100 € versés chaque mois pendant 20 ans, vous versez 24 000 € de votre poche. À 2 %/an vous obtenez environ 29 500 €, à 4 %/an environ 36 700 €, à 6 %/an environ 46 200 € et à 8 %/an environ 58 900 €. L'écart entre 2 % et 8 % dépasse donc le total du capital versé."}}, {"@type": "Question", "name": "Quelle est la formule des intérêts composés avec versements mensuels ?", "acceptedAnswer": {"@type": "Answer", "text": "La formule est C = V × [((1 + t)^n − 1) / t], où V est le versement mensuel, t le taux mensuel (taux annuel divisé par 12) et n le nombre de mois. Pour 100 € par mois à 6 %/an sur 30 ans : t = 0,005, n = 360, ce qui donne environ 100 452 €."}}, {"@type": "Question", "name": "Au bout de combien de temps les intérêts dépassent-ils les versements ?", "acceptedAnswer": {"@type": "Answer", "text": "Ce point de bascule ne dépend pas du montant épargné, uniquement du taux. À 8 %/an il survient après environ 15,8 ans, à 6 %/an après 21,1 ans, à 4 %/an après 31,6 ans et à 2 %/an après 63 ans. C'est la raison pour laquelle un taux faible ne produit jamais d'effet boule de neige sur une vie d'épargne."}}, {"@type": "Question", "name": "L'inflation change-t-elle le calcul des intérêts composés ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, et fortement. Un capital de 121 997 € obtenu avec 100 € par mois pendant 30 ans à 7 %/an ne représente plus que 81 733 € de pouvoir d'achat d'aujourd'hui si l'inflation tourne à 2 %/an. Il faut raisonner en taux réel, soit environ 4,90 %/an dans cet exemple."}}]}</script>
+</head>
+<body>
+<noscript>
+<div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px 20px;text-align:center;font-family:system-ui,sans-serif;font-size:14px;z-index:10000">
+  <strong>JavaScript est requis</strong> pour utiliser les simulateurs CalcInvest.
+</div>
+</noscript>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2L22 12L12 22L2 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 2L17 12L12 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" opacity="0.5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+      </div>
+      <div class="logo-text"><div class="logo-text-main">CalcInvest</div></div>
+    </a>
+  </div>
+  <nav class="topbar-nav">
+    <a href="/#outils" class="topbar-nav-link">Outils</a>
+    <a href="/methodologie" class="topbar-nav-link">Méthodologie</a>
+    <a href="/blog" class="topbar-nav-link active">Blog</a>
+    <a href="/abonnement" class="topbar-nav-link">Tarifs</a>
+  </nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<section class="article-hero">
+  <div class="article-hero-inner reveal">
+    <div class="article-breadcrumb">
+      <a href="/blog">Blog</a>
+      <span class="article-breadcrumb-sep">›</span>
+      <span>Épargne</span>
+    </div>
+    <span class="article-category-tag">Épargne</span>
+    <h1 class="article-title">Intérêts composés : combien rapporte vraiment 100 € par mois ?</h1>
+    <p class="article-subtitle">Le calcul complet, sans formule magique : ce que produisent 100 € mensuels selon le taux et la durée, à quel moment les intérêts dépassent vos versements, ce que l'inflation en retire et ce que le fisc français en prélève.</p>
+    <div class="article-meta">
+      <span class="article-meta-author">
+        <span class="article-meta-avatar">N</span>
+        Nicolas D.
+      </span>
+      <span class="article-meta-sep">·</span>
+      <span>29 août 2026</span>
+      <span class="article-meta-sep">·</span>
+      <span>12 min de lecture</span>
+    </div>
+  </div>
+</section>
+
+<main class="main fade-in" style="max-width:1280px;margin:0 auto;padding:48px 32px 96px">
+
+  <div class="article-shell">
+
+    <aside class="article-toc">
+      <div class="article-toc-title">Sommaire</div>
+      <a href="#mecanique">La mécanique et la formule</a>
+      <a href="#tableau">100 €/mois selon le taux</a>
+      <a href="#bascule">Le point de bascule</a>
+      <a href="#retard">Ce que coûte le retard</a>
+      <a href="#inflation">Le piège de l'inflation</a>
+      <a href="#fiscalite">Ce que prend le fisc</a>
+      <a href="#ou-placer">Où placer selon l'horizon</a>
+      <a href="#erreurs">4 erreurs de calcul</a>
+      <a href="#simuler">Simuler votre cas</a>
+    </aside>
+
+    <article class="article-content">
+
+      <p>« L'intérêt composé est la huitième merveille du monde. » La citation est attribuée à Einstein, il ne l'a probablement jamais prononcée, et surtout elle n'apprend rien à personne. Ce qui manque dans la plupart des articles sur le sujet, ce sont les chiffres : <strong>combien, exactement, pour un effort d'épargne donné</strong>.</p>
+
+      <p>Cet article prend le cas le plus courant — une somme modeste versée chaque mois — et le déroule jusqu'au bout : le capital brut, le moment où la machine s'emballe, ce que l'inflation en retire, et ce qu'il reste après impôt selon l'enveloppe choisie. Tous les montants sont calculés, pas arrondis à la louche.</p>
+
+      <h2 id="mecanique">La mécanique : pourquoi ça n'est pas une addition</h2>
+
+      <p>L'intérêt simple rapporte toujours sur le capital de départ. L'intérêt composé rapporte sur le capital <em>plus les intérêts déjà produits</em>. La différence paraît anodine la première année ; elle devient l'essentiel du résultat après vingt ans.</p>
+
+      <p>Quand on épargne une somme fixe chaque mois, chaque versement démarre sa propre capitalisation à une date différente. Le versement du premier mois travaille pendant toute la durée, celui du dernier mois ne travaille pas du tout. Le capital final est la somme de toutes ces trajectoires décalées :</p>
+
+      <div class="info-box">
+        <p style="margin:0"><strong>Formule d'une épargne mensuelle capitalisée</strong></p>
+        <p class="mono" style="margin:10px 0 0;font-size:15px">C = V × [ ( (1 + t)<sup>n</sup> − 1 ) ÷ t ]</p>
+        <p style="margin:10px 0 0;font-size:13px;color:var(--text-2)">où <strong>V</strong> = versement mensuel, <strong>t</strong> = taux mensuel (taux annuel ÷ 12) et <strong>n</strong> = nombre de mois. Exemple avec 100 € par mois à 6 %/an pendant 30 ans : t = 0,005, n = 360, soit <strong>100 452 €</strong> pour 36 000 € versés.</p>
+      </div>
+
+      <p>Une précision qui change les résultats de quelques pourcents : tous les calculs de cet article supposent des versements en <strong>fin de mois</strong>. Verser en début de mois ajoute un mois de capitalisation à chaque versement, soit environ 0,5 % de capital final en plus à 6 %/an. Beaucoup de simulateurs ne précisent pas cette convention, ce qui explique une bonne partie des écarts que vous pouvez constater d'un outil à l'autre.</p>
+
+      <h2 id="tableau">Ce que donnent réellement 100 € par mois</h2>
+
+      <p>Voici le tableau de référence. Même effort d'épargne — 100 € par mois, soit 1 200 € par an — décliné selon le taux annuel obtenu et la durée de placement :</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Taux annuel</th>
+            <th>10 ans</th>
+            <th>20 ans</th>
+            <th>30 ans</th>
+            <th>40 ans</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>2 %</strong> <span style="color:var(--text-3);font-size:12px">livret</span></td><td class="mono">13 272 €</td><td class="mono">29 480 €</td><td class="mono">49 273 €</td><td class="mono">73 444 €</td></tr>
+          <tr><td><strong>4 %</strong> <span style="color:var(--text-3);font-size:12px">fonds euros</span></td><td class="mono">14 725 €</td><td class="mono">36 677 €</td><td class="mono">69 405 €</td><td class="mono">118 196 €</td></tr>
+          <tr><td><strong>6 %</strong> <span style="color:var(--text-3);font-size:12px">actions prudent</span></td><td class="mono">16 388 €</td><td class="mono">46 204 €</td><td class="mono pos">100 452 €</td><td class="mono pos">199 149 €</td></tr>
+          <tr><td><strong>8 %</strong> <span style="color:var(--text-3);font-size:12px">actions optimiste</span></td><td class="mono">18 295 €</td><td class="mono">58 902 €</td><td class="mono pos">149 036 €</td><td class="mono pos">349 101 €</td></tr>
+          <tr style="border-top:2px solid var(--border)"><td><strong>Versé de votre poche</strong></td><td class="mono">12 000 €</td><td class="mono">24 000 €</td><td class="mono">36 000 €</td><td class="mono">48 000 €</td></tr>
+        </tbody>
+      </table>
+
+      <p><em>Versements de 100 € en fin de mois, taux constant, avant inflation et avant fiscalité. Les taux indiqués sont des ordres de grandeur d'enveloppes, pas des promesses de rendement.</em></p>
+
+      <p>Deux lectures s'imposent. Sur <strong>10 ans</strong>, l'écart entre le pire et le meilleur taux est d'environ 5 000 € — réel, mais pas spectaculaire : sur une durée courte, c'est votre effort d'épargne qui fait le résultat, pas le rendement. Sur <strong>40 ans</strong>, ce même écart atteint <strong>275 000 €</strong>, soit près de six fois la somme totale versée.</p>
+
+      <p>C'est le vrai enseignement du tableau : <strong>le taux ne compte presque pas à court terme et compte démesurément à long terme</strong>. Choisir son enveloppe avec soin n'a donc d'intérêt que si l'on tient la distance.</p>
+
+      <h2 id="bascule">Le point de bascule : quand votre argent travaille plus que vous</h2>
+
+      <p>Il existe un moment précis où le capital accumulé se compose pour plus de la moitié d'intérêts, et où vous devenez minoritaire dans votre propre épargne. C'est le seul instant qui mérite vraiment le nom d'« effet boule de neige ».</p>
+
+      <p>Ce point de bascule a une propriété surprenante : <strong>il ne dépend pas du montant que vous épargnez</strong>. Que vous versiez 50 € ou 2 000 € par mois, il tombe exactement à la même date. Seul le taux le détermine.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Taux annuel</th>
+            <th>Bascule atteinte après</th>
+            <th>Ce que ça signifie</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>2 %</strong></td><td class="mono neg">63,0 ans</td><td>Hors de portée d'une vie d'épargne</td></tr>
+          <tr><td><strong>4 %</strong></td><td class="mono">31,6 ans</td><td>Atteignable si l'on commence jeune</td></tr>
+          <tr><td><strong>6 %</strong></td><td class="mono pos">21,1 ans</td><td>Bascule avant la retraite dans la plupart des cas</td></tr>
+          <tr><td><strong>8 %</strong></td><td class="mono pos">15,8 ans</td><td>Bascule en milieu de parcours</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ce tableau explique en une ligne pourquoi une épargne de précaution ne rend jamais riche. Sur un support à 2 %, la bascule arrive après 63 ans : autrement dit, <strong>elle n'arrive jamais</strong>. Vous resterez, toute votre vie, le principal contributeur de votre propre capital. Ce n'est pas un défaut du livret — c'est son rôle : la sécurité et la disponibilité, pas la croissance.</p>
+
+      <p>À l'inverse, à 6 %, la bascule tombe vers 21 ans. Quelqu'un qui commence à 30 ans voit sa courbe changer de nature vers 51 ans, et passe les quinze années suivantes à regarder les intérêts faire le gros du travail à sa place.</p>
+
+      <h2 id="retard">Ce que coûte le fait de commencer plus tard</h2>
+
+      <p>C'est le calcul le plus brutal de tout le sujet. Prenons une épargne de <strong>200 € par mois jusqu'à 65 ans</strong>, à 7 %/an, et faisons uniquement varier l'âge de départ :</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Début</th>
+            <th>Durée</th>
+            <th>Versé</th>
+            <th>Capital à 65 ans</th>
+            <th>Dont intérêts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>25 ans</strong></td><td class="mono">40 ans</td><td class="mono">96 000 €</td><td class="mono pos">524 963 €</td><td class="mono pos">428 963 €</td></tr>
+          <tr><td><strong>30 ans</strong></td><td class="mono">35 ans</td><td class="mono">84 000 €</td><td class="mono pos">360 211 €</td><td class="mono">276 211 €</td></tr>
+          <tr><td><strong>35 ans</strong></td><td class="mono">30 ans</td><td class="mono">72 000 €</td><td class="mono">243 994 €</td><td class="mono">171 994 €</td></tr>
+          <tr><td><strong>40 ans</strong></td><td class="mono">25 ans</td><td class="mono">60 000 €</td><td class="mono">162 014 €</td><td class="mono">102 014 €</td></tr>
+          <tr><td><strong>45 ans</strong></td><td class="mono">20 ans</td><td class="mono">48 000 €</td><td class="mono neg">104 185 €</td><td class="mono neg">56 185 €</td></tr>
+        </tbody>
+      </table>
+
+      <p>Entre un départ à 25 ans et un départ à 45 ans, l'effort supplémentaire représente 48 000 € versés — mais le capital final est multiplié par <strong>cinq</strong>, avec 420 000 € d'écart. Chaque tranche de cinq ans de retard, prise tôt, coûte plus cher que toutes les optimisations fiscales que vous pourrez faire par la suite.</p>
+
+      <p>Formulé autrement : <strong>les cinq premières années d'épargne pèsent plus lourd que les quinze dernières</strong>, parce qu'elles sont les seules à bénéficier de la totalité de la durée de capitalisation. C'est aussi pour cette raison qu'il vaut mieux commencer avec 50 € tout de suite que d'attendre de pouvoir en mettre 300.</p>
+
+      <h2 id="inflation">Le piège : votre capital futur ne vaut pas ce que vous croyez</h2>
+
+      <p>Tous les chiffres précédents sont nominaux. Ils ne disent pas ce que vous pourrez <em>acheter</em> avec. Or 100 000 € en 2056 n'ont rien à voir avec 100 000 € aujourd'hui.</p>
+
+      <p>Reprenons 100 € par mois pendant 30 ans à 7 %/an, avec une inflation de 2 %/an :</p>
+
+      <table>
+        <thead>
+          <tr><th>Lecture</th><th>Montant</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Versé de votre poche</td><td class="mono">36 000 €</td></tr>
+          <tr><td>Capital nominal à 30 ans</td><td class="mono pos">121 997 €</td></tr>
+          <tr><td>Taux réel (7 % corrigé de 2 % d'inflation)</td><td class="mono">4,90 %</td></tr>
+          <tr><td><strong>Pouvoir d'achat en euros d'aujourd'hui</strong></td><td class="mono warn"><strong>81 733 €</strong></td></tr>
+        </tbody>
+      </table>
+
+      <p>L'inflation retire <strong>40 264 €</strong> de pouvoir d'achat, soit un tiers du capital affiché. Et attention à la tentation de soustraire les taux : le calcul correct n'est pas 7 − 2 = 5 %, mais (1,07 ÷ 1,02) − 1 = <strong>4,90 %</strong>. L'écart paraît minuscule sur une année et représente plusieurs milliers d'euros sur trente ans.</p>
+
+      <p>La conséquence pratique est directe : sur un support à 2 % avec une inflation à 2 %, votre rendement réel est <strong>nul</strong>. Vous ne perdez pas d'argent, vous n'en gagnez pas non plus — vous conservez du pouvoir d'achat, ce qui reste exactement le but d'une épargne de précaution, mais ne construit aucun patrimoine.</p>
+
+      <h2 id="fiscalite">Ce que le fisc français prélève au bout du compte</h2>
+
+      <p>Dernière couche, souvent absente des simulateurs anglo-saxons : l'impôt. Sur les 85 997 € de gains de l'exemple précédent, voici ce qui reste selon l'enveloppe :</p>
+
+      <table>
+        <thead>
+          <tr><th>Enveloppe</th><th>Taux sur les gains</th><th>Impôt</th><th>Capital net</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>PEA</strong> après 5 ans</td><td class="mono">17,2 %</td><td class="mono">14 792 €</td><td class="mono pos">107 206 €</td></tr>
+          <tr><td><strong>Assurance-vie</strong> après 8 ans</td><td class="mono">17,2 %</td><td class="mono">14 792 €</td><td class="mono pos">107 206 €</td></tr>
+          <tr><td><strong>Compte-titres</strong> (PFU)</td><td class="mono">30,0 %</td><td class="mono neg">25 799 €</td><td class="mono">96 198 €</td></tr>
+          <tr><td><strong>Livret A</strong> (à 3 %, plafonné)</td><td class="mono">0 %</td><td class="mono">0 €</td><td class="mono neg">58 274 €</td></tr>
+        </tbody>
+      </table>
+
+      <p><em>PEA après 5 ans : seuls les prélèvements sociaux de 17,2 % s'appliquent, l'impôt sur le revenu étant exonéré. Assurance-vie après 8 ans : 17,2 % de prélèvements sociaux, l'abattement annuel de 4 600 € (9 200 € pour un couple) neutralisant l'impôt sur le revenu dans la plupart des retraits progressifs. Compte-titres : prélèvement forfaitaire unique de 30 %.</em></p>
+
+      <p>Le PEA fait économiser <strong>11 008 €</strong> par rapport au compte-titres sur ce seul scénario — l'équivalent de plus de neuf années de versements. C'est l'argument décisif en faveur du PEA pour toute épargne en actions à horizon long, dans la limite de son plafond de 150 000 € de versements.</p>
+
+      <p>La dernière ligne mérite qu'on s'y arrête. Le Livret A n'est pas fiscalisé, ce qui semble imbattable — sauf que son rendement plafonne le capital à 58 274 €, soit <strong>49 000 € de moins</strong> que le PEA une fois l'impôt payé. Une exonération totale sur un rendement faible reste très inférieure à une fiscalité modérée sur un rendement correct. Sans compter que le Livret A est plafonné à 22 950 € de versements, montant dépassé dès la dix-neuvième année dans cet exemple.</p>
+
+      <h2 id="ou-placer">Où placer selon votre horizon</h2>
+
+      <p>Les tableaux précédents ne servent à rien si l'horizon ne correspond pas au support. La règle relève moins du rendement que du <strong>risque de devoir vendre au mauvais moment</strong> :</p>
+
+      <ul>
+        <li><strong>Moins de 2 ans</strong> — Livret A, LDDS, compte à terme. Le capital doit être disponible et garanti, point. Le rendement est secondaire.</li>
+        <li><strong>2 à 5 ans</strong> — Fonds euros d'assurance-vie, éventuellement complétés d'obligations. Sur cette durée, une baisse des marchés actions n'a pas le temps d'être rattrapée.</li>
+        <li><strong>5 à 10 ans</strong> — Mélange progressif : une part d'actions via <a href="/simulateur-dca">un investissement programmé</a>, une part sécurisée. C'est la zone où l'arbitrage devient réellement personnel.</li>
+        <li><strong>Plus de 10 ans</strong> — Actions en majorité, via PEA en priorité. C'est le seul horizon où les tableaux de cet article prennent vraiment leur sens, et le seul où la volatilité devient statistiquement supportable.</li>
+      </ul>
+
+      <p>Pour affiner ce découpage selon votre situation, deux outils complémentaires : <a href="/allocation-portefeuille">l'allocation de portefeuille</a> pour répartir entre classes d'actifs, et <a href="/calculateur-fire">le calculateur FIRE</a> si l'objectif est d'atteindre l'indépendance financière plutôt qu'un simple capital.</p>
+
+      <h2 id="erreurs">Quatre erreurs de calcul très répandues</h2>
+
+      <h3>Raisonner en rendement moyen sur un placement volatil</h3>
+
+      <p>Un placement qui fait +50 % puis −50 % n'a pas un rendement moyen de 0 % : 100 € deviennent 150 €, puis 75 €. La perte réelle est de 25 %. Sur des actifs volatils, c'est la <strong>moyenne géométrique</strong> (le CAGR) qui compte, jamais la moyenne arithmétique des performances annuelles. Les simulateurs qui appliquent un taux constant, celui de cet article inclus, donnent donc une trajectoire lissée qui ne ressemblera pas au parcours réel.</p>
+
+      <h3>Oublier les frais annuels</h3>
+
+      <p>Des frais de gestion de 1,5 %/an transforment un rendement de 7 % en 5,5 %. Sur 30 ans avec 100 € par mois, le capital passe alors de 121 997 € à environ 92 000 € : <strong>près de 30 000 € partis en frais</strong>, soit davantage que le total de vos versements sur les vingt-cinq premières années. C'est l'argument central en faveur des ETF, dont les frais tournent autour de 0,20 %/an.</p>
+
+      <h3>Comparer des capitaux à des dates différentes</h3>
+
+      <p>« Mon collègue a 80 000 € et moi 40 000 € » n'a aucun sens sans préciser depuis combien de temps chacun épargne et à quel rythme. À taux identique, cinq ans d'avance suffisent à créer un écart de 40 % qui ne se rattrapera jamais.</p>
+
+      <h3>Supposer que le taux sera constant</h3>
+
+      <p>Aucun marché ne délivre 7 % chaque année. Il délivre +22 %, puis −18 %, puis +9 %. Le capital final dépend fortement de <em>l'ordre</em> dans lequel ces années arrivent, tout particulièrement en phase de retrait. C'est le risque de séquence, et il n'apparaît dans aucun tableau à taux fixe — seulement dans une simulation qui rejoue de vrais historiques.</p>
+
+      <h2 id="simuler">Simuler votre propre cas</h2>
+
+      <p>Les chiffres de cet article reposent sur un versement fixe et un taux constant. Votre situation comporte des paramètres que ce cadre ne capture pas : versements qui augmentent avec vos revenus, capital de départ déjà constitué, frais réels de votre contrat, inflation variable, fiscalité propre à votre enveloppe.</p>
+
+      <div class="article-callout">
+        <div class="article-callout-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12l3-2 3 3 3-5 3 3 3-4"/></svg>
+          Faites le calcul sur vos propres chiffres
+        </div>
+        <p>Le <a href="/simulateur-interets-composes">calculateur d'intérêts composés CalcInvest</a> reprend les paramètres de cet article — versement mensuel, capital de départ, taux, durée, inflation, frais annuels et enveloppe fiscale — et affiche la courbe année par année ainsi que la part exacte d'intérêts dans votre capital. Gratuit, sans inscription.</p>
+      </div>
+
+      <p>Pour aller plus loin, si votre épargne est destinée aux marchés actions, <a href="/simulateur-dca">le simulateur DCA</a> rejoue votre versement mensuel sur les données historiques réelles depuis 1871 — krachs de 1929, 2000, 2008 et 2020 inclus. C'est toute la différence entre une courbe théorique parfaitement lisse et ce que vous auriez réellement vécu.</p>
+
+      <!-- ═══ Bio auteur (E-E-A-T) ═══ -->
+      <div class="ci-author-bio" style="display:flex;gap:16px;align-items:flex-start;padding:20px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);margin:32px 0 8px">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;flex-shrink:0;font:700 20px var(--font-sans);color:var(--accent)">N</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--text-2)">
+          <strong style="color:var(--text);font-size:14px">Nicolas D.</strong> — Investisseur particulier passionné de bourse et de crypto depuis plusieurs années. Je crée et maintiens les simulateurs CalcInvest pour tester mes propres stratégies sur données réelles.
+          <a href="/a-propos" style="color:var(--accent)">En savoir plus</a> ·
+          <a href="https://x.com/nicoladoz1" target="_blank" rel="noopener" style="color:var(--accent)">@nicoladoz1 sur X</a>
+        </div>
+      </div>
+
+      <!-- RELATED -->
+      <div class="article-related">
+        <div class="article-related-title">À lire aussi</div>
+        <div class="article-related-grid">
+          <a href="/blog/combien-investir-bourse-par-mois" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#1D4ED8 0%,#60A5FA 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40">
+                <rect x="8" y="44" width="14" height="24" rx="3"/>
+                <rect x="28" y="30" width="14" height="38" rx="3"/>
+                <rect x="48" y="16" width="14" height="52" rx="3"/>
+                <path d="M15 38l13-12 13 8 13-18" stroke-width="2.5"/>
+              </svg>
+            </div>
+            <div class="blog-card-body">
+              <div class="blog-card-meta"><span class="blog-card-meta-tag">Marchés</span><span>10 min</span></div>
+              <div class="blog-card-title">Combien investir en bourse par mois selon son salaire ?</div>
+            </div>
+          </a>
+          <a href="/blog/per-vs-assurance-vie-2026" class="blog-card">
+            <div class="blog-card-cover" style="background:linear-gradient(135deg,#7C3AED 0%,#A78BFA 100%);color:#fff;height:120px">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40">
+                <path d="M40 12v56M20 26h40M20 54h40"/>
+              </svg>
+            </div>
+            <div class="blog-card-body">
+              <div class="blog-card-meta"><span class="blog-card-meta-tag">Retraite</span><span>9 min</span></div>
+              <div class="blog-card-title">PER ou assurance-vie : lequel choisir en 2026 ?</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </article>
+
+    <!-- ASIDE -->
+    <aside class="article-aside">
+      <div class="article-aside-card">
+        <div class="article-aside-label">Outil mentionné</div>
+        <a href="/simulateur-interets-composes" class="article-aside-tool">
+          <div class="article-aside-tool-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M2 13c3-9 6 3 9-4 1.5-3.5 2.5-1 3-1"/></svg>
+          </div>
+          Calculateur d'intérêts composés
+        </a>
+      </div>
+      <div class="article-aside-card">
+        <div class="article-aside-label">Chiffres clés</div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text-2);line-height:1.8">
+          <li><strong>100 452 €</strong> avec 100 €/mois à 6 % sur 30 ans</li>
+          <li><strong>21,1 ans</strong> avant que les intérêts dépassent les versements à 6 %</li>
+          <li><strong>×5</strong> d'écart entre un départ à 25 ans et à 45 ans</li>
+          <li><strong>−33 %</strong> de pouvoir d'achat sur 30 ans à 2 % d'inflation</li>
+          <li><strong>11 008 €</strong> économisés via le PEA plutôt qu'un compte-titres</li>
+        </ul>
+      </div>
+      <div class="article-aside-card">
+        <div class="article-aside-label">Partager</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>CI.toast&&CI.toast('Lien copié ✓','success'))" style="flex:1;padding:8px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;color:var(--text-3);transition:var(--t-fast)" title="Copier le lien">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="display:block;margin:auto"><rect x="3" y="6" width="9" height="9" rx="1"/><path d="M6 6V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/></svg>
+          </button>
+          <a href="https://twitter.com/intent/tweet?text=Int%C3%A9r%C3%AAts%20compos%C3%A9s%20%3A%20combien%20rapporte%20vraiment%20100%20%E2%82%AC%20par%20mois%20%3F&url=https://calcinvest.fr/blog/interets-composes-epargne-mensuelle" target="_blank" rel="noopener" style="flex:1;padding:8px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);color:var(--text-3);text-align:center" title="Partager sur X">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14" style="display:block;margin:auto"><path d="M12.6 1.5h2.4l-5.2 6 6.2 8.2h-4.9l-3.8-5-4.4 5H.5l5.6-6.4L0 1.5h5l3.5 4.6L12.6 1.5zm-.9 12.7h1.3L4.4 2.8H3l8.7 11.4z"/></svg>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div>Simulation à titre informatif · Les taux présentés sont des hypothèses de calcul, non des rendements garantis · Fiscalité française en vigueur en 2026</div>
+  <div><a href="/blog">← Tous les articles</a> · <a href="/simulateur-interets-composes">Calculateur d'intérêts composés</a> · <a href="/methodologie">Méthodologie</a></div>
+</footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script>
+  document.querySelectorAll('.article-toc a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 96;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+  (function () {
+    const links = document.querySelectorAll('.article-toc a');
+    if (!links.length || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const id = e.target.id;
+        links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + id));
+      });
+    }, { threshold: 0.2, rootMargin: '-120px 0px -60% 0px' });
+    document.querySelectorAll('.article-content [id]').forEach(s => obs.observe(s));
+  })();
+  CI.initAll && CI.initAll();
+</script>
+
+</body>
+</html>
