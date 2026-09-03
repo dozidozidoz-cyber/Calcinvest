@@ -378,19 +378,28 @@
   <!-- ─── Filtre catégories ─── -->
   <div class="blog-filter reveal" data-filter-group>
     <button class="blog-filter-btn is-active" data-filter="all">
-      Tous <span class="blog-filter-count">5</span>
+      Tous <span class="blog-filter-count">17</span>
     </button>
     <button class="blog-filter-btn" data-filter="strategie">
-      Stratégie <span class="blog-filter-count">2</span>
+      Stratégie <span class="blog-filter-count">6</span>
+    </button>
+    <button class="blog-filter-btn" data-filter="marches">
+      Marchés <span class="blog-filter-count">3</span>
+    </button>
+    <button class="blog-filter-btn" data-filter="epargne">
+      Épargne <span class="blog-filter-count">2</span>
     </button>
     <button class="blog-filter-btn" data-filter="immobilier">
-      Immobilier <span class="blog-filter-count">1</span>
+      Immobilier <span class="blog-filter-count">3</span>
     </button>
     <button class="blog-filter-btn" data-filter="retraite">
       Retraite <span class="blog-filter-count">1</span>
     </button>
     <button class="blog-filter-btn" data-filter="fiscalite">
       Fiscalité <span class="blog-filter-count">1</span>
+    </button>
+    <button class="blog-filter-btn" data-filter="trading">
+      Trading <span class="blog-filter-count">1</span>
     </button>
   </div>
 
@@ -813,8 +822,24 @@
   // Filtre articles par catégorie
   (function () {
     const buttons = document.querySelectorAll('[data-filter-group] [data-filter]');
-    const articles = document.querySelectorAll('[data-cat]');
+    /* Scopé aux cartes du blog : '[data-cat]' seul attraperait aussi les
+       panneaux du megamenu injectés par common.js (qui portent le même
+       attribut). Ça ne casse rien aujourd'hui — ils sont injectés après
+       ce script — mais le filtre ne doit pas dépendre de cet ordre. */
+    const articles = document.querySelectorAll('.blog-articles-grid [data-cat], .blog-featured[data-cat]');
     if (!buttons.length) return;
+
+    /* Compteurs calculés depuis les articles réellement présents :
+       plus de valeurs figées à corriger à chaque nouvel article. */
+    buttons.forEach(btn => {
+      const f = btn.dataset.filter;
+      const n = f === 'all'
+        ? articles.length
+        : [...articles].filter(a => a.dataset.cat === f).length;
+      const badge = btn.querySelector('.blog-filter-count');
+      if (badge) badge.textContent = n;
+      if (n === 0 && f !== 'all') btn.style.display = 'none';
+    });
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         const filter = btn.dataset.filter;
