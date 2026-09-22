@@ -1,7 +1,17 @@
 /* ============================================================
-   CalcInvest — Core Impôt sur le Revenu (France 2025)
-   Barème progressif 2024 (déclaration 2025) · Quotient familial
+   CalcInvest — Core Impôt sur le Revenu (France)
+   Barème des revenus 2025 (déclaration 2026) · Quotient familial
    Décote · Abattement 10 % salaires · Plafonnement QF
+
+   Sources (vérifiées le 22/09/2026) :
+   - Tranches : loi de finances 2026 (loi n° 2026-103 du 19/02/2026),
+     indexation de 0,9 % des limites — BOFiP ACTU-2026-00022.
+   - Plafonds QF : BOFiP BOI-IR-LIQ-20-20-20, § III-A-40 et III-B-1-70.
+   - Abattement 10 % : impots.gouv.fr, déduction forfaitaire.
+
+   ⚠ À REVALORISER chaque année après la loi de finances. Les valeurs
+   sont regroupées ci-dessous et couvertes par tests/fisc/impot.test.js :
+   mettre à jour les deux ensemble.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -11,25 +21,33 @@
     return Number.isFinite(n) ? n : (fb || 0);
   }
 
-  // Barème IR 2025 (revenus 2024) — source impots.gouv.fr
+  // Barème IR 2026 (revenus 2025)
   const BRACKETS = [
-    { from: 0,      to: 11497,  rate: 0    },
-    { from: 11497,  to: 29315,  rate: 0.11 },
-    { from: 29315,  to: 83823,  rate: 0.30 },
-    { from: 83823,  to: 180294, rate: 0.41 },
-    { from: 180294, to: Infinity, rate: 0.45 }
+    { from: 0,      to: 11600,  rate: 0    },
+    { from: 11600,  to: 29579,  rate: 0.11 },
+    { from: 29579,  to: 84577,  rate: 0.30 },
+    { from: 84577,  to: 181917, rate: 0.41 },
+    { from: 181917, to: Infinity, rate: 0.45 }
   ];
 
-  // Plafond avantage QF par demi-part supplémentaire (2025) : 1 791 €
-  const QF_CAP_PER_HALFPART = 1791;
-  // Décote (2025) : si IR < 1 964 (célib) ou 3 248 (couple), application décote
-  const DECOTE_THRESHOLD_SINGLE = 1964;
-  const DECOTE_THRESHOLD_COUPLE = 3248;
+  // Plafonnement du quotient familial (revenus 2025)
+  const QF_CAP_PER_HALFPART = 1807;   // par demi-part supplémentaire
+  // La part entière liée au 1er enfant d'un parent isolé (case T) relève
+  // d'un plafond spécifique, bien supérieur au générique. Sans lui, l'impôt
+  // de ces foyers était surestimé de plusieurs centaines d'euros.
+  const QF_CAP_PARENT_ISOLE = 4262;
+
+  // Décote (revenus 2025). Cohérence : seuil = somme fixe ÷ taux.
+  //   897 / 0,4525 = 1 982   ·   1 483 / 0,4525 = 3 277
+  const DECOTE_THRESHOLD_SINGLE = 1982;
+  const DECOTE_THRESHOLD_COUPLE = 3277;
+  const DECOTE_REF_SINGLE = 897;
+  const DECOTE_REF_COUPLE = 1483;
   const DECOTE_RATE = 0.4525;
 
-  // Plafond abattement 10 % frais professionnels
-  const ABATTEMENT_MIN = 504;
-  const ABATTEMENT_MAX = 14426;
+  // Abattement forfaitaire 10 % frais professionnels (revenus 2025)
+  const ABATTEMENT_MIN = 509;
+  const ABATTEMENT_MAX = 14555;
 
   /**
    * Calcule l'IR brut sur un revenu net imposable par part.
@@ -106,7 +124,19 @@
     const irSansQF = irOnPart(revenuNetImposable / partsBase) * partsBase;
     const avantageQF = irSansQF - irAvecQF;
     const halfParts = (parts - partsBase) * 2; // nombre de demi-parts supplémentaires
-    const plafondAvantage = halfParts * QF_CAP_PER_HALFPART;
+
+    // Parent isolé : le 1er enfant ouvre droit à une PART entière (2 demi-parts)
+    // dont l'avantage relève d'un plafond spécifique et global — pas du
+    // plafond générique appliqué demi-part par demi-part. Les demi-parts
+    // suivantes (enfants 2, 3…) restent au plafond générique.
+    const beneficieCaseT = parentIsole && enfants >= 1 && adultes === 1;
+    let plafondAvantage;
+    if (beneficieCaseT) {
+      const halfPartsRestantes = Math.max(halfParts - 2, 0);
+      plafondAvantage = QF_CAP_PARENT_ISOLE + halfPartsRestantes * QF_CAP_PER_HALFPART;
+    } else {
+      plafondAvantage = halfParts * QF_CAP_PER_HALFPART;
+    }
 
     let irApresPlafond = irAvecQF;
     let plafondAtteint = false;
@@ -119,7 +149,7 @@
     const seuil = adultes === 2 ? DECOTE_THRESHOLD_COUPLE : DECOTE_THRESHOLD_SINGLE;
     let decote = 0;
     if (irApresPlafond < seuil) {
-      const ref = adultes === 2 ? 1444 : 873; // valeurs 2025
+      const ref = adultes === 2 ? DECOTE_REF_COUPLE : DECOTE_REF_SINGLE;
       decote = Math.max(ref - irApresPlafond * DECOTE_RATE, 0);
       decote = Math.min(decote, irApresPlafond);
     }
@@ -245,8 +275,10 @@
 
   const api = {
     calcIR, compareScenarios, marginalCost, perOptimizer,
-    BRACKETS, QF_CAP_PER_HALFPART,
+    BRACKETS, QF_CAP_PER_HALFPART, QF_CAP_PARENT_ISOLE,
     DECOTE_THRESHOLD_SINGLE, DECOTE_THRESHOLD_COUPLE,
+    DECOTE_REF_SINGLE, DECOTE_REF_COUPLE,
+    ABATTEMENT_MIN, ABATTEMENT_MAX,
     abattementSalaire, tmiFromPart, irOnPart
   };
 

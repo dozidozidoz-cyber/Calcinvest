@@ -11,15 +11,20 @@
     return Number.isFinite(n) ? n : (fb || 0);
   }
 
-  // Barème IR français 2025 (revenus 2024)
-  // Source : impots.gouv.fr
-  const IR_BRACKETS = [
-    { from: 0,      to: 11497,  rate: 0    },
-    { from: 11497,  to: 29315,  rate: 0.11 },
-    { from: 29315,  to: 83823,  rate: 0.30 },
-    { from: 83823,  to: 180294, rate: 0.41 },
-    { from: 180294, to: Infinity, rate: 0.45 }
-  ];
+  // Barème IR : source unique dans calc-impot.js.
+  // Ce module en gardait une copie, restée au millésime précédent pendant
+  // que calc-impot.js était mis à jour — exactement ce qu'une duplication
+  // finit par produire. La page doit charger calc-impot.js AVANT celui-ci.
+  const isNode = typeof module !== 'undefined' && module.exports;
+  const IR_SRC = isNode ? require('./calc-impot') : global.IR;
+
+  if (!IR_SRC || !IR_SRC.BRACKETS) {
+    if (typeof console !== 'undefined') {
+      console.error('[calc-fisca-trading.js] Dépendance manquante : charger core/calc-impot.js avant ce fichier.');
+    }
+    return;
+  }
+  const IR_BRACKETS = IR_SRC.BRACKETS;
 
   /**
    * Calcule l'IR sur un revenu donné selon le barème progressif.
