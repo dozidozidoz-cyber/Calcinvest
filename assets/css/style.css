@@ -4143,6 +4143,28 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; } /* subnav 48 + marge
   border: 1px solid var(--border);
 }
 
+/* Mobile : la recherche se replie sur sa seule icône.
+   Le bouton complet fait 180 px de large et était coupé par le bord de
+   l’écran en dessous de 426 px de viewport (−51 px sur iPhone SE, −36 px
+   sur iPhone 14, −66 px sur un Android de 360 px). Le raccourci Ctrl K
+   n’a de toute façon aucun sens sur tactile.
+   Le clic reste fonctionnel et aria-label="Rechercher" (posé par
+   common.js) porte l’intitulé pour les lecteurs d’écran.
+   ⚠ Doit rester APRÈS .cmdk-trigger ci-dessus : à spécificité égale,
+   c’est l’ordre du fichier qui tranche. */
+@media (max-width: 640px) {
+  .cmdk-trigger {
+    min-width: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+  }
+  .cmdk-trigger-text,
+  .cmdk-trigger kbd { display: none; }
+}
+
 /* ============================================================
    DARK MODE TOGGLE — bouton dans le topbar
    ============================================================ */
