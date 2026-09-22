@@ -525,17 +525,34 @@
         }
       });
 
-      // Inline math expressions: "1500*12" → 18000 au blur
+      // Au blur : évalue les expressions ("1500*12" → 18000) ET borne la
+      // saisie clavier sur data-min/data-max.
+      // Avant, un nombre simple sortait en early-return et n'était jamais
+      // borné : seuls les boutons +/− respectaient les bornes. Taper
+      // "-1000" dans un champ salaire produisait donc un net négatif.
+      // L'arrondi à la précision du pas reste réservé aux expressions :
+      // l'appliquer à une saisie directe casserait les décimales (un taux
+      // de 2.5 avec step=1 deviendrait 3).
       input.addEventListener('blur', () => {
-        const raw = input.value;
-        if (!raw || /^-?\d+(\.\d+)?$/.test(raw.trim())) return;
-        const result = CI.evalExpression && CI.evalExpression(raw);
-        if (result == null) return;
-        let next = result;
+        const raw = (input.value || '').trim();
+        if (!raw) return;
+
+        const estNombreSimple = /^-?\d+(\.\d+)?$/.test(raw);
+        let next;
+
+        if (estNombreSimple) {
+          next = parseFloat(raw);
+        } else {
+          const result = CI.evalExpression && CI.evalExpression(raw);
+          if (result == null) return;
+          const decimals = (String(step).split('.')[1] || '').length;
+          next = parseFloat(result.toFixed(decimals));
+        }
+
         if (min !== null && next < min) next = min;
         if (max !== null && next > max) next = max;
-        const decimals = (String(step).split('.')[1] || '').length;
-        next = parseFloat(next.toFixed(decimals));
+
+        if (next === parseFloat(raw)) return;   // inchangé : pas d'événement inutile
         input.value = next;
         input.dispatchEvent(new Event('input',  { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));

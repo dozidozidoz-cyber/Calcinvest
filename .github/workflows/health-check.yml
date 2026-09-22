@@ -30,6 +30,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Tests unitaires (moteur, simulations, fiscalité)
+        run: npm test
+
       - name: Liens internes
         run: python scripts/check_links.py
 

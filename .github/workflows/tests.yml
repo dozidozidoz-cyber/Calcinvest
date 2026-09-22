@@ -1,0 +1,37 @@
+# ============================================================
+# CalcInvest — Tests unitaires
+# ============================================================
+# À chaque push sur main et sur chaque pull request.
+#
+# Le health-check hebdomadaire les lance aussi, mais une fois par
+# semaine seulement : une régression pourrait vivre 7 jours avant
+# d'être vue. C'est ici que les tests deviennent protecteurs.
+#
+# Couvre : moteur probabiliste (engine/), simulations (sim/),
+# calculateurs (calculators/) et modules fiscaux FR (fisc/).
+# Aucune dépendance npm nécessaire : node:test + node:assert seulement.
+# ============================================================
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Tests unitaires
+        run: npm test
