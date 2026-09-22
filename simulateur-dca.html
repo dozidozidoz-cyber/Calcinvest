@@ -561,7 +561,7 @@
             </div>
             <div class="field-grid" style="margin-top:14px">
               <div class="field">
-                <label class="field-label">Durée d'investissement</label>
+                <label class="field-label" for="d-duration">Durée d'investissement</label>
                 <div class="stepper" data-step="1" data-min="1" data-max="60">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="d-duration" value="20" />
@@ -581,7 +581,7 @@
                 <div style="font-size:11px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)" id="d-date-hint">Sortie : —</div>
               </div>
               <div class="field" id="d-end-field" hidden>
-                <label class="field-label">Date de sortie</label>
+                <label class="field-label" for="d-end">Date de sortie</label>
                 <input class="select" type="month" id="d-end" />
                 <div style="font-size:11px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)" id="d-end-hint">Plage : —</div>
               </div>
@@ -596,7 +596,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Capital initial</label>
+                <label class="field-label" for="d-initial">Capital initial</label>
                 <div class="stepper" data-step="1000" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="d-initial" value="20000" />
@@ -611,15 +611,15 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Déploiement</label>
-                <div class="mode-toggle" id="d-deployment">
+                <div class="field-label" id="d-deployment-label">Déploiement</div>
+                <div role="group" aria-labelledby="d-deployment-label" class="mode-toggle" id="d-deployment">
                   <button data-val="lump" class="active">En une fois</button>
                   <button data-val="spread">DCA étalé (12 mois)</button>
                 </div>
                 <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="d-deployment-hint">Capital investi entièrement au mois d'entrée</div>
               </div>
               <div class="field field-full">
-                <label class="field-label">Versement mensuel</label>
+                <label class="field-label" for="d-monthly">Versement mensuel</label>
                 <div class="stepper" data-step="50" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="d-monthly" value="500" />
@@ -634,7 +634,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Croissance annuelle du versement</label>
+                <label class="field-label" for="d-growth">Croissance annuelle du versement</label>
                 <div class="stepper" data-step="0.5" data-min="0" data-max="15">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="d-growth" value="0" step="0.5" />
@@ -676,7 +676,7 @@
 
             <div class="field-grid" style="margin-top:14px">
               <div class="field">
-                <label class="field-label">Taux du cash (référence)</label>
+                <label class="field-label" for="d-cash">Taux du cash (référence)</label>
                 <div class="stepper" data-step="0.25" data-min="0" data-max="10">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="d-cash" value="2" step="0.25" />
@@ -691,7 +691,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Frais de l'ETF (TER)</label>
+                <label class="field-label" for="d-fees">Frais de l'ETF (TER)</label>
                 <div class="stepper" data-step="0.05" data-min="0" data-max="2">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="d-fees" value="0.20" step="0.05" />
@@ -1102,11 +1102,11 @@
         </div>
         <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap">
           <div class="field">
-            <label class="field-label">Date de début</label>
+            <label class="field-label" for="da8-start">Date de début</label>
             <input class="input" type="month" id="da8-start" style="width:140px" />
           </div>
           <div class="field">
-            <label class="field-label">Durée</label>
+            <label class="field-label" for="da8-duration">Durée</label>
             <div class="stepper" data-step="1" data-min="1" data-max="50" style="width:auto">
               <button class="stepper-btn" data-dir="-1" type="button">−</button>
               <input class="stepper-input" type="number" id="da8-duration" value="10" min="1" max="50" style="width:44px" />
@@ -1192,7 +1192,7 @@
 
       <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px;padding:14px 16px;background:var(--bg-elev);border-radius:var(--r);border:1px solid var(--border-soft)">
         <div class="field">
-          <label class="field-label">Tranche marginale (TMI)</label>
+          <label class="field-label" for="da9-tmi">Tranche marginale (TMI)</label>
           <select class="select" id="da9-tmi">
             <option value="0">0 % — non imposable</option>
             <option value="11">11 %</option>
@@ -1202,8 +1202,8 @@
           </select>
         </div>
         <div class="field">
-          <label class="field-label">Situation fiscale</label>
-          <div class="mode-toggle" id="da9-fiscal-statut">
+          <div class="field-label" id="da9-fiscal-statut-label">Situation fiscale</div>
+          <div role="group" aria-labelledby="da9-fiscal-statut-label" class="mode-toggle" id="da9-fiscal-statut">
             <button data-val="seul" class="active" type="button">Célibataire</button>
             <button data-val="couple" type="button">Couple / PACS</button>
           </div>

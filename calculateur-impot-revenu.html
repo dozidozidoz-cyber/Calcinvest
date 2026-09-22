@@ -161,15 +161,15 @@
         <div class="field-grid">
 
           <div class="field">
-            <div class="field-label">Composition du foyer</div>
-            <div class="radio-group">
+            <div class="field-label" id="calculateur-impot-revenu-g1-label">Composition du foyer</div>
+            <div role="group" aria-labelledby="calculateur-impot-revenu-g1-label" class="radio-group">
               <label><input type="radio" name="ir-foyer" value="single" id="ir-single" checked> Célibataire</label>
               <label><input type="radio" name="ir-foyer" value="couple" id="ir-couple"> Couple marié/PACSé</label>
             </div>
           </div>
 
           <div class="field">
-            <div class="field-label">Nombre d'enfants à charge</div>
+            <label class="field-label" for="ir-enfants">Nombre d'enfants à charge</label>
             <div class="stepper" data-min="0" data-max="10" data-step="1">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ir-enfants" type="number" value="0" />
@@ -185,7 +185,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Salaire net annuel</div>
+            <label class="field-label" for="ir-salaire">Salaire net annuel</label>
             <div class="stepper" data-min="0" data-max="1000000" data-step="1000">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ir-salaire" type="number" value="35000" />
@@ -201,7 +201,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Autres revenus imposables</div>
+            <label class="field-label" for="ir-autres">Autres revenus imposables</label>
             <div class="stepper" data-min="0" data-max="1000000" data-step="500">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ir-autres" type="number" value="0" />
@@ -216,7 +216,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Déductions (PER, etc.)</div>
+            <label class="field-label" for="ir-deductions">Déductions (PER, etc.)</label>
             <div class="stepper" data-min="0" data-max="100000" data-step="500">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ir-deductions" type="number" value="0" />

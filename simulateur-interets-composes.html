@@ -333,7 +333,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Capital initial</label>
+                <label class="field-label" for="c-initial">Capital initial</label>
                 <div class="stepper" data-step="1000" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="c-initial" value="10000" />
@@ -348,7 +348,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Versement mensuel</label>
+                <label class="field-label" for="c-monthly">Versement mensuel</label>
                 <div class="stepper" data-step="50" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="c-monthly" value="200" />
@@ -363,7 +363,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Croissance annuelle du versement</label>
+                <label class="field-label" for="c-growth">Croissance annuelle du versement</label>
                 <div class="stepper" data-step="0.5" data-min="0" data-max="15">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="c-growth" value="0" step="0.5" />
@@ -390,7 +390,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Taux de rendement</label>
+                <label class="field-label" for="c-rate">Taux de rendement</label>
                 <div class="stepper" data-step="0.5" data-min="0" data-max="25">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="c-rate" value="7" step="0.5" />
@@ -405,7 +405,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Durée de placement</label>
+                <label class="field-label" for="c-years">Durée de placement</label>
                 <div class="stepper" data-step="1" data-min="1" data-max="50">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="c-years" value="20" />
@@ -433,7 +433,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Inflation estimée</label>
+                <label class="field-label" for="c-inflation">Inflation estimée</label>
                 <div class="stepper" data-step="0.5" data-min="0" data-max="10">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="c-inflation" value="2" step="0.5" />
@@ -442,7 +442,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Frais annuels (TER)</label>
+                <label class="field-label" for="c-fees">Frais annuels (TER)</label>
                 <div class="stepper" data-step="0.05" data-min="0" data-max="3">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="c-fees" value="0.2" step="0.05" />
@@ -456,7 +456,7 @@
                 </div>
               </div>
               <div class="field field-full">
-                <label class="field-label">Enveloppe fiscale à la sortie</label>
+                <label class="field-label" for="c-envelope">Enveloppe fiscale à la sortie</label>
                 <select class="select" id="c-envelope" style="width:100%">
                   <option value="cto" selected>CTO — flat tax 30 % sur les plus-values</option>
                   <option value="pea-5">PEA après 5 ans — 17.2 % PS seulement</option>
@@ -642,7 +642,7 @@
 
       <div style="padding:16px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:var(--r);margin-bottom:18px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
         <div class="field">
-          <label class="field-label">Objectif financier</label>
+          <label class="field-label" for="ca3-goal">Objectif financier</label>
           <div class="stepper" data-step="10000" data-min="0" style="width:auto">
             <button class="stepper-btn" data-dir="-1" type="button">−</button>
             <input class="stepper-input" type="number" id="ca3-goal" value="100000" style="width:80px" />
@@ -658,7 +658,7 @@
           </div>
         </div>
         <div class="field">
-          <label class="field-label">Mode de calcul</label>
+          <label class="field-label" for="ca3-mode">Mode de calcul</label>
           <select class="select" id="ca3-mode" style="height:42px">
             <option value="monthly">Combien épargner / mois ?</option>
             <option value="time">Dans combien de temps ?</option>

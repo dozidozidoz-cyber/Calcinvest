@@ -62,42 +62,42 @@
   <section class="fy-section">
     <div class="fy-section-title">👤 Foyer</div>
     <div class="field-grid">
-      <div class="field"><label class="field-label">Composition</label><select class="select" id="fy-foyer"><option value="1">Célibataire</option><option value="2">Couple marié/PACSé</option></select></div>
-      <div class="field"><label class="field-label">Enfants à charge</label><div class="stepper" data-min="0" data-max="8" data-step="1"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-enfants" type="number" value="0" /><span class="stepper-unit">enfants</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-foyer">Composition</label><select class="select" id="fy-foyer"><option value="1">Célibataire</option><option value="2">Couple marié/PACSé</option></select></div>
+      <div class="field"><label class="field-label" for="fy-enfants">Enfants à charge</label><div class="stepper" data-min="0" data-max="8" data-step="1"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-enfants" type="number" value="0" /><span class="stepper-unit">enfants</span><button class="stepper-btn" data-act="plus">+</button></div></div>
     </div>
   </section>
 
   <section class="fy-section">
     <div class="fy-section-title">💼 Revenus du travail</div>
     <div class="field-grid">
-      <div class="field"><label class="field-label">Salaire net annuel (foyer total)</label><div class="stepper" data-min="0" data-step="1000"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-salaire" type="number" value="45000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
-      <div class="field"><label class="field-label">Revenus indépendants / BIC (si AE)</label><div class="stepper" data-min="0" data-step="1000"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-bic" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-salaire">Salaire net annuel (foyer total)</label><div class="stepper" data-min="0" data-step="1000"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-salaire" type="number" value="45000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-bic">Revenus indépendants / BIC (si AE)</label><div class="stepper" data-min="0" data-step="1000"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-bic" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
     </div>
   </section>
 
   <section class="fy-section">
     <div class="fy-section-title">🏠 Revenus immobiliers (net)</div>
     <div class="field-grid">
-      <div class="field"><label class="field-label">Revenus fonciers nets (locatif nu)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-fonciers" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
-      <div class="field"><label class="field-label">Revenus LMNP (BIC, après amortissements)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-lmnp" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
-      <div class="field"><label class="field-label">Dividendes SCPI (net)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-scpi" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-fonciers">Revenus fonciers nets (locatif nu)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-fonciers" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-lmnp">Revenus LMNP (BIC, après amortissements)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-lmnp" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-scpi">Dividendes SCPI (net)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-scpi" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
     </div>
   </section>
 
   <section class="fy-section">
     <div class="fy-section-title">📈 Revenus de capitaux mobiliers</div>
     <div class="field-grid">
-      <div class="field"><label class="field-label">Plus-values trading / CTO réalisées</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-trading" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
-      <div class="field"><label class="field-label">Dividendes / intérêts (CTO, livrets)</label><div class="stepper" data-min="0" data-step="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-dividendes" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
-      <div class="field"><label class="field-label">Rachat AV (PV après abat.)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-av" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-trading">Plus-values trading / CTO réalisées</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-trading" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-dividendes">Dividendes / intérêts (CTO, livrets)</label><div class="stepper" data-min="0" data-step="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-dividendes" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-av">Rachat AV (PV après abat.)</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-av" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
     </div>
   </section>
 
   <section class="fy-section">
     <div class="fy-section-title">📉 Déductions / abattements</div>
     <div class="field-grid">
-      <div class="field"><label class="field-label">Versement PER déductible</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-per" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
-      <div class="field"><label class="field-label">Dons éligibles 66%</label><div class="stepper" data-min="0" data-step="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-dons" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-per">Versement PER déductible</label><div class="stepper" data-min="0" data-step="500"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-per" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+      <div class="field"><label class="field-label" for="fy-dons">Dons éligibles 66%</label><div class="stepper" data-min="0" data-step="100"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="fy-dons" type="number" value="0" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div></div>
     </div>
   </section>
 

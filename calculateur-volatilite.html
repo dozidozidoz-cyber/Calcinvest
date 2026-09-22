@@ -109,12 +109,12 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Instrument</div>
+              <label class="field-label" for="vol-pair">Instrument</label>
               <select class="select" id="vol-pair" data-instruments data-default="EUR/USD"></select>
               <div class="field-hint" id="vol-atr-typical" style="margin-top:6px">—</div>
             </div>
             <div class="field">
-              <div class="field-label">ATR 14j (en pips) <span class="field-hint">vide = utiliser valeur typique</span></div>
+              <label class="field-label" for="vol-atr-custom">ATR 14j (en pips) <span class="field-hint">vide = utiliser valeur typique</span></label>
               <div class="stepper" data-min="0" data-max="100000" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-atr-custom" type="number" placeholder="auto" />
@@ -123,7 +123,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Multiplicateur ATR (stop)</div>
+              <label class="field-label" for="vol-mult">Multiplicateur ATR (stop)</label>
               <div class="stepper" data-min="0.5" data-max="5" data-step="0.1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-mult" type="number" value="1.5" step="0.1" />
@@ -138,7 +138,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">R/R ratio cible</div>
+              <label class="field-label" for="vol-rr">R/R ratio cible</label>
               <div class="stepper" data-min="0.5" data-max="10" data-step="0.1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-rr" type="number" value="2" step="0.1" />
@@ -156,7 +156,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Win Rate</div>
+              <label class="field-label" for="vol-wr">Win Rate</label>
               <div class="stepper" data-min="1" data-max="99" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-wr" type="number" value="55" />
@@ -174,7 +174,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Capital total</div>
+              <label class="field-label" for="vol-balance">Capital total</label>
               <div class="stepper" data-min="100" data-max="10000000" data-step="100">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-balance" type="number" value="10000" />
@@ -183,7 +183,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Nombre positions simultanées</div>
+              <label class="field-label" for="vol-nbpos">Nombre positions simultanées</label>
               <div class="stepper" data-min="1" data-max="20" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-nbpos" type="number" value="3" />
@@ -192,7 +192,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Risque par position</div>
+              <label class="field-label" for="vol-riskpos">Risque par position</label>
               <div class="stepper" data-min="0.1" data-max="10" data-step="0.1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-riskpos" type="number" value="1" step="0.1" />
@@ -201,7 +201,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Corrélation moyenne <span class="field-hint">−1 hedge / 0 indep / +1 même direction</span></div>
+              <label class="field-label" for="vol-corr">Corrélation moyenne <span class="field-hint">−1 hedge / 0 indep / +1 même direction</span></label>
               <div class="stepper" data-min="-1" data-max="1" data-step="0.1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="vol-corr" type="number" value="0.5" step="0.1" />

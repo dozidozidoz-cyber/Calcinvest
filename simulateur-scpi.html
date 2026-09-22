@@ -215,7 +215,7 @@
             <div class="field-grid">
 
               <div class="field">
-                <div class="field-label">Capital initial</div>
+                <label class="field-label" for="sc-k0">Capital initial</label>
                 <div class="stepper" data-min="0" data-max="2000000" data-step="1000">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="sc-k0" type="number" value="20000" />
@@ -232,7 +232,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Versement mensuel <span class="field-hint">(0 si pas de DCA)</span></div>
+                <label class="field-label" for="sc-monthly">Versement mensuel <span class="field-hint">(0 si pas de DCA)</span></label>
                 <div class="stepper" data-min="0" data-max="10000" data-step="50">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="sc-monthly" type="number" value="0" />
@@ -249,7 +249,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Durée d'investissement</div>
+                <label class="field-label" for="sc-years">Durée d'investissement</label>
                 <div class="stepper" data-min="1" data-max="50" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="sc-years" type="number" value="20" />
@@ -266,7 +266,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Frais d'entrée</div>
+                <label class="field-label" for="sc-fees">Frais d'entrée</label>
                 <div class="stepper" data-min="0" data-max="15" data-step="0.5">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="sc-fees" type="number" value="10" />
@@ -293,7 +293,7 @@
             <div class="field-grid">
 
               <div class="field">
-                <div class="field-label">TDVM <span class="field-hint">Taux de Distribution sur Valeur de Marché</span></div>
+                <label class="field-label" for="sc-tdvm">TDVM <span class="field-hint">Taux de Distribution sur Valeur de Marché</span></label>
                 <div class="stepper" data-min="0" data-max="12" data-step="0.1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="sc-tdvm" type="number" value="5.5" />
@@ -309,7 +309,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Revalorisation parts</div>
+                <label class="field-label" for="sc-reval">Revalorisation parts</label>
                 <div class="stepper" data-min="-3" data-max="5" data-step="0.1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="sc-reval" type="number" value="1.0" />
@@ -336,7 +336,7 @@
             <div class="field-grid">
 
               <div class="field">
-                <div class="field-label">Régime fiscal</div>
+                <label class="field-label" for="sc-regime">Régime fiscal</label>
                 <select class="select" id="sc-regime">
                   <option value="PP">Pleine propriété (revenus fonciers)</option>
                   <option value="EU">SCPI européenne (crédit d'impôt)</option>
@@ -346,7 +346,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">TMI (tranche marginale)</div>
+                <label class="field-label" for="sc-tmi">TMI (tranche marginale)</label>
                 <div class="stepper" data-min="0" data-max="45" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="sc-tmi" type="number" value="30" />
@@ -697,7 +697,7 @@
       <div class="card-body">
 
         <div class="field" style="max-width:420px;margin-bottom:18px">
-          <div class="field-label">Rente nette mensuelle cible</div>
+          <label class="field-label" for="sc-target-rente">Rente nette mensuelle cible</label>
           <div class="stepper" data-min="50" data-max="20000" data-step="50">
             <button class="stepper-btn" data-act="minus">−</button>
             <input class="stepper-input" id="sc-target-rente" type="number" value="500" />

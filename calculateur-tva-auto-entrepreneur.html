@@ -71,18 +71,18 @@
       <div class="card-body">
         <div class="field-grid">
           <div class="field">
-            <label class="field-label">Sens de conversion</label>
-            <div style="display:flex;gap:6px">
+            <div class="field-label" id="calculateur-tva-auto-entrepreneur-g1-label">Sens de conversion</div>
+            <div role="group" aria-labelledby="calculateur-tva-auto-entrepreneur-g1-label" style="display:flex;gap:6px">
               <label style="flex:1;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;text-align:center;font-size:13px;font-weight:600"><input type="radio" name="tva-mode" value="htToTtc" checked style="display:none"> HT → TTC</label>
               <label style="flex:1;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;text-align:center;font-size:13px;font-weight:600"><input type="radio" name="tva-mode" value="ttcToHt" style="display:none"> TTC → HT</label>
             </div>
           </div>
           <div class="field">
-            <label class="field-label">Montant</label>
+            <label class="field-label" for="tva-amount">Montant</label>
             <div class="stepper" data-step="10" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="tva-amount" type="number" value="1000" step="any" /><span class="stepper-unit">€</span><button class="stepper-btn" data-act="plus">+</button></div>
           </div>
           <div class="field">
-            <label class="field-label">Taux de TVA</label>
+            <label class="field-label" for="tva-rate">Taux de TVA</label>
             <select class="select" id="tva-rate">
               <option value="normal">20 % — Taux normal (majorité des B&S)</option>
               <option value="intermed">10 % — Restauration, transport, travaux logement</option>
@@ -111,10 +111,10 @@
     <section class="card" style="margin-bottom:24px">
       <div class="card-body">
         <div class="field-grid">
-          <div class="field"><label class="field-label">Chiffre d'affaires annuel</label><div class="stepper" data-step="1000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="ae-ca" type="number" value="50000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div><div class="pills" data-target="ae-ca"><button class="pill" data-val="20000">20k</button><button class="pill" data-val="50000">50k</button><button class="pill" data-val="77700">77.7k (plafond)</button></div></div>
-          <div class="field"><label class="field-label">Activité</label><select class="select" id="ae-activite"><option value="prestaServicesBIC">Prestations de services (BIC) — 21.1 %</option><option value="prestaServicesBNC">Prestations de services (BNC) — 21.1 %</option><option value="venteMarchandises">Vente de marchandises — 12.3 %</option><option value="professionsLibCipav">Profession libérale CIPAV — 23.2 %</option></select></div>
+          <div class="field"><label class="field-label" for="ae-ca">Chiffre d'affaires annuel</label><div class="stepper" data-step="1000" data-min="0"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="ae-ca" type="number" value="50000" /><span class="stepper-unit">€/an</span><button class="stepper-btn" data-act="plus">+</button></div><div class="pills" data-target="ae-ca"><button class="pill" data-val="20000">20k</button><button class="pill" data-val="50000">50k</button><button class="pill" data-val="77700">77.7k (plafond)</button></div></div>
+          <div class="field"><label class="field-label" for="ae-activite">Activité</label><select class="select" id="ae-activite"><option value="prestaServicesBIC">Prestations de services (BIC) — 21.1 %</option><option value="prestaServicesBNC">Prestations de services (BNC) — 21.1 %</option><option value="venteMarchandises">Vente de marchandises — 12.3 %</option><option value="professionsLibCipav">Profession libérale CIPAV — 23.2 %</option></select></div>
           <div class="field"><label class="field-label">Options</label><label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer"><input type="checkbox" id="ae-vl"> Versement libératoire de l'IR</label><div style="font-size:11px;color:var(--text-4);margin-top:4px">Disponible si RFR foyer N-2 ≤ 27 478 €/part</div></div>
-          <div class="field" id="ae-tmi-wrap"><label class="field-label">Votre TMI (si pas VL)</label><div class="stepper" data-step="1" data-min="0" data-max="45"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="ae-tmi" type="number" value="30" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div></div>
+          <div class="field" id="ae-tmi-wrap"><label class="field-label" for="ae-tmi">Votre TMI (si pas VL)</label><div class="stepper" data-step="1" data-min="0" data-max="45"><button class="stepper-btn" data-act="minus">−</button><input class="stepper-input" id="ae-tmi" type="number" value="30" /><span class="stepper-unit">%</span><button class="stepper-btn" data-act="plus">+</button></div></div>
         </div>
       </div>
     </section>

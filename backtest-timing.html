@@ -100,7 +100,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <label class="field-label">Capital initial</label>
+              <label class="field-label" for="bt-k0">Capital initial</label>
               <div class="stepper" data-step="1000" data-min="0">
                 <button class="stepper-btn" data-dir="-1" type="button">−</button>
                 <input class="stepper-input" type="number" id="bt-k0" value="10000" />
@@ -115,7 +115,7 @@
               </div>
             </div>
             <div class="field">
-              <label class="field-label">Versement mensuel</label>
+              <label class="field-label" for="bt-monthly">Versement mensuel</label>
               <div class="stepper" data-step="50" data-min="0">
                 <button class="stepper-btn" data-dir="-1" type="button">−</button>
                 <input class="stepper-input" type="number" id="bt-monthly" value="200" />
@@ -154,8 +154,8 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <label class="field-label">Enveloppe fiscale</label>
-              <div class="pills" id="bt-env-pills">
+              <div class="field-label" id="bt-env-pills-label">Enveloppe fiscale</div>
+              <div role="group" aria-labelledby="bt-env-pills-label" class="pills" id="bt-env-pills">
                 <button class="pill" data-value="none" type="button">Brut (US)</button>
                 <button class="pill active" data-value="cto" type="button">CTO 30 %</button>
                 <button class="pill" data-value="pea-5" type="button">PEA &gt; 5a (17.2 %)</button>
@@ -164,7 +164,7 @@
               <div style="font-size:11px;color:var(--text-3);margin-top:6px">Imposition matérialisée à chaque vente de positions (sortie + rentrée). Buy &amp; Hold n'est jamais taxé en cours de route.</div>
             </div>
             <div class="field">
-              <label class="field-label">Frais transaction (spread + commission)</label>
+              <label class="field-label" for="bt-fee">Frais transaction (spread + commission)</label>
               <div class="stepper" data-step="0.05" data-min="0" data-max="2">
                 <button class="stepper-btn" data-dir="-1" type="button">−</button>
                 <input class="stepper-input" type="number" id="bt-fee" value="0.1" step="0.05" />

@@ -105,13 +105,13 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Paire / Actif</div>
+              <label class="field-label" for="ct-pair">Paire / Actif</label>
               <select class="select" id="ct-pair" data-instruments data-default="EUR/USD">
               </select>
             </div>
 
             <div class="field">
-              <div class="field-label">Taille position</div>
+              <label class="field-label" for="ct-lotsize">Taille position</label>
               <div class="stepper" data-min="0" data-max="100000000" data-step="1000">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="ct-lotsize" type="number" value="100000" />
@@ -126,14 +126,14 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Devise compte</div>
+              <label class="field-label" for="ct-currency">Devise compte</label>
               <select class="select" id="ct-currency">
                 <option value="EUR">EUR</option><option value="USD">USD</option>
               </select>
             </div>
 
             <div class="field">
-              <div class="field-label">Mouvement attendu (pips)</div>
+              <label class="field-label" for="ct-move">Mouvement attendu (pips)</label>
               <div class="stepper" data-min="1" data-max="10000" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="ct-move" type="number" value="30" />
@@ -152,7 +152,7 @@
 
           <div class="field-grid" style="margin-bottom:14px">
             <div class="field" style="grid-column:1/-1">
-              <div class="field-label">Profil broker</div>
+              <label class="field-label" for="ct-broker-profile">Profil broker</label>
               <select class="select" id="ct-broker-profile"></select>
               <div class="field-hint" id="ct-broker-note" style="margin-top:6px">À paramétrer</div>
             </div>
@@ -160,7 +160,7 @@
 
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Spread typique</div>
+              <label class="field-label" for="ct-spread">Spread typique</label>
               <div class="stepper" data-min="0" data-max="100" data-step="0.1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="ct-spread" type="number" value="1.5" step="0.1" />
@@ -176,7 +176,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Type commission</div>
+              <label class="field-label" for="ct-comm-type">Type commission</label>
               <select class="select" id="ct-comm-type">
                 <option value="fixed">Fixe par trade</option>
                 <option value="perlot" selected>Par lot</option>
@@ -185,7 +185,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Montant commission</div>
+              <label class="field-label" for="ct-comm-value">Montant commission</label>
               <div class="stepper" data-min="0" data-max="100" data-step="0.5">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="ct-comm-value" type="number" value="7" step="0.5" />
@@ -201,7 +201,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Swap quotidien <span class="field-hint">négatif = vous payez</span></div>
+              <label class="field-label" for="ct-swap">Swap quotidien <span class="field-hint">négatif = vous payez</span></label>
               <div class="stepper" data-min="-50" data-max="50" data-step="0.1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="ct-swap" type="number" value="-0.5" step="0.1" />
@@ -211,7 +211,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Nuits tenues</div>
+              <label class="field-label" for="ct-nights">Nuits tenues</label>
               <div class="stepper" data-min="0" data-max="365" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="ct-nights" type="number" value="1" />
@@ -284,7 +284,7 @@
 
         <div class="field-grid" style="margin-bottom:18px">
           <div class="field">
-            <div class="field-label">Capital départ</div>
+            <label class="field-label" for="ct-start">Capital départ</label>
             <div class="stepper" data-min="100" data-max="10000000" data-step="100">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ct-start" type="number" value="10000" />
@@ -293,7 +293,7 @@
             </div>
           </div>
           <div class="field">
-            <div class="field-label">Gain mensuel cible</div>
+            <label class="field-label" for="ct-ret">Gain mensuel cible</label>
             <div class="stepper" data-min="0" data-max="100" data-step="0.1">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ct-ret" type="number" value="2" step="0.1" />
@@ -308,7 +308,7 @@
             </div>
           </div>
           <div class="field">
-            <div class="field-label">Durée</div>
+            <label class="field-label" for="ct-months">Durée</label>
             <div class="stepper" data-min="1" data-max="240" data-step="1">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ct-months" type="number" value="12" />
@@ -317,7 +317,7 @@
             </div>
           </div>
           <div class="field">
-            <div class="field-label">Retrait mensuel <span class="field-hint">"vivre du trading"</span></div>
+            <label class="field-label" for="ct-wd">Retrait mensuel <span class="field-hint">"vivre du trading"</span></label>
             <div class="stepper" data-min="0" data-max="100000" data-step="100">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ct-wd" type="number" value="0" />
@@ -331,7 +331,7 @@
             </div>
           </div>
           <div class="field">
-            <div class="field-label">Fiscalité sortie</div>
+            <label class="field-label" for="ct-tax">Fiscalité sortie</label>
             <div class="stepper" data-min="0" data-max="60" data-step="1">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="ct-tax" type="number" value="30" />

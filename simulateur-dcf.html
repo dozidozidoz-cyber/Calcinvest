@@ -338,12 +338,12 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <div class="field-label">Entreprise</div>
+                <label class="field-label" for="dcf-company">Entreprise</label>
                 <input id="dcf-company" type="text" placeholder="ex : AXON Enterprise" autocomplete="off"
                   style="width:100%;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);box-shadow:var(--shadow-sm)" />
               </div>
               <div class="field">
-                <div class="field-label">Ticker <span class="field-hint">ex : AAPL · AIR.PA · NESN.SW</span></div>
+                <label class="field-label" for="dcf-ticker">Ticker <span class="field-hint">ex : AAPL · AIR.PA · NESN.SW</span></label>
                 <div style="display:flex;gap:8px">
                   <input id="dcf-ticker" type="text" placeholder="AAPL, AIR.PA, MSFT…" autocomplete="off"
                     style="flex:1;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);text-transform:uppercase;font-family:var(--font-mono);box-shadow:var(--shadow-sm)" />
@@ -367,7 +367,7 @@
 
             <div class="field-grid">
               <div class="field">
-                <div class="field-label">Revenus TTM <span class="field-hint">12 derniers mois</span></div>
+                <label class="field-label" for="dcf-revenue">Revenus TTM <span class="field-hint">12 derniers mois</span></label>
                 <div class="stepper" data-min="1" data-max="2000000" data-step="100">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-revenue" type="number" value="1000" />
@@ -384,7 +384,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Marge FCF <span class="field-hint">FCF / CA actuel — peut être négatif</span></div>
+                <label class="field-label" for="dcf-fcf-margin">Marge FCF <span class="field-hint">FCF / CA actuel — peut être négatif</span></label>
                 <div class="stepper" data-min="-50" data-max="80" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-fcf-margin" type="number" value="20" />
@@ -400,7 +400,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Marge FCF cible (an 10) <span class="field-hint">convergence à long terme</span></div>
+                <label class="field-label" for="dcf-fcf-margin-target">Marge FCF cible (an 10) <span class="field-hint">convergence à long terme</span></label>
                 <div class="stepper" data-min="1" data-max="80" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-fcf-margin-target" type="number" value="20" />
@@ -416,7 +416,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Croissance an 1-5 <span class="field-hint">phase d'expansion</span></div>
+                <label class="field-label" for="dcf-g1">Croissance an 1-5 <span class="field-hint">phase d'expansion</span></label>
                 <div class="stepper" data-min="-20" data-max="100" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-g1" type="number" value="15" />
@@ -433,7 +433,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Croissance an 6-10 <span class="field-hint">phase de maturité</span></div>
+                <label class="field-label" for="dcf-g2">Croissance an 6-10 <span class="field-hint">phase de maturité</span></label>
                 <div class="stepper" data-min="-10" data-max="60" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-g2" type="number" value="8" />
@@ -460,7 +460,7 @@
 
             <div class="field-grid">
               <div class="field">
-                <div class="field-label">WACC <span class="field-hint">coût moyen pondéré du capital</span></div>
+                <label class="field-label" for="dcf-wacc">WACC <span class="field-hint">coût moyen pondéré du capital</span></label>
                 <div class="stepper" data-min="3" data-max="25" data-step="0.5">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-wacc" type="number" value="9" />
@@ -477,7 +477,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Croissance terminale <span class="field-hint">perpetuity · ≈ inflation</span></div>
+                <label class="field-label" for="dcf-tg">Croissance terminale <span class="field-hint">perpetuity · ≈ inflation</span></label>
                 <div class="stepper" data-min="0" data-max="5" data-step="0.5">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-tg" type="number" value="2.5" />
@@ -505,7 +505,7 @@
 
             <div class="field-grid">
               <div class="field">
-                <div class="field-label">Dette nette <span class="field-hint">négatif = trésorerie nette</span></div>
+                <label class="field-label" for="dcf-net-debt">Dette nette <span class="field-hint">négatif = trésorerie nette</span></label>
                 <div class="stepper" data-min="-500000" data-max="500000" data-step="100">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-net-debt" type="number" value="0" />
@@ -515,7 +515,7 @@
               </div>
 
               <div class="field">
-                <div class="field-label">Actions en circulation <span class="field-hint">diluted</span></div>
+                <label class="field-label" for="dcf-shares">Actions en circulation <span class="field-hint">diluted</span></label>
                 <div class="stepper" data-min="0.01" data-max="100000" data-step="10">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-shares" type="number" value="100" />
@@ -525,7 +525,7 @@
               </div>
 
               <div class="field field-full">
-                <div class="field-label">Prix actuel de l'action <span class="field-hint">0 = ne pas calculer le verdict</span></div>
+                <label class="field-label" for="dcf-price">Prix actuel de l'action <span class="field-hint">0 = ne pas calculer le verdict</span></label>
                 <div class="stepper" data-min="0" data-max="50000" data-step="1">
                   <button class="stepper-btn" data-act="minus">−</button>
                   <input class="stepper-input" id="dcf-price" type="number" value="0" />

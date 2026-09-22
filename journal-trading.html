@@ -197,16 +197,16 @@
             <div class="subsection-title">Identité du trade</div>
           </div>
           <div class="field-grid">
-            <div class="field"><label class="field-label">Instrument</label><input type="text" id="j-instrument" class="select" placeholder="EUR/USD, BTC, AAPL..." value="EUR/USD" /></div>
-            <div class="field"><label class="field-label">Sens</label>
-              <div class="pills" id="j-side-pills">
+            <div class="field"><label class="field-label" for="j-instrument">Instrument</label><input type="text" id="j-instrument" class="select" placeholder="EUR/USD, BTC, AAPL..." value="EUR/USD" /></div>
+            <div class="field"><div class="field-label" id="j-side-pills-label">Sens</div>
+              <div role="group" aria-labelledby="j-side-pills-label" class="pills" id="j-side-pills">
                 <button class="pill active" data-value="long" type="button">▲ Long</button>
                 <button class="pill" data-value="short" type="button">▼ Short</button>
               </div>
               <input type="hidden" id="j-side" value="long" />
             </div>
-            <div class="field"><label class="field-label">Stratégie</label><input type="text" id="j-strategy" class="select" placeholder="breakout, pullback, news..." /></div>
-            <div class="field"><label class="field-label">Tags (séparés par virgule)</label><input type="text" id="j-tags" class="select" placeholder="A-setup, range, london-session" /></div>
+            <div class="field"><label class="field-label" for="j-strategy">Stratégie</label><input type="text" id="j-strategy" class="select" placeholder="breakout, pullback, news..." /></div>
+            <div class="field"><label class="field-label" for="j-tags">Tags (séparés par virgule)</label><input type="text" id="j-tags" class="select" placeholder="A-setup, range, london-session" /></div>
           </div>
         </div>
 
@@ -216,12 +216,12 @@
             <div class="subsection-title">Prix &amp; taille</div>
           </div>
           <div class="field-grid">
-            <div class="field"><label class="field-label">Prix entrée</label><input type="number" id="j-entry" class="select" step="any" value="1.0850" /></div>
-            <div class="field"><label class="field-label">Prix sortie <span style="font-size:10px;color:var(--text-4)">(vide = ouvert)</span></label><input type="number" id="j-exit" class="select" step="any" placeholder="1.0900" /></div>
-            <div class="field"><label class="field-label">Taille (units)</label><input type="number" id="j-size" class="select" step="any" value="10000" /></div>
-            <div class="field"><label class="field-label">Stop loss</label><input type="number" id="j-stop" class="select" step="any" placeholder="optionnel" /></div>
-            <div class="field"><label class="field-label">Take profit</label><input type="number" id="j-tp" class="select" step="any" placeholder="optionnel" /></div>
-            <div class="field"><label class="field-label">Frais (€)</label><input type="number" id="j-fees" class="select" step="0.01" value="0" /></div>
+            <div class="field"><label class="field-label" for="j-entry">Prix entrée</label><input type="number" id="j-entry" class="select" step="any" value="1.0850" /></div>
+            <div class="field"><label class="field-label" for="j-exit">Prix sortie <span style="font-size:10px;color:var(--text-4)">(vide = ouvert)</span></label><input type="number" id="j-exit" class="select" step="any" placeholder="1.0900" /></div>
+            <div class="field"><label class="field-label" for="j-size">Taille (units)</label><input type="number" id="j-size" class="select" step="any" value="10000" /></div>
+            <div class="field"><label class="field-label" for="j-stop">Stop loss</label><input type="number" id="j-stop" class="select" step="any" placeholder="optionnel" /></div>
+            <div class="field"><label class="field-label" for="j-tp">Take profit</label><input type="number" id="j-tp" class="select" step="any" placeholder="optionnel" /></div>
+            <div class="field"><label class="field-label" for="j-fees">Frais (€)</label><input type="number" id="j-fees" class="select" step="0.01" value="0" /></div>
           </div>
         </div>
 
@@ -231,17 +231,17 @@
             <div class="subsection-title">Contexte</div>
           </div>
           <div class="field-grid">
-            <div class="field"><label class="field-label">Date entrée</label><input type="datetime-local" id="j-entry-date" class="select" /></div>
-            <div class="field"><label class="field-label">Date sortie <span style="font-size:10px;color:var(--text-4)">(si clos)</span></label><input type="datetime-local" id="j-exit-date" class="select" /></div>
-            <div class="field"><label class="field-label">Plan respecté ?</label>
-              <div class="pills" id="j-plan-pills">
+            <div class="field"><label class="field-label" for="j-entry-date">Date entrée</label><input type="datetime-local" id="j-entry-date" class="select" /></div>
+            <div class="field"><label class="field-label" for="j-exit-date">Date sortie <span style="font-size:10px;color:var(--text-4)">(si clos)</span></label><input type="datetime-local" id="j-exit-date" class="select" /></div>
+            <div class="field"><div class="field-label" id="j-plan-pills-label">Plan respecté ?</div>
+              <div role="group" aria-labelledby="j-plan-pills-label" class="pills" id="j-plan-pills">
                 <button class="pill" data-value="" type="button">—</button>
                 <button class="pill" data-value="true" type="button">✓ Oui</button>
                 <button class="pill" data-value="false" type="button">✕ Non</button>
               </div>
               <input type="hidden" id="j-plan" value="" />
             </div>
-            <div class="field field-full"><label class="field-label">Notes</label><input type="text" id="j-notes" class="select" placeholder="Trade idea, ce qui a marché ou non..." /></div>
+            <div class="field field-full"><label class="field-label" for="j-notes">Notes</label><input type="text" id="j-notes" class="select" placeholder="Trade idea, ce qui a marché ou non..." /></div>
           </div>
         </div>
 

@@ -73,21 +73,21 @@
     <div class="card-body">
       <div class="field-grid">
         <div class="field">
-          <label class="field-label">Mode de calcul</label>
-          <div class="mode-toggle" style="display:flex;gap:6px">
+          <div class="field-label" id="calculateur-salaire-brut-net-g1-label">Mode de calcul</div>
+          <div role="group" aria-labelledby="calculateur-salaire-brut-net-g1-label" class="mode-toggle" style="display:flex;gap:6px">
             <label><input type="radio" name="sal-mode" value="brutToNet" checked>Brut → Net</label>
             <label><input type="radio" name="sal-mode" value="netToBrut">Net → Brut</label>
           </div>
         </div>
         <div class="field">
-          <label class="field-label">Statut</label>
-          <div class="mode-toggle" style="display:flex;gap:6px">
+          <div class="field-label" id="calculateur-salaire-brut-net-g2-label">Statut</div>
+          <div role="group" aria-labelledby="calculateur-salaire-brut-net-g2-label" class="mode-toggle" style="display:flex;gap:6px">
             <label><input type="radio" name="sal-statut" value="nonCadre" checked>Non-cadre</label>
             <label><input type="radio" name="sal-statut" value="cadre">Cadre</label>
           </div>
         </div>
         <div class="field" data-show="brutToNet">
-          <label class="field-label">Salaire brut mensuel</label>
+          <label class="field-label" for="sal-brut">Salaire brut mensuel</label>
           <div class="stepper" data-step="100" data-min="0">
             <button class="stepper-btn" data-act="minus">−</button>
             <input class="stepper-input" id="sal-brut" type="number" value="3000" />
@@ -103,7 +103,7 @@
           </div>
         </div>
         <div class="field" data-show="netToBrut" style="display:none">
-          <label class="field-label">Salaire net mensuel souhaité</label>
+          <label class="field-label" for="sal-net">Salaire net mensuel souhaité</label>
           <div class="stepper" data-step="100" data-min="0">
             <button class="stepper-btn" data-act="minus">−</button>
             <input class="stepper-input" id="sal-net" type="number" value="2500" />

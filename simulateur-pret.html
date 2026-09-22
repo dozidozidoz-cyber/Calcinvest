@@ -163,8 +163,8 @@
 
         <!-- Mode toggle -->
         <div class="field" style="margin-bottom:20px">
-          <div class="field-label">Que souhaitez-vous calculer ?</div>
-          <div class="mode-toggle">
+          <div class="field-label" id="simulateur-pret-g1-label">Que souhaitez-vous calculer ?</div>
+          <div role="group" aria-labelledby="simulateur-pret-g1-label" class="mode-toggle">
             <label><input type="radio" name="loan-mode" value="capacite" checked><span class="mode-label">📊 Ma capacité d'emprunt</span></label>
             <label><input type="radio" name="loan-mode" value="mensualite"><span class="mode-label">💶 La mensualité d'un prêt</span></label>
           </div>
@@ -178,7 +178,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Revenus nets mensuels du foyer</div>
+              <label class="field-label" for="loan-revenus">Revenus nets mensuels du foyer</label>
               <div class="stepper" data-min="0" data-max="50000" data-step="100">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-revenus" type="number" value="3500" />
@@ -193,7 +193,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Charges déjà existantes <span class="field-hint">crédits, pension, etc.</span></div>
+              <label class="field-label" for="loan-charges">Charges déjà existantes <span class="field-hint">crédits, pension, etc.</span></label>
               <div class="stepper" data-min="0" data-max="10000" data-step="50">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-charges" type="number" value="0" />
@@ -202,7 +202,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Taux d'endettement max</div>
+              <label class="field-label" for="loan-endettement">Taux d'endettement max</label>
               <div class="stepper" data-min="20" data-max="40" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-endettement" type="number" value="35" />
@@ -225,7 +225,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Montant emprunté</div>
+              <label class="field-label" for="loan-capital">Montant emprunté</label>
               <div class="stepper" data-min="10000" data-max="5000000" data-step="5000">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-capital" type="number" value="200000" />
@@ -250,7 +250,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Durée</div>
+              <label class="field-label" for="loan-duree">Durée</label>
               <div class="stepper" data-min="5" data-max="30" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-duree" type="number" value="25" />
@@ -265,7 +265,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Taux nominal</div>
+              <label class="field-label" for="loan-taux">Taux nominal</label>
               <div class="stepper" data-min="0.5" data-max="10" data-step="0.05">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-taux" type="number" value="3.5" />
@@ -280,7 +280,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Assurance emprunteur</div>
+              <label class="field-label" for="loan-assurance">Assurance emprunteur</label>
               <div class="stepper" data-min="0" data-max="2" data-step="0.01">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-assurance" type="number" value="0.36" step="0.01" />
@@ -304,7 +304,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Prix du bien</div>
+              <label class="field-label" for="loan-prix-bien">Prix du bien</label>
               <div class="stepper" data-min="0" data-max="5000000" data-step="5000">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-prix-bien" type="number" value="250000" />
@@ -313,14 +313,14 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Type de bien</div>
-              <div class="mode-toggle">
+              <div class="field-label" id="simulateur-pret-g2-label">Type de bien</div>
+              <div role="group" aria-labelledby="simulateur-pret-g2-label" class="mode-toggle">
                 <label><input type="radio" name="loan-neuf" value="ancien" checked><span class="mode-label">Ancien (~7.5% notaire)</span></label>
                 <label><input type="radio" name="loan-neuf" value="neuf"><span class="mode-label">Neuf (~2.5%)</span></label>
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Travaux</div>
+              <label class="field-label" for="loan-travaux">Travaux</label>
               <div class="stepper" data-min="0" data-max="500000" data-step="1000">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-travaux" type="number" value="0" />
@@ -329,7 +329,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">Apport personnel</div>
+              <label class="field-label" for="loan-apport">Apport personnel</label>
               <div class="stepper" data-min="0" data-max="2000000" data-step="1000">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-apport" type="number" value="30000" />
@@ -348,7 +348,7 @@
           </div>
           <div class="field-grid">
             <div class="field">
-              <div class="field-label">Montant remboursé d'un coup</div>
+              <label class="field-label" for="loan-anticipe-montant">Montant remboursé d'un coup</label>
               <div class="stepper" data-min="0" data-max="500000" data-step="1000">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-anticipe-montant" type="number" value="20000" />
@@ -357,7 +357,7 @@
               </div>
             </div>
             <div class="field">
-              <div class="field-label">À quel mois du prêt ?</div>
+              <label class="field-label" for="loan-anticipe-mois">À quel mois du prêt ?</label>
               <div class="stepper" data-min="1" data-max="360" data-step="6">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="loan-anticipe-mois" type="number" value="60" />

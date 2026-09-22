@@ -163,13 +163,13 @@
           <div class="field-grid">
 
             <div class="field">
-              <div class="field-label">Paire / Actif</div>
+              <label class="field-label" for="pp-pair">Paire / Actif</label>
               <select class="select" id="pp-pair" data-instruments data-live-price="pp-entry" data-default="EUR/USD">
               </select>
             </div>
 
             <div class="field">
-              <div class="field-label">Devise du compte</div>
+              <label class="field-label" for="pp-currency">Devise du compte</label>
               <select class="select" id="pp-currency">
                 <option value="EUR">EUR (Euro)</option>
                 <option value="USD">USD (Dollar)</option>
@@ -177,8 +177,8 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Direction</div>
-              <div class="pp-dir-toggle">
+              <div class="field-label" id="calculateur-pips-g1-label">Direction</div>
+              <div role="group" aria-labelledby="calculateur-pips-g1-label" class="pp-dir-toggle">
                 <input type="radio" name="pp-dir" value="long" id="pp-long" checked>
                 <label for="pp-long" class="pp-dir-label">▲ Long (achat)</label>
                 <input type="radio" name="pp-dir" value="short" id="pp-short">
@@ -187,7 +187,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Prix d'entrée <span class="field-hint">optionnel pour le P&L</span></div>
+              <label class="field-label" for="pp-entry">Prix d'entrée <span class="field-hint">optionnel pour le P&L</span></label>
               <div class="stepper" data-min="0" data-max="200000" data-step="0.0001">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="pp-entry" type="number" step="0.0001" placeholder="auto" />
@@ -208,7 +208,7 @@
           <div class="field-grid">
 
             <div class="field">
-              <div class="field-label">Capital du compte</div>
+              <label class="field-label" for="pp-balance">Capital du compte</label>
               <div class="stepper" data-min="0" data-max="10000000" data-step="100">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="pp-balance" type="number" value="10000" />
@@ -225,7 +225,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">% capital à risquer / trade</div>
+              <label class="field-label" for="pp-risk">% capital à risquer / trade</label>
               <div class="stepper" data-min="0.1" data-max="10" data-step="0.1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="pp-risk" type="number" value="1" step="0.1" />
@@ -241,7 +241,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Stop loss</div>
+              <label class="field-label" for="pp-stop">Stop loss</label>
               <div class="stepper" data-min="1" data-max="10000" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="pp-stop" type="number" value="30" />
@@ -258,7 +258,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">Take profit (target)</div>
+              <label class="field-label" for="pp-target">Take profit (target)</label>
               <div class="stepper" data-min="1" data-max="10000" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="pp-target" type="number" value="60" />
@@ -274,9 +274,9 @@
             </div>
 
             <div class="field">
-              <div class="field-label">
+              <label class="field-label" for="pp-contract-size">
                 Taille du contrat <span class="field-hint">selon votre broker (units / lot)</span>
-              </div>
+              </label>
               <div class="stepper" data-min="0.0001" data-max="10000000" data-step="1">
                 <button class="stepper-btn" data-act="minus">−</button>
                 <input class="stepper-input" id="pp-contract-size" type="number" value="100000" step="any" />

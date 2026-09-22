@@ -105,7 +105,7 @@
 
         <div class="field-grid">
           <div class="field">
-            <div class="field-label">Capital de départ</div>
+            <label class="field-label" for="mc-balance">Capital de départ</label>
             <div class="stepper" data-min="100" data-max="10000000" data-step="100">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-balance" type="number" value="10000" />
@@ -120,7 +120,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Win rate</div>
+            <label class="field-label" for="mc-wr">Win rate</label>
             <div class="stepper" data-min="1" data-max="99" data-step="1">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-wr" type="number" value="55" />
@@ -136,7 +136,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">R/R ratio</div>
+            <label class="field-label" for="mc-rr">R/R ratio</label>
             <div class="stepper" data-min="0.1" data-max="10" data-step="0.1">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-rr" type="number" value="2" step="0.1" />
@@ -152,7 +152,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Risque par trade</div>
+            <label class="field-label" for="mc-risk">Risque par trade</label>
             <div class="stepper" data-min="0.1" data-max="20" data-step="0.1">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-risk" type="number" value="1" step="0.1" />
@@ -168,7 +168,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Nombre de trades / horizon</div>
+            <label class="field-label" for="mc-n">Nombre de trades / horizon</label>
             <div class="stepper" data-min="10" data-max="5000" data-step="10">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-n" type="number" value="200" />
@@ -184,7 +184,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Nombre de simulations</div>
+            <label class="field-label" for="mc-sims">Nombre de simulations</label>
             <div class="stepper" data-min="100" data-max="5000" data-step="100">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-sims" type="number" value="2000" />
@@ -199,7 +199,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Objectif de capital (optionnel)</div>
+            <label class="field-label" for="mc-target">Objectif de capital (optionnel)</label>
             <div class="stepper" data-min="0" data-max="10000000" data-step="500">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-target" type="number" value="20000" />
@@ -209,7 +209,7 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Frais par trade (commission + spread)</div>
+            <label class="field-label" for="mc-fee">Frais par trade (commission + spread)</label>
             <div class="stepper" data-min="0" data-step="0.5">
               <button class="stepper-btn" data-act="minus">−</button>
               <input class="stepper-input" id="mc-fee" type="number" value="2" step="0.5" />
@@ -225,8 +225,8 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Fiscalité PV finale (CTO)</div>
-            <div class="pills" id="mc-env-pills">
+            <div class="field-label" id="mc-env-pills-label">Fiscalité PV finale (CTO)</div>
+            <div role="group" aria-labelledby="mc-env-pills-label" class="pills" id="mc-env-pills">
               <button class="pill" data-val="0">Brut</button>
               <button class="pill active" data-val="30">CTO 30 %</button>
               <button class="pill" data-val="17.2">PEA &gt; 5a (17.2 %)</button>

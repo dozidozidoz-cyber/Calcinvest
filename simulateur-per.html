@@ -262,7 +262,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Âge actuel</label>
+                <label class="field-label" for="per-age">Âge actuel</label>
                 <div class="stepper" data-step="1" data-min="18" data-max="70">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-age" value="35" />
@@ -271,7 +271,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Âge de retraite</label>
+                <label class="field-label" for="per-retire-age">Âge de retraite</label>
                 <div class="stepper" data-step="1" data-min="55" data-max="75">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-retire-age" value="65" />
@@ -296,7 +296,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Capital initial PER</label>
+                <label class="field-label" for="per-initial">Capital initial PER</label>
                 <div class="stepper" data-step="500" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-initial" value="0" />
@@ -310,7 +310,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Versement mensuel</label>
+                <label class="field-label" for="per-monthly">Versement mensuel</label>
                 <div class="stepper" data-step="50" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-monthly" value="200" />
@@ -335,7 +335,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Rendement attendu</label>
+                <label class="field-label" for="per-return">Rendement attendu</label>
                 <div class="stepper" data-step="0.5" data-min="0" data-max="15">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-return" value="6" step="0.5" />
@@ -344,7 +344,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Frais annuels (PER)</label>
+                <label class="field-label" for="per-fees">Frais annuels (PER)</label>
                 <div class="stepper" data-step="0.1" data-min="0" data-max="3">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-fees" value="1" step="0.1" />
@@ -353,7 +353,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Inflation estimée</label>
+                <label class="field-label" for="per-inflation">Inflation estimée</label>
                 <div class="stepper" data-step="0.5" data-min="0" data-max="10">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-inflation" value="2" step="0.5" />
@@ -373,7 +373,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">TMI aujourd'hui (entrée)</label>
+                <label class="field-label" for="per-tmi-in">TMI aujourd'hui (entrée)</label>
                 <select id="per-tmi-in" class="select">
                   <option value="0">0 %</option>
                   <option value="11">11 %</option>
@@ -386,7 +386,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">TMI estimée à la retraite</label>
+                <label class="field-label" for="per-tmi-out">TMI estimée à la retraite</label>
                 <select id="per-tmi-out" class="select">
                   <option value="0">0 %</option>
                   <option value="11" selected>11 %</option>
@@ -409,7 +409,7 @@
             </div>
             <div class="field-grid">
               <div class="field">
-                <label class="field-label">Revenu professionnel net</label>
+                <label class="field-label" for="per-revenu-pro">Revenu professionnel net</label>
                 <div class="stepper" data-step="1000" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-revenu-pro" value="" placeholder="ex: 45000" />
@@ -427,7 +427,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label">Reports non utilisés (3 ans)</label>
+                <label class="field-label" for="per-cumulated-unused">Reports non utilisés (3 ans)</label>
                 <div class="stepper" data-step="500" data-min="0">
                   <button class="stepper-btn" data-dir="-1" type="button">−</button>
                   <input class="stepper-input" type="number" id="per-cumulated-unused" value="0" />
@@ -449,7 +449,7 @@
               <div class="subsection-hint">Répartition capital / rente à la retraite</div>
             </div>
             <div class="field">
-              <label class="field-label">
+              <label class="field-label" for="per-exit-capital-pct">
                 Mix sortie : <strong id="per-exit-mix-display">100 % capital</strong>
               </label>
               <input
@@ -467,8 +467,8 @@
 
             <!-- Forfait fiscal sortie -->
             <div class="field" style="margin-top:14px">
-              <label class="field-label">Méthode d'imposition à la sortie (capital)</label>
-              <div class="tax-toggle">
+              <div class="field-label" id="simulateur-per-g1-label">Méthode d'imposition à la sortie (capital)</div>
+              <div role="group" aria-labelledby="simulateur-per-g1-label" class="tax-toggle">
                 <label>
                   <input type="radio" name="per-tax-method" value="auto" checked />
                   🤖 Auto (minimum)
