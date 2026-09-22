@@ -127,7 +127,7 @@
 <!-- ═══ Pour aller plus loin (maillage outils → blog) ═══ -->
 <aside class="ci-readmore" aria-label="Articles liés">
   <div class="ci-readmore-inner">
-    <h3 class="ci-readmore-title">📖 Pour aller plus loin</h3>
+    <h2 class="ci-readmore-title">📖 Pour aller plus loin</h2>
     <a href="/blog/rendement-locatif-net-2026" class="ci-readmore-item">
       <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
       <span class="ci-readmore-text"><strong>Rendement locatif net : la formule complète + 5 pièges</strong><span class="ci-readmore-meta">Article · 10 min de lecture</span></span>
@@ -143,7 +143,7 @@
 
 <aside class="ci-related" aria-label="Outils complémentaires">
   <div class="ci-related-inner">
-    <h3 class="ci-related-title">Outils complémentaires</h3>
+    <h2 class="ci-related-title">Outils complémentaires</h2>
     <div class="ci-related-grid">
   <a href="/simulateur-rendement-locatif" class="ci-related-item"><span class="ci-related-arrow">→</span>Rendement Locatif</a>
   <a href="/simulateur-lmnp" class="ci-related-item"><span class="ci-related-arrow">→</span>LMNP</a>
@@ -179,12 +179,12 @@
     const c = $('pf-biens');
     c.innerHTML = biens.map((b, idx) => `
       <div class="pf-bien-row" data-idx="${idx}">
-        <input type="text" data-k="nom" value="${b.nom || ''}" />
-        <input type="number" data-k="prix" value="${b.prix || 0}" />
-        <input type="number" data-k="loyer" value="${b.loyer || 0}" />
-        <input type="number" data-k="mensualite" value="${b.mensualite || 0}" />
-        <input type="number" data-k="capitalRestant" value="${b.capitalRestant || 0}" />
-        <input type="number" data-k="charges" value="${b.charges || 0}" />
+        <input type="text" data-k="nom" aria-label="Bien ${idx + 1} — nom" value="${b.nom || ''}" />
+        <input type="number" data-k="prix" aria-label="Bien ${idx + 1} — prix d'achat" value="${b.prix || 0}" />
+        <input type="number" data-k="loyer" aria-label="Bien ${idx + 1} — loyer mensuel" value="${b.loyer || 0}" />
+        <input type="number" data-k="mensualite" aria-label="Bien ${idx + 1} — mensualité de prêt" value="${b.mensualite || 0}" />
+        <input type="number" data-k="capitalRestant" aria-label="Bien ${idx + 1} — capital restant dû" value="${b.capitalRestant || 0}" />
+        <input type="number" data-k="charges" aria-label="Bien ${idx + 1} — charges" value="${b.charges || 0}" />
         <button class="btn-ghost" data-del="${idx}" style="padding:4px 10px;color:var(--red);font-size:12px">✕</button>
       </div>
     `).join('');

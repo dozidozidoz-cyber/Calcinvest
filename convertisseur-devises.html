@@ -82,7 +82,7 @@
           <div class="stepper" data-step="1" data-min="0">
             <button class="stepper-btn" data-act="minus">−</button>
             <input class="stepper-input" id="fx-amount" type="number" value="100" step="any" />
-            <select class="select" id="fx-from" style="min-width:90px"></select>
+            <select class="select" id="fx-from" aria-label="Devise de départ" style="min-width:90px"></select>
           </div>
         </div>
         <button class="fx-swap-btn" id="fx-swap" title="Inverser les devises" aria-label="Inverser">
@@ -92,7 +92,7 @@
           <label class="field-label" for="fx-result">Convertir vers</label>
           <div class="stepper" style="display:flex;align-items:center">
             <input class="stepper-input" id="fx-result" type="text" readonly value="—" style="font-weight:700;color:var(--accent);font-size:18px" />
-            <select class="select" id="fx-to" style="min-width:90px"></select>
+            <select class="select" id="fx-to" aria-label="Devise d’arrivée" style="min-width:90px"></select>
           </div>
         </div>
       </div>

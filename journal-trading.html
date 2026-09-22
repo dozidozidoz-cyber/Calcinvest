@@ -263,9 +263,9 @@
     </div>
     <div class="card-body">
       <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-        <input type="search" id="j-filter" placeholder="Filtrer par instrument, stratégie, tag…" class="select" style="flex:1;min-width:200px" />
-        <select class="select" id="j-filter-status" style="flex:0 0 auto"><option value="all">Tous statuts</option><option value="closed">Clos</option><option value="open">Ouverts</option><option value="win">Gagnants</option><option value="loss">Perdants</option></select>
-        <input type="month" id="j-filter-month" class="select" style="flex:0 0 auto" />
+        <input type="search" id="j-filter" aria-label="Filtrer par instrument, stratégie ou tag" placeholder="Filtrer par instrument, stratégie, tag…" class="select" style="flex:1;min-width:200px" />
+        <select class="select" id="j-filter-status" aria-label="Filtrer par statut" style="flex:0 0 auto"><option value="all">Tous statuts</option><option value="closed">Clos</option><option value="open">Ouverts</option><option value="win">Gagnants</option><option value="loss">Perdants</option></select>
+        <input type="month" id="j-filter-month" aria-label="Filtrer par mois" class="select" style="flex:0 0 auto" />
         <button class="btn btn-secondary" id="j-btn-export" type="button" style="flex:0 0 auto">⬇ Export CSV</button>
         <button class="btn btn-secondary" id="j-btn-import" type="button" style="flex:0 0 auto">⬆ Import CSV</button>
         <input type="file" id="j-import-file" accept=".csv" style="display:none" />
@@ -335,7 +335,7 @@
 <!-- ═══ Pour aller plus loin (maillage outils → blog) ═══ -->
 <aside class="ci-readmore" aria-label="Articles liés">
   <div class="ci-readmore-inner">
-    <h3 class="ci-readmore-title">📖 Pour aller plus loin</h3>
+    <h2 class="ci-readmore-title">📖 Pour aller plus loin</h2>
     <a href="/blog/comparateur-brokers" class="ci-readmore-item">
       <span class="ci-readmore-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h3"/></svg></span>
       <span class="ci-readmore-text"><strong>Comparateur brokers : lequel choisir pour le PEA / CTO</strong><span class="ci-readmore-meta">Article · 9 min de lecture</span></span>
@@ -351,7 +351,7 @@
 
 <aside class="ci-related" aria-label="Outils complémentaires">
   <div class="ci-related-inner">
-    <h3 class="ci-related-title">Outils complémentaires</h3>
+    <h2 class="ci-related-title">Outils complémentaires</h2>
     <div class="ci-related-grid">
   <a href="/calculateur-risk-management" class="ci-related-item"><span class="ci-related-arrow">→</span>Risk Management</a>
   <a href="/simulateur-monte-carlo-trading" class="ci-related-item"><span class="ci-related-arrow">→</span>Monte Carlo Trading</a>

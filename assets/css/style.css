@@ -4165,28 +4165,6 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; } /* subnav 48 + marge
   .cmdk-trigger kbd { display: none; }
 }
 
-/* ============================================================
-   DARK MODE TOGGLE — bouton dans le topbar
-   ============================================================ */
-.darkmode-toggle {
-  width: 34px; height: 34px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  display: grid; place-items: center;
-  cursor: pointer;
-  color: var(--text-3);
-  transition: var(--t-fast);
-}
-.darkmode-toggle:hover {
-  color: var(--text);
-  border-color: var(--border-strong);
-  background: var(--bg-card);
-}
-.darkmode-toggle .sun { display: block; }
-.darkmode-toggle .moon { display: none; }
-[data-theme="dark"] .darkmode-toggle .sun { display: none; }
-[data-theme="dark"] .darkmode-toggle .moon { display: block; }
 
 /* ============================================================
    RECENT TOOLS — sur la home

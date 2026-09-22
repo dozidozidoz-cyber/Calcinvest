@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#34D399" />
-<title>Calculatrices Express — TMI, SMIC net, Mensualité prêt, Conversion devises | CalcInvest</title>
+<title>Calculatrices Express — TMI, SMIC net, mensualité, devises</title>
 <meta name="description" content="4 calculatrices express en 1 clic : TMI, SMIC net 2026, mensualité prêt, conversion devise live. Ultra-rapide." />
 <meta name="keywords" content="ma TMI, SMIC net 2025, calcul rapide mensualité prêt, taux marginal imposition" />
 <link rel="manifest" href="/manifest.json" />
@@ -72,10 +72,10 @@
       <div class="mc-card-title">📊 Quelle est ma TMI ?</div>
       <div class="mc-card-sub">Tranche marginale d'imposition 2025</div>
       <div class="mc-row">
-        <input type="number" id="mc-tmi-salaire" class="mc-input" placeholder="Salaire net annuel (€)" value="35000" />
+        <input type="number" id="mc-tmi-salaire" aria-label="TMI — salaire net annuel" class="mc-input" placeholder="Salaire net annuel (€)" value="35000" />
       </div>
       <div class="mc-row">
-        <select id="mc-tmi-parts" class="mc-input">
+        <select id="mc-tmi-parts" aria-label="TMI — nombre de parts fiscales" class="mc-input">
           <option value="1">1 part (célibataire)</option>
           <option value="2">2 parts (couple)</option>
           <option value="2.5">2,5 parts (couple + 1 enfant)</option>
@@ -96,10 +96,10 @@
       <div class="mc-card-title">💶 SMIC net 2025</div>
       <div class="mc-card-sub">Conversion brut → net</div>
       <div class="mc-row">
-        <input type="number" id="mc-smic-brut" class="mc-input" placeholder="Salaire brut mensuel (€)" value="1801.80" step="any" />
+        <input type="number" id="mc-smic-brut" aria-label="Brut vers net — salaire brut mensuel" class="mc-input" placeholder="Salaire brut mensuel (€)" value="1801.80" step="any" />
       </div>
       <div class="mc-row">
-        <select id="mc-smic-statut" class="mc-input">
+        <select id="mc-smic-statut" aria-label="Brut vers net — statut" class="mc-input">
           <option value="nonCadre">Non-cadre</option>
           <option value="cadre">Cadre</option>
         </select>
@@ -117,11 +117,11 @@
       <div class="mc-card-title">🏠 Mensualité d'un prêt</div>
       <div class="mc-card-sub">Capital + durée + taux → mensualité</div>
       <div class="mc-row">
-        <input type="number" id="mc-loan-capital" class="mc-input" placeholder="Capital (€)" value="200000" />
+        <input type="number" id="mc-loan-capital" aria-label="Prêt — capital emprunté" class="mc-input" placeholder="Capital (€)" value="200000" />
       </div>
       <div class="mc-row" style="gap:8px">
-        <input type="number" id="mc-loan-duree" class="mc-input" placeholder="Années" value="25" style="flex:1" />
-        <input type="number" id="mc-loan-taux" class="mc-input" placeholder="Taux %" value="3.5" step="0.1" style="flex:1" />
+        <input type="number" id="mc-loan-duree" aria-label="Prêt — durée en années" class="mc-input" placeholder="Années" value="25" style="flex:1" />
+        <input type="number" id="mc-loan-taux" aria-label="Prêt — taux annuel" class="mc-input" placeholder="Taux %" value="3.5" step="0.1" style="flex:1" />
       </div>
       <div class="mc-result">
         <div class="mc-result-label">Mensualité (assurance 0.36 % incluse)</div>
@@ -136,11 +136,11 @@
       <div class="mc-card-title">💱 Conversion devise live</div>
       <div class="mc-card-sub">Taux BCE temps réel</div>
       <div class="mc-row" style="gap:8px">
-        <input type="number" id="mc-fx-amount" class="mc-input" placeholder="Montant" value="100" step="any" />
-        <select id="mc-fx-from" class="mc-input" style="flex:1"></select>
+        <input type="number" id="mc-fx-amount" aria-label="Devises — montant à convertir" class="mc-input" placeholder="Montant" value="100" step="any" />
+        <select id="mc-fx-from" aria-label="Devises — devise de départ" class="mc-input" style="flex:1"></select>
       </div>
       <div class="mc-row">
-        <select id="mc-fx-to" class="mc-input"></select>
+        <select id="mc-fx-to" aria-label="Devises — devise d’arrivée" class="mc-input"></select>
       </div>
       <div class="mc-result">
         <div class="mc-result-label">Équivalent</div>

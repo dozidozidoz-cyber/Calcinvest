@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#34D399" />
-<title>Simulateur DCA Bourse Gratuit — Backtest S&P 500 1871 à aujourd'hui | CalcInvest</title>
+<title>Simulateur DCA Bourse Gratuit — Backtest S&P 500 depuis 1871</title>
 <meta name="description" content="Simulateur DCA bourse gratuit 2026 : backtest sur 13 actifs depuis 1871. Crises 1929, 2008, 2020 incluses. Dividendes, inflation, frais ETF, Monte Carlo." />
 <link rel="manifest" href="/manifest.json" />
 <link rel="canonical" href="https://calcinvest.fr/simulateur-dca" />
@@ -576,7 +576,7 @@
                 </div>
               </div>
               <div class="field">
-                <label class="field-label" id="d-date-label">Date d'entrée</label>
+                <label class="field-label" id="d-date-label" for="d-start">Date d'entrée</label>
                 <input class="select" type="month" id="d-start" />
                 <div style="font-size:11px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)" id="d-date-hint">Sortie : —</div>
               </div>
@@ -1270,7 +1270,7 @@
         <span style="font-size:12px;color:var(--text-3)">Rendement attendu post-retraite :</span>
         <div class="stepper" data-step="0.5" data-min="1" data-max="15" style="width:auto">
           <button class="stepper-btn" data-dir="-1" type="button">−</button>
-          <input class="stepper-input" type="number" id="da10-return" value="7" step="0.5" style="width:52px" />
+          <input class="stepper-input" type="number" id="da10-return" aria-label="Rendement annuel supposé, en %" value="7" step="0.5" style="width:52px" />
           <span class="stepper-unit">%/an</span>
           <button class="stepper-btn" data-dir="1" type="button">+</button>
         </div>

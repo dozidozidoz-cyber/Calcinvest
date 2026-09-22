@@ -660,45 +660,10 @@
       CI.initLivePrices();
       CI.initRecentTools();
       CI.initCommandPalette();
-      CI.initDarkMode();
       CI._scrollInited = true;
     }
   };
 
-  /* ===========================================================
-     DARK MODE — toggle bouton, persist localStorage
-     =========================================================== */
-  const DARK_KEY = 'ci_theme_v1';
-  CI.initDarkMode = function () {
-    // Applique le thème stocké
-    const stored = localStorage.getItem(DARK_KEY);
-    if (stored === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-
-    // Injecte le bouton dans le topbar-right s'il y a un user-zone
-    const userZone = document.getElementById('ci-user-zone');
-    if (userZone && !document.querySelector('.darkmode-toggle')) {
-      const btn = document.createElement('button');
-      btn.className = 'darkmode-toggle';
-      btn.setAttribute('aria-label', 'Basculer thème');
-      btn.title = 'Basculer thème clair/sombre';
-      btn.innerHTML = `
-        <svg class="sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4"/></svg>
-        <svg class="moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M13 9.5A6 6 0 1 1 6.5 3a4.5 4.5 0 0 0 6.5 6.5z"/></svg>
-      `;
-      btn.addEventListener('click', () => {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        if (isDark) {
-          document.documentElement.removeAttribute('data-theme');
-          localStorage.setItem(DARK_KEY, 'light');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          localStorage.setItem(DARK_KEY, 'dark');
-        }
-      });
-      // Insère en première position de user-zone
-      userZone.insertBefore(btn, userZone.firstChild);
-    }
-  };
 
   /* ===========================================================
      COMMAND PALETTE (Ctrl+K) — recherche universelle
@@ -2252,6 +2217,19 @@
   CI.initTheme = function () {
     // Défaut = light. On respecte le choix utilisateur stocké mais on n'auto-flip plus
     // vers dark selon prefers-color-scheme — le site est "clair par défaut".
+    // Migration : un second sélecteur de thème (.darkmode-toggle) a coexisté
+    // ici, écrivant sous la clé « ci_theme_v1 ». Les deux boutons ne
+    // partageaient donc aucun état : cliquer l’un laissait l’icône de
+    // l’autre à contresens. Il a été supprimé ; on récupère une dernière
+    // fois la préférence qu’il avait pu stocker pour ne perdre personne.
+    try {
+      const ancienne = localStorage.getItem('ci_theme_v1');
+      if (ancienne && !localStorage.getItem(THEME_KEY)) {
+        localStorage.setItem(THEME_KEY, ancienne === 'dark' ? 'dark' : 'light');
+      }
+      if (ancienne) localStorage.removeItem('ci_theme_v1');
+    } catch (e) {}
+
     const stored = CI.getTheme();
     if (stored === 'dark' || stored === 'light') {
       document.documentElement.dataset.theme = stored;

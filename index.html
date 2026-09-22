@@ -194,7 +194,7 @@
           <svg class="hero-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
             <circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/>
           </svg>
-          <input type="text" id="hero-search-input" class="hero-search-input" placeholder='Que cherchez-vous ? ex : "salaire net", "PER", "DCA bitcoin"…' autocomplete="off" />
+          <input type="text" id="hero-search-input" aria-label="Rechercher un outil" class="hero-search-input" placeholder='Que cherchez-vous ? ex : "salaire net", "PER", "DCA bitcoin"…' autocomplete="off" />
           <kbd class="hero-search-kbd">Tab pour explorer</kbd>
         </div>
         <div class="hero-search-suggestions" id="hero-search-suggestions"></div>
@@ -1750,7 +1750,7 @@
       </p>
       <form id="newsletter-form" style="display:flex;gap:8px;max-width:440px;margin:0 auto;flex-wrap:wrap">
         <input type="email" required placeholder="votre@email.com"
-               style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;color:var(--text);font-size:14px;outline:none" />
+               style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;color:var(--text);font-size:14px;outline:none" / aria-label="Adresse e-mail" >
         <button type="submit" class="btn btn-accent" style="padding:12px 22px;font-weight:600">S'inscrire</button>
         <div data-msg style="width:100%;font-size:12px;margin-top:8px;min-height:16px"></div>
       </form>

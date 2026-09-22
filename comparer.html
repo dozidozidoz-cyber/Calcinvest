@@ -224,7 +224,7 @@
         <div class="cmp-slot-empty-text">
           <div style="font-size:28px;color:var(--text-4);margin-bottom:10px">＋</div>
           <div style="font-size:13px;color:var(--text-3);margin-bottom:14px">Slot ${slotIdx + 1} — vide</div>
-          <select class="select cmp-slot-picker" data-slot="${slotIdx}" style="width:100%;max-width:240px">
+          <select class="select cmp-slot-picker" data-slot="${slotIdx}" aria-label="Choisir un projet pour l'emplacement ${slotIdx + 1}" style="width:100%;max-width:240px">
             <option value="">Choisir un projet…</option>
             ${projects.map(p => {
               const meta = TYPE_META[p.type] || { label: p.type };

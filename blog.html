@@ -795,7 +795,7 @@
     <h3>Recevez les nouveaux articles par e-mail</h3>
     <p>Un mail tous les 15 jours. Sans tracking, sans pub. Désinscription en 1 clic.</p>
     <form class="blog-newsletter-form" onsubmit="event.preventDefault(); CI.toast && CI.toast('Newsletter en cours de mise en place — restez en ligne !', 'info', 4000);">
-      <input type="email" placeholder="votre@email.fr" required />
+      <input type="email" placeholder="votre@email.fr" required / aria-label="Adresse e-mail" >
       <button type="submit">
         S'abonner
       </button>
