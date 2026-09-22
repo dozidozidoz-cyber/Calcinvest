@@ -68,7 +68,11 @@
    * @returns {Object}
    */
   function brutToNet(p) {
-    const brut = num(p.brut, 0);
+    // Borné à 0 : un brut négatif produisait un net et des cotisations
+    // négatives. Le stepper ne borne que ses boutons +/−, pas la saisie
+    // clavier, donc la valeur peut réellement arriver ici. Même
+    // convention défensive que calc-impot.js.
+    const brut = Math.max(num(p.brut, 0), 0);
     const statut = p.statut === 'cadre' ? 'cadre' : 'nonCadre';
     const r = RATES[statut];
 
@@ -125,7 +129,7 @@
    * Convertit un net mensuel souhaité → brut (résolution numérique).
    */
   function netToBrut(p) {
-    const targetNet = num(p.net, 0);
+    const targetNet = Math.max(num(p.net, 0), 0);
     const statut = p.statut === 'cadre' ? 'cadre' : 'nonCadre';
     // Approche : ratio empirique, puis ajustement Newton.
     // Cadre ~ 75 % brut / Non-cadre ~ 78 %
