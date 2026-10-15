@@ -17,10 +17,23 @@
     "id": "meuser",
     "type": "CONGRESS"
   },
-  "updated": "2026-10-12T15:51:14.012144Z",
+  "updated": "2026-10-15T11:51:46.587643Z",
   "data_source": "live_house_clerk",
-  "count": 17,
+  "count": 18,
   "transactions": [
+    {
+      "date": "2026-08-31",
+      "disclosed": "2026-09-14",
+      "ticker": "NVDA",
+      "asset": "NVIDIA Corporation - Common Stock",
+      "asset_class": "ST",
+      "type": "S (partial)",
+      "amount": "$1,001 - $15,000",
+      "owner": "SP",
+      "description": "Schwab Brokerage Account",
+      "filing_date": "2026-10-14",
+      "doc_id": "20035487"
+    },
     {
       "date": "2026-06-15",
       "disclosed": "2026-06-16",
