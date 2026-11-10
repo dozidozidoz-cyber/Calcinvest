@@ -692,6 +692,7 @@
       { url: '/glossaire',         label: 'Glossaire financier',cat: 'Page', keywords: 'glossaire termes definitions cagr tri pfu drawdown' },
       { url: '/comparer',          label: 'Comparer simulations',cat: 'Page', keywords: 'comparer comparaison projets simulations cote a cote' },
       { url: '/blog',              label: 'Blog',              cat: 'Page', keywords: 'blog articles ressources' },
+      { url: '/marche-cette-semaine', label: 'Marché cette semaine', cat: 'Page', keywords: 'marche hebdo rapport indices taux semaine' },
       // { url: '/abonnement',     label: 'Tarifs & Premium',  cat: 'Page', keywords: 'tarifs premium abonnement prix' },  // PRE-LAUNCH : masqué
       { url: '/mes-projets',       label: 'Mes Projets',       cat: 'Page', keywords: 'projets sauvegarde' },
       { url: '/mentions-legales',  label: 'Mentions légales',  cat: 'Page', keywords: 'rgpd cookies cgv' }
@@ -1117,7 +1118,8 @@
           { url: '/allocation-portefeuille', label: 'Allocation Portefeuille', desc: '60/40, All-Weather, Permanent', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 4"/></svg>' },
           { url: '/regime-marche',         label: 'Régime de marché',    desc: 'Bull / Bear / Range / Volatile', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 18l6-6 4 4 8-10"/></svg>' },
           { url: '/backtest-timing',       label: 'Backtest Timing',     desc: 'Golden Cross, Faber GTAA, Momentum', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 10h18M9 4v16"/></svg>' },
-          { url: '/smart-money',           label: 'Smart Money',         desc: '13F + ARK + Pelosi · perf vs S&P', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="6" y="14" width="2.5" height="5" rx="0.3" fill="currentColor" opacity="0.25" stroke="none"/><rect x="10.5" y="10" width="2.5" height="9" rx="0.3" fill="currentColor" opacity="0.4" stroke="none"/><rect x="15" y="6" width="2.5" height="13" rx="0.3" fill="currentColor" opacity="0.7" stroke="none"/><path d="M5 16l4-3 4-4 5-5"/><path d="M18 4l0.6 1.4L20 6l-1.4 0.6L18 8l-0.6-1.4L16 6l1.4-0.6z" fill="currentColor" stroke="none"/></svg>' }
+          { url: '/smart-money',           label: 'Smart Money',         desc: '13F + ARK + Pelosi · perf vs S&P', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="6" y="14" width="2.5" height="5" rx="0.3" fill="currentColor" opacity="0.25" stroke="none"/><rect x="10.5" y="10" width="2.5" height="9" rx="0.3" fill="currentColor" opacity="0.4" stroke="none"/><rect x="15" y="6" width="2.5" height="13" rx="0.3" fill="currentColor" opacity="0.7" stroke="none"/><path d="M5 16l4-3 4-4 5-5"/><path d="M18 4l0.6 1.4L20 6l-1.4 0.6L18 8l-0.6-1.4L16 6l1.4-0.6z" fill="currentColor" stroke="none"/></svg>' },
+          { url: '/marche-cette-semaine', label: 'Marché cette semaine', desc: 'Rapport hebdo : indices, taux, matières premières', icon: ICONS.catMarches },
         ]
       },
       {
