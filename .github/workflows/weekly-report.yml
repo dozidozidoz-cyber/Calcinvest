@@ -21,6 +21,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # historique complet : update_sitemap_lastmod.js lit git log
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - uses: actions/setup-python@v5
         with:
@@ -32,14 +39,21 @@ jobs:
       - name: Generate report
         run: python scripts/generate_weekly_report.py
 
+      # Resynchronise les <lastmod> sur la vraie date de modification de
+      # chaque page. Sans ca le sitemap se fige : toutes les dates étaient
+      # restées au 2026-07-02 alors que des pages changeaient, privant
+      # Google de son signal de recrawl.
+      - name: Resynchroniser les dates du sitemap
+        run: node scripts/update_sitemap_lastmod.js
+
       - name: Commit & push
         run: |
           git config user.name "calcinvest-bot"
           git config user.email "actions@github.com"
-          git add marche-cette-semaine.html
+          git add marche-cette-semaine.html sitemap.xml
           if git diff --cached --quiet; then
             echo "Aucun changement."
           else
-            git commit -m "content: rapport marché hebdo ($(date -u +%Y-%m-%d))"
+            git commit -m "content: rapport marché hebdo + sitemap ($(date -u +%Y-%m-%d))"
             git push
           fi
