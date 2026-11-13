@@ -173,6 +173,10 @@
       <div id="bd-plan"></div>
     </div>
     <div class="breakdown-card">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-4);font-weight:700;margin-bottom:10px">Raison de sortie</div>
+      <div id="bd-exit"></div>
+    </div>
+    <div class="breakdown-card">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-4);font-weight:700;margin-bottom:10px">Par jour de semaine</div>
       <div id="bd-dow"></div>
     </div>
@@ -241,6 +245,17 @@
               </div>
               <input type="hidden" id="j-plan" value="" />
             </div>
+            <div class="field field-full"><label class="field-label" for="j-thesis">Thèse <span style="font-size:10px;color:var(--text-4)">(pourquoi j'achète, écrit avant l'entrée)</span></label><input type="text" id="j-thesis" class="select" maxlength="500" placeholder="Ex : croissance du CA &gt; 20 %/an, marge en hausse, catalyseur résultats T4" /></div>
+            <div class="field field-full"><label class="field-label" for="j-invalidation">Condition d'invalidation <span style="font-size:10px;color:var(--text-4)">(ce qui prouverait que j'ai tort)</span></label><input type="text" id="j-invalidation" class="select" maxlength="500" placeholder="Ex : clôture sous 24,50 $, ou guidance abaissée" /></div>
+            <div class="field"><label class="field-label" for="j-exit-reason">Raison de sortie <span style="font-size:10px;color:var(--text-4)">(si clos)</span></label>
+              <select id="j-exit-reason" class="select">
+                <option value="">— Non renseignée</option>
+                <option value="stop">Stop touché</option>
+                <option value="invalidated">Thèse invalidée</option>
+                <option value="target">Objectif atteint</option>
+                <option value="discretionary">Sortie discrétionnaire</option>
+              </select>
+            </div>
             <div class="field field-full"><label class="field-label" for="j-notes">Notes</label><input type="text" id="j-notes" class="select" placeholder="Trade idea, ce qui a marché ou non..." /></div>
           </div>
         </div>
@@ -298,6 +313,7 @@
       <strong>Stats expliquées</strong> :
       <ul style="margin:8px 0 0 18px">
         <li><strong>R-multiple</strong> : ratio P&L / risque initial (stop loss). 2R = vous avez gagné 2× ce que vous risquiez. Avg R > 0.3 = solide.</li>
+        <li><strong>Raison de sortie</strong> : stop touché, thèse invalidée et objectif atteint sont des sorties <em>prévues</em> par le plan écrit avant l'achat ; une sortie discrétionnaire est décidée en cours de route. Comparer leur R moyen mesure ce que rapporte (ou coûte) le fait de s'écarter du plan.</li>
         <li><strong>Profit factor</strong> : gains totaux / pertes totales. PF > 1.5 = bon, > 2 = excellent.</li>
         <li><strong>Payoff ratio</strong> : avg win ÷ |avg loss|. Combien vous gagnez vs perdez en moyenne. > 1.5 = R/R favorable.</li>
         <li><strong>Recovery factor</strong> : profit total ÷ max drawdown. > 2 = solide.</li>
@@ -306,8 +322,8 @@
         <li><strong>Sharpe annualisé</strong> : approximation pour 252 jours/an de trading. > 1 = bon.</li>
       </ul>
       <br/>
-      <strong>Import CSV</strong> : format minimal attendu — colonnes <code>instrument,side,entry_price,exit_price,size,stop_loss,fees,entry_date,exit_date,strategy,notes</code>. Compatible export brut MT4/MT5/IBKR après ajustement des en-têtes.
-      <br/><strong>Schema Supabase</strong> : à exécuter dans le SQL Editor → <code>scripts/supabase_migrations/001_trades.sql</code>
+      <strong>Import CSV</strong> : format minimal attendu — colonnes <code>instrument,side,entry_price,exit_price,size,stop_loss,fees,entry_date,exit_date,strategy,notes</code>. Colonnes optionnelles : <code>thesis,invalidation,exit_reason</code> (<code>stop</code>, <code>invalidated</code>, <code>target</code> ou <code>discretionary</code>). Compatible export brut MT4/MT5/IBKR après ajustement des en-têtes.
+      <br/><strong>Schema Supabase</strong> : à exécuter dans le SQL Editor → <code>scripts/supabase_migrations/001_trades.sql</code> puis <code>002_trades_decision_fields.sql</code>
     </div>
   </section>
 </main>

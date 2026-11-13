@@ -12,6 +12,9 @@
   const fmtP = n => (window.CI && CI.fmtPctPlain) ? CI.fmtPctPlain(n, 1) : (n || 0).toFixed(1) + ' %';
   const fmtN = (n, d) => Number.isFinite(n) ? n.toLocaleString('fr-FR', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }) : '—';
 
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmtR = r => r == null ? '—' : (r >= 0 ? '+' : '') + r.toFixed(2) + 'R';
+
   let allTrades = [];
   let editingId = null; // trade en cours d'édition
 
@@ -104,6 +107,10 @@
       const longER = s.bySide.long.avgPnl, shortER = s.bySide.short.avgPnl;
       if (longER > 0 && shortER < 0) insights.push(`Vos longs gagnent (avg ${fmtMd(longER)}), vos shorts perdent (avg ${fmtMd(shortER)}). À creuser.`);
       else if (longER < 0 && shortER > 0) insights.push(`Vos shorts gagnent (avg ${fmtMd(shortER)}), vos longs perdent (avg ${fmtMd(longER)}). À creuser.`);
+    }
+    const ex = JOURNAL.byExitReason(allTrades);
+    if (ex.planned.nbWithR > 2 && ex.discretionary.nbWithR > 2) {
+      insights.push(`Sorties prévues au plan (stop, invalidation, objectif) : ${fmtR(ex.planned.avgR)} en moyenne sur ${ex.planned.nbWithR} trades. Sorties discrétionnaires : ${fmtR(ex.discretionary.avgR)} sur ${ex.discretionary.nbWithR} trades.`);
     }
     if (insights.length > 0) {
       $('kpi-insight').innerHTML = '💡 <strong>Insights</strong> · ' + insights.join(' &nbsp;·&nbsp; ');
@@ -339,6 +346,23 @@
       </div>`;
     }).filter(Boolean).join('') || '<div style="color:var(--text-4);font-size:12px">Pas de données plan respecté</div>';
 
+    // Raison de sortie
+    const be = $('bd-exit');
+    if (be) {
+      const exr = JOURNAL.byExitReason(allTrades);
+      const exitRows = JOURNAL.EXIT_REASONS.map(r => ({ key: r.key, label: r.label }))
+        .concat([{ key: 'unknown', label: '— Non renseignée' }]);
+      be.innerHTML = exitRows.map(r => {
+        const g = exr.groups[r.key];
+        if (g.count === 0) return '';
+        const pnlColor = g.pnl >= 0 ? '#10B981' : 'var(--red)';
+        return `<div class="breakdown-row">
+        <span style="color:var(--text-2)">${r.label} <span style="color:var(--text-4);font-size:11px">(${g.count})</span></span>
+        <span><strong style="color:${pnlColor}">${(g.pnl >= 0 ? '+' : '') + fmtM(g.pnl)}</strong> <span style="color:var(--text-4);font-size:11px">${fmtR(g.avgR)} · WR ${g.winrate.toFixed(0)}%</span></span>
+      </div>`;
+      }).filter(Boolean).join('') || '<div style="color:var(--text-4);font-size:12px">Aucun trade clos</div>';
+    }
+
     // Jour de la semaine
     const dow = JOURNAL.byDayOfWeek(allTrades);
     const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
@@ -405,7 +429,9 @@
       (t.instrument || '').toLowerCase().includes(filter) ||
       (t.strategy || '').toLowerCase().includes(filter) ||
       (t.tags || '').toLowerCase().includes(filter) ||
-      (t.notes || '').toLowerCase().includes(filter)
+      (t.notes || '').toLowerCase().includes(filter) ||
+      (t.thesis || '').toLowerCase().includes(filter) ||
+      (t.invalidation || '').toLowerCase().includes(filter)
     );
     if (status === 'closed') list = list.filter(t => t.exit_price != null);
     else if (status === 'open') list = list.filter(t => t.exit_price == null);
@@ -429,7 +455,7 @@
       const pnlStr = isOpen ? 'ouvert' : ((t.pnl >= 0 ? '+' : '') + fmtMd(t.pnl));
       const r = JOURNAL.rMultipleOf(t);
       const rStr = r != null && Number.isFinite(r) ? (r >= 0 ? '+' : '') + r.toFixed(2) + 'R' : '—';
-      return `<tr class="trade-row ${cls}" data-edit="${t.id}">
+      return `<tr class="trade-row ${cls}" data-edit="${t.id}" title="${esc([t.thesis && ('Thèse : ' + t.thesis), t.invalidation && ('Invalidation : ' + t.invalidation)].filter(Boolean).join(' — '))}">
         <td>${fmtDate(t.entry_date)}</td>
         <td><strong>${t.instrument || '—'}</strong></td>
         <td>${t.side === 'short' ? '▼ Short' : '▲ Long'}</td>
@@ -470,17 +496,21 @@
       strategy: ($('j-strategy').value || '').trim() || null,
       tags: ($('j-tags').value || '').trim() || null,
       notes: ($('j-notes').value || '').trim() || null,
+      thesis: ($('j-thesis').value || '').trim() || null,
+      invalidation: ($('j-invalidation').value || '').trim() || null,
+      exit_reason: null,
       entry_date: $('j-entry-date').value ? new Date($('j-entry-date').value).toISOString() : new Date().toISOString(),
       followed_plan: planVal === '' ? null : (planVal === 'true')
     };
     if (t.exit_price != null) {
+      t.exit_reason = JOURNAL.normalizeExitReason($('j-exit-reason').value);
       t.exit_date = $('j-exit-date').value ? new Date($('j-exit-date').value).toISOString() : new Date().toISOString();
     }
     return t;
   }
 
   function resetForm() {
-    ['j-exit', 'j-stop', 'j-tp', 'j-notes', 'j-tags', 'j-exit-date'].forEach(id => $(id).value = '');
+    ['j-exit', 'j-stop', 'j-tp', 'j-notes', 'j-tags', 'j-exit-date', 'j-thesis', 'j-invalidation', 'j-exit-reason'].forEach(id => $(id).value = '');
     $('j-fees').value = '0';
     $('j-entry-date').value = '';
     // Reset pills
@@ -506,6 +536,9 @@
     $('j-strategy').value = t.strategy || '';
     $('j-tags').value = t.tags || '';
     $('j-notes').value = t.notes || '';
+    $('j-thesis').value = t.thesis || '';
+    $('j-invalidation').value = t.invalidation || '';
+    $('j-exit-reason').value = JOURNAL.normalizeExitReason(t.exit_reason) || '';
     $('j-entry-date').value = t.entry_date ? new Date(t.entry_date).toISOString().slice(0, 16) : '';
     $('j-exit-date').value = t.exit_date ? new Date(t.exit_date).toISOString().slice(0, 16) : '';
     const planVal = t.followed_plan === true ? 'true' : t.followed_plan === false ? 'false' : '';
@@ -568,7 +601,7 @@
   }
 
   /* ─── Import / Export CSV ────────────────────────────────── */
-  const CSV_COLS = ['instrument','side','entry_price','exit_price','size','stop_loss','take_profit','fees','strategy','tags','notes','entry_date','exit_date','followed_plan','pnl'];
+  const CSV_COLS = ['instrument','side','entry_price','exit_price','size','stop_loss','take_profit','fees','strategy','tags','notes','thesis','invalidation','exit_reason','entry_date','exit_date','followed_plan','pnl'];
 
   function escapeCsv(v) {
     if (v == null) return '';
@@ -637,6 +670,9 @@
             if (Number.isFinite(n)) t[h] = n;
           } else if (boolCols.includes(h)) {
             t[h] = v.toLowerCase() === 'true' || v === '1' || v.toLowerCase() === 'oui';
+          } else if (h === 'exit_reason') {
+            const er = JOURNAL.normalizeExitReason(v);
+            if (er) t[h] = er;
           } else if (h === 'side') {
             t[h] = v.toLowerCase().includes('short') || v.toLowerCase().includes('sell') ? 'short' : 'long';
           } else {

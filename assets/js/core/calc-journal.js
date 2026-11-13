@@ -296,7 +296,67 @@
     })).sort((a, b) => b.pnl - a.pnl);
   }
 
-  const api = { tradePnl, stats, pnlDistribution, breakdown, monthlyHeatmap, byDayOfWeek, rMultipleOf, holdHoursOf };
+  /**
+   * Raisons de sortie reconnues. 'planned' = la sortie était prévue par le plan
+   * écrit avant l'achat (stop, invalidation de la thèse, objectif) ; une sortie
+   * discrétionnaire est décidée en cours de route.
+   */
+  const EXIT_REASONS = [
+    { key: 'stop',          label: 'Stop touché',           planned: true },
+    { key: 'invalidated',   label: 'Thèse invalidée',       planned: true },
+    { key: 'target',        label: 'Objectif atteint',      planned: true },
+    { key: 'discretionary', label: 'Sortie discrétionnaire', planned: false }
+  ];
+  const EXIT_REASON_KEYS = EXIT_REASONS.map(r => r.key);
+
+  function normalizeExitReason(v) {
+    if (v == null) return null;
+    const s = String(v).trim().toLowerCase();
+    return EXIT_REASON_KEYS.includes(s) ? s : null;
+  }
+
+  function emptyRGroup() {
+    return { count: 0, wins: 0, pnl: 0, winrate: 0, avgPnl: 0, sumR: 0, nbWithR: 0, avgR: null };
+  }
+
+  function addToRGroup(g, t) {
+    addToGroup(g, t);
+    const r = rMultipleOf(t);
+    if (r != null && Number.isFinite(r)) { g.sumR += r; g.nbWithR++; }
+  }
+
+  function finalizeRGroup(g) {
+    finalizeGroup(g);
+    g.avgR = g.nbWithR > 0 ? g.sumR / g.nbWithR : null;
+    return g;
+  }
+
+  /**
+   * Ventilation des trades clos par raison de sortie.
+   * Renvoie { groups: { stop, invalidated, target, discretionary, unknown },
+   *           planned, discretionary } où `planned` agrège stop + invalidation
+   * + objectif. Chaque groupe : count, wins, pnl, winrate, avgPnl, avgR, nbWithR.
+   */
+  function byExitReason(trades) {
+    const closed = trades.filter(t => t.exit_price != null && t.pnl != null);
+    const groups = { unknown: emptyRGroup() };
+    EXIT_REASON_KEYS.forEach(k => { groups[k] = emptyRGroup(); });
+    const planned = emptyRGroup();
+    closed.forEach(t => {
+      const key = normalizeExitReason(t.exit_reason) || 'unknown';
+      addToRGroup(groups[key], t);
+      const def = EXIT_REASONS.find(r => r.key === key);
+      if (def && def.planned) addToRGroup(planned, t);
+    });
+    Object.keys(groups).forEach(k => finalizeRGroup(groups[k]));
+    finalizeRGroup(planned);
+    return { groups, planned, discretionary: groups.discretionary };
+  }
+
+  const api = {
+    tradePnl, stats, pnlDistribution, breakdown, monthlyHeatmap, byDayOfWeek, rMultipleOf, holdHoursOf,
+    byExitReason, normalizeExitReason, EXIT_REASONS
+  };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.JOURNAL = api;
 })(typeof window !== 'undefined' ? window : globalThis);
