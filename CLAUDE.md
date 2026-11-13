@@ -207,6 +207,16 @@ Manifest : `assets/data/manifest.json`. Format JSON par actif :
 - `gold` (1833 → 2026), `silver` (2011 → 2024)
 - `oil_brent` (1987 → 2026), `oil_wti` (1986 → 2026)
 
+### Cours journaliers (backtests de stops / moyennes mobiles)
+
+`assets/data/daily/{id}.json` — OHLC journalier **ajusté dividendes/splits**, depuis 2000, pour les 19 actifs du manifest. Format colonnaire : `{ meta, start, end, points, d:["YYYY-MM-DD"], o, h, l, c }`. `daily/index.json` liste les séries. Chargement : `ENGINE.data.assetLoader.loadDaily(id)` / `loadDailyIndex()`.
+
+Génération : `node scripts/fetch_daily.js` (Node pur, sans dépendance ; `--only id`, `--since YYYY-MM-DD`, `--ticker TWST` pour un ticker Yahoo hors manifest). Rafraîchi chaque mois par `refresh-market-data.yml`. Les critères de backtest restent à définir — aucun moteur de backtest journalier n'existe encore.
+
+### Journal de Trade — champs de décision
+
+`thesis`, `invalidation`, `exit_reason` (`stop` | `invalidated` | `target` | `discretionary`). `JOURNAL.byExitReason(trades)` ventile P&L, winrate et R moyen par raison, et agrège les sorties « prévues au plan » (stop + invalidation + objectif) face aux discrétionnaires. Migration Supabase : `002_trades_decision_fields.sql` (non exécutée tant que l'auth est désactivée).
+
 **SOON (4)** ETF UCITS : `cw8`, `cspx`, `eimi`, `panx` — à activer avec `python scripts/fetch_data.py` (yfinance).
 
 ---
@@ -257,6 +267,8 @@ Manifest : `assets/data/manifest.json`. Format JSON par actif :
 **Zero build step** — ouvrir `index.html` dans un navigateur, ça marche. Pour dev local avec HTTP (évite CORS sur fetch `/assets/data/*.json`) :
 ```bash
 python3 -m http.server 8000
+# ou, sans Python (gère aussi les clean URLs type /journal-trading) :
+node scripts/dev_server.js
 # puis http://localhost:8000
 ```
 

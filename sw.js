@@ -10,7 +10,7 @@
 //  manuel de CACHE_VERSION). En network-first, chaque navigation revalide
 // la CSS via Vercel (304 Not Modified si inchangée, donc latence négligeable).
 
-const CACHE_VERSION = 'calcinvest-v118';
+const CACHE_VERSION = 'calcinvest-v119';
 
 // Seuls les assets STABLES vont en cache-first (icons, data JSONs).
 const STATIC_ASSETS = [
@@ -47,6 +47,7 @@ const NETWORK_FIRST_PATTERNS = [
   /\/assets\/js\//,
   /\/manifest\.json$/,
   /\/assets\/data\/manifest\.json$/,
+  /\/assets\/data\/daily\//,         // cours journaliers : rafraîchis chaque mois, jamais figés en cache
   /^\/$/
 ];
 

@@ -1,0 +1,176 @@
+{
+  "updatedAt": "2026-11-13",
+  "series": [
+    {
+      "id": "bnb",
+      "name": "BNB",
+      "ticker": "BNB-USD",
+      "currency": "USD",
+      "start": "2017-11-09",
+      "end": "2026-11-12",
+      "points": 3291
+    },
+    {
+      "id": "btc",
+      "name": "Bitcoin",
+      "ticker": "BTC-USD",
+      "currency": "USD",
+      "start": "2014-09-17",
+      "end": "2026-11-12",
+      "points": 4440
+    },
+    {
+      "id": "cac40",
+      "name": "CAC 40",
+      "ticker": "^FCHI",
+      "currency": "EUR",
+      "start": "2000-01-03",
+      "end": "2026-11-12",
+      "points": 6867
+    },
+    {
+      "id": "cspx",
+      "name": "iShares Core S&P 500",
+      "ticker": "CSPX.L",
+      "currency": "USD",
+      "start": "2010-09-15",
+      "end": "2026-11-12",
+      "points": 4082
+    },
+    {
+      "id": "cw8",
+      "name": "Amundi MSCI World",
+      "ticker": "CW8.PA",
+      "currency": "EUR",
+      "start": "2009-06-16",
+      "end": "2026-11-12",
+      "points": 4455
+    },
+    {
+      "id": "eimi",
+      "name": "iShares Core EM IMI",
+      "ticker": "EIMI.L",
+      "currency": "USD",
+      "start": "2014-05-30",
+      "end": "2026-11-12",
+      "points": 3150
+    },
+    {
+      "id": "eth",
+      "name": "Ethereum",
+      "ticker": "ETH-USD",
+      "currency": "USD",
+      "start": "2017-11-09",
+      "end": "2026-11-12",
+      "points": 3291
+    },
+    {
+      "id": "gold",
+      "name": "Or (XAU/USD)",
+      "ticker": "GC=F",
+      "currency": "USD",
+      "start": "2000-08-29",
+      "end": "2026-11-12",
+      "points": 6576
+    },
+    {
+      "id": "msci_world",
+      "name": "MSCI World",
+      "ticker": "URTH",
+      "currency": "USD",
+      "start": "2012-01-12",
+      "end": "2026-11-12",
+      "points": 3731
+    },
+    {
+      "id": "nasdaq",
+      "name": "NASDAQ Composite",
+      "ticker": "^IXIC",
+      "currency": "USD",
+      "start": "2000-01-03",
+      "end": "2026-11-12",
+      "points": 6757
+    },
+    {
+      "id": "nikkei",
+      "name": "Nikkei 225",
+      "ticker": "^N225",
+      "currency": "JPY",
+      "start": "2000-01-04",
+      "end": "2026-11-12",
+      "points": 6578
+    },
+    {
+      "id": "oil_brent",
+      "name": "Pétrole Brent",
+      "ticker": "BZ=F",
+      "currency": "USD",
+      "start": "2007-07-29",
+      "end": "2026-11-12",
+      "points": 4802
+    },
+    {
+      "id": "oil_wti",
+      "name": "Pétrole WTI",
+      "ticker": "CL=F",
+      "currency": "USD",
+      "start": "2000-08-22",
+      "end": "2026-11-12",
+      "points": 6582
+    },
+    {
+      "id": "paeem",
+      "name": "Amundi Euro Stoxx 50",
+      "ticker": "C50.PA",
+      "currency": "EUR",
+      "start": "2008-09-16",
+      "end": "2026-11-12",
+      "points": 4643
+    },
+    {
+      "id": "panx",
+      "name": "BNPP Easy NASDAQ 100",
+      "ticker": "PANX.PA",
+      "currency": "EUR",
+      "start": "2019-04-25",
+      "end": "2026-11-12",
+      "points": 1937
+    },
+    {
+      "id": "silver",
+      "name": "Argent (XAG/USD)",
+      "ticker": "SI=F",
+      "currency": "USD",
+      "start": "2000-08-29",
+      "end": "2026-11-12",
+      "points": 6577
+    },
+    {
+      "id": "sol",
+      "name": "Solana",
+      "ticker": "SOL-USD",
+      "currency": "USD",
+      "start": "2020-04-10",
+      "end": "2026-11-12",
+      "points": 2408
+    },
+    {
+      "id": "sp500",
+      "name": "S&P 500",
+      "ticker": "^GSPC",
+      "currency": "USD",
+      "start": "2000-01-03",
+      "end": "2026-11-12",
+      "points": 6757
+    },
+    {
+      "id": "xrp",
+      "name": "XRP",
+      "ticker": "XRP-USD",
+      "currency": "USD",
+      "start": "2017-11-09",
+      "end": "2026-11-12",
+      "points": 3291
+    }
+  ]
+}
