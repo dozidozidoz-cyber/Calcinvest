@@ -35,3 +35,12 @@ jobs:
 
       - name: Tests unitaires
         run: npm test
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Tests Python (scripts de données)
+        run: |
+          pip install --quiet yfinance pandas
+          python -m unittest discover -s tests/py -v

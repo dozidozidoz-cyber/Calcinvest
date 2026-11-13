@@ -6,7 +6,7 @@
 #     via scripts/fetch_data.py --all
 #   - Cryptos (BTC, ETH, SOL, BNB, XRP) via scripts/fetch_crypto.py
 #   - Cours journaliers OHLC ajustés (assets/data/daily/) via
-#     scripts/fetch_daily.js — utilisés par les backtests de stops
+#     scripts/fetch_daily.py — utilisés par les backtests de stops
 # Sans ça, les backtests "jusqu'à aujourd'hui" se figent à leur
 # dernière date de fetch. Commit + push → Vercel redéploie.
 # ============================================================
@@ -43,7 +43,7 @@ jobs:
         continue-on-error: true
 
       - name: Refresh daily OHLC (backtests)
-        run: node scripts/fetch_daily.js
+        run: python scripts/fetch_daily.py
         continue-on-error: true
 
       - name: Commit & push if changed
