@@ -6,7 +6,7 @@
    pas pour tester un stop ou une moyenne mobile : il faut le plus
    haut / plus bas de chaque séance. Ce script écrit
    assets/data/daily/{id}.json pour chaque actif du manifest, plus
-   assets/data/daily/index.json (liste des séries disponibles).
+   assets/data/daily/series.json (liste des séries disponibles).
 
    Usage (Node >= 18, aucune dépendance) :
      node scripts/fetch_daily.js                    # tous les actifs du manifest
@@ -150,13 +150,13 @@ function buildJobs(args) {
 
 function writeIndex() {
   const series = fs.readdirSync(DAILY_DIR)
-    .filter(f => f.endsWith('.json') && f !== 'index.json')
+    .filter(f => f.endsWith('.json') && f !== 'series.json')
     .map(f => {
       const j = JSON.parse(fs.readFileSync(path.join(DAILY_DIR, f), 'utf8'));
       return { id: j.meta.id, name: j.meta.name, ticker: j.meta.ticker, currency: j.meta.currency, start: j.start, end: j.end, points: j.points };
     })
     .sort((a, b) => a.id.localeCompare(b.id));
-  fs.writeFileSync(path.join(DAILY_DIR, 'index.json'), JSON.stringify({ updatedAt: new Date().toISOString().slice(0, 10), series }, null, 2) + '\n');
+  fs.writeFileSync(path.join(DAILY_DIR, 'series.json'), JSON.stringify({ updatedAt: new Date().toISOString().slice(0, 10), series }, null, 2) + '\n');
   return series.length;
 }
 
@@ -180,7 +180,7 @@ async function main() {
   }
   const n = writeIndex();
   console.log('\n' + '='.repeat(50));
-  console.log('✅ ' + ok.length + ' séries récupérées, ' + n + ' dans index.json');
+  console.log('✅ ' + ok.length + ' séries récupérées, ' + n + ' dans series.json');
   if (fail.length) console.log('❌ Échecs : ' + fail.join(', '));
   if (!ok.length) process.exit(1);
 }

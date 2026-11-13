@@ -60,10 +60,10 @@
       });
     },
 
-    /** List the daily series available (daily/index.json). */
+    /** List the daily series available (daily/series.json). */
     loadDailyIndex: function () {
       if (_cache.__dailyIndex) return Promise.resolve(_cache.__dailyIndex);
-      return _fetch(_basePath + 'daily/index.json').then(function (j) {
+      return _fetch(_basePath + 'daily/series.json').then(function (j) {
         _cache.__dailyIndex = j;
         return j;
       });

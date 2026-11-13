@@ -57,8 +57,8 @@ test('slug : ticker Yahoo → nom de fichier', () => {
 });
 
 test('fichiers daily : colonnes cohérentes, dates croissantes, low ≤ open/close ≤ high', () => {
-  const index = JSON.parse(fs.readFileSync(path.join(DAILY_DIR, 'index.json'), 'utf8'));
-  assert.ok(index.series.length > 0, 'index.json vide');
+  const index = JSON.parse(fs.readFileSync(path.join(DAILY_DIR, 'series.json'), 'utf8'));
+  assert.ok(index.series.length > 0, 'series.json vide');
   for (const entry of index.series) {
     const j = JSON.parse(fs.readFileSync(path.join(DAILY_DIR, entry.id + '.json'), 'utf8'));
     const n = j.d.length;

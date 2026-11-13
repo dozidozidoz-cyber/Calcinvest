@@ -209,7 +209,7 @@ Manifest : `assets/data/manifest.json`. Format JSON par actif :
 
 ### Cours journaliers (backtests de stops / moyennes mobiles)
 
-`assets/data/daily/{id}.json` — OHLC journalier **ajusté dividendes/splits**, depuis 2000, pour les 19 actifs du manifest. Format colonnaire : `{ meta, start, end, points, d:["YYYY-MM-DD"], o, h, l, c }`. `daily/index.json` liste les séries. Chargement : `ENGINE.data.assetLoader.loadDaily(id)` / `loadDailyIndex()`.
+`assets/data/daily/{id}.json` — OHLC journalier **ajusté dividendes/splits**, depuis 2000, pour les 19 actifs du manifest. Format colonnaire : `{ meta, start, end, points, d:["YYYY-MM-DD"], o, h, l, c }`. `daily/series.json` liste les séries. Chargement : `ENGINE.data.assetLoader.loadDaily(id)` / `loadDailyIndex()`.
 
 Génération : `node scripts/fetch_daily.js` (Node pur, sans dépendance ; `--only id`, `--since YYYY-MM-DD`, `--ticker TWST` pour un ticker Yahoo hors manifest). Rafraîchi chaque mois par `refresh-market-data.yml`. Les critères de backtest restent à définir — aucun moteur de backtest journalier n'existe encore.
 
