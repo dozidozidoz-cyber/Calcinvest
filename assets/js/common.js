@@ -984,6 +984,7 @@
     '/allocation-portefeuille':         { label: 'Allocation Portefeuille',cat: 'Marchés',color: '#10B981' },
     '/regime-marche':                   { label: 'Régime de marché',   cat: 'Marchés',  color: '#A855F7' },
     '/backtest-timing':                 { label: 'Backtest Timing',    cat: 'Marchés',  color: '#0EA5E9' },
+    '/backtest-entree-sortie':          { label: 'Backtest Entrée / Sortie', cat: 'Marchés', color: '#0D9488' },
     '/smart-money':                     { label: 'Smart Money',        cat: 'Marchés',  color: '#34D399' },
     '/simulateur-rendement-locatif':    { label: 'Rendement Locatif',  cat: 'Immobilier', color: '#059669' },
     '/simulateur-scpi':                 { label: 'SCPI',               cat: 'Immobilier', color: '#0E9F6E' },
@@ -1118,6 +1119,7 @@
           { url: '/allocation-portefeuille', label: 'Allocation Portefeuille', desc: '60/40, All-Weather, Permanent', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 4"/></svg>' },
           { url: '/regime-marche',         label: 'Régime de marché',    desc: 'Bull / Bear / Range / Volatile', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 18l6-6 4 4 8-10"/></svg>' },
           { url: '/backtest-timing',       label: 'Backtest Timing',     desc: 'Golden Cross, Faber GTAA, Momentum', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 10h18M9 4v16"/></svg>' },
+          { url: '/backtest-entree-sortie', label: 'Backtest Entrée / Sortie', desc: 'Stop suiveur, stop fixe, sur tout ticker', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 17l5-5 4 3 8-9"/><path d="M15 6h5v5"/></svg>' },
           { url: '/smart-money',           label: 'Smart Money',         desc: '13F + ARK + Pelosi · perf vs S&P', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="6" y="14" width="2.5" height="5" rx="0.3" fill="currentColor" opacity="0.25" stroke="none"/><rect x="10.5" y="10" width="2.5" height="9" rx="0.3" fill="currentColor" opacity="0.4" stroke="none"/><rect x="15" y="6" width="2.5" height="13" rx="0.3" fill="currentColor" opacity="0.7" stroke="none"/><path d="M5 16l4-3 4-4 5-5"/><path d="M18 4l0.6 1.4L20 6l-1.4 0.6L18 8l-0.6-1.4L16 6l1.4-0.6z" fill="currentColor" stroke="none"/></svg>' },
           { url: '/marche-cette-semaine', label: 'Marché cette semaine', desc: 'Rapport hebdo : indices, taux, matières premières', icon: ICONS.catMarches },
         ]

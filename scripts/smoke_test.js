@@ -83,7 +83,8 @@ const coreModules = [
   'calc-allocation.js',
   'calc-valuation.js',
   'calc-regime.js',
-  'calc-timing.js'
+  'calc-timing.js',
+  'calc-entry-exit.js'
 ];
 global.window = global;  // bootstrap UMD pattern
 coreModules.forEach(m => {

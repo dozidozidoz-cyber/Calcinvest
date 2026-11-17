@@ -144,11 +144,11 @@ Module testé : `node -e "const FIN = require('./assets/js/core/finance-utils.js
 
 ---
 
-## 📈 État des outils (36 LIVE)
+## 📈 État des outils (37 LIVE)
 
 Tous les outils ci-dessous sont accessibles via le megamenu sur les 40 pages.
 
-**Marchés (7)** : DCA Bourse, DCA Crypto, Valorisation DCF, Valorisation Marché (CAPE/DD/composite), Allocation Portefeuille (60/40/Dalio/Browne), Régime de marché (Bull/Bear/Range/Volatile), Backtest Timing (Golden Cross/Faber GTAA/Momentum)
+**Marchés (8)** : DCA Bourse, DCA Crypto, Valorisation DCF, Valorisation Marché (CAPE/DD/composite), Allocation Portefeuille (60/40/Dalio/Browne), Régime de marché (Bull/Bear/Range/Volatile), Backtest Timing (Golden Cross/Faber GTAA/Momentum), **Backtest Entrée / Sortie** (`/backtest-entree-sortie` — 6 règles d'entrée × 4 sorties : conserver, stop fixe, stop suiveur, suiveur sur clôture ; journalier ou hebdo ; cours de `daily/` ou de n'importe quel ticker via `/api/daily`. Core : `core/calc-entry-exit.js` (`ENTRYEXIT.run`), view : `views/entry-exit.view.js`)
 
 **Immobilier (6)** : Rendement Locatif, SCPI, Prêt, Plus-Value, LMNP, Portefeuille Locatif
 
@@ -211,7 +211,7 @@ Manifest : `assets/data/manifest.json`. Format JSON par actif :
 
 `assets/data/daily/{id}.json` — OHLC journalier **ajusté dividendes/splits**, depuis 2000, pour les 19 actifs du manifest. Format colonnaire : `{ meta, start, end, points, d:["YYYY-MM-DD"], o, h, l, c }`. `daily/series.json` liste les séries. Chargement : `ENGINE.data.assetLoader.loadDaily(id)` / `loadDailyIndex()`.
 
-Génération : `python scripts/fetch_daily.py` (yfinance, mêmes tickers de secours que `fetch_data.py` ; tests : `python -m unittest discover -s tests/py` ; `--only id`, `--since YYYY-MM-DD`, `--ticker TWST` pour un ticker Yahoo hors manifest). Rafraîchi chaque mois par `refresh-market-data.yml`. Les critères de backtest restent à définir — aucun moteur de backtest journalier n'existe encore.
+Génération : `python scripts/fetch_daily.py` (yfinance, mêmes tickers de secours que `fetch_data.py` ; tests : `python -m unittest discover -s tests/py` ; `--only id`, `--since YYYY-MM-DD`, `--ticker TWST` pour un ticker Yahoo hors manifest). Rafraîchi chaque mois par `refresh-market-data.yml`. Utilisés par le Backtest Entrée / Sortie. `/api/daily?symbol=XXX` (fonction Vercel) renvoie le même format pour n'importe quel ticker Yahoo ; dates dans le fuseau de la bourse (`Intl`, heure d'été comprise).
 
 ### Journal de Trade — champs de décision
 

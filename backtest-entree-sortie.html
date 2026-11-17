@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0D9488" />
+<title>Backtest Entrée / Sortie — Stop Suiveur, Stop ATR, Moyenne 200 | CalcInvest</title>
+<meta name="description" content="Backtest gratuit de vos règles d'entrée et de sortie sur n'importe quelle action, ETF ou crypto : stop suiveur ATR, stop fixe, moyenne 200 jours, achat sur repli. Cours journaliers ajustés depuis 2000." />
+<meta name="keywords" content="backtest stop suiveur, backtest stop loss ATR, trailing stop backtest, moyenne mobile 200 jours, backtest action gratuit, règle de sortie trading" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="canonical" href="https://calcinvest.fr/backtest-entree-sortie" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Backtest Entrée / Sortie — vos stops tiennent-ils ?" />
+<meta property="og:description" content="Stop suiveur, stop fixe ou conserver : testez vos règles sur n'importe quel ticker." />
+<meta property="og:url" content="https://calcinvest.fr/backtest-entree-sortie" />
+<meta property="og:image" content="https://calcinvest.fr/assets/og/backtest-timing.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="CalcInvest" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://calcinvest.fr/assets/og/backtest-timing.png" />
+<meta name="twitter:title" content="Backtest Entrée / Sortie" />
+<meta name="twitter:description" content="Stop suiveur ATR, stop fixe, moyenne 200, repli : testez vos règles." />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon-192.svg" />
+<link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="/assets/css/style.css" as="style" />
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Backtest Entrée / Sortie","description":"Teste des règles d'entrée (tendance, repli, plus haut annuel) et de sortie (stop fixe, stop suiveur ATR) sur n'importe quel ticker","url":"https://calcinvest.fr/backtest-entree-sortie","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://calcinvest.fr/"}, {"@type": "ListItem", "position": 2, "name": "Marchés", "item": "https://calcinvest.fr/#cat-marches"}, {"@type": "ListItem", "position": 3, "name": "Backtest Entrée / Sortie", "item": "https://calcinvest.fr/backtest-entree-sortie"}]}</script>
+<style>
+.ee-hero { background: linear-gradient(135deg, rgba(13,148,136,.10), rgba(13,148,136,.02)); border:1px solid #0D9488; }
+.ee-ticker { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+.ee-ticker input { flex:1 1 180px; max-width:260px; text-transform:uppercase; }
+.ee-status { font-size:12px; color:var(--text-3); margin-top:8px; min-height:16px; }
+.ee-status.err { color:var(--red); }
+.ee-rule-desc { font-size:12px; color:var(--text-3); margin-top:8px; line-height:1.5; }
+.ee-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+.ee-card { padding:16px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); }
+.ee-card-head { display:flex; align-items:center; gap:8px; margin-bottom:4px; font-weight:700; font-size:14px; }
+.ee-dot { width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
+.ee-card-desc { font-size:11px; color:var(--text-4); line-height:1.4; margin-bottom:12px; min-height:30px; }
+.ee-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+.ee-stats .lbl { color:var(--text-4); font-size:10px; text-transform:uppercase; letter-spacing:.05em; }
+.ee-stats .val { font-weight:700; font-family:var(--font-mono); font-size:14px; }
+.ee-pos { color:#059669; } .ee-neg { color:var(--red); }
+.ee-table td, .ee-table th { white-space:nowrap; }
+.ee-table tbody tr { cursor:pointer; }
+.ee-table tbody tr.is-active { background:rgba(13,148,136,.08); }
+.ee-table .sub { display:block; font-size:10px; color:var(--text-4); font-weight:400; }
+.ee-warn { font-size:12px; color:var(--yellow); margin-top:10px; }
+@media (max-width: 640px) {
+  .ee-stats .val { font-size:13px; }
+}
+</style>
+<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+</head>
+<body>
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#DC2626;color:#fff;padding:14px;text-align:center;z-index:10000"><strong>JavaScript requis</strong>.</div></noscript>
+
+<header class="topbar">
+  <div class="topbar-left"><a href="/" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2L22 12L12 22L2 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 2L17 12L12 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" opacity="0.5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="logo-text"><div class="logo-text-main">Backtest Entrée / Sortie</div><div class="logo-text-sub">Stops et filtres sur tout ticker</div></div></a></div>
+  <nav class="topbar-nav"><a href="/#outils" class="topbar-nav-link">Outils</a><a href="/methodologie" class="topbar-nav-link">Méthodologie</a><a href="/blog" class="topbar-nav-link">Blog</a><a href="/abonnement" class="topbar-nav-link">Tarifs</a></nav>
+  <div class="topbar-right" id="ci-user-zone"></div>
+</header>
+
+<main class="main fade-in" style="max-width:1080px;margin:0 auto;padding:40px 16px 80px">
+  <div class="page-header" style="text-align:center;margin-bottom:24px">
+    <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 12l4-4 3 3 5-6"/></svg></span>Analyse &amp; Trading</div>
+    <h1 class="page-title" style="font-size:clamp(30px,4vw,42px)">Vos règles d'entrée et de sortie <em>tiennent-elles</em> ?</h1>
+    <p class="page-lede" style="max-width:660px;margin:0 auto">Choisissez un actif ou <strong style="color:var(--text)">n'importe quel ticker</strong>, une règle d'entrée et un stop. L'outil simule une entrée à chaque signal depuis 2000 et compare <strong style="color:var(--text)">conserver, stop fixe et stop suiveur</strong> sur la même position.</p>
+  </div>
+
+  <div data-intro-banner data-intro-key="backtest-entree-sortie" data-intro-title="💡 Comment lire ce backtest ?" data-intro-body="Au lieu d'un seul trade, l'outil teste <strong>chaque date d'entrée possible</strong> : pour chacune, il regarde ce qu'aurait donné la position avec 4 façons de sortir. Vous voyez donc la <strong>distribution</strong> des résultats (médiane, pire 5 %, part de trades perdants) et pas un chiffre isolé. Le <strong>stop suiveur</strong> remonte avec le plus haut atteint et ne redescend jamais ; il est exprimé en multiples d'<strong>ATR</strong> (amplitude moyenne d'une barre), ce qui l'adapte à la volatilité de chaque actif." style="margin-top:24px"></div>
+
+  <!-- Paramètres -->
+  <section class="accordion open" id="params" style="margin:24px 0">
+    <div class="accordion-header">
+      <div class="accordion-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12M4 10h12M4 15h8" stroke-linecap="round"/></svg></div>
+      <div class="accordion-titles">
+        <div class="accordion-title">Paramètres du backtest</div>
+        <div class="accordion-summary" id="ee-sum">—</div>
+      </div>
+      <div class="accordion-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l4-4 3 3 5-6"/></svg></div>
+            <div class="subsection-title">Actif</div>
+            <div class="subsection-hint">Indices, ETF, matières premières et cryptos préchargés, ou n'importe quel ticker Yahoo Finance</div>
+          </div>
+          <div class="pills" id="ee-asset-pills"></div>
+          <form class="ee-ticker" id="ee-ticker-form" autocomplete="off">
+            <label class="field-label" for="ee-ticker" style="margin:0">Ou un ticker</label>
+            <input type="text" id="ee-ticker" class="select" maxlength="15" placeholder="AAPL, MC.PA, 0388.HK…" spellcheck="false" />
+            <button class="btn btn-secondary" type="submit">Charger</button>
+          </form>
+          <div class="ee-status" id="ee-status" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 4l4 4-4 4"/></svg></div>
+            <div class="subsection-title">Règle d'entrée</div>
+          </div>
+          <div class="pills" data-target="ee-entry" id="ee-entry-pills"></div>
+          <input type="hidden" id="ee-entry" value="all" />
+          <div class="ee-rule-desc" id="ee-entry-desc"></div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 12h12M5 8h6"/></svg></div>
+            <div class="subsection-title">Sortie</div>
+            <div class="subsection-hint">Les 4 règles de sortie sont toujours comparées ; ces réglages s'appliquent aux stops</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label" id="ee-tf-label">Unité de temps</div>
+              <div role="group" aria-labelledby="ee-tf-label" class="pills" data-target="ee-tf">
+                <button class="pill" data-value="daily" type="button">Journalier</button>
+                <button class="pill active" data-value="weekly" type="button">Hebdomadaire</button>
+              </div>
+              <input type="hidden" id="ee-tf" value="weekly" />
+              <div style="font-size:11px;color:var(--text-3);margin-top:6px">Barres utilisées pour l'ATR, les moyennes et le déclenchement des stops.</div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="ee-k">Distance du stop</label>
+              <div class="stepper" data-step="0.5" data-min="0.5" data-max="10">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" type="number" id="ee-k" value="3" step="0.5" />
+                <span class="stepper-unit">× ATR(14)</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="ee-k">
+                <button class="pill" data-value="2" type="button">2</button>
+                <button class="pill active" data-value="3" type="button">3</button>
+                <button class="pill" data-value="4" type="button">4</button>
+                <button class="pill" data-value="5" type="button">5</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label" id="ee-h-label">Horizon maximal</div>
+              <div role="group" aria-labelledby="ee-h-label" class="pills" data-target="ee-h">
+                <button class="pill" data-value="3" type="button">3 mois</button>
+                <button class="pill" data-value="6" type="button">6 mois</button>
+                <button class="pill active" data-value="12" type="button">1 an</button>
+                <button class="pill" data-value="24" type="button">2 ans</button>
+              </div>
+              <input type="hidden" id="ee-h" value="12" />
+              <div style="font-size:11px;color:var(--text-3);margin-top:6px">Sans stop touché, la position est vendue à cette échéance.</div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="ee-fee">Frais par ordre</label>
+              <div class="stepper" data-step="0.05" data-min="0" data-max="2">
+                <button class="stepper-btn" data-dir="-1" type="button">−</button>
+                <input class="stepper-input" type="number" id="ee-fee" value="0.1" step="0.05" />
+                <span class="stepper-unit">%</span>
+                <button class="stepper-btn" data-dir="1" type="button">+</button>
+              </div>
+              <div class="pills" data-target="ee-fee">
+                <button class="pill" data-value="0" type="button">0 %</button>
+                <button class="pill active" data-value="0.1" type="button">0,1 %</button>
+                <button class="pill" data-value="0.25" type="button">0,25 %</button>
+                <button class="pill" data-value="0.5" type="button">0,5 %</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Synthèse -->
+  <section class="card ee-hero" style="margin-bottom:24px">
+    <div class="card-body" style="padding:24px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#0D9488;font-weight:700;margin-bottom:10px">Synthèse</div>
+      <div id="ee-summary" style="font-size:15px;line-height:1.6;color:var(--text-2)">Chargement…</div>
+      <div class="ee-warn" id="ee-warn" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- Cartes par règle de sortie -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg></div>Résultats par règle de sortie</div>
+      <div class="card-meta" id="ee-cards-meta">—</div>
+    </div>
+    <div class="card-body"><div class="ee-cards" id="ee-cards"></div></div>
+  </section>
+
+  <!-- Chronologie -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div>Résultat selon la date d'entrée</div>
+      <div class="card-meta" id="ee-chart-meta">—</div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap" style="position:relative;height:320px"><canvas id="ee-chart" aria-label="Rendement de chaque entrée simulée selon sa date, par règle de sortie" role="img"></canvas></div>
+      <div id="ee-legend" style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:12px"></div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:10px">Chaque point est une entrée simulée : en abscisse sa date, en ordonnée son rendement final (en %) selon la règle de sortie.</div>
+    </div>
+  </section>
+
+  <!-- Comparaison des entrées -->
+  <section class="card" style="margin-bottom:24px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 4h12M2 8h12M2 12h12"/></svg></div>Toutes les règles d'entrée</div>
+      <div class="card-meta">Gain médian · part de trades perdants</div>
+    </div>
+    <div class="card-body">
+      <div class="table-scroll">
+        <table class="data-table ee-table">
+          <thead><tr><th>Règle d'entrée</th><th>Entrées</th><th>Conserver</th><th>Stop fixe</th><th>Stop suiveur</th><th>Suiveur clôture</th><th>Baisse max médiane</th></tr></thead>
+          <tbody id="ee-tbody"></tbody>
+        </table>
+      </div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:10px">Cliquez une ligne pour l'afficher en détail. La baisse maximale est celle subie en conservant la position, entre l'achat et l'horizon.</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-body" style="font-size:13px;line-height:1.6;color:var(--text-2)">
+      <strong>Méthode</strong>
+      <ul style="margin:8px 0 14px 18px;padding:0">
+        <li><strong>Entrées</strong> : un achat simulé à la clôture de chaque barre où la règle d'entrée est vraie, sur toute la période où l'historique permet de calculer les indicateurs (1 an de recul) et de tenir la position jusqu'à l'horizon.</li>
+        <li><strong>Stops</strong> : touchés si le plus bas de la barre passe sous le stop, exécutés au niveau du stop, ou à l'ouverture si le cours a ouvert en dessous (gap). Le suiveur sur clôture attend la clôture de la barre.</li>
+        <li><strong>ATR(14)</strong> : moyenne de l'amplitude des 14 dernières barres (journalières ou hebdomadaires selon l'unité choisie).</li>
+        <li><strong>Moyenne longue</strong> : moyenne simple 200 jours en journalier, 40 semaines en hebdomadaire.</li>
+        <li><strong>Données</strong> : cours ajustés des dividendes et des splits (Yahoo Finance), depuis 2000 ou la date de cotation.</li>
+      </ul>
+      <strong>Limites à garder en tête</strong>
+      <ul style="margin:8px 0 14px 18px;padding:0">
+        <li><strong>Biais du survivant</strong> : un ticker qui cote encore aujourd'hui a survécu. Les actions et cryptos disparues, là où un stop sert le plus, ne sont pas dans les données.</li>
+        <li><strong>Entrées chevauchées</strong> : deux entrées proches partagent presque la même trajectoire. 3 ans d'historique ne font que trois périodes d'un an réellement indépendantes, quel que soit le nombre d'entrées affiché.</li>
+        <li><strong>Capital non réinvesti</strong> : après un stop, le capital libéré n'est pas replacé. Cela pénalise les stops dans la comparaison du gain moyen ; la colonne « par mois investi » corrige en partie ce biais.</li>
+        <li><strong>Ni fiscalité ni change</strong> : seuls les frais par ordre sont déduits. Les rendements sont exprimés dans la devise de cotation.</li>
+      </ul>
+      <em style="color:var(--text-4)">Backtest pédagogique. Les performances passées ne préjugent pas des performances futures.</em>
+    </div>
+  </section>
+</main>
+
+<section class="ci-semantic" aria-label="Recherches associées">
+  <div class="ci-semantic-inner">
+    <p class="ci-semantic-intro">Cet outil est un <strong>backtest de règles d'entrée et de sortie</strong> : stop suiveur ATR, stop fixe, moyenne mobile 200 jours et achat sur repli, testés sur n'importe quel ticker.</p>
+    <div class="ci-semantic-label">Recherches fréquentes pour cet outil</div>
+    <div class="ci-semantic-chips">
+<span class="ci-semantic-chip">backtest stop suiveur</span>
+<span class="ci-semantic-chip">trailing stop ATR</span>
+<span class="ci-semantic-chip">backtest stop loss action</span>
+<span class="ci-semantic-chip">acheter au-dessus de la moyenne 200</span>
+<span class="ci-semantic-chip">acheter sur repli backtest</span>
+<span class="ci-semantic-chip">règle de sortie trading</span>
+    </div>
+  </div>
+</section>
+
+<aside class="ci-related" aria-label="Outils complémentaires">
+  <div class="ci-related-inner">
+    <h2 class="ci-related-title">Outils complémentaires</h2>
+    <div class="ci-related-grid">
+  <a href="/journal-trading" class="ci-related-item"><span class="ci-related-arrow">→</span>Journal de Trading</a>
+  <a href="/calculateur-volatilite" class="ci-related-item"><span class="ci-related-arrow">→</span>ATR &amp; Kelly</a>
+  <a href="/calculateur-risk-management" class="ci-related-item"><span class="ci-related-arrow">→</span>Risk Management</a>
+  <a href="/backtest-timing" class="ci-related-item"><span class="ci-related-arrow">→</span>Backtest Timing</a>
+    </div>
+  </div>
+</aside>
+<footer class="footer"><div>Sources : Yahoo Finance, cours journaliers ajustés depuis 2000</div><div><a href="/">Accueil</a> · <a href="/backtest-timing">Backtest Timing</a> · <a href="/journal-trading">Journal</a></div></footer>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/intro-banner.js"></script>
+<script src="/assets/js/core/calc-entry-exit.js"></script>
+<script src="/assets/js/views/entry-exit.view.js"></script>
+</body>
+</html>
