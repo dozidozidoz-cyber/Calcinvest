@@ -224,3 +224,46 @@ test('run swing : RSI 2 sur le S&P 500, résultats cohérents et bornes de dates
   assert.ok(w.lastDate <= '2019-02-28');
   assert.match(EE.run(sp, { style: 'swing', entryRule: 'pullback40' }).error, /inconnue pour ce style/);
 });
+
+/* ─── Règle anti-rachat ────────────────────────────────────── */
+
+test('simulateExit : motif de sortie (stop, objectif, signal, échéance)', () => {
+  const s = { o: [100, 100, 104], h: [100, 103, 105], l: [100, 99, 103], c: [100, 102, 104] };
+  assert.strictEqual(EE.simulateExit(s, [1, 1, 1], 0, 5, 'target2r', 2).reason, 'target');
+  assert.strictEqual(EE.simulateExit(s, [1, 1, 1], 0, 5, 'hold', 2).reason, 'horizon');
+  const d = { o: [100, 100], h: [100, 100], l: [100, 90], c: [100, 95] };
+  assert.strictEqual(EE.simulateExit(d, [1, 1], 0, 5, 'fixed', 2).reason, 'stop');
+  assert.strictEqual(EE.simulateExit(d, [1, 1], 0, 5, 'trailingClose', 2).reason, 'stop');
+});
+
+test('anti-rachat : après un stop, pas de nouvel achat sous la moyenne longue', () => {
+  // hausse, chute de 50 % puis plateau bas : sans la règle, "tous les jours" + stop rachète sans cesse
+  const up = Array.from({ length: 400 }, (_, i) => 100 + i * 0.05);
+  const down = Array.from({ length: 200 }, (_, i) => 120 * (1 - 0.5 * (i + 1) / 200));
+  const flat = Array.from({ length: 200 }, () => 60);
+  const s = serie(up.concat(down, flat));
+  const p = { style: 'position', timeframe: 'daily', entryRule: 'all', k: 3, horizonMonths: 12, feePct: 0 };
+  const off = EE.run(s, p), on = EE.run(s, Object.assign({}, p, { guard: true }));
+  assert.strictEqual(off.guard, false); assert.strictEqual(on.guard, true);
+  const a = off.portfolio.fixed, b = on.portfolio.fixed;
+  assert.ok(b.trades < a.trades, b.trades + ' vs ' + a.trades);
+  assert.ok(b.maxDD > a.maxDD + 0.1, b.maxDD + ' vs ' + a.maxDD);
+  assert.ok(b.blockedBars > 100);
+  assert.strictEqual(a.blockedBars, 0);
+  // sans stop (conserver), la règle n'a aucun effet
+  assert.strictEqual(on.portfolio.hold.final, off.portfolio.hold.final);
+  // la distribution des entrées n'est pas concernée
+  assert.deepStrictEqual(on.byExit.fixed, off.byExit.fixed);
+});
+
+test('anti-rachat : le blocage se lève quand la clôture repasse au-dessus de la moyenne', () => {
+  const up = Array.from({ length: 300 }, (_, i) => 100 + i * 0.05);
+  const down = Array.from({ length: 60 }, (_, i) => 115 * (1 - 0.3 * (i + 1) / 60));
+  const back = Array.from({ length: 300 }, (_, i) => 80.5 + i * 0.3);
+  const s = serie(up.concat(down, back));
+  const r = EE.run(s, { style: 'position', timeframe: 'daily', entryRule: 'all', k: 3, horizonMonths: 12, feePct: 0, guard: true });
+  const trades = r.portfolio.fixed.tradeList;
+  const stopIdx = trades.findIndex(t => t.reason === 'stop');
+  assert.ok(stopIdx >= 0 && stopIdx < trades.length - 1, 'un stop puis au moins un rachat');
+  assert.ok(trades[stopIdx + 1].entry > '2021-01-01', 'rachat seulement après la reprise : ' + trades[stopIdx + 1].entry);
+});

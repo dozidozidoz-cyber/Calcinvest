@@ -222,8 +222,9 @@
    * Simule une sortie pour une entrée à la clôture de la barre i.
    * `ind` : objet d'indicateurs, ou directement le tableau d'ATR.
    * La position est close au plus tard à i + horizon (ou à la dernière barre).
-   * Renvoie { ret, bars, maxDD, exitIdx } : rendement brut, barres tenues,
-   * pire baisse pendant la détention (plus bas / entrée − 1), barre de sortie.
+   * Renvoie { ret, bars, maxDD, exitIdx, reason } : rendement brut, barres tenues,
+   * pire baisse pendant la détention (plus bas / entrée − 1), barre de sortie,
+   * motif ('stop' | 'target' | 'signal' | 'horizon').
    */
   function simulateExit(s, ind, i, horizon, rule, k) {
     if (Array.isArray(ind)) ind = { atr: ind };
@@ -236,25 +237,25 @@
     const trails = rule === 'trailing' || rule === 'trailingClose';
     let top = h[i];
     let low = Infinity;
-    const out = (px, t) => ({ ret: px / entry - 1, bars: t - i, maxDD: Math.min(low, px) / entry - 1, exitIdx: t });
+    const out = (px, t, reason) => ({ ret: px / entry - 1, bars: t - i, maxDD: Math.min(low, px) / entry - 1, exitIdx: t, reason });
 
     for (let t = i + 1; t <= end; t++) {
       if (rule === 'trailingClose') {
         low = Math.min(low, l[t]);
-        if (c[t] <= stop) return out(c[t], t);
+        if (c[t] <= stop) return out(c[t], t, 'stop');
       } else {
-        if (rule !== 'hold' && l[t] <= stop) return out(Math.min(stop, o[t]), t);
+        if (rule !== 'hold' && l[t] <= stop) return out(Math.min(stop, o[t]), t, 'stop');
         low = Math.min(low, l[t]);
-        if (h[t] >= target) return out(Math.max(target, o[t]), t);
-        if (rule === 'rebound' && c[t] > ind.sma5[t]) return out(c[t], t);
-        if (rule === 'donchian10' && c[t] < ind.ll10[t]) return out(c[t], t);
+        if (h[t] >= target) return out(Math.max(target, o[t]), t, 'target');
+        if (rule === 'rebound' && c[t] > ind.sma5[t]) return out(c[t], t, 'signal');
+        if (rule === 'donchian10' && c[t] < ind.ll10[t]) return out(c[t], t, 'signal');
       }
       if (trails) {
         top = Math.max(top, h[t]);
         stop = Math.max(stop, top - k * ind.atr[t]);
       }
     }
-    return out(c[end], end);
+    return out(c[end], end, 'horizon');
   }
 
   /* ─── Statistiques ───────────────────────────────────────── */
@@ -311,18 +312,24 @@
    * Capital réinvesti : une position à la fois, entrée au premier signal
    * où l'on est sans position, sortie selon la règle, capital entier
    * réinvesti au signal suivant (à partir de la barre qui suit la sortie).
+   * Option p.guard (règle anti-rachat) : après une sortie par stop, aucun
+   * nouvel achat tant que la clôture n'est pas repassée au-dessus de la
+   * moyenne longue (200 jours / 40 semaines).
    * Renvoie { equity (base 1, null avant `first`), final, cagr, maxDD,
-   *           trades, winRate, meanR, exposure, worstTrade }.
+   *           trades, winRate, meanR, exposure, worstTrade, blockedBars }.
    */
   function simulatePortfolio(s, ind, entryRule, exitRule, p) {
     const c = s.c, n = c.length;
     const fee = p.fee, k = p.k, horizon = p.horizon, first = p.first;
     const equity = new Array(n).fill(null);
     let cap = 1, inMarket = 0, wins = 0, sumR = 0, nR = 0, worst = 0;
+    let blocked = false, blockedBars = 0;
     const trades = [];
     let i = first;
     while (i < n) {
-      if (i < n - 1 && isEntry(entryRule, c, ind, i)) {
+      if (blocked && c[i] > ind.smaLong[i]) blocked = false;
+      if (blocked) blockedBars++;
+      if (!blocked && i < n - 1 && isEntry(entryRule, c, ind, i)) {
         const capIn = cap * (1 - fee);
         const res = simulateExit(s, ind, i, horizon, exitRule, k);
         for (let t = i; t < res.exitIdx; t++) equity[t] = capIn * c[t] / c[i];
@@ -334,7 +341,8 @@
         if (Number.isFinite(r)) { sumR += r; nR++; }
         if (net > 0) wins++;
         worst = Math.min(worst, net);
-        trades.push({ entry: s.d[i], exit: s.d[res.exitIdx], ret: net });
+        trades.push({ entry: s.d[i], exit: s.d[res.exitIdx], ret: net, reason: res.reason });
+        if (p.guard && res.reason === 'stop') blocked = true;
         i = res.exitIdx + 1;
       } else {
         equity[i] = cap;
@@ -350,7 +358,8 @@
       meanR: nR ? sumR / nR : NaN,
       exposure: (n - 1 - first) > 0 ? inMarket / (n - 1 - first) : 0,
       tradesPerYear: years > 0 ? trades.length / years : NaN,
-      worstTrade: worst
+      worstTrade: worst,
+      blockedBars
     };
   }
 
@@ -370,7 +379,8 @@
   /**
    * @param {object} series  Série journalière { d, o, h, l, c }
    * @param {object} p       { style: 'position'|'swing', timeframe: 'daily'|'weekly',
-   *                           entryRule, k, horizonMonths, feePct, from?, to? }
+   *                           entryRule, k, horizonMonths, feePct, from?, to?, guard? }
+   *                         guard : règle anti-rachat (capital réinvesti uniquement).
    *                         from/to ("YYYY-MM-DD", optionnels) bornent les DATES D'ENTRÉE.
    * @returns {object} { error } ou {
    *     entryRules, exitRules, byExit, byEntry,                  // distribution
@@ -437,7 +447,7 @@
     let pEnd = n;
     if (p.to) { pEnd = Math.min(n, last + horizon + 1); }
     const sp = pEnd < n ? { d: s.d.slice(0, pEnd), o: s.o.slice(0, pEnd), h: s.h.slice(0, pEnd), l: s.l.slice(0, pEnd), c: s.c.slice(0, pEnd) } : s;
-    const pp = { fee, k, horizon, first, perMonth: tf.perMonth };
+    const pp = { fee, k, horizon, first, perMonth: tf.perMonth, guard: !!p.guard };
     const portfolioByEntry = {};
     entryRules.forEach(en => {
       portfolioByEntry[en.key] = {};
@@ -446,7 +456,7 @@
     const buyHold = buyAndHold(sp, first, fee, tf.perMonth);
 
     return {
-      style, timeframe: tfKey,
+      style, timeframe: tfKey, guard: !!p.guard,
       k, horizon, horizonMonths: horizon / tf.perMonth, feePct: fee * 100,
       bars: n,
       firstEntry: s.d[first], lastEntry: s.d[last], lastDate: sp.d[sp.d.length - 1],

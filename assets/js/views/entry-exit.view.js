@@ -153,7 +153,8 @@
       entryRule: $('ee-entry').value,
       k: Math.min(10, Math.max(0.5, parseFloat($('ee-k').value) || 3)),
       horizonMonths: parseFloat($('ee-h').value) || 12,
-      feePct: Math.min(2, Math.max(0, parseFloat($('ee-fee').value) || 0))
+      feePct: Math.min(2, Math.max(0, parseFloat($('ee-fee').value) || 0)),
+      guard: $('ee-guard').checked
     };
   }
 
@@ -173,11 +174,11 @@
     updateDescs();
     CI.setUrlParams({
       a: state.ticker ? null : state.asset, t: state.ticker || null,
-      s: p.style, m: mode, tf: p.timeframe, e: p.entryRule, k: p.k, h: p.horizonMonths, f: p.feePct
+      s: p.style, m: mode, tf: p.timeframe, e: p.entryRule, k: p.k, h: p.horizonMonths, f: p.feePct, g: p.guard ? 1 : null
     });
     const label = state.ticker || SHORT[state.asset] || state.asset;
     const entryLbl = (EE.ENTRY_RULES.find(r => r.key === p.entryRule) || {}).label;
-    $('ee-sum').textContent = `${label} · ${EE.STYLES[p.style].label} · ${entryLbl} · ${EE.TIMEFRAMES[p.timeframe].label} · stop ${num(p.k, p.k % 1 ? 1 : 0)} ATR · ${HORIZON_LABEL[p.horizonMonths] || p.horizonMonths + ' mois'} · frais ${num(p.feePct, 2)} %`;
+    $('ee-sum').textContent = `${label} · ${EE.STYLES[p.style].label} · ${entryLbl} · ${EE.TIMEFRAMES[p.timeframe].label} · stop ${num(p.k, p.k % 1 ? 1 : 0)} ATR · ${HORIZON_LABEL[p.horizonMonths] || p.horizonMonths + ' mois'} · frais ${num(p.feePct, 2)} %${p.guard ? ' · anti-rachat' : ''}`;
 
     const r = EE.run(current, p);
     lastResult = r;
@@ -341,6 +342,10 @@
       `contre <strong>${money(100 * bh.final)}</strong> en achat-conservation (<span class="${cls(bh.cagr)}">${pct(bh.cagr)}</span> par an, baisse maximale <span class="ee-neg">${pct(bh.maxDD)}</span>). ` +
       `Meilleur rendement par point de baisse : <strong>${esc(calm.label)}</strong> (${num(ratio(pf[calm.key]), 2)} contre ${num(ratio(bh), 2)} pour l'achat-conservation).`;
     const minTrades = Math.min(...traded.map(ex => pf[ex.key].trades));
+    if (r.guard) {
+      const blocked = traded.reduce((a, ex) => Math.max(a, pf[ex.key].blockedBars || 0), 0);
+      $('ee-summary').innerHTML += ` Règle anti-rachat active : jusqu'à ${blocked.toLocaleString('fr-FR')} barres de signaux ignorés après des stops.`;
+    }
     if (minTrades < 30) showWarn(`⚠ Certaines combinaisons ne comptent que ${minTrades} trades : le résultat dépend de quelques trades et de la date de départ.`);
     else if (r.portfolioYears < 5) showWarn(`⚠ ${num(r.portfolioYears, 1)} ans de données seulement : un ou deux épisodes de marché font l'essentiel du résultat.`);
     else showWarn('');
@@ -427,6 +432,7 @@
     if (Number.isFinite(k) && k >= 0.5 && k <= 10) $('ee-k').value = k;
     if (EE.STYLES[style].horizons.includes(h)) $('ee-h').value = String(h);
     if (Number.isFinite(f) && f >= 0 && f <= 2) $('ee-fee').value = f;
+    $('ee-guard').checked = g('g') === '1';
     const t = (g('t') || '').toUpperCase();
     if (TICKER_RE.test(t)) return { asset: null, ticker: t };
     const a = g('a');
@@ -481,6 +487,7 @@
       scheduleRun();
     });
     ['ee-tf', 'ee-k', 'ee-fee', 'ee-mode'].forEach(id => $(id).addEventListener('input', scheduleRun));
+    $('ee-guard').addEventListener('change', scheduleRun);
     $('ee-tbody').addEventListener('click', e => {
       const tr = e.target.closest('tr[data-entry]');
       if (tr) pickEntry(tr.dataset.entry);

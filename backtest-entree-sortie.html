@@ -113,6 +113,10 @@
               </div>
               <input type="hidden" id="ee-mode" value="dist" />
               <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="ee-mode-desc"></div>
+              <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:12px;color:var(--text-2);cursor:pointer">
+                <input type="checkbox" id="ee-guard" style="margin-top:2px" />
+                <span><strong>Règle anti-rachat</strong> : après un stop, pas de nouvel achat tant que la clôture reste sous la moyenne longue (200 jours / 40 semaines). S'applique au capital réinvesti.</span>
+              </label>
             </div>
           </div>
         </div>
@@ -260,6 +264,7 @@
         <li><strong>Règles swing</strong> : RSI(2) de Wilder sous 10 au-dessus de la moyenne longue ; cassure du plus haut des 20 ou 55 barres précédentes ; croisement à la hausse de la moyenne 20 barres sur la moyenne 50 barres. Sorties : objectif à 2 fois le risque (si stop et objectif sont atteints dans la même barre, le stop est retenu), première clôture au-dessus de la moyenne 5 barres, ou clôture sous le plus bas des 10 barres précédentes.</li>
         <li><strong>Espérance en R</strong> : rendement net d'un trade divisé par son risque initial, la distance du stop (k × ATR). +0,3 R signifie qu'en moyenne chaque trade rapporte 30 % de ce qu'il risquait.</li>
         <li><strong>Capital réinvesti</strong> : un seul capital, une seule position à la fois. On achète au premier signal où l'on n'a pas de position, on sort selon la règle, puis tout le capital (gains et pertes compris) attend le signal suivant, sans rémunération. Comparé à l'achat-conservation sur la même période, frais compris.</li>
+        <li><strong>Règle anti-rachat</strong> : après une sortie par stop (fixe ou suiveur), les signaux d'achat sont ignorés tant que la clôture n'est pas repassée au-dessus de la moyenne longue. Elle évite de racheter encore et encore une valeur qui s'effondre ; en contrepartie, elle fait parfois rater le rebond d'une valeur saine.</li>
         <li><strong>Données</strong> : cours ajustés des dividendes et des splits (Yahoo Finance), depuis 2000 ou la date de cotation.</li>
       </ul>
       <strong>Limites à garder en tête</strong>
