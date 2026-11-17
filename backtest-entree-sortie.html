@@ -4,9 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#0D9488" />
-<title>Backtest Entrée / Sortie — Stop Suiveur, Stop ATR, Moyenne 200 | CalcInvest</title>
-<meta name="description" content="Backtest gratuit de vos règles d'entrée et de sortie sur n'importe quelle action, ETF ou crypto : stop suiveur ATR, stop fixe, moyenne 200 jours, achat sur repli. Cours journaliers ajustés depuis 2000." />
-<meta name="keywords" content="backtest stop suiveur, backtest stop loss ATR, trailing stop backtest, moyenne mobile 200 jours, backtest action gratuit, règle de sortie trading" />
+<title>Backtest Entrée / Sortie — Swing, Stop Suiveur, Stop ATR | CalcInvest</title>
+<meta name="description" content="Backtest gratuit de règles d'entrée et de sortie, en position ou en swing, sur n'importe quelle action, ETF ou crypto : stop suiveur ATR, objectif 2R, RSI 2, cassures, avec capital réinvesti. Cours journaliers ajustés depuis 2000." />
+<meta name="keywords" content="backtest stop suiveur, backtest swing trading, backtest RSI 2, backtest stop loss ATR, trailing stop backtest, moyenne mobile 200 jours, backtest action gratuit, règle de sortie trading" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="canonical" href="https://calcinvest.fr/backtest-entree-sortie" />
 <meta property="og:type" content="website" />
@@ -72,7 +72,7 @@
   <div class="page-header" style="text-align:center;margin-bottom:24px">
     <div class="page-eyebrow" style="margin:0 auto 14px"><span class="page-eyebrow-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="11" height="11"><path d="M2 12l4-4 3 3 5-6"/></svg></span>Analyse &amp; Trading</div>
     <h1 class="page-title" style="font-size:clamp(30px,4vw,42px)">Vos règles d'entrée et de sortie <em>tiennent-elles</em> ?</h1>
-    <p class="page-lede" style="max-width:660px;margin:0 auto">Choisissez un actif ou <strong style="color:var(--text)">n'importe quel ticker</strong>, une règle d'entrée et un stop. L'outil simule une entrée à chaque signal depuis 2000 et compare <strong style="color:var(--text)">conserver, stop fixe et stop suiveur</strong> sur la même position.</p>
+    <p class="page-lede" style="max-width:660px;margin:0 auto">Choisissez un actif ou <strong style="color:var(--text)">n'importe quel ticker</strong>, un style (position ou <strong style="color:var(--text)">swing</strong>), une règle d'entrée et un stop. L'outil simule chaque signal depuis 2000, compare les règles de sortie sur la même position, et montre ce que donnerait le <strong style="color:var(--text)">capital réinvesti</strong> de trade en trade face à l'achat-conservation.</p>
   </div>
 
   <div data-intro-banner data-intro-key="backtest-entree-sortie" data-intro-title="💡 Comment lire ce backtest ?" data-intro-body="Au lieu d'un seul trade, l'outil teste <strong>chaque date d'entrée possible</strong> : pour chacune, il regarde ce qu'aurait donné la position avec 4 façons de sortir. Vous voyez donc la <strong>distribution</strong> des résultats (médiane, pire 5 %, part de trades perdants) et pas un chiffre isolé. Le <strong>stop suiveur</strong> remonte avec le plus haut atteint et ne redescend jamais ; il est exprimé en multiples d'<strong>ATR</strong> (amplitude moyenne d'une barre), ce qui l'adapte à la volatilité de chaque actif." style="margin-top:24px"></div>
@@ -89,6 +89,33 @@
     </div>
     <div class="accordion-body">
       <div class="accordion-body-inner">
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg></div>
+            <div class="subsection-title">Style et lecture</div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label" id="ee-style-label">Style de trading</div>
+              <div role="group" aria-labelledby="ee-style-label" class="pills" id="ee-style-pills">
+                <button class="pill active" data-value="position" type="button">Position (mois)</button>
+                <button class="pill" data-value="swing" type="button">Swing (jours)</button>
+              </div>
+              <input type="hidden" id="ee-style" value="position" />
+              <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="ee-style-desc"></div>
+            </div>
+            <div class="field">
+              <div class="field-label" id="ee-mode-label">Lecture des résultats</div>
+              <div role="group" aria-labelledby="ee-mode-label" class="pills" data-target="ee-mode">
+                <button class="pill active" data-value="dist" type="button">Distribution des entrées</button>
+                <button class="pill" data-value="capital" type="button">Capital réinvesti</button>
+              </div>
+              <input type="hidden" id="ee-mode" value="dist" />
+              <div style="font-size:11px;color:var(--text-3);margin-top:6px" id="ee-mode-desc"></div>
+            </div>
+          </div>
+        </div>
 
         <div class="subsection">
           <div class="subsection-header">
@@ -110,7 +137,7 @@
             <div class="subsection-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 4l4 4-4 4"/></svg></div>
             <div class="subsection-title">Règle d'entrée</div>
           </div>
-          <div class="pills" data-target="ee-entry" id="ee-entry-pills"></div>
+          <div class="pills" id="ee-entry-pills"></div>
           <input type="hidden" id="ee-entry" value="all" />
           <div class="ee-rule-desc" id="ee-entry-desc"></div>
         </div>
@@ -148,14 +175,9 @@
             </div>
             <div class="field">
               <div class="field-label" id="ee-h-label">Horizon maximal</div>
-              <div role="group" aria-labelledby="ee-h-label" class="pills" data-target="ee-h">
-                <button class="pill" data-value="3" type="button">3 mois</button>
-                <button class="pill" data-value="6" type="button">6 mois</button>
-                <button class="pill active" data-value="12" type="button">1 an</button>
-                <button class="pill" data-value="24" type="button">2 ans</button>
-              </div>
+              <div role="group" aria-labelledby="ee-h-label" class="pills" id="ee-h-pills"></div>
               <input type="hidden" id="ee-h" value="12" />
-              <div style="font-size:11px;color:var(--text-3);margin-top:6px">Sans stop touché, la position est vendue à cette échéance.</div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:6px">Sans sortie déclenchée avant, la position est vendue à cette échéance.</div>
             </div>
             <div class="field">
               <label class="field-label" for="ee-fee">Frais par ordre</label>
@@ -191,7 +213,7 @@
   <!-- Cartes par règle de sortie -->
   <section class="card" style="margin-bottom:24px">
     <div class="card-header">
-      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg></div>Résultats par règle de sortie</div>
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg></div><span id="ee-cards-title">Résultats par règle de sortie</span></div>
       <div class="card-meta" id="ee-cards-meta">—</div>
     </div>
     <div class="card-body"><div class="ee-cards" id="ee-cards"></div></div>
@@ -200,13 +222,13 @@
   <!-- Chronologie -->
   <section class="card" style="margin-bottom:24px">
     <div class="card-header">
-      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div>Résultat selon la date d'entrée</div>
+      <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><polyline points="2 13 5 9 8 11 12 4 14 7"/></svg></div><span id="ee-chart-title">Résultat selon la date d'entrée</span></div>
       <div class="card-meta" id="ee-chart-meta">—</div>
     </div>
     <div class="card-body">
-      <div class="chart-wrap" style="position:relative;height:320px"><canvas id="ee-chart" aria-label="Rendement de chaque entrée simulée selon sa date, par règle de sortie" role="img"></canvas></div>
+      <div class="chart-wrap" style="position:relative;height:320px"><canvas id="ee-chart" aria-label="Graphique des résultats par règle de sortie" role="img"></canvas></div>
       <div id="ee-legend" style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:12px"></div>
-      <div style="font-size:12px;color:var(--text-3);margin-top:10px">Chaque point est une entrée simulée : en abscisse sa date, en ordonnée son rendement final (en %) selon la règle de sortie.</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:10px" id="ee-chart-note"></div>
     </div>
   </section>
 
@@ -214,16 +236,16 @@
   <section class="card" style="margin-bottom:24px">
     <div class="card-header">
       <div class="card-title"><div class="card-title-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M2 4h12M2 8h12M2 12h12"/></svg></div>Toutes les règles d'entrée</div>
-      <div class="card-meta">Gain médian · part de trades perdants</div>
+      <div class="card-meta" id="ee-table-meta">Gain médian · part de trades perdants</div>
     </div>
     <div class="card-body">
       <div class="table-scroll">
         <table class="data-table ee-table">
-          <thead><tr><th>Règle d'entrée</th><th>Entrées</th><th>Conserver</th><th>Stop fixe</th><th>Stop suiveur</th><th>Suiveur clôture</th><th>Baisse max médiane</th></tr></thead>
+          <thead id="ee-thead"></thead>
           <tbody id="ee-tbody"></tbody>
         </table>
       </div>
-      <div style="font-size:12px;color:var(--text-3);margin-top:10px">Cliquez une ligne pour l'afficher en détail. La baisse maximale est celle subie en conservant la position, entre l'achat et l'horizon.</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:10px" id="ee-table-note"></div>
     </div>
   </section>
 
@@ -235,13 +257,17 @@
         <li><strong>Stops</strong> : touchés si le plus bas de la barre passe sous le stop, exécutés au niveau du stop, ou à l'ouverture si le cours a ouvert en dessous (gap). Le suiveur sur clôture attend la clôture de la barre.</li>
         <li><strong>ATR(14)</strong> : moyenne de l'amplitude des 14 dernières barres (journalières ou hebdomadaires selon l'unité choisie).</li>
         <li><strong>Moyenne longue</strong> : moyenne simple 200 jours en journalier, 40 semaines en hebdomadaire.</li>
+        <li><strong>Règles swing</strong> : RSI(2) de Wilder sous 10 au-dessus de la moyenne longue ; cassure du plus haut des 20 ou 55 barres précédentes ; croisement à la hausse de la moyenne 20 barres sur la moyenne 50 barres. Sorties : objectif à 2 fois le risque (si stop et objectif sont atteints dans la même barre, le stop est retenu), première clôture au-dessus de la moyenne 5 barres, ou clôture sous le plus bas des 10 barres précédentes.</li>
+        <li><strong>Espérance en R</strong> : rendement net d'un trade divisé par son risque initial, la distance du stop (k × ATR). +0,3 R signifie qu'en moyenne chaque trade rapporte 30 % de ce qu'il risquait.</li>
+        <li><strong>Capital réinvesti</strong> : un seul capital, une seule position à la fois. On achète au premier signal où l'on n'a pas de position, on sort selon la règle, puis tout le capital (gains et pertes compris) attend le signal suivant, sans rémunération. Comparé à l'achat-conservation sur la même période, frais compris.</li>
         <li><strong>Données</strong> : cours ajustés des dividendes et des splits (Yahoo Finance), depuis 2000 ou la date de cotation.</li>
       </ul>
       <strong>Limites à garder en tête</strong>
       <ul style="margin:8px 0 14px 18px;padding:0">
         <li><strong>Biais du survivant</strong> : un ticker qui cote encore aujourd'hui a survécu. Les actions et cryptos disparues, là où un stop sert le plus, ne sont pas dans les données.</li>
         <li><strong>Entrées chevauchées</strong> : deux entrées proches partagent presque la même trajectoire. 3 ans d'historique ne font que trois périodes d'un an réellement indépendantes, quel que soit le nombre d'entrées affiché.</li>
-        <li><strong>Capital non réinvesti</strong> : après un stop, le capital libéré n'est pas replacé. Cela pénalise les stops dans la comparaison du gain moyen ; la colonne « par mois investi » corrige en partie ce biais.</li>
+        <li><strong>Distribution ou capital</strong> : la distribution traite chaque entrée isolément (le capital libéré par un stop n'y est pas replacé) ; le mode capital réinvesti enchaîne les trades, mais son résultat dépend de la date de départ et d'un petit nombre de trades.</li>
+        <li><strong>Surajustement</strong> : en essayant beaucoup de réglages sur le même actif, on finit toujours par en trouver un qui « marche » sur le passé. Une règle crédible fonctionne sur plusieurs actifs et plusieurs périodes, avec des réglages proches.</li>
         <li><strong>Ni fiscalité ni change</strong> : seuls les frais par ordre sont déduits. Les rendements sont exprimés dans la devise de cotation.</li>
       </ul>
       <em style="color:var(--text-4)">Backtest pédagogique. Les performances passées ne préjugent pas des performances futures.</em>
@@ -260,6 +286,8 @@
 <span class="ci-semantic-chip">acheter au-dessus de la moyenne 200</span>
 <span class="ci-semantic-chip">acheter sur repli backtest</span>
 <span class="ci-semantic-chip">règle de sortie trading</span>
+<span class="ci-semantic-chip">backtest swing trading</span>
+<span class="ci-semantic-chip">stratégie RSI 2 Connors</span>
     </div>
   </div>
 </section>

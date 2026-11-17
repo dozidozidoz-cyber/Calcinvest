@@ -148,7 +148,7 @@ Module testé : `node -e "const FIN = require('./assets/js/core/finance-utils.js
 
 Tous les outils ci-dessous sont accessibles via le megamenu sur les 40 pages.
 
-**Marchés (8)** : DCA Bourse, DCA Crypto, Valorisation DCF, Valorisation Marché (CAPE/DD/composite), Allocation Portefeuille (60/40/Dalio/Browne), Régime de marché (Bull/Bear/Range/Volatile), Backtest Timing (Golden Cross/Faber GTAA/Momentum), **Backtest Entrée / Sortie** (`/backtest-entree-sortie` — 6 règles d'entrée × 4 sorties : conserver, stop fixe, stop suiveur, suiveur sur clôture ; journalier ou hebdo ; cours de `daily/` ou de n'importe quel ticker via `/api/daily`. Core : `core/calc-entry-exit.js` (`ENTRYEXIT.run`), view : `views/entry-exit.view.js`)
+**Marchés (8)** : DCA Bourse, DCA Crypto, Valorisation DCF, Valorisation Marché (CAPE/DD/composite), Allocation Portefeuille (60/40/Dalio/Browne), Régime de marché (Bull/Bear/Range/Volatile), Backtest Timing (Golden Cross/Faber GTAA/Momentum), **Backtest Entrée / Sortie** (`/backtest-entree-sortie` — 2 styles : position (tendance, replis ; conserver, stop fixe, stop suiveur, suiveur sur clôture) et swing (RSI 2, cassures 20/55, croisement MM20/50 ; objectif 2R, sortie sur rebond MM5, plus bas 10 barres) ; 2 lectures : distribution des entrées ou capital réinvesti (une position à la fois, comparée à l'achat-conservation) ; journalier ou hebdo ; cours de `daily/` ou de n'importe quel ticker via `/api/daily`. Core : `core/calc-entry-exit.js` (`ENTRYEXIT.run`), view : `views/entry-exit.view.js`)
 
 **Immobilier (6)** : Rendement Locatif, SCPI, Prêt, Plus-Value, LMNP, Portefeuille Locatif
 
